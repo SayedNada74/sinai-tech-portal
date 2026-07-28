@@ -1,0 +1,601 @@
+"use client";
+
+import * as React from "react";
+import { useApp } from "@/context/app-context";
+import { useAcademic, GRADE_POINTS, GRADE_LABELS } from "@/context/academic-context";
+import { useAdmin } from "@/context/admin-context";
+import { useAuth } from "@/context/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, Printer } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { AnimatedNumber } from "@/components/ui/animated-number";
+
+interface SemesterCourseInput {
+  id: string;
+  code: string;
+  credits: number;
+  grade: string;
+}
+
+export default function GpaPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin";
+  const { t, lang, dir } = useApp();
+  const { toast } = useToast();
+  const { courses } = useAdmin();
+  const {
+    cumulativeGpa,
+    completedCredits,
+    remainingCredits,
+    targetGpa,
+    setTargetGpa,
+    markCompleted
+  } = useAcademic();
+
+  const handlePrintReport = () => {
+    toast(t("جاري تجهيز التقرير للطباعة والتصدير...", "Preparing report for export & printing..."), "info");
+    setTimeout(() => {
+      window.print();
+    }, 400);
+  };
+
+  const [activeTab, setActiveTab] = React.useState<"calculator" | "predictor">("calculator");
+
+  // --- Semester GPA Calculator States ---
+  const [calcCourses, setCalcCourses] = React.useState<SemesterCourseInput[]>([]);
+  const [savedSuccess, setSavedSuccess] = React.useState(false);
+
+  const addCalcRow = () => {
+    setCalcCourses([
+      ...calcCourses,
+      { id: Math.random().toString(36).substring(2, 9), code: "", credits: 3, grade: "B" }
+    ]);
+  };
+
+  const removeCalcRow = (id: string) => {
+    setCalcCourses(calcCourses.filter((row) => row.id !== id));
+  };
+
+  const updateCalcRow = (id: string, field: keyof SemesterCourseInput, value: any) => {
+    setCalcCourses(
+      calcCourses.map((row) => {
+        if (row.id === id) {
+          const updated = { ...row, [field]: value };
+          if (field === "code" && value) {
+            const course = courses.find((c) => c.code === value);
+            if (course) {
+              updated.credits = course.credits;
+            }
+          }
+          return updated;
+        }
+        return row;
+      })
+    );
+  };
+
+  const semesterGpa = React.useMemo(() => {
+    let totalPoints = 0;
+    let totalCredits = 0;
+    calcCourses.forEach((c) => {
+      const pts = GRADE_POINTS[c.grade] ?? 0;
+      totalPoints += pts * c.credits;
+      totalCredits += c.credits;
+    });
+    if (totalCredits === 0) return 0;
+    return Math.round((totalPoints / totalCredits) * 100) / 100;
+  }, [calcCourses]);
+
+  const totalSemesterCredits = React.useMemo(() => {
+    return calcCourses.reduce((sum, c) => sum + c.credits, 0);
+  }, [calcCourses]);
+
+  const handleSaveToCompleted = () => {
+    calcCourses.forEach((c) => {
+      if (c.code) {
+        markCompleted(c.code, c.grade);
+      }
+    });
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const resetCalculator = () => {
+    setCalcCourses([]);
+  };
+
+  // --- Predictor Simulator Calculations ---
+  const requiredGpa = React.useMemo(() => {
+    if (remainingCredits <= 0) return 0;
+    const totalPointsTarget = targetGpa * 144;
+    const currentPoints = cumulativeGpa * completedCredits;
+    const needed = (totalPointsTarget - currentPoints) / remainingCredits;
+    return Math.round(needed * 100) / 100;
+  }, [cumulativeGpa, completedCredits, remainingCredits, targetGpa]);
+
+  const predictorStatus = React.useMemo(() => {
+    if (remainingCredits <= 0) {
+      return { type: "info", text: t("لقد أتممت بالفعل جميع الساعات المطلوبة للتخرج!", "You have completed all required graduation credits!") };
+    }
+    if (requiredGpa > 4.0) {
+      return {
+        type: "error",
+        text: t(
+          `المعدل المطلوب هو ${requiredGpa}. من الناحية الرياضية، لا يمكنك الوصول للمعدل المستهدف (${targetGpa}) حتى لو حصلت على امتياز مرتفع A+ في جميع المواد المتبقية.`,
+          `Required GPA is ${requiredGpa}. Mathematically impossible to reach target (${targetGpa}) even with A+ in all remaining courses.`
+        )
+      };
+    }
+    if (requiredGpa < 0) {
+      return {
+        type: "success",
+        text: t(
+          `المعدل المطلوب هو 0.00! لقد حققت بالفعل أو تجاوزت متطلبات معدل التخرج المستهدف الخاص بك بمعدلك الحالي!`,
+          `Required GPA is 0.00! You have already met or exceeded your target graduation GPA!`
+        )
+      };
+    }
+    if (requiredGpa > 3.4) {
+      return {
+        type: "warning",
+        text: t(
+          `المعدل المطلوب هو ${requiredGpa}. هذا يتطلب منك مجهوداً كبيراً جداً والحصول على امتياز (A) في أغلب المواد المتبقية.`,
+          `Required GPA is ${requiredGpa}. This requires high effort and obtaining (A) in most remaining courses.`
+        )
+      };
+    }
+    return {
+      type: "success",
+      text: t(
+        `المعدل المطلوب هو ${requiredGpa}. يمكنك تحقيق هدفك بمستوى دراسي جيد جداً (متوسط درجات B+ إلى A-) في المواد المتبقية.`,
+        `Required GPA is ${requiredGpa}. You can easily achieve your goal with a solid (B+ to A-) average in remaining courses.`
+      )
+    };
+  }, [requiredGpa, targetGpa, remainingCredits, t]);
+
+  const isRtl = dir === "rtl";
+
+  return (
+    <>
+      <div className="space-y-8 print:hidden" dir={dir}>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">
+            {t("حساب وتوقع المعدل التراكمي (GPA)", "GPA Calculator & Simulator")}
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            {t(
+              "احسب معدلك الفصلي الحالي، أو خطط وتوقع السيناريوهات المطلوبة لتحقيق معدلك المستهدف.",
+              "Calculate your semester GPA or simulate target scenarios to reach your goal."
+            )}
+          </p>
+        </div>
+
+        <Button onClick={handlePrintReport} variant="outline" className="gap-2 text-xs font-bold shadow-sm self-start sm:self-auto cursor-pointer">
+          <Printer className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+          <span>{t("تصدير / طباعة التقرير (PDF)", "Export / Print PDF Report")}</span>
+        </Button>
+      </div>
+
+      {isAdmin && (
+        <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">
+          <div className="flex items-center gap-2">
+            <span>⚙️</span>
+            <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): هذه حاسبة معدل افتراضية لاختبار تجربة الطلاب.", "Admin View Mode: This is a preview of the GPA calculator tool for testing student experience.")}</span>
+          </div>
+          <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-6">
+        <button
+          onClick={() => setActiveTab("calculator")}
+          className={`pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === "calculator"
+              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
+              : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <Calculator className="h-4.5 w-4.5" />
+            {t("حاسبة المعدل الفصلي", "Semester GPA Calculator")}
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveTab("predictor")}
+          className={`pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === "predictor"
+              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
+              : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <TrendingUp className="h-4.5 w-4.5" />
+            {t("محاكي التوقع التراكمي (What-If)", "GPA Target Simulator (What-If)")}
+          </span>
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "calculator" ? (
+          <motion.div
+            key="calculator"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          >
+            {/* Input Section */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+                <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-800/60 mb-6">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base font-bold">{t("مواد الفصل الدراسي", "Semester Courses")}</CardTitle>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={resetCalculator} className="gap-1 text-xs h-9">
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        {t("إعادة تعيين", "Reset")}
+                      </Button>
+                      <Button size="sm" onClick={addCalcRow} className="gap-1 text-xs h-9">
+                        <Plus className="h-3.5 w-3.5" />
+                        {t("إضافة مادة", "Add Course")}
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {calcCourses.length > 0 ? (
+                    <>
+                      <div className="hidden sm:grid grid-cols-12 gap-4 text-xs font-bold text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-850">
+                        <div className="col-span-6">{t("المادة الدراسية", "Course")}</div>
+                        <div className="col-span-3 text-center">{t("الساعات", "Credits")}</div>
+                        <div className="col-span-2 text-center">{t("التقدير المتوقع", "Grade")}</div>
+                        <div className="col-span-1"></div>
+                      </div>
+
+                      {calcCourses.map((row) => (
+                        <div key={row.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center border-b border-zinc-100/50 dark:border-zinc-850/40 pb-3 sm:pb-0 sm:border-0">
+                          {/* Course Selection */}
+                          <div className="col-span-12 sm:col-span-6">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("المادة", "Course")}</label>
+                            <select
+                              value={row.code}
+                              onChange={(e) => updateCalcRow(row.id, "code", e.target.value)}
+                              className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer"
+                            >
+                              <option value="">{t("-- اختر مقرر دراسي --", "-- Select a course --")}</option>
+                              {courses.map((course) => (
+                                <option key={course.code} value={course.code}>
+                                  {course.code} - {t(course.arabic, course.english)} ({course.credits} {t("ساعة", "cr")})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Credit Hours */}
+                          <div className="col-span-6 sm:col-span-3">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("عدد الساعات", "Credits")}</label>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={6}
+                              value={row.credits}
+                              onChange={(e) => updateCalcRow(row.id, "credits", parseInt(e.target.value) || 0)}
+                              className="text-center"
+                            />
+                          </div>
+
+                          {/* Grade */}
+                          <div className="col-span-6 sm:col-span-2">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("التقدير", "Grade")}</label>
+                            <select
+                              value={row.grade}
+                              onChange={(e) => updateCalcRow(row.id, "grade", e.target.value)}
+                              className="w-full h-11 px-2 rounded-xl border border-zinc-200 bg-white text-center text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer"
+                            >
+                              {Object.keys(GRADE_POINTS).map((g) => (
+                                <option key={g} value={g}>{g}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="col-span-12 sm:col-span-1 text-center">
+                            <button
+                              onClick={() => removeCalcRow(row.id)}
+                              className="p-2.5 rounded-xl border border-zinc-200 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:border-zinc-800 dark:hover:bg-red-950/20 transition-all cursor-pointer"
+                            >
+                              <Trash2 className="h-4.5 w-4.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <div className="py-12 text-center text-zinc-400 dark:text-zinc-550 space-y-3">
+                      <Calculator className="h-9 w-9 mx-auto text-zinc-300 dark:text-zinc-700" />
+                      <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                        {t("لا توجد مواد مضافة حالياً. اضغط على 'إضافة مادة' للبدء بحساب معدلك.", "No courses added yet. Click 'Add Course' to calculate GPA.")}
+                      </p>
+                      <Button size="sm" onClick={addCalcRow} className="gap-1.5 text-xs font-bold px-5">
+                        <Plus className="h-4 w-4" />
+                        {t("إضافة مادة جديدة", "Add New Course")}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Save widget */}
+              <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-violet-50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/30 rounded-2xl gap-4">
+                <div>
+                  <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
+                    {t("حفظ الدرجات للملف الشخصي", "Save Grades to Profile")}
+                  </h4>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                    {t(
+                      "احفظ المواد المختارة فوراً في سجلك الأكاديمي المنجز لتنعكس في إحصائيات لوحة التحكم ومخطط المواد.",
+                      "Save chosen courses to your academic record to update dashboard statistics and checklist."
+                    )}
+                  </p>
+                </div>
+                <Button onClick={handleSaveToCompleted} className="gap-2 shrink-0 font-bold">
+                  <Save className="h-4.5 w-4.5" />
+                  {t("مزامنة المواد المنجزة", "Sync Completed Courses")}
+                </Button>
+              </div>
+
+              {savedSuccess && (
+                <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 text-xs font-semibold flex items-center gap-2.5">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <span>{t("تم بنجاح تحديث ومزامنة سجلك الأكاديمي في قاعدة البيانات!", "Academic record updated & synced successfully!")}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Results Sidebar */}
+            <div>
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
+                <CardContent className="pt-8 pb-6">
+                  <h3 className="text-zinc-500 dark:text-zinc-400 font-bold text-sm">
+                    {t("المعدل الفصلي المتوقع", "Expected Semester GPA")}
+                  </h3>
+                  <div className="text-5xl font-black text-violet-600 dark:text-violet-400 mt-4.5">
+                    <AnimatedNumber value={semesterGpa} decimals={2} />
+                  </div>
+                  <Badge className="mt-3 bg-violet-50 text-violet-600 border-transparent text-xs py-1 px-3 dark:bg-violet-950/40 dark:text-violet-400">
+                    {semesterGpa >= 3.4
+                      ? t("جيد جداً مرتفع 🚀", "High Distinction 🚀")
+                      : semesterGpa >= 2.8
+                      ? t("جيد جداً 👍", "Very Good 👍")
+                      : t("مقبول", "Passing")}
+                  </Badge>
+
+                  <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"}`}>
+                    <div>
+                      <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500 block">{t("إجمالي الساعات", "Total Credits")}</span>
+                      <span className="text-base font-bold text-zinc-800 dark:text-zinc-200">{totalSemesterCredits} {t("ساعة", "Hours")}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500 block">{t("النقاط المقدرة", "Quality Points")}</span>
+                      <span className="text-base font-bold text-zinc-800 dark:text-zinc-200">
+                        {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="predictor"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          >
+            {/* Simulation Controls */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-base font-bold">{t("تحديد المعدل المستهدف", "Set Target GPA")}</CardTitle>
+                  <CardDescription className="text-xs">{t("استخدم المنزلق لتحديد المعدل التراكمي (GPA) الذي تود التخرج به.", "Use slider to set target graduation GPA.")}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-sm font-bold">
+                      <span className="text-zinc-650 dark:text-zinc-400">{t("المعدل المستهدف عند التخرج:", "Target GPA at graduation:")}</span>
+                      <span className="text-lg text-violet-600 dark:text-violet-400 font-extrabold">{targetGpa.toFixed(2)}</span>
+                    </div>
+
+                    <input
+                      type="range"
+                      min="2.00"
+                      max="4.00"
+                      step="0.05"
+                      value={targetGpa}
+                      onChange={(e) => setTargetGpa(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-violet-650"
+                    />
+
+                    <div className="flex justify-between text-[10px] font-bold text-zinc-400">
+                      <span>2.00 {t("مقبول", "Good")}</span>
+                      <span>3.00 {t("جيد جداً", "Very Good")}</span>
+                      <span>4.00 {t("امتياز مرتفع", "High Distinction")}</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-4.5 rounded-2xl border text-xs leading-relaxed font-semibold flex gap-3 ${
+                    predictorStatus.type === "success"
+                      ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+                      : predictorStatus.type === "error"
+                      ? "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+                      : "bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400"
+                  }`}>
+                    {predictorStatus.type === "success" && <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type === "error" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type === "warning" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    <span>{predictorStatus.text}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Simulation Results Summary */}
+            <div>
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
+                <CardContent className="pt-8 pb-6">
+                  <h3 className="text-zinc-550 dark:text-zinc-400 font-bold text-sm">
+                    {t("المعدل المطلوب في الساعات المتبقية", "Required GPA in Remaining Hours")}
+                  </h3>
+                  <div className="text-5xl font-black text-violet-600 dark:text-violet-400 mt-4.5">
+                    {requiredGpa <= 0 ? "0.00" : requiredGpa > 4.0 ? "A+" : requiredGpa.toFixed(2)}
+                  </div>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-2.5">
+                    ({t(`مستند إلى معدلك الحالي ${cumulativeGpa.toFixed(2)} وإتمامك ${completedCredits} ساعة`, `Based on current GPA ${cumulativeGpa.toFixed(2)} & ${completedCredits} credits`)})
+                  </p>
+
+                  <div className={`mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"} space-y-4`}>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-zinc-450 dark:text-zinc-500">{t("الساعات المنجزة:", "Completed Credits:")}</span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200">{completedCredits} / 144</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-zinc-450 dark:text-zinc-500">{t("الساعات المتبقية للتخرج:", "Remaining Credits:")}</span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200">{remainingCredits} {t("ساعة", "Hours")}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      </div>
+
+      {/* Official Print & PDF Export Document Layout */}
+      <div className="hidden print:block text-black p-6 space-y-6 bg-white font-sans w-full leading-relaxed" dir={dir}>
+        {/* Document Header */}
+        <div className="flex justify-between items-center border-b-2 border-black pb-4">
+          <div className="space-y-1">
+            <h1 className="text-xl font-black">
+              {t("جامعة سيناء — Sinai University", "Sinai University")}
+            </h1>
+            <h2 className="text-sm font-bold">
+              {t("كلية الحاسبات وتكنولوجيا المعلومات (SU IT Guide)", "Faculty of Computers & Information Technology (SU IT Guide)")}
+            </h2>
+            <p className="text-xs text-gray-700 font-semibold">
+              {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)", "Official Academic Transcript Summary")}
+            </p>
+          </div>
+          <div className={`${isRtl ? "text-left" : "text-right"} text-xs space-y-1 font-bold`}>
+            <p>{t("تاريخ التصدير:", "Export Date:")} {new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")}</p>
+            <p className="text-gray-600">
+              {t("نوع المستند: التقرير الفصلي والتراكمي", "Document Type: Semester & Cumulative Report")}
+            </p>
+          </div>
+        </div>
+
+        {/* Student Metadata Box */}
+        <div className="grid grid-cols-2 gap-4 border border-black p-4 rounded-xl text-xs bg-gray-50">
+          <div>
+            <span className="font-bold text-gray-700">{t("اسم الطالب:", "Student Name:")} </span>
+            <span className="font-black text-black">{user?.name || (lang === "ar" ? "أحمد الطالب" : "Student")}</span>
+          </div>
+          <div>
+            <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):", "Student ID:")} </span>
+            <span className="font-black text-black">{user?.studentId || "20230101"}</span>
+          </div>
+          <div>
+            <span className="font-bold text-gray-700">{t("التخصص / القسم الأكاديمي:", "Department / Major:")} </span>
+            <span className="font-black text-black">{user?.department || (lang === "ar" ? "تكنولوجيا المعلومات (IT)" : "Information Technology (IT)")}</span>
+          </div>
+          <div>
+            <span className="font-bold text-gray-700">{t("المستوى:", "Level / Year:")} </span>
+            <span className="font-black text-black">{user?.level || (lang === "ar" ? "الفرقة الثانية" : "Year 2")}</span>
+          </div>
+        </div>
+
+        {/* Academic Stats Box */}
+        <div className="grid grid-cols-4 gap-3 text-center text-xs">
+          <div className="border border-black p-3 rounded-xl bg-gray-50">
+            <span className="block font-bold text-gray-600 mb-1">{t("المعدل التراكمي الفعلي", "Cumulative GPA")}</span>
+            <span className="text-xl font-black">{cumulativeGpa.toFixed(2)}</span>
+          </div>
+          <div className="border border-black p-3 rounded-xl bg-gray-50">
+            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المستكملة", "Completed Credits")}</span>
+            <span className="text-xl font-black">{completedCredits} / 144</span>
+          </div>
+          <div className="border border-black p-3 rounded-xl bg-gray-50">
+            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المتبقية", "Remaining Credits")}</span>
+            <span className="text-xl font-black">{remainingCredits} {t("ساعة", "cr")}</span>
+          </div>
+          <div className="border border-black p-3 rounded-xl bg-gray-50">
+            <span className="block font-bold text-gray-600 mb-1">{t("المعدل الفصلي الحالي", "Semester GPA")}</span>
+            <span className="text-xl font-black">{semesterGpa}</span>
+          </div>
+        </div>
+
+        {/* Courses Grade Table */}
+        <div className="space-y-3 pt-2">
+          <h3 className="text-xs font-bold border-b border-black pb-1">
+            {t("بيان درجات ومواد التقرير الحالي:", "Current Semester Course Grades:")}
+          </h3>
+          <table className={`w-full ${isRtl ? "text-right" : "text-left"} text-xs border-collapse border border-black`}>
+            <thead>
+              <tr className="bg-gray-100 border-b border-black font-bold">
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>#</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("رمز المقرر", "Course Code")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("اسم المادة الدراسية", "Course Name")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("الساعات", "Credits")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("التقدير المتوقع", "Grade")}</th>
+                <th className="p-2.5">{t("النقاط المكتسبة", "Quality Points")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {calcCourses.map((c, idx) => {
+                const found = courses.find((co) => co.code === c.code);
+                const pts = (GRADE_POINTS[c.grade] || 0) * (c.credits || 0);
+                return (
+                  <tr key={c.id} className="border-b border-black">
+                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{idx + 1}</td>
+                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black`}>{c.code || t("مقرر فصلي", "Semester Course")}</td>
+                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-semibold`}>{found ? t(found.arabic, found.english) : t("مقرر اختياري/إجباري", "Elective/Core Course")}</td>
+                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{c.credits}</td>
+                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black`}>{c.grade} ({GRADE_LABELS[c.grade] || ""})</td>
+                    <td className="p-2.5 font-black">{pts.toFixed(1)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Sign-off Verification Footer */}
+        <div className="pt-8 border-t border-black flex justify-between items-end text-[10px] text-gray-700">
+          <div>
+            <p className="font-bold">{t("تنبيه رسمي:", "Official Notice:")}</p>
+            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر دليل ومرشد طلاب الحاسبات (SU IT Guide).", "This official transcript summary is automatically generated and verified via SU IT Guide.")}</p>
+            <p>Verification URL: su-it-guide.vercel.app</p>
+          </div>
+          <div className="text-center space-y-1">
+            <p className="font-bold">{t("اعتماد وتوثيق النظام الأكاديمي", "Academic System Verification & Endorsement")}</p>
+            <div className="w-32 h-12 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center font-bold text-[9px] text-gray-500">
+              {t("[ ختم التوثيق الإلكتروني ]", "[ Digital Seal & Verification ]")}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

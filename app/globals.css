@@ -1,26 +1,392 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
+@custom-variant dark (&:where(html:not(.light-mode), html:not(.light-mode) *));
+
+@theme {
+  --color-zinc-150: #f0f1f4;
+  --color-zinc-250: #e2e4e9;
+  --color-zinc-450: #90929e;
+  --color-zinc-550: #656773;
+  --color-zinc-650: #42444e;
+  --color-zinc-850: #1b1c22;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Arabic", "SF Pro Text", "SF Pro Display", var(--font-ibm-plex), 'IBM Plex Sans Arabic', 'Readex Pro', var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.light-mode {
+  --background: #fafafa;
+  --foreground: #09090b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body, html, input, button, select, textarea {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Arabic", "SF Pro Text", "SF Pro Display", var(--font-ibm-plex), 'IBM Plex Sans Arabic', 'Readex Pro', var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.01em;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── Webkit Custom Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(9, 9, 11, 0.3);
+}
+
+.light-mode ::-webkit-scrollbar-track {
+  background: rgba(250, 250, 250, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  /* cyan/teal scrollbar */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.6);
+  /* accent cyan on hover */
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─── Smooth thin scrollbar ─────────────────────────────────────────────── */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thumb-zinc-200::-webkit-scrollbar-thumb {
+  background: #e4e4e7;
+  border-radius: 999px;
+}
+
+.dark .scrollbar-thumb-zinc-800::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 999px;
+}
+
+/* ─── Custom UI Component Classes ────────────────────────────────────────── */
+
+/* Glass card with backdrop-blur, hover glow + lift */
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light-mode .card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(6, 182, 212, 0.15);
+  /* cyan glow */
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+/* Card with permanent cyan glow shadow */
+.card-glow {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 1.25rem;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
+.light-mode .card-glow {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+}
+
+/* Compact horizontal stat display */
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .stat-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Gradient button (cyan→teal) with hover lift + glow */
+.btn-primary {
+  background: linear-gradient(135deg, #06b6d4, #0d9488);
+  color: #ffffff !important;
+  font-weight: 750;
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.45);
+  filter: brightness(1.1);
+}
+
+/* Outlined button with hover border accent */
+.btn-secondary {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: inherit;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-mode .btn-secondary {
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+}
+
+.btn-secondary:hover {
+  border-color: #06b6d4;
+  background: rgba(6, 182, 212, 0.05);
+}
+
+/* Nav link with icon shift on hover, .active gradient state */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.825rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  color: var(--foreground);
+  opacity: 0.75;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.light-mode .sidebar-link:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.sidebar-link svg {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-link:hover svg {
+  transform: translateX(-3px);
+  /* Shift icon on hover (RTL) */
+}
+
+[dir="ltr"] .sidebar-link:hover svg {
+  transform: translateX(3px);
+  /* Shift icon on hover (LTR) */
+}
+
+.sidebar-link.active {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(13, 148, 136, 0.15)) !important;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  color: #06b6d4 !important;
+}
+
+.light-mode .sidebar-link.active {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(13, 148, 136, 0.08)) !important;
+  border: 1px solid rgba(6, 182, 212, 0.12);
+}
+
+/* Navbar glass effect with blur + border-bottom */
+.glass {
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .glass {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Status pills */
+.badge-safe {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ─── Smooth Focus Rings ────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #06b6d4;
+}
+
+/* ─── Smooth Animations ─────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-fade-in {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+/* ─── Official Print & PDF Export Stylesheet ────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide Web Navbars, Sidebars, Fixed Elements, Buttons, and Toasts */
+  aside,
+  header,
+  nav,
+  footer,
+  button,
+  .print-hide,
+  .print\:hidden,
+  .fixed,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  main {
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:flex {
+    display: flex !important;
+  }
+
+  .print\:grid {
+    display: grid !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Floating Animation Effects */
+@keyframes floatSlow {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 8s ease-in-out infinite;
 }
