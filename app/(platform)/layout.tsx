@@ -31,7 +31,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { notifications, markAsRead, markAllAsRead, clearNotifications } = useSocial();
-  const { theme, setTheme, dir, t, lang } = useApp();
+  const { theme, setTheme, dir, t, lang, setLang } = useApp();
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const [isNotifOpen, setIsNotifOpen] = React.useState(false);
@@ -53,22 +53,38 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <MobileSidebar isOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
 
         {/* Mobile Header */}
-        <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-6 flex items-center justify-between sticky top-0 z-40">
+        <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-cyan-600 flex items-center justify-center text-white shadow-md">
               <GraduationCap className="h-4.5 w-4.5" />
             </div>
-            <span className="font-bold text-base text-zinc-950 dark:text-zinc-50">SU IT Guide</span>
+            <span className="font-bold text-sm text-zinc-950 dark:text-zinc-50">SU IT Guide</span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            {/* Language Toggle */}
+            <button
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="p-1.5 px-2 rounded-lg text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer"
+            >
+              {lang === "ar" ? "EN" : "عربي"}
+            </button>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}
+            </button>
+
             {/* Notifications mobile trigger */}
             <div className="relative">
               <button
                 onClick={() => setIsNotifOpen(!isNotifOpen)}
-                className="p-2 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 relative cursor-pointer"
+                className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 relative cursor-pointer"
               >
-                <Bell className="h-4.5 w-4.5" />
+                <Bell className="h-4 w-4" />
                 {unreadNotifs.length > 0 && (
                   <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
                 )}
@@ -78,7 +94,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             {/* Mobile Sidebar Hamburger Trigger */}
             <button
               onClick={() => setIsMobileOpen(true)}
-              className="p-2 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
             >
               <Menu className="h-5 w-5" />
             </button>

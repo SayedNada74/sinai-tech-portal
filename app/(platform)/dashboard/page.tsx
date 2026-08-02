@@ -198,14 +198,14 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8" dir={dir}>
       {/* Welcome Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-600 to-teal-600 p-8 md:p-10 text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-600 to-teal-600 p-5 sm:p-8 md:p-10 text-white shadow-xl">
         <div className="absolute -top-10 -left-10 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <Badge variant="secondary" className="bg-white/20 text-white dark:bg-white/20 dark:text-white border-transparent mb-3.5 backdrop-blur-md">
+            <Badge variant="secondary" className="bg-white/20 text-white dark:bg-white/20 dark:text-white border-transparent mb-3 backdrop-blur-md">
               {t("نسخة 2.0 ✨", " Version 2.0 ✨")}
             </Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight mb-2.5">
               {lang === "ar"
                 ? `أهلاً بك، ${getLocalizedUserName(user?.name, "ar")} 👋`
                 : `Welcome, ${getLocalizedUserName(user?.name, "en")} 👋`}
@@ -222,14 +222,14 @@ export default function DashboardPage() {
                   )}
             </p>
           </div>
-          <div className="flex gap-3 shrink-0">
+          <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link href="/profile">
-              <Button size="sm" variant="secondary" className="bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-extrabold border-transparent shadow-md">
+              <Button size="sm" variant="secondary" className="bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-extrabold border-transparent shadow-md text-xs cursor-pointer">
                 {t("تعديل الملف الشخصي", "Edit Profile")}
               </Button>
             </Link>
             <Link href="/settings">
-              <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold">
+              <Button size="sm" variant="outline" className="border-white/40 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold text-xs cursor-pointer">
                 {t("الإعدادات", "Settings")}
               </Button>
             </Link>

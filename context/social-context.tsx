@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useAuth, UserProfile } from "./auth-context";
-import { type } from "os";
+import { fetchFromSupabase, insertToSupabase, updateInSupabase, deleteFromSupabase } from "@/lib/supabase";
 
 // Post Interfaces
 export interface PostReply {
@@ -99,7 +99,7 @@ interface SocialContextType {
   syncMoodle: (url: string) => Promise<void>;
   clearMoodle: () => void;
 
-  // Community Actions
+  // Post Actions
   createPost: (title: string, content: string, category: CommunityPost["category"], attachmentName?: string, attachmentUrl?: string) => void;
   editPost: (id: string, title: string, content: string, category: CommunityPost["category"]) => void;
   deletePost: (id: string) => void;
@@ -111,13 +111,15 @@ interface SocialContextType {
   deleteReply: (postId: string, commentId: string, replyId: string) => void;
 
   // Career Actions
-  toggleSaveJob: (id: string) => void;
-  isJobSaved: (id: string) => boolean;
   addCareer: (career: Omit<CareerOpportunity, "id" | "dateAdded">) => void;
   editCareer: (id: string, career: Omit<CareerOpportunity, "id" | "dateAdded">) => void;
   deleteCareer: (id: string) => void;
+  toggleSaveJob: (id: string) => void;
+  isJobSaved: (id: string) => boolean;
 
   // Event Actions
+  addEvent: (event: Omit<EventItem, "id">) => void;
+  deleteEvent: (id: string) => void;
   toggleSaveEvent: (id: string) => void;
   isEventSaved: (id: string) => boolean;
 
@@ -136,8 +138,46 @@ interface SocialContextType {
 
 const SocialContext = React.createContext<SocialContextType | undefined>(undefined);
 
-// Clean Live Community Posts
-const INITIAL_POSTS: CommunityPost[] = [];
+// Clean Initial Community Posts
+const INITIAL_POSTS: CommunityPost[] = [
+  {
+    id: "post-1",
+    title: "ما هي أفضل الطرق للتعامل مع مادة الداتا ستراكشر (CSW 232)؟",
+    category: "Study Help",
+    content: "يا شباب، محتاج نصائح للتعامل مع أسئلة امتحان الميدتيرم لمادة بناء البيانات والمعلومات. تنصحوا بحل مسائل شيت الكود واللاب ولا التركيز على الفهم النظري فقط؟",
+    date: "2026-07-25",
+    author: "أحمد محمود",
+    authorEmail: "ahmed.m@sinai.edu.eg",
+    avatar: "👨‍💻",
+    likes: ["admin@sinai.edu.eg"],
+    comments: [
+      {
+        id: "comm-1",
+        postId: "post-1",
+        author: "سيد ندى",
+        authorEmail: "sayed@example.com",
+        avatar: "🎓",
+        content: "ركز جداً على كود Linked Lists والـ Binary Trees لأن الدكاترة بيطلبوا كتابة الكود بنفسك بالورقة والقلم!",
+        date: "2026-07-26",
+        replies: []
+      }
+    ],
+    reported: false
+  },
+  {
+    id: "post-2",
+    title: "جلسة دراسية وتطبيق عملي لمشروع تطوير الويب بـ React & Next.js 🚀",
+    category: "Web Development",
+    content: "بنجهز لجروب عمل وتدريب أسبوعي زوم لتطبيق مشاريع تخرج وأفكار مواقع حقيقية بـ Next.js و Tailwind. اللي حابب ينضم يسيب تعليق بمهاراته الحالية!",
+    date: "2026-07-27",
+    author: "مريم علي",
+    authorEmail: "mariam.a@sinai.edu.eg",
+    avatar: "👩‍💻",
+    likes: [],
+    comments: [],
+    reported: false
+  }
+];
 
 // Clean Live Careers
 const INITIAL_CAREERS: CareerOpportunity[] = [];
@@ -165,14 +205,83 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   const [savedPosts, setSavedPosts] = React.useState<string[]>([]);
   const [moodleUrl, setMoodleUrl] = React.useState<string>("");
 
-  // Load from localStorage on user change
+  // Load Global Shared Community Posts & Sync from Supabase Cloud
+  React.useEffect(() => {
+    const loadSharedPosts = async () => {
+      let initial: CommunityPost[] = [];
+      const savedGlobal = localStorage.getItem("su_global_community_posts");
+      if (savedGlobal) {
+        try {
+          const parsed = JSON.parse(savedGlobal);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            initial = parsed;
+          }
+        } catch (e) {}
+      }
+
+      if (initial.length === 0) {
+        initial = INITIAL_POSTS;
+        localStorage.setItem("su_global_community_posts", JSON.stringify(INITIAL_POSTS));
+      }
+      setPosts(initial);
+
+      // Fetch remote posts from Supabase database
+      const remotePosts = await fetchFromSupabase<any>("posts");
+      if (remotePosts && remotePosts.length > 0) {
+        const mappedRemote: CommunityPost[] = remotePosts.map((p) => ({
+          id: p.id,
+          title: p.title,
+          content: p.content,
+          category: p.category || "General Discussion",
+          date: p.date,
+          author: p.author,
+          authorEmail: p.author_email || p.authorEmail || "student@sinai.edu.eg",
+          avatar: p.avatar || "🎓",
+          likes: Array.isArray(p.likes) ? p.likes : [],
+          comments: Array.isArray(p.comments) ? p.comments : [],
+          attachmentName: p.attachment_name,
+          attachmentUrl: p.attachment_url,
+          reported: Boolean(p.reported)
+        }));
+
+        const mergedMap = new Map<string, CommunityPost>();
+        initial.forEach(p => mergedMap.set(p.id, p));
+        mappedRemote.forEach(p => mergedMap.set(p.id, p));
+        const merged = Array.from(mergedMap.values());
+
+        setPosts(merged);
+        localStorage.setItem("su_global_community_posts", JSON.stringify(merged));
+      }
+    };
+
+    loadSharedPosts();
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === "su_global_community_posts" && e.newValue) {
+        try {
+          setPosts(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, []);
+
+  const saveGlobalPosts = (updatedPosts: CommunityPost[]) => {
+    setPosts(updatedPosts);
+    try {
+      localStorage.setItem("su_global_community_posts", JSON.stringify(updatedPosts));
+      window.dispatchEvent(new Event("storage"));
+    } catch (e) {}
+  };
+
+  // Load user specific state from localStorage on user change
   React.useEffect(() => {
     if (user) {
       const savedDb = localStorage.getItem(`su_social_${user.id}`);
       if (savedDb) {
         try {
           const parsed = JSON.parse(savedDb);
-          if (parsed.posts) setPosts(parsed.posts);
           if (parsed.careers) setCareers(parsed.careers);
           if (parsed.events) setEvents(parsed.events);
           if (parsed.reminders) setReminders(parsed.reminders);
@@ -184,16 +293,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           console.error("Failed to parse social state", e);
         }
-      } else {
-        setPosts(INITIAL_POSTS);
-        setCareers(INITIAL_CAREERS);
-        setEvents(INITIAL_EVENTS);
-        setReminders(INITIAL_REMINDERS);
-        setNotifications(INITIAL_NOTIFICATIONS);
-        setSavedJobs([]);
-        setSavedEvents([]);
-        setSavedPosts([]);
-        setMoodleUrl("");
       }
     }
   }, [user]);
@@ -208,7 +307,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         try { current = JSON.parse(saved); } catch (e) { }
       }
       const data = {
-        posts: updates.posts !== undefined ? updates.posts : (current.posts || posts),
         careers: updates.careers !== undefined ? updates.careers : (current.careers || careers),
         events: updates.events !== undefined ? updates.events : (current.events || events),
         reminders: updates.reminders !== undefined ? updates.reminders : (current.reminders || reminders),
@@ -232,7 +330,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     let newBadges = [...currentBadges];
     let badgeNotification: string | null = null;
 
-    // Check thresholds for badges
     if (newPoints >= 100 && !newBadges.includes("نجم الكلية")) {
       newBadges.push("نجم الكلية");
       badgeNotification = "حصلت على شارة 'نجم الكلية' لتخطيك 100 نقطة أكاديمية!";
@@ -246,19 +343,16 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       badgeNotification = "تهانينا! حصلت على شارة 'العضو الذهبي' المرموقة لتخطيك 500 نقطة!";
     }
 
-    // Award badge based on specific triggers if specified
     if (reason === "إضافة منشور" && !newBadges.includes("المساهم الأول")) {
       newBadges.push("المساهم الأول");
       badgeNotification = "شارة جديدة: 'المساهم الأول' لنشرك أول تدوينة بالمنتدى!";
     }
 
-    // Update Profile with new points/badges
     await updateProfile({
       points: newPoints,
       badges: newBadges
     });
 
-    // Create system notification for points
     const newNotif: NotificationItem = {
       id: `notif-${Date.now()}`,
       title: `لقد ربحت +${amount} نقطة!`,
@@ -305,21 +399,36 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updated = [newPost, ...posts];
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
+
+    insertToSupabase("posts", {
+      id: newPost.id,
+      title: newPost.title,
+      content: newPost.content,
+      category: newPost.category,
+      author: newPost.author,
+      author_email: newPost.authorEmail,
+      avatar: newPost.avatar,
+      date: newPost.date,
+      likes: newPost.likes,
+      reported: false,
+      attachment_name: attachmentName,
+      attachment_url: attachmentUrl
+    });
+
     awardPoints(20, "إضافة منشور");
   };
 
   const editPost = (id: string, title: string, content: string, category: CommunityPost["category"]) => {
     const updated = posts.map(p => p.id === id ? { ...p, title, content, category } : p);
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
+    updateInSupabase("posts", id, { title, content, category });
   };
 
   const deletePost = (id: string) => {
     const updated = posts.filter(p => p.id !== id);
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
+    deleteFromSupabase("posts", id);
   };
 
   const likePost = (id: string) => {
@@ -328,18 +437,18 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       if (p.id === id) {
         const liked = p.likes.includes(user.email);
         const newLikes = liked ? p.likes.filter(email => email !== user.email) : [...p.likes, user.email];
+        updateInSupabase("posts", id, { likes: newLikes });
         return { ...p, likes: newLikes };
       }
       return p;
     });
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
   };
 
   const reportPost = (id: string) => {
     const updated = posts.map(p => p.id === id ? { ...p, reported: true } : p);
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
+    updateInSupabase("posts", id, { reported: true });
     alert("🚨 تم إرسال تقرير البلاغ للمشرفين لمراجعة المحتوى.");
   };
 
@@ -377,8 +486,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       return p;
     });
 
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
     awardPoints(10, "إضافة تعليق");
   };
 
@@ -398,7 +506,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         const commentIndex = p.comments.findIndex(c => c.id === commentId);
         if (commentIndex !== -1) {
           const targetComment = p.comments[commentIndex];
-          // Send notification if comment author is not current user
           if (targetComment.authorEmail !== user.email) {
             const newNot: NotificationItem = {
               id: `not-${Date.now()}`,
@@ -423,8 +530,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       return p;
     });
 
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
     awardPoints(5, "الرد على تعليق");
   };
 
@@ -435,8 +541,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       }
       return p;
     });
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
   };
 
   const deleteReply = (postId: string, commentId: string, replyId: string) => {
@@ -453,8 +558,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       }
       return p;
     });
-    setPosts(updated);
-    saveSocialState({ posts: updated });
+    saveGlobalPosts(updated);
   };
 
   // Careers bookmarks
@@ -497,6 +601,22 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isEventSaved = (id: string) => savedEvents.includes(id);
+
+  const addEvent = (eventData: Omit<EventItem, "id">) => {
+    const newEv: EventItem = {
+      ...eventData,
+      id: `event-${Date.now()}`
+    };
+    const updated = [newEv, ...events];
+    setEvents(updated);
+    saveSocialState({ events: updated });
+  };
+
+  const deleteEvent = (id: string) => {
+    const updated = events.filter(e => e.id !== id);
+    setEvents(updated);
+    saveSocialState({ events: updated });
+  };
 
   // Reminders
   const addReminder = (title: string, date: string, type: CalendarReminder["type"], description?: string) => {
@@ -628,6 +748,8 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         deleteCareer,
         toggleSaveEvent,
         isEventSaved,
+        addEvent,
+        deleteEvent,
         addReminder,
         deleteReminder,
         markAsRead,

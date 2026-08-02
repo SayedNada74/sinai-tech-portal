@@ -21,7 +21,10 @@ import {
   Layers,
   X,
   LogOut,
-  Shield
+  Shield,
+  Sun,
+  Moon,
+  Globe
 } from "lucide-react";
 
 interface MobileSidebarProps {
@@ -32,7 +35,7 @@ interface MobileSidebarProps {
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
-  const { lang, t, dir, userRole } = useApp();
+  const { lang, setLang, theme, setTheme, t, dir, userRole } = useApp();
   const { shouldAnimate } = useAnimationProps();
 
   const isRtl = dir === "rtl";
@@ -136,14 +139,43 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               </nav>
             </div>
 
-            {/* Logout block at bottom */}
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-900/60 bg-zinc-50/50 dark:bg-zinc-950/40">
+            {/* Bottom Controls: Language, Theme & Logout */}
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-900/60 bg-zinc-50/50 dark:bg-zinc-950/40 space-y-2">
+              {/* Language & Theme Controls Row */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-extrabold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer"
+                >
+                  <Globe className="h-4 w-4 text-cyan-500" />
+                  <span>{lang === "ar" ? "English" : "العربية"}</span>
+                </button>
+
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-extrabold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer"
+                >
+                  {theme === "dark" ? (
+                    <>
+                      <Sun className="h-4 w-4 text-amber-400" />
+                      <span>Light</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="h-4 w-4 text-zinc-600" />
+                      <span>Dark</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Logout button */}
               <button
                 onClick={() => {
                   onClose();
                   logout();
                 }}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-500 rounded-xl hover:bg-red-500/10 transition-all cursor-pointer border-none bg-transparent"
+                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-red-500 rounded-xl hover:bg-red-500/10 transition-all cursor-pointer border border-red-500/20 bg-red-500/5"
               >
                 <LogOut className="h-4.5 w-4.5" />
                 <span>{t("تسجيل الخروج", "Logout")}</span>

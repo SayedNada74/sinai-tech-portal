@@ -359,16 +359,16 @@ export default function AiAssistantPage() {
 
           {/* SCREEN 1: NEW CHAT WELCOME LANDING HERO (When activeSessionId === "") */}
           {activeSessionId === "" ? (
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col justify-center items-center text-center space-y-8">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col justify-start sm:justify-center items-center text-center space-y-6 my-auto">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-3 max-w-xl"
+                className="space-y-2.5 max-w-xl shrink-0"
               >
-                <div className="h-16 w-16 mx-auto rounded-3xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-violet-500/20">
-                  <Sparkles className="h-8 w-8" />
+                <div className="h-14 w-14 sm:h-16 sm:w-16 mx-auto rounded-3xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-violet-500/20">
+                  <Sparkles className="h-7 w-7 sm:h-8 sm:w-8" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+                <h2 className="text-xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
                   {t(`أهلاً بك، ${displayName} 👋`, `Welcome, ${displayName} 👋`)}
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">
@@ -380,7 +380,7 @@ export default function AiAssistantPage() {
               </motion.div>
 
               {/* Quick capabilities grid cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full max-w-2xl text-right shrink-0">
                 {quickCapabilities.map((item, idx) => {
                   const Icon = item.icon;
                   return (
@@ -388,21 +388,21 @@ export default function AiAssistantPage() {
                       key={idx}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.08 }}
+                      transition={{ delay: idx * 0.05 }}
                       onClick={() => handleSendMessage(item.prompt)}
-                      className={`p-4 rounded-2xl border text-right transition-all cursor-pointer hover:scale-[1.01] hover:shadow-md flex flex-col justify-between space-y-3 ${item.bgLight}`}
+                      className={`p-3.5 sm:p-4 rounded-2xl border text-right transition-all cursor-pointer hover:scale-[1.01] hover:shadow-md flex flex-col justify-between space-y-2.5 ${item.bgLight}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="p-2 rounded-xl bg-white/80 dark:bg-zinc-950/80 shadow-xs">
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-4.5 w-4.5" />
                         </div>
                         <ArrowUpRight className="h-4 w-4 opacity-60" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-100 mb-1">
+                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-100 mb-0.5">
                           {t(item.titleAr, item.titleEn)}
                         </h4>
-                        <p className="text-[11px] text-zinc-650 dark:text-zinc-400 leading-snug font-medium">
+                        <p className="text-[10px] sm:text-[11px] text-zinc-650 dark:text-zinc-400 leading-snug font-medium line-clamp-2">
                           {t(item.descAr, item.descEn)}
                         </p>
                       </div>

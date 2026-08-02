@@ -171,7 +171,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
 
         {/* Page Content area */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto max-h-screen">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-20 md:pb-8 overflow-y-auto max-h-screen">
           <PageTransitionWrapper>{children}</PageTransitionWrapper>
         </main>
       </div>
