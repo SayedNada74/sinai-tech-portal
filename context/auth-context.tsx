@@ -158,6 +158,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
+    // Fetch cloud profiles from Supabase if available for cross-device sync
+    const syncCloudProfiles = async () => {
+      if (isSupabaseConfigured) {
+        const cloudProfiles = await fetchFromSupabase<any>("profiles");
+        if (cloudProfiles && Array.isArray(cloudProfiles) && cloudProfiles.length > 0) {
+          cloudProfiles.forEach((cp) => {
+            if (cp.email) {
+              const idx = currentUsers.findIndex((u) => u.email.toLowerCase() === cp.email.toLowerCase());
+              const mappedUser: UserProfile = {
+                id: cp.id || `user-${Date.now()}`,
+                name: cp.name || cp.email.split("@")[0],
+                email: cp.email,
+                password: cp.password || "123456",
+                level: cp.level || "الفرقة الأولى",
+                department: cp.department || "تكنولوجيا المعلومات (IT)",
+                studentId: cp.student_id || cp.studentId || "20261001",
+                bio: cp.bio || "طالب مسجل في المنصة",
+                skills: cp.skills || [],
+                socialLinks: cp.socialLinks || {},
+                avatar: cp.avatar || "🎓",
+                role: cp.role || "student",
+                badges: cp.badges || ["طالب"],
+                points: cp.points || 50,
+                following: cp.following || []
+              };
+              if (idx === -1) {
+                currentUsers.push(mappedUser);
+              } else {
+                currentUsers[idx] = { ...currentUsers[idx], ...mappedUser };
+              }
+            }
+          });
+          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+        }
+      }
+    };
+    syncCloudProfiles();
+
     // Ensure any user without a password has a default fallback password
     currentUsers = currentUsers.map((u) => ({
       ...u,
@@ -392,6 +430,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await insertToSupabase("profiles", {
       id: userId,
       email,
+      password: password || "123456",
       name,
       role: "student",
       level,
