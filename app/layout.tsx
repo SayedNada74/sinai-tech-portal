@@ -8,6 +8,7 @@ import { AdminProvider } from "@/context/admin-context";
 import { SocialProvider } from "@/context/social-context";
 import { ToastProvider } from "@/components/ui/toast";
 import { PWAInstaller } from "@/components/pwa-installer";
+import { Analytics } from "@vercel/analytics/react";
 
 const ibmPlexArabic = { variable: "font-ibm-plex" };
 const jakarta = { variable: "font-jakarta" };
@@ -104,6 +105,7 @@ export default function RootLayout({
                     <ToastProvider>
                       {children}
                       <PWAInstaller />
+                      <Analytics />
                     </ToastProvider>
                   </SocialProvider>
                 </LearningProvider>
