@@ -22,8 +22,11 @@ import {
   Link as LinkIcon
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function CourseManagementPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -101,7 +104,7 @@ export default function CourseManagementPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formCode || !formEnglish || !formArabic) {
-      alert(t("يرجى ملء الكود، والاسم بالإنجليزية، والاسم بالعربية.", "Please fill in code, English name, and Arabic name."));
+      toast(t("⚠️ يرجى ملء الكود، والاسم بالإنجليزية، والاسم بالعربية.", "⚠️ Please fill in code, English name, and Arabic name."), "error");
       return;
     }
 
@@ -123,10 +126,10 @@ export default function CourseManagementPage() {
 
     if (editingCode) {
       updateCourse(editingCode, courseObj);
-      alert(t("✅ تم تحديث بيانات المقرر بنجاح.", "✅ Course updated successfully."));
+      toast(t("✨ تم تحديث بيانات المقرر بنجاح!", "✨ Course updated successfully!"), "success");
     } else {
       addCourse(courseObj);
-      alert(t("✨ تم إضافة المقرر الجديد بالدليل الأكاديمي بنجاح.", "✨ New course added successfully."));
+      toast(t("✨ تم إضافة المقرر الجديد بالدليل الأكاديمي بنجاح!", "✨ New course added successfully!"), "success");
     }
     setModalOpen(false);
   };

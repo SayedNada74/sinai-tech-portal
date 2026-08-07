@@ -449,7 +449,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     const updated = posts.map(p => p.id === id ? { ...p, reported: true } : p);
     saveGlobalPosts(updated);
     updateInSupabase("posts", id, { reported: true });
-    alert("🚨 تم إرسال تقرير البلاغ للمشرفين لمراجعة المحتوى.");
   };
 
   const addComment = (postId: string, content: string) => {

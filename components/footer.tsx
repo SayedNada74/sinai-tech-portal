@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { GraduationCap, Globe, Mail } from "lucide-react";
 import { useApp } from "@/context/app-context";
@@ -12,14 +13,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Info Column */}
         <div className="md:col-span-2 flex flex-col space-y-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-violet-600 flex items-center justify-center text-white shadow-md">
-              <GraduationCap className="h-5 w-5" />
-            </div>
-            <span className="font-bold text-lg text-zinc-900 dark:text-zinc-50">
-              SU IT <span className="text-violet-600 dark:text-violet-400">Guide</span>
-            </span>
-          </Link>
+          <Logo size="md" href="/" />
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm leading-relaxed">
             {t(
               "المنصة الذكية المتكاملة لطلاب تكنولوجيا المعلومات بجامعة سيناء لتتبع مسارهم الدراسي، وحساب وتوقع المعدل التراكمي بدقة، وتنظيم الجدول والتسجيل الأكاديمي.",

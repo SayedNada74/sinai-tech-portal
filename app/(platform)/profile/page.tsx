@@ -180,9 +180,26 @@ export default function ProfilePage() {
   };
 
   const isRtl = dir === "rtl";
-  const isAdmin = user?.role === "admin" || user?.role === "super-admin";
+  const isAdminStaff = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
 
-  if (isAdmin) {
+  if (isAdminStaff) {
+    const adminTitle =
+      user?.role === "super-admin"
+        ? "👑 المشرف الأعلى للمنصة (Super Admin)"
+        : user?.role === "admin"
+        ? "⚙️ مسؤول النظام الإداري (System Admin)"
+        : "👩‍🏫 منسق المحتوى والمنتدى (Content Moderator)";
+
+    const adminCode =
+      user?.role === "super-admin" ? "SUP-001" : user?.role === "admin" ? "ADM-001" : "MOD-001";
+
+    const adminSector =
+      user?.role === "super-admin"
+        ? "الإدارة العليا للجامعة"
+        : user?.role === "admin"
+        ? "الكادر الإداري والفني"
+        : "كادر التنسيق والرقابة";
+
     return (
       <div className="max-w-4xl mx-auto space-y-8 animate-fade-in" dir={dir}>
         {/* Admin Profile Header */}
@@ -190,7 +207,7 @@ export default function ProfilePage() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge className="bg-cyan-500 text-white font-bold text-xs px-3 py-1">
-                {user?.role === "super-admin" ? "👑 المشرف الأعلى للمنصة (Super Admin)" : "⚙️ مسؤول النظام الإداري (System Admin)"}
+                {adminTitle}
               </Badge>
             </div>
             <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-50">
@@ -241,14 +258,18 @@ export default function ProfilePage() {
                 <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-50">{name}</h3>
                 <p className="text-xs text-zinc-500 font-mono mt-0.5">{email}</p>
 
-                <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-right space-y-2">
+                <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-right space-y-2.5">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">{t("كود الكادر:", "Staff ID:")}</span>
+                    <span className="font-mono font-extrabold text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-lg border border-zinc-200/70 dark:border-zinc-700/70">💳 {adminCode}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-500">{t("القطاع الوظيفي:", "Sector:")}</span>
+                    <span className="font-bold text-cyan-600 dark:text-cyan-400">{adminSector}</span>
+                  </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-zinc-500">{t("حالة الحساب:", "Account Status:")}</span>
                     <Badge className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[10px]">🟢 نشط وتصريح كامل</Badge>
-                  </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-zinc-500">{t("الصلاحية الأكاديمية:", "System Clearance:")}</span>
-                    <span className="font-bold text-cyan-600">{user?.role === "super-admin" ? "Super Admin 👑" : "Admin ⚙️"}</span>
                   </div>
                 </div>
               </CardContent>

@@ -7,17 +7,27 @@ import { LearningProvider } from "@/context/learning-context";
 import { AdminProvider } from "@/context/admin-context";
 import { SocialProvider } from "@/context/social-context";
 import { ToastProvider } from "@/components/ui/toast";
+import { PWAInstaller } from "@/components/pwa-installer";
 
 const ibmPlexArabic = { variable: "font-ibm-plex" };
 const jakarta = { variable: "font-jakarta" };
 
 export const metadata: Metadata = {
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "SU IT Guide",
+    statusBarStyle: "black-translucent"
+  },
+  formatDetection: {
+    telephone: false
+  },
   title: {
     default: "SU IT Guide | دليل ومرشد طلاب جامعة سيناء",
     template: "%s | SU IT Guide"
   },
   description: "المنصة الأكاديمية التفاعلية الشاملة لطلاب تكنولوجيا المعلومات والحاسب الآلي بجامعة سيناء لتتبع خطتهم الدراسية وحساب معدلهم التراكمي.",
-  keywords: ["جامعة سيناء", "تكنولوجيا المعلومات", "حاسبات ومعلومات", "معدل تراكمي", "خطة دراسية", "ساعات معتمدة", "Sinai University", "IT", "GPA Calculator"],
+  keywords: ["جامعة سيناء", "تكنولوجيا المعلومات", "حاسبات ومعلومات", "معدل تراكمي", "خطة دراسية", "ساعات معتمدة", "Sinai University", "IT", "GPA Calculator", "PWA"],
   authors: [{ name: "Sayed Mahmoud" }],
   openGraph: {
     title: "SU IT Guide - منصة طالب تكنولوجيا المعلومات",
@@ -33,7 +43,9 @@ export const metadata: Metadata = {
     description: "البوابة الأكاديمية الشاملة لطلاب تكنولوجيا المعلومات بجامعة سيناء.",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/uni-logo.jpeg",
+    shortcut: "/uni-logo.jpeg",
+    apple: "/uni-logo.jpeg"
   }
 };
 
@@ -49,6 +61,16 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="theme-color" content="#7c3aed" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="SU IT Guide" />
+        <link rel="icon" type="image/jpeg" href="/uni-logo.jpeg" />
+        <link rel="shortcut icon" type="image/jpeg" href="/uni-logo.jpeg" />
+        <link rel="apple-touch-icon" href="/uni-logo.jpeg" />
+        <link rel="manifest" href="/manifest.json" />
+
         {/* Blocking theme script — runs before paint to prevent flash */}
         <script
           dangerouslySetInnerHTML={{
@@ -79,7 +101,10 @@ export default function RootLayout({
               <AcademicProvider>
                 <LearningProvider>
                   <SocialProvider>
-                    <ToastProvider>{children}</ToastProvider>
+                    <ToastProvider>
+                      {children}
+                      <PWAInstaller />
+                    </ToastProvider>
                   </SocialProvider>
                 </LearningProvider>
               </AcademicProvider>

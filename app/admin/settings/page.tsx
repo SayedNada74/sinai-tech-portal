@@ -18,10 +18,30 @@ import {
   Sparkles,
   Info
 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
+import { useAuth } from "@/context/auth-context";
 
 export default function PlatformSettingsPage() {
   const { t, dir } = useApp();
   const { settings, updateSettings, logAction } = useAdmin();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  if (user && user.role !== "super-admin") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
+        <div className="h-16 w-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-3xl">
+          👑
+        </div>
+        <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
+          {t("هذه الصفحة مخصصة فقط للمشرف الأعلى (Super Admin)", "Restricted to Super Admin only")}
+        </h3>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+          {t("لا تملك الصلاحية الكافية لتعديل إعدادات النظام ومفاتيح الخصائص.", "You do not have sufficient clearance to modify system settings and feature flags.")}
+        </p>
+      </div>
+    );
+  }
 
   // Form Fields
   const [siteName, setSiteName] = React.useState(settings.siteName);
@@ -62,7 +82,7 @@ export default function PlatformSettingsPage() {
     });
 
     logAction("تحديث إعدادات المنصة", "تغيير اسم المنصة، بريد التواصل، أو حالة مفاتيح الميزات.", "settings");
-    alert(t("✅ تم حفظ وتحديث إعدادات النظام الرئيسية بنجاح.", "✅ System core settings updated successfully."));
+    toast(t("✅ تم حفظ وتحديث إعدادات النظام الرئيسية بنجاح.", "✅ System core settings updated successfully."), "success");
   };
 
   return (

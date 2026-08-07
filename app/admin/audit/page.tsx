@@ -21,8 +21,29 @@ import {
   HardDrive
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+import { useAuth } from "@/context/auth-context";
+
 export default function SystemLogsAndErrorsPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  if (user && user.role !== "super-admin") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
+        <div className="h-16 w-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-3xl">
+          👑
+        </div>
+        <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
+          {t("هذه الصفحة مخصصة فقط للمشرف الأعلى (Super Admin)", "Restricted to Super Admin only")}
+        </h3>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+          {t("لا تملك الصلاحية الكافية لمراجعة سجلات النظام والأمان.", "You do not have sufficient clearance to view system audit logs.")}
+        </p>
+      </div>
+    );
+  }
   const {
     auditLogs,
     incidents,
@@ -38,16 +59,15 @@ export default function SystemLogsAndErrorsPage() {
   // Filter logs
   const filteredLogs = React.useMemo(() => {
     return auditLogs.filter((log) => {
-      const query = searchTerm.toLowerCase().trim();
-      const matchQuery =
-        !query ||
-        log.userEmail.toLowerCase().includes(query) ||
-        log.action.toLowerCase().includes(query) ||
-        log.details.toLowerCase().includes(query);
+      const q = searchTerm.toLowerCase().trim();
+      const matchQ =
+        !q ||
+        log.action.toLowerCase().includes(q) ||
+        log.details.toLowerCase().includes(q) ||
+        log.userName.toLowerCase().includes(q);
 
-      const matchCategory = categoryFilter === "ALL" || log.category === categoryFilter;
-
-      return matchQuery && matchCategory;
+      const matchCat = categoryFilter === "ALL" || log.category === categoryFilter;
+      return matchQ && matchCat;
     });
   }, [auditLogs, searchTerm, categoryFilter]);
 
@@ -55,13 +75,13 @@ export default function SystemLogsAndErrorsPage() {
   const handleClearLogs = () => {
     if (confirm(t("⚠️ هل أنت متأكد من مسح جميع سجلات تدقيق النظام والأمان نهائياً؟", "⚠️ Are you sure you want to clear all audit logs permanently?"))) {
       clearAuditLogs();
-      alert(t("✅ تم مسح سجلات التدقيق بنجاح.", "✅ Audit logs cleared successfully."));
+      toast(t("✨ تم مسح سجلات التدقيق بنجاح!", "✨ Audit logs cleared successfully!"), "success");
     }
   };
 
   const handleTriggerError = (title: string, message: string, type: ErrorIncident["type"]) => {
     triggerMockError(title, message, type);
-    alert(t(`🚨 تم محاكاة تسجيل حدث الخطأ: "${title}"`, `🚨 Simulated error event: "${title}"`));
+    toast(t(`🚨 تم محاكاة تسجيل حدث الخطأ: "${title}"`, `🚨 Simulated error event: "${title}"`), "info");
   };
 
   return (

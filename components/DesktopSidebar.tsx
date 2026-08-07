@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/app-context";
@@ -24,10 +24,13 @@ import {
   Shield
 } from "lucide-react";
 
+import { useAdmin } from "@/context/admin-context";
+
 export function DesktopSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { lang, theme, setLang, setTheme, t, dir, isLoggedIn, userRole } = useApp();
+  const { settings } = useAdmin();
 
   const isRtl = dir === "rtl";
 
@@ -38,30 +41,36 @@ export function DesktopSidebar() {
 
   const isAdminUser = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
 
-  const menuItems = isAdminUser
+  const rawMenuItems = isAdminUser
     ? [
-        { labelAr: "لوحة الإدارة 🛠️", labelEn: "Admin Dashboard 🛠️", href: "/admin", icon: Shield },
-        { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen },
-        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare },
-        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase },
-        { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers },
-        { labelAr: "الملف الشخصي", labelEn: "Admin Profile", href: "/profile", icon: User },
-        { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings }
+        { labelAr: "لوحة الإدارة 🛠️", labelEn: "Admin Dashboard 🛠️", href: "/admin", icon: Shield, key: "admin" },
+        { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
+        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
+        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
+        { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers, key: "roadmaps" },
+        { labelAr: "الملف الشخصي", labelEn: "Admin Profile", href: "/profile", icon: User, key: "profile" },
+        { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings, key: "settings" }
       ]
     : [
-        { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { labelAr: "المرشد الذكي (AI)", labelEn: "AI Assistant", href: "/ai-assistant", icon: Bot },
-        { labelAr: "الخطة الدراسية والتقدم", labelEn: "Curriculum Checklist", href: "/departments", icon: CheckCircle },
-        { labelAr: "مخطط التسجيل الذكي", labelEn: "Registration Planner", href: "/planner", icon: Compass },
-        { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator },
-        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen },
-        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare },
-        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase },
-        { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers },
-        { labelAr: "الملف الشخصي", labelEn: "Student Profile", href: "/profile", icon: User },
-        { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings }
+        { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
+        { labelAr: "المرشد الذكي (AI)", labelEn: "AI Assistant", href: "/ai-assistant", icon: Bot, key: "aiAssistant" },
+        { labelAr: "الخطة الدراسية والتقدم", labelEn: "Curriculum Checklist", href: "/departments", icon: CheckCircle, key: "departments" },
+        { labelAr: "مخطط التسجيل الذكي", labelEn: "Registration Planner", href: "/planner", icon: Compass, key: "planner" },
+        { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator, key: "gpa" },
+        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
+        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
+        { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers, key: "roadmaps" },
+        { labelAr: "الملف الشخصي", labelEn: "Student Profile", href: "/profile", icon: User, key: "profile" },
+        { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings, key: "settings" }
       ];
+
+  const menuItems = rawMenuItems.filter(item => {
+    if (item.key === "gpa") return settings?.featureFlags?.gpaPredictor !== false;
+    if (item.key === "aiAssistant") return settings?.featureFlags?.aiAssistant !== false;
+    return true;
+  });
 
   const userAvatar = user?.avatar || "🎓";
   const isImageAvatar = userAvatar.startsWith("data:image/") || userAvatar.startsWith("http");
@@ -77,14 +86,7 @@ export function DesktopSidebar() {
       {/* Top Header Logo */}
       <div className="flex-1 flex flex-col min-h-0">
         <div className="h-16 px-5 flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-850 shrink-0">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
-              <GraduationCap className="h-4.5 w-4.5" />
-            </div>
-            <span className="font-black text-sm tracking-tight text-zinc-900 dark:text-zinc-50">
-              SU IT Guide
-            </span>
-          </Link>
+          <Logo size="sm" href="/dashboard" />
         </div>
 
         {/* Scrollable Navigation Items */}

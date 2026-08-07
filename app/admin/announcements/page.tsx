@@ -22,8 +22,11 @@ import {
   HelpCircle
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function AnnouncementCMSPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -83,7 +86,7 @@ export default function AnnouncementCMSPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle || !formContent) {
-      alert(t("يرجى إدخال عنوان الإعلان ونصه التفصيلي.", "Please enter announcement title and detailed content."));
+      toast(t("⚠️ يرجى إدخال عنوان الإعلان ونصه التفصيلي.", "⚠️ Please enter announcement title and detailed content."), "error");
       return;
     }
 
@@ -95,7 +98,7 @@ export default function AnnouncementCMSPage() {
         scheduledDate: formScheduledDate || undefined,
         published: formPublished
       });
-      alert(t("✅ تم تحديث بيانات الإعلان بنجاح.", "✅ Announcement updated successfully."));
+      toast(t("✨ تم تحديث بيانات الإعلان بنجاح!", "✨ Announcement updated successfully!"), "success");
     } else {
       addAnnouncement({
         title: formTitle,
@@ -104,7 +107,7 @@ export default function AnnouncementCMSPage() {
         scheduledDate: formScheduledDate || undefined,
         published: formPublished
       });
-      alert(t("✨ تم نشر الإعلان الجديد على المنصة بنجاح.", "✨ New announcement published successfully."));
+      toast(t("✨ تم نشر الإعلان الجديد على المنصة بنجاح!", "✨ New announcement published successfully!"), "success");
     }
     setModalOpen(false);
   };

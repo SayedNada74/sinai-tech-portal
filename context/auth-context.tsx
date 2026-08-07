@@ -46,12 +46,12 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
     email: "sayed@example.com",
     password: "123",
     level: "الفرقة الأولى",
-    department: "تكنولوجيا المعلومات وعلوم الحاسب",
+    department: "تكنولوجيا المعلومات (IT)",
     studentId: "20230109",
     bio: "طالب متحمس لبرمجة وتطوير تطبيقات الويب والذكاء الاصطناعي بجامعة سيناء.",
     skills: ["React", "TypeScript", "Tailwind CSS", "Next.js"],
     socialLinks: { github: "https://github.com/sayed-mahmoud", linkedin: "https://linkedin.com/in/sayed-mahmoud" },
-    avatar: "👨‍💻",
+    avatar: "🧑‍🎓",
     role: "student",
     cvUrl: "resume.pdf",
     projects: [
@@ -66,10 +66,10 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
     name: "سيد المسؤول",
     email: "admin@example.com",
     password: "admin",
-    level: "الفرقة الرابعة",
-    department: "تكنولوجيا المعلومات (IT)",
-    studentId: "20230102",
-    bio: "مدير النظام",
+    level: "الكادر الإداري والفني",
+    department: "إدارة المنصة والسياسات",
+    studentId: "ADM-001",
+    bio: "مسؤول النظام الإداري",
     skills: [],
     socialLinks: {},
     avatar: "⚙️",
@@ -80,12 +80,12 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
   },
   {
     id: "user-super",
-    name: "السيد المشرف الأعلى",
+    name: "أحمد المشرف الأعلى",
     email: "super@example.com",
     password: "super",
-    level: "الفرقة الرابعة",
-    department: "تكنولوجيا المعلومات (IT)",
-    studentId: "20230103",
+    level: "الإدارة العليا للجامعة",
+    department: "الإشراف والرقابة العامة",
+    studentId: "SUP-001",
     bio: "المشرف الأعلى على المنصة",
     skills: [],
     socialLinks: {},
@@ -97,7 +97,7 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
   },
   {
     id: "user-student",
-    name: "سيد الطالب",
+    name: "أحمد الطالب",
     email: "student@example.com",
     password: "123",
     level: "الفرقة الأولى",
@@ -106,7 +106,7 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
     bio: "حساب طالب تجريبي",
     skills: [],
     socialLinks: {},
-    avatar: "🎓",
+    avatar: "🧑‍🎓",
     role: "student",
     badges: ["طالب"],
     points: 100,
@@ -114,13 +114,13 @@ const DEFAULT_ACCOUNTS: UserProfile[] = [
   },
   {
     id: "user-mod",
-    name: "سيد المنسق",
+    name: "منى المنسقة",
     email: "mod@example.com",
     password: "mod",
-    level: "الفرقة الثالثة",
-    department: "تكنولوجيا المعلومات (IT)",
-    studentId: "20230104",
-    bio: "منسقة ومراجعة المحتوى الأكاديمي",
+    level: "كادر التنسيق والرقابة",
+    department: "الرقابة وجودة المحتوى",
+    studentId: "MOD-001",
+    bio: "منسقة ومراجعة المحتوى الأكاديمي والمنتدى",
     skills: [],
     socialLinks: {},
     avatar: "👩‍🏫",
@@ -203,7 +203,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         localStorage.setItem("su_active_sessions", JSON.stringify(sessions));
-      } catch (e) {}
+      } catch (e) { }
     };
 
     updateHeartbeat();
@@ -271,7 +271,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // 2. Strict Local Credentials Check
-    const matchedUser = currentUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    const lowerInputEmail = email.toLowerCase().trim();
+    const isDemoAccount = DEFAULT_ACCOUNTS.some(da => da.email.toLowerCase() === lowerInputEmail);
+    if (!isDemoAccount) {
+      if (!lowerInputEmail.endsWith("@su.edu.eg") && !lowerInputEmail.endsWith("@sinai.edu.eg")) {
+        setIsLoading(false);
+        throw new Error("⚠️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
+      }
+    }
+
+    const matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
 
     // FAILED: Email does NOT exist in registered users
     if (!matchedUser) {
@@ -288,9 +297,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // FAILED: Check if account is suspended
     if (matchedUser.bio && matchedUser.bio.includes("[SUSPENDED]")) {
-      alert("🚫 هذا الحساب موقوف حالياً من قبل إدارة الكلية.");
       setIsLoading(false);
-      return false;
+      throw new Error("🚫 هذا الحساب مجمد وموقوف مؤقتاً بقرار إداري. جميع بياناتك ومحفوظاتك وتقدمك الأكاديمي محفوظ بأمان، يرجى التواصل مع إدارة النظام.");
     }
 
     // SUCCESS: Authenticate and grant user session
@@ -318,11 +326,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const savedUsersStr = localStorage.getItem("su_registered_users") || "[]";
     const savedUsers = JSON.parse(savedUsersStr) as UserProfile[];
 
-    // Check if email already registered
-    if (savedUsers.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      alert("⚠️ هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول.");
+    // Validate Official University Email Domain (@su.edu.eg or @sinai.edu.eg)
+    const lowerEmail = email.toLowerCase().trim();
+    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
       setIsLoading(false);
-      return false;
+      throw new Error("⚠️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
+    }
+
+    // Validate Password Complexity (Min 8 chars, letter, number, special char)
+    const hasMinLen = password.length >= 8;
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNum = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    if (!hasMinLen || !hasLetter || !hasNum || !hasSpecial) {
+      setIsLoading(false);
+      throw new Error("⚠️ كلمة المرور ضعيفة! يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).");
+    }
+
+    // Check if email already registered across all registered and default accounts
+    const allExistingUsers = [...DEFAULT_ACCOUNTS, ...savedUsers];
+    if (allExistingUsers.some((u) => u.email.toLowerCase() === lowerEmail)) {
+      setIsLoading(false);
+      throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
     }
 
     const userId = `user-${Date.now()}`;

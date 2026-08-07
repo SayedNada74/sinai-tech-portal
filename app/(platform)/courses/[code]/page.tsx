@@ -28,6 +28,7 @@ import {
   ExternalLink,
   ChevronLeft
 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 
 interface PageProps {
   params: Promise<{ code: string }>;
@@ -124,10 +125,12 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   const bookmarked = isBookmarked(course.code);
 
+  const { toast } = useToast();
+
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim() || !tips.trim()) {
-      alert(t("يرجى كتابة تعليقك ونصيحتك الأكاديمية لمساعدة زملائك.", "Please write your review and study tips to help your peers."));
+      toast(t("⚠️ يرجى كتابة تعليقك ونصيحتك الأكاديمية لمساعدة زملائك.", "⚠️ Please write your review and study tips to help your peers."), "error");
       return;
     }
     addReview(course.code, {
@@ -142,7 +145,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     setComment("");
     setTips("");
     setShowReviewForm(false);
-    alert(t("✨ تم نشر مراجعتك بنجاح! شكرًا لك على مساهمتك القيمة.", "✨ Your review has been published successfully! Thank you for your feedback."));
+    toast(t("✨ تم نشر مراجعتك بنجاح! شكرًا لك على مساهمتك القيمة.", "✨ Your review has been published successfully! Thank you for your feedback."), "success");
   };
 
   const getIcon = (type: string) => {
@@ -298,7 +301,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                       variant="ghost"
                       onClick={() => {
                         incrementDownload(res.id);
-                        alert(t(`📥 جاري تحميل: "${res.title}"...`, `📥 Downloading: "${res.title}"...`));
+                        toast(t(`📥 جاري تحميل المستند: "${res.title}"...`, `📥 Downloading document: "${res.title}"...`), "info");
                       }}
                       className="h-8 gap-1.5 text-[10px] text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400"
                     >

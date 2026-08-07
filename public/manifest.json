@@ -1,0 +1,57 @@
+{
+  "name": "SU IT Guide | دليل ومرشد طلاب جامعة سيناء",
+  "short_name": "SU IT Guide",
+  "description": "المنصة الأكاديمية التفاعلية الشاملة لطلاب حاسبات وتكنولوجيا المعلومات بجامعة سيناء لتتبع الخطط الدراسية وحساب المعدل التراكمي.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "categories": ["education", "academic", "productivity"],
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/uni-logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "الخطة الدراسية",
+      "short_name": "الخطة",
+      "description": "تتبع الخطة الدراسية والمقررات",
+      "url": "/planner",
+      "icons": [{ "src": "/uni-logo.jpeg", "sizes": "512x512" }]
+    },
+    {
+      "name": "حاسبة المعدل GPA",
+      "short_name": "المعدل",
+      "description": "احسب معدلك التراكمي الفصلي بدقة",
+      "url": "/gpa",
+      "icons": [{ "src": "/uni-logo.jpeg", "sizes": "512x512" }]
+    },
+    {
+      "name": "المساعد الذكي AI",
+      "short_name": "الذكاء الاصطناعي",
+      "description": "استشر المساعد الأكاديمي الذكي",
+      "url": "/ai-assistant",
+      "icons": [{ "src": "/uni-logo.jpeg", "sizes": "512x512" }]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,19 +9,23 @@ import { useApp } from "@/context/app-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Mail, Lock, User, Calendar, ShieldAlert } from "lucide-react";
+import { GraduationCap, Mail, Lock, User, Calendar, ShieldAlert, BookOpen, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+
+import { useToast } from "@/components/ui/toast";
 
 export default function RegisterPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const { register, isLoading } = useAuth();
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [studentId, setStudentId] = React.useState("");
   const [level, setLevel] = React.useState("الفرقة الأولى");
   const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState("");
-  const department = "تكنولوجيا المعلومات وعلوم الحاسب";
+  const [department, setDepartment] = React.useState("تكنولوجيا المعلومات (IT)");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,20 +33,46 @@ export default function RegisterPage() {
     setError("");
 
     if (!name.trim() || !email.trim() || !password.trim()) {
-      setError(t("الرجاء ملء جميع الحقول المطلوبة (الاسم والبريد وكلمة المرور).", "Please fill in all required fields."));
+      const errMsg = t("الرجاء ملء جميع الحقول المطلوبة (الاسم والبريد وكلمة المرور).", "Please fill in all required fields.");
+      setError(errMsg);
+      toast(`⚠️ ${errMsg}`, "error");
+      return;
+    }
+
+    const lowerEmail = email.trim().toLowerCase();
+    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
+      const errMsg = t("⚠️ يجب استخدام البريد الإلكتروني الجامعي الرسمي المعتمد لجامعة سيناء (username@su.edu.eg).", "⚠️ Must use official Sinai University email ending with @su.edu.eg.");
+      setError(errMsg);
+      toast(errMsg, "error");
+      return;
+    }
+
+    const hasMinLen = password.length >= 8;
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNum = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+    if (!hasMinLen || !hasLetter || !hasNum || !hasSpecial) {
+      const errMsg = t("⚠️ كلمة المرور ضعيفة. يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).", "⚠️ Weak password. Must be at least 8 characters and include letters, numbers, and symbols.");
+      setError(errMsg);
+      toast(errMsg, "error");
       return;
     }
 
     try {
       const success = await register(name.trim(), email.trim(), password.trim(), level, department, studentId.trim());
       if (success) {
-        // Direct seamless redirection to dashboard after successful registration!
+        toast(t("🎉 تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء.", "🎉 Account created successfully! Welcome to Sinai University Portal."), "success");
         router.push("/dashboard");
       } else {
-        setError(t("فشل إنشاء الحساب. البريد مسجل مسبقاً أو البيانات غير مكتملة.", "Registration failed. Email might already exist."));
+        const errMsg = t("⚠️ البريد الإلكتروني مسجل مسبقاً في منصة الجامعة. يرجى تسجيل الدخول إلى حسابك الحالي.", "⚠️ Email is already registered. Please sign in to your existing account.");
+        setError(errMsg);
+        toast(errMsg, "error");
       }
-    } catch (err) {
-      setError(t("حدث خطأ أثناء التسجيل. حاول مرة أخرى.", "An error occurred during registration."));
+    } catch (err: any) {
+      const errMsg = err?.message || t("حدث خطأ أثناء التسجيل. حاول مرة أخرى.", "An error occurred during registration.");
+      setError(errMsg);
+      toast(errMsg, "error");
     }
   };
 
@@ -58,14 +89,7 @@ export default function RegisterPage() {
       >
         {/* Logo and Header */}
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2.5 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-lg">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <span className="font-bold text-2xl text-zinc-900 dark:text-zinc-50">
-              SU IT <span className="text-violet-600 dark:text-violet-400">Guide</span>
-            </span>
-          </Link>
+          <Logo size="xl" href="/" className="mb-4" />
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{t("إنشاء حساب جديد", "Create New Account")}</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{t("ابدأ رحلتك الأكاديمية الذكية اليوم", "Start your academic journey today")}</p>
         </div>
@@ -131,6 +155,25 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              {/* Department Specialization */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("القسم التخصصي", "Department Specialization")}</label>
+                <div className="relative">
+                  <BookOpen className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none`} />
+                  <select
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    disabled={isLoading}
+                    className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
+                  >
+                    <option value="تكنولوجيا المعلومات (IT)">{t("قسم تكنولوجيا المعلومات (IT)", "Information Technology (IT)")}</option>
+                    <option value="علوم الحاسب (CS)">{t("قسم علوم الحاسب (CS)", "Computer Science (CS)")}</option>
+                    <option value="نظم المعلومات (IS)">{t("قسم نظم المعلومات (IS)", "Information Systems (IS)")}</option>
+                    <option value="الذكاء الاصطناعي وعلوم البيانات (AI)">{t("قسم الذكاء الاصطناعي (AI)", "Artificial Intelligence (AI)")}</option>
+                  </select>
+                </div>
+              </div>
+
               {/* Student ID */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الرقم الجامعي (ID)", "Student ID")}</label>
@@ -149,18 +192,47 @@ export default function RegisterPage() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور", "Password")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور المعقدة", "Complex Password")}</label>
                 <div className="relative">
                   <Lock className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
+                    className={lang === "ar" ? "pr-10 pl-10 text-xs font-mono" : "pl-10 pr-10 text-xs font-mono"}
                     disabled={isLoading}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
+                    title={showPassword ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4 text-violet-500" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
+
+                {/* Password Strength Requirement Indicators */}
+                {password.length > 0 && (
+                  <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 space-y-1 text-[10px] sm:text-[11px] mt-2">
+                    <span className="font-bold text-zinc-500 block mb-1">{t("معايير كلمة المرور:", "Password Requirements:")}</span>
+                    <div className="grid grid-cols-2 gap-1 font-extrabold">
+                      <span className={password.length >= 8 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}>
+                        {password.length >= 8 ? "✓" : "○"} 8 أحرف على الأقل
+                      </span>
+                      <span className={/[a-zA-Z]/.test(password) ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}>
+                        {/[a-zA-Z]/.test(password) ? "✓" : "○"} حروف إنجليزية (A-Z)
+                      </span>
+                      <span className={/[0-9]/.test(password) ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}>
+                        {/[0-9]/.test(password) ? "✓" : "○"} أرقام (0-9)
+                      </span>
+                      <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}>
+                        {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? "✓" : "○"} رموز مميزة (!@#$)
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Button type="submit" className="w-full mt-2 cursor-pointer font-bold" isLoading={isLoading} disabled={isLoading}>

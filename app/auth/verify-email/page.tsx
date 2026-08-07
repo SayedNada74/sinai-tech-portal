@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -69,14 +70,7 @@ export default function VerifyEmailPage() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2.5 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-lg">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <span className="font-bold text-2xl text-zinc-900 dark:text-zinc-50">
-              SU IT <span className="text-violet-600 dark:text-violet-400">Guide</span>
-            </span>
-          </Link>
+          <Logo size="xl" href="/" className="mb-4" />
         </div>
 
         <React.Suspense fallback={

@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -36,19 +37,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { t, dir } = useApp();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  const menuItems = [
-    { nameAr: "لوحة التحكم والتحليلات", nameEn: "Dashboard & Analytics", path: "/admin", icon: LayoutDashboard },
-    { nameAr: "إدارة المستخدمين والصلاحيات", nameEn: "Users & Roles Management", path: "/admin/users", icon: Users },
-    { nameAr: "إدارة المساقات والخطط", nameEn: "Courses & Curricula", path: "/admin/courses", icon: BookOpen },
-    { nameAr: "إدارة الملفات والمصادر", nameEn: "Files & Resources", path: "/admin/resources", icon: FileSpreadsheet },
-    { nameAr: "بوابة التدريب والتوظيف", nameEn: "Careers & Internships", path: "/admin/careers", icon: Briefcase },
-    { nameAr: "خارطة مسارات التعلّم", nameEn: "Career Roadmaps", path: "/admin/roadmaps", icon: Compass },
-    { nameAr: "مراجعة وتقييمات الطلاب", nameEn: "Student Reviews & Audits", path: "/admin/reviews", icon: MessageSquare },
-    { nameAr: "مركز نشر الإعلانات", nameEn: "Announcements Center", path: "/admin/announcements", icon: Megaphone },
-    { nameAr: "قاعدة المعرفة والذكاء الاصطناعي", nameEn: "Knowledge & AI Base", path: "/admin/faq", icon: HelpCircle },
-    { nameAr: "سجلات النظام والرقابة", nameEn: "Audit & Log Inspection", path: "/admin/audit", icon: ShieldCheck },
-    { nameAr: "إعدادات المنصة الأساسية", nameEn: "Core System Settings", path: "/admin/settings", icon: Settings }
+  const allMenuItems = [
+    { nameAr: "لوحة التحكم والتحليلات", nameEn: "Dashboard & Analytics", path: "/admin", icon: LayoutDashboard, roles: ["moderator", "admin", "super-admin"] },
+    { nameAr: "إدارة المستخدمين والصلاحيات", nameEn: "Users & Roles Management", path: "/admin/users", icon: Users, roles: ["super-admin"] },
+    { nameAr: "إدارة المساقات والخطط", nameEn: "Courses & Curricula", path: "/admin/courses", icon: BookOpen, roles: ["admin", "super-admin"] },
+    { nameAr: "إدارة الملفات والمصادر", nameEn: "Files & Resources", path: "/admin/resources", icon: FileSpreadsheet, roles: ["admin", "super-admin"] },
+    { nameAr: "بوابة التدريب والتوظيف", nameEn: "Careers & Internships", path: "/admin/careers", icon: Briefcase, roles: ["admin", "super-admin"] },
+    { nameAr: "خارطة مسارات التعلّم", nameEn: "Career Roadmaps", path: "/admin/roadmaps", icon: Compass, roles: ["admin", "super-admin"] },
+    { nameAr: "مراجعة وتقييمات الطلاب", nameEn: "Student Reviews & Audits", path: "/admin/reviews", icon: MessageSquare, roles: ["moderator", "admin", "super-admin"] },
+    { nameAr: "مركز نشر الإعلانات", nameEn: "Announcements Center", path: "/admin/announcements", icon: Megaphone, roles: ["moderator", "admin", "super-admin"] },
+    { nameAr: "قاعدة المعرفة والذكاء الاصطناعي", nameEn: "Knowledge & AI Base", path: "/admin/faq", icon: HelpCircle, roles: ["moderator", "admin", "super-admin"] },
+    { nameAr: "سجلات النظام والرقابة", nameEn: "Audit & Log Inspection", path: "/admin/audit", icon: ShieldCheck, roles: ["super-admin"] },
+    { nameAr: "إعدادات المنصة الأساسية", nameEn: "Core System Settings", path: "/admin/settings", icon: Settings, roles: ["super-admin"] }
   ];
+
+  const menuItems = allMenuItems.filter(item => user && item.roles.includes(user.role as any));
+
+  // Protect current path against unauthorized role access
+  React.useEffect(() => {
+    if (user && pathname) {
+      const currentItem = allMenuItems.find(i => i.path === pathname);
+      if (currentItem && !currentItem.roles.includes(user.role as any)) {
+        router.push("/admin");
+      }
+    }
+  }, [user, pathname, router]);
 
   // Helper to resolve badge label and color based on role
   const getRoleBadge = (role?: string) => {
@@ -105,14 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex flex-col flex-1 overflow-y-auto">
             {/* Logo */}
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-              <Link href="/admin" className="flex items-center gap-2">
-                <div className="h-9 w-9 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-md">
-                  <GraduationCap className="h-5.5 w-5.5" />
-                </div>
-                <span className="font-bold text-base text-zinc-900 dark:text-zinc-50">
-                  {t("إشراف", "Admin")} <span className="text-violet-600 dark:text-violet-400">SU IT</span>
-                </span>
-              </Link>
+              <Logo size="sm" href="/admin" subtitle={t("الإشراف", "Admin")} />
             </div>
 
             {/* Profile Info */}

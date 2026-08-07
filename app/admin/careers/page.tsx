@@ -21,8 +21,11 @@ import {
   X
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function AdminCareersPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -40,10 +43,10 @@ export default function AdminCareersPage() {
   // Form State
   const [formTitle, setFormTitle] = React.useState("");
   const [formCompany, setFormCompany] = React.useState("");
-  const [formLocation, setFormLocation] = React.useState("");
+  const [formLocation, setFormLocation] = React.useState("مصر / Remotely");
   const [formType, setFormType] = React.useState<CareerOpportunity["type"]>("internship");
   const [formDesc, setFormDesc] = React.useState("");
-  const [formLink, setFormLink] = React.useState("");
+  const [formLink, setFormLink] = React.useState("https://example.com");
   const [formDept, setFormDept] = React.useState<CareerOpportunity["department"]>("all");
   const [formExp, setFormExp] = React.useState<CareerOpportunity["experience"]>("entry");
 
@@ -51,25 +54,25 @@ export default function AdminCareersPage() {
     setEditingId(null);
     setFormTitle("");
     setFormCompany("");
-    setFormLocation("");
+    setFormLocation("مصر / Remotely");
     setFormType("internship");
     setFormDesc("");
-    setFormLink("");
+    setFormLink("https://example.com");
     setFormDept("all");
     setFormExp("entry");
     setModalOpen(true);
   };
 
-  const openEditModal = (job: CareerOpportunity) => {
-    setEditingId(job.id);
-    setFormTitle(job.title);
-    setFormCompany(job.company);
-    setFormLocation(job.location);
-    setFormType(job.type);
-    setFormDesc(job.description);
-    setFormLink(job.link);
-    setFormDept(job.department);
-    setFormExp(job.experience);
+  const openEditModal = (c: CareerOpportunity) => {
+    setEditingId(c.id);
+    setFormTitle(c.title);
+    setFormCompany(c.company);
+    setFormLocation(c.location || "");
+    setFormType(c.type);
+    setFormDesc(c.description || "");
+    setFormLink(c.link);
+    setFormDept(c.department || "all");
+    setFormExp(c.experience || "entry");
     setModalOpen(true);
   };
 
@@ -79,8 +82,7 @@ export default function AdminCareersPage() {
       const matchQ =
         !q ||
         c.title.toLowerCase().includes(q) ||
-        c.company.toLowerCase().includes(q) ||
-        c.location.toLowerCase().includes(q);
+        c.company.toLowerCase().includes(q);
 
       const matchType = typeFilter === "ALL" || c.type === typeFilter;
       return matchQ && matchType;
@@ -90,7 +92,7 @@ export default function AdminCareersPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle || !formCompany || !formLink) {
-      alert(t("يرجى ملء المسمّى الوظيفي، اسم الشركة، ورابط التقديم.", "Please enter job title, company name, and application URL."));
+      toast(t("⚠️ يرجى ملء المسمّى الوظيفي، اسم الشركة، ورابط التقديم.", "⚠️ Please enter job title, company name, and application URL."), "error");
       return;
     }
 
@@ -105,7 +107,7 @@ export default function AdminCareersPage() {
         department: formDept,
         experience: formExp
       });
-      alert(t("✅ تم تعديل بيانات الفرصة بنجاح.", "✅ Opportunity updated successfully."));
+      toast(t("✨ تم تعديل بيانات الفرصة بنجاح!", "✨ Opportunity updated successfully!"), "success");
     } else {
       addCareer({
         title: formTitle,
@@ -117,7 +119,7 @@ export default function AdminCareersPage() {
         department: formDept,
         experience: formExp
       });
-      alert(t("✨ تم نشر فرصة التوظيف/التدريب بنجاح.", "✨ Opportunity published successfully."));
+      toast(t("✨ تم نشر فرصة التوظيف/التدريب بنجاح!", "✨ Opportunity published successfully!"), "success");
     }
     setModalOpen(false);
   };

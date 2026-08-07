@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,14 +9,18 @@ import { useApp } from "@/context/app-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Mail, Lock, ShieldAlert } from "lucide-react";
+import { GraduationCap, Mail, Lock, ShieldAlert, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+
+import { useToast } from "@/components/ui/toast";
 
 export default function LoginPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const { login, loginWithProvider, isLoading } = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
   const [rememberMe, setRememberMe] = React.useState(false);
   const [error, setError] = React.useState("");
   const router = useRouter();
@@ -25,19 +30,26 @@ export default function LoginPage() {
     setError("");
 
     if (!email.trim() || !password.trim()) {
-      setError(t("الرجاء إدخال البريد الإلكتروني وكلمة المرور.", "Please enter your email and password."));
+      const errMsg = t("الرجاء إدخال البريد الإلكتروني وكلمة المرور.", "Please enter your email and password.");
+      setError(errMsg);
+      toast(`⚠️ ${errMsg}`, "error");
       return;
     }
 
     try {
       const success = await login(email.trim(), password.trim(), rememberMe);
       if (success) {
+        toast(t("🎉 تم تسجيل الدخول بنجاح! مرحباً بك مجدداً.", "🎉 Login successful! Welcome back."), "success");
         router.push("/dashboard");
       } else {
-        setError(t("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات.", "Invalid email or password. Access denied."));
+        const errMsg = t("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات.", "Invalid email or password. Access denied.");
+        setError(errMsg);
+        toast(`🚫 ${errMsg}`, "error");
       }
-    } catch (err) {
-      setError(t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.", "An error occurred during sign in."));
+    } catch (err: any) {
+      const errMsg = err?.message || t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.", "An error occurred during sign in.");
+      setError(errMsg);
+      toast(errMsg, "error");
     }
   };
 
@@ -66,14 +78,7 @@ export default function LoginPage() {
       >
         {/* Logo and Header */}
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2.5 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-lg">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <span className="font-bold text-2xl text-zinc-900 dark:text-zinc-50">
-              SU IT <span className="text-violet-600 dark:text-violet-400">Guide</span>
-            </span>
-          </Link>
+          <Logo size="xl" href="/" className="mb-4" />
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{t("مرحباً بك مجدداً", "Welcome Back")}</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{t("سجل دخولك لمتابعة خطتك الأكاديمية", "Sign in to access your academic dashboard")}</p>
         </div>
@@ -95,7 +100,7 @@ export default function LoginPage() {
                   <Mail className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder="username@su.edu.eg"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={lang === "ar" ? "pr-10" : "pl-10"}
@@ -115,13 +120,21 @@ export default function LoginPage() {
                 <div className="relative">
                   <Lock className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={lang === "ar" ? "pr-10" : "pl-10"}
+                    className={lang === "ar" ? "pr-10 pl-10" : "pl-10 pr-10"}
                     disabled={isLoading}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
+                    title={showPassword ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4 text-violet-500" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
               </div>
 

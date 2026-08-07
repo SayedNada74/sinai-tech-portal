@@ -1,11 +1,13 @@
 "use client";
 
+import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useApp } from "@/context/app-context";
 import { useSocial } from "@/context/social-context";
+import { useAdmin } from "@/context/admin-context";
 import { ProtectedRoute } from "@/components/protected-route";
 import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { MobileSidebar } from "@/components/MobileSidebar";
@@ -24,6 +26,7 @@ import {
   GraduationCap,
   X,
   AlertCircle,
+  AlertTriangle,
   Briefcase
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,6 +35,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   const { user } = useAuth();
   const { notifications, markAsRead, markAllAsRead, clearNotifications } = useSocial();
   const { theme, setTheme, dir, t, lang, setLang } = useApp();
+  const { settings } = useAdmin();
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const [isNotifOpen, setIsNotifOpen] = React.useState(false);
@@ -52,14 +56,22 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <DesktopSidebar />
         <MobileSidebar isOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
 
+        {/* Live Maintenance Mode Banner (Controlled by Admin Settings) */}
+        {settings?.maintenanceMode && (
+          <div className="fixed top-0 inset-x-0 z-[100] bg-amber-600 text-white font-extrabold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 shadow-lg border-b border-amber-500">
+            <AlertTriangle className="h-4 w-4 animate-bounce shrink-0" />
+            <span>
+              {t(
+                "⚠️ إشعار الصيانة: ميزّة وضع الصيانة المؤقتة مفعّلة حالياً بالكامل على كافة أرجاء المنصة من قِبل إدارة النظام.",
+                "⚠️ Maintenance Alert: Live maintenance mode is currently activated across the entire platform by System Administration."
+              )}
+            </span>
+          </div>
+        )}
+
         {/* Mobile Header */}
         <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-cyan-600 flex items-center justify-center text-white shadow-md">
-              <GraduationCap className="h-4.5 w-4.5" />
-            </div>
-            <span className="font-bold text-sm text-zinc-950 dark:text-zinc-50">SU IT Guide</span>
-          </Link>
+          <Logo size="sm" href="/dashboard" />
 
           <div className="flex items-center gap-1.5">
             {/* Language Toggle */}

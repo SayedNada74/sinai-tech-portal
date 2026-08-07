@@ -23,8 +23,11 @@ import {
   Play
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function FaqAndAiSettingsPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -94,7 +97,7 @@ export default function FaqAndAiSettingsPage() {
   const handleSaveFaq = (e: React.FormEvent) => {
     e.preventDefault();
     if (!faqQuestion || !faqAnswer) {
-      alert(t("يرجى إدخال نص السؤال والإجابة الشاملة.", "Please enter question and detailed answer."));
+      toast(t("⚠️ يرجى إدخال نص السؤال والإجابة الشاملة.", "⚠️ Please enter question and detailed answer."), "error");
       return;
     }
 
@@ -105,7 +108,7 @@ export default function FaqAndAiSettingsPage() {
         category: faqCategory,
         pinned: faqPinned
       });
-      alert(t("✅ تم تحديث السؤال الشائع بنجاح.", "✅ FAQ item updated successfully."));
+      toast(t("✨ تم تحديث السؤال الشائع بنجاح!", "✨ FAQ item updated successfully!"), "success");
     } else {
       addFaq({
         question: faqQuestion,
@@ -113,7 +116,7 @@ export default function FaqAndAiSettingsPage() {
         category: faqCategory,
         pinned: faqPinned
       });
-      alert(t("✨ تم إضافة السؤال الشائع بنجاح.", "✨ FAQ item added successfully."));
+      toast(t("✨ تم إضافة السؤال الشائع بنجاح!", "✨ FAQ item added successfully!"), "success");
     }
     setFaqModalOpen(false);
   };
@@ -126,7 +129,7 @@ export default function FaqAndAiSettingsPage() {
       temperature: tempVal,
       suggestedReplies: pills
     });
-    alert(t("⚙️ تم تحديث قواعد وإتاحة نموذج الذكاء الاصطناعي للمساعد بنجاح.", "⚙️ AI model knowledge base updated successfully."));
+    toast(t("⚙️ تم تحديث قواعد وإتاحة نموذج الذكاء الاصطناعي بنجاح!", "⚙️ AI model knowledge base updated successfully!"), "success");
   };
 
   return (

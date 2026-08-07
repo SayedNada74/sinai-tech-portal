@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { useApp } from "@/context/app-context";
@@ -65,14 +66,7 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" dir={dir}>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/30 group-hover:scale-105 transition-transform duration-300">
-              <GraduationCap className="h-5.5 w-5.5" />
-            </div>
-            <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-50 font-sans">
-              SU IT <span className="text-violet-600 dark:text-violet-400">Guide</span>
-            </span>
-          </Link>
+          <Logo size="md" href="/" />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">

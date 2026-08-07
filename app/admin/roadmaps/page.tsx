@@ -21,8 +21,11 @@ import {
   Layers
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function AdminRoadmapsPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -99,7 +102,7 @@ export default function AdminRoadmapsPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle) {
-      alert(t("يرجى إدخال عنوان مسار التعلم.", "Please enter roadmap title."));
+      toast(t("⚠️ يرجى إدخال عنوان مسار التعلم.", "⚠️ Please enter roadmap title."), "error");
       return;
     }
 
@@ -113,7 +116,7 @@ export default function AdminRoadmapsPage() {
         durationEn: formDuration || "6 months",
         nodes
       });
-      alert(t("✅ تم تحديث مسار التعلم بنجاح.", "✅ Learning roadmap updated successfully."));
+      toast(t("✨ تم تحديث مسار التعلم بنجاح!", "✨ Learning roadmap updated successfully!"), "success");
     } else {
       addRoadmap({
         title: formTitle,
@@ -124,7 +127,7 @@ export default function AdminRoadmapsPage() {
         durationEn: formDuration || "6 months",
         nodes
       });
-      alert(t("✨ تم إضافة مسار التعلم الجديد بنجاح.", "✨ New learning roadmap added successfully."));
+      toast(t("✨ تم إضافة مسار التعلم الجديد بنجاح!", "✨ New learning roadmap added successfully!"), "success");
     }
     setModalOpen(false);
   };

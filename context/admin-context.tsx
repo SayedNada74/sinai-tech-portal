@@ -75,6 +75,7 @@ interface AdminContextType {
   };
 
   // User methods
+  addUserAccount: (newUser: Partial<UserProfile> & { role: UserProfile["role"] }) => void;
   updateUserRole: (userId: string, role: UserProfile["role"]) => void;
   suspendUser: (userId: string, suspend: boolean) => void;
   deleteUser: (userId: string) => void;
@@ -194,15 +195,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     // Ensure we have some default roles for demo
     const defaultAccounts: UserProfile[] = [
-      { id: "user-student", name: "أحمد الطالب", email: "student@example.com", level: "الفرقة الأولى", department: "تكنولوجيا المعلومات (IT)", studentId: "20230101", bio: "حساب طالب تجريبي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🎓", role: "student" },
-      { id: "user-admin", name: "سيد المسؤول", email: "admin@example.com", level: "الفرقة الرابعة", department: "تكنولوجيا المعلومات (IT)", studentId: "20230102", bio: "مدير النظام", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin" },
-      { id: "user-super", name: "أحمد المشرف الأعلى", email: "super@example.com", level: "الفرقة الرابعة", department: "تكنولوجيا المعلومات (IT)", studentId: "20230103", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin" },
-      { id: "user-mod", name: "منى المنسقة", email: "mod@example.com", level: "الفرقة الثالثة", department: "تكنولوجيا المعلومات (IT)", studentId: "20230104", bio: "منسقة ومراجعة المحتوى الأكاديمي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👩‍🏫", role: "moderator" }
+      { id: "user-student", name: "أحمد الطالب", email: "student@example.com", level: "الفرقة الأولى", department: "تكنولوجيا المعلومات (IT)", studentId: "20230101", bio: "حساب طالب تجريبي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🧑‍🎓", role: "student" },
+      { id: "user-admin", name: "سيد المسؤول", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin" },
+      { id: "user-super", name: "أحمد المشرف الأعلى", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin" },
+      { id: "user-mod", name: "منى المنسقة", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسقة ومراجعة المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👩‍🏫", role: "moderator" }
     ];
 
     defaultAccounts.forEach(da => {
-      if (!currentUsers.some(u => u.email.toLowerCase() === da.email.toLowerCase())) {
+      const idx = currentUsers.findIndex(u => u.email.toLowerCase() === da.email.toLowerCase());
+      if (idx === -1) {
         currentUsers.push(da);
+      } else {
+        // Force sync administrative credentials for demo accounts
+        if (da.role !== "student") {
+          currentUsers[idx] = {
+            ...currentUsers[idx],
+            studentId: da.studentId,
+            level: da.level,
+            department: da.department,
+            role: da.role
+          };
+        }
       }
     });
     setUsers(currentUsers);
@@ -357,7 +370,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const resetUserPassword = (userId: string) => {
     const target = users.find(u => u.id === userId);
     logAction("إعادة تعيين كلمة المرور", `تم إرسال رابط تصفير كلمة المرور للمستخدم: ${target?.email}`, "auth");
-    alert(`🔑 تم بنجاح تصفير كلمة مرور الحساب: ${target?.email}`);
+  };
+
+  const addUserAccount = (newUser: Partial<UserProfile> & { role: UserProfile["role"] }) => {
+    const id = `user-${Date.now()}`;
+    const fullUser: UserProfile = {
+      id,
+      name: newUser.name || "عضو جديد",
+      email: newUser.email || `user_${Date.now()}@example.com`,
+      level: newUser.level || (newUser.role === "student" ? "الفرقة الأولى" : "الكادر الإداري والفني"),
+      department: newUser.department || (newUser.role === "student" ? "تكنولوجيا المعلومات (IT)" : "إدارة المنصة والسياسات"),
+      studentId: newUser.studentId || (newUser.role === "super-admin" ? `SUP-${Math.floor(100+Math.random()*900)}` : newUser.role === "admin" ? `ADM-${Math.floor(100+Math.random()*900)}` : newUser.role === "moderator" ? `MOD-${Math.floor(100+Math.random()*900)}` : `${Math.floor(20230000+Math.random()*9999)}`),
+      bio: newUser.bio || "حساب جديد في المنصة",
+      skills: [],
+      socialLinks: { github: "", linkedin: "" },
+      avatar: newUser.avatar || (newUser.role === "super-admin" ? "👑" : newUser.role === "admin" ? "⚙️" : newUser.role === "moderator" ? "👩‍🏫" : "🎓"),
+      role: newUser.role
+    };
+    const updated = [fullUser, ...users];
+    setUsers(updated);
+    saveState("su_registered_users", updated);
+    logAction("إضافة حساب مستخدم جديد", `تم إنشاء حساب جديد بنجاح للبريد: ${fullUser.email} برتبة: ${fullUser.role}`, "auth");
   };
 
   const updateUserProfileAdmin = (userId: string, data: Partial<UserProfile>) => {
@@ -582,6 +615,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         settings,
         incidents,
         aiConfig,
+        addUserAccount,
         addRoadmap,
         updateRoadmap,
         deleteRoadmap,

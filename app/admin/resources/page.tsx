@@ -29,8 +29,11 @@ import {
   Plus
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function ResourceManagementPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -121,7 +124,7 @@ export default function ResourceManagementPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle || !formCourse) {
-      alert(t("يرجى إدخال عنوان الملف وكود المادة المرتبطة.", "Please enter resource title and associated course code."));
+      toast(t("⚠️ يرجى إدخال عنوان الملف وكود المادة المرتبطة.", "⚠️ Please enter resource title and associated course code."));
       return;
     }
 
@@ -134,7 +137,7 @@ export default function ResourceManagementPage() {
         url: formLink || "#",
         author: formAuthor
       });
-      alert(t("✅ تم تعديل بيانات المصدر بنجاح.", "✅ Resource updated successfully."));
+      toast(t("✅ تم تعديل بيانات المصدر بنجاح.", "✅ Resource updated successfully."));
     } else {
       addResourceAdmin({
         title: formTitle,
@@ -144,7 +147,7 @@ export default function ResourceManagementPage() {
         url: formLink || "#",
         author: formAuthor || "إدارة الكلية"
       });
-      alert(t("✨ تم إضافة الملف والمصدر الأكاديمي بنجاح.", "✨ Academic resource added successfully."));
+      toast(t("✨ تم إضافة الملف والمصدر الأكاديمي بنجاح.", "✨ Academic resource added successfully."));
     }
     setModalOpen(false);
   };

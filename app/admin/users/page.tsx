@@ -25,8 +25,11 @@ import {
   HelpCircle
 } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+
 export default function UserManagementPage() {
   const { t, dir, lang } = useApp();
+  const { toast } = useToast();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -34,6 +37,7 @@ export default function UserManagementPage() {
   }, []);
   const {
     users,
+    addUserAccount,
     updateUserRole,
     suspendUser,
     deleteUser,
@@ -44,10 +48,52 @@ export default function UserManagementPage() {
   } = useAdmin();
   const { user: currentUser } = useAuth();
 
+  if (currentUser && currentUser.role !== "super-admin") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
+        <div className="h-16 w-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-3xl">
+          👑
+        </div>
+        <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
+          {t("هذه الصفحة مخصصة فقط للمشرف الأعلى (Super Admin)", "Restricted to Super Admin only")}
+        </h3>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+          {t("لا تملك الصلاحية الكافية لإدارة الحسابات والرتب الإدارية.", "You do not have sufficient clearance to manage user accounts and admin roles.")}
+        </p>
+      </div>
+    );
+  }
+
   const [searchTerm, setSearchTerm] = React.useState("");
   const [roleFilter, setRoleFilter] = React.useState<string>("ALL");
   const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+
+  // Add User Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const [newEmail, setNewEmail] = React.useState("");
+  const [newRole, setNewRole] = React.useState<UserProfile["role"]>("admin");
+  const [newDepartment, setNewDepartment] = React.useState("");
+  const [newLevel, setNewLevel] = React.useState("");
+
+  const handleCreateUser = () => {
+    if (!newName.trim() || !newEmail.trim()) {
+      toast(t("⚠️ يرجى كتابة اسم الحساب والبريد الإلكتروني.", "⚠️ Please enter name and email."), "error");
+      return;
+    }
+    addUserAccount({
+      name: newName,
+      email: newEmail,
+      role: newRole,
+      department: newDepartment || (newRole === "student" ? "تكنولوجيا المعلومات (IT)" : "إدارة المنصة والسياسات"),
+      level: newLevel || (newRole === "student" ? "الفرقة الأولى" : "الكادر الإداري والفني")
+    });
+    toast(t("✨ تم إنشاء وتعيين الحساب الجديد بنجاح!", "✨ New user account created successfully!"), "success");
+    setIsAddModalOpen(false);
+    setNewName("");
+    setNewEmail("");
+  };
 
   // Edit Modal State
   const [editingUser, setEditingUser] = React.useState<UserProfile | null>(null);
@@ -55,6 +101,19 @@ export default function UserManagementPage() {
   const [editEmail, setEditEmail] = React.useState("");
   const [editLevel, setEditLevel] = React.useState("");
   const [editStudentId, setEditStudentId] = React.useState("");
+
+  const getUserDisplayAvatar = React.useCallback((u: Partial<UserProfile>) => {
+    if (u.role === "super-admin") return "👑";
+    if (u.role === "admin") return "⚙️";
+    if (u.role === "moderator") return "👩‍🏫";
+    if (u.role === "student") {
+      const lvl = u.level || "";
+      const isSenior = lvl.includes("الرابعة") || lvl.includes("الرابعه") || lvl.includes("4") || lvl.includes("Fourth") || lvl.includes("Senior");
+      if (isSenior) return "🎓"; // Graduation Cap for Senior Year!
+      return "🧑‍🎓"; // Student Icon for Years 1, 2, 3!
+    }
+    return u.avatar || "🧑‍🎓";
+  }, []);
 
   // Filtering
   const filteredUsers = React.useMemo(() => {
@@ -98,12 +157,12 @@ export default function UserManagementPage() {
   const handleBulkRoleChange = (role: UserProfile["role"]) => {
     if (selectedIds.length === 0) return;
     if (role === "super-admin" && currentUser?.role !== "super-admin") {
-      alert(t("⚠️ غير مسموح لك بترقية مستخدمين لدور المشرف الأعلى.", "⚠️ You are not authorized to promote users to Super Admin."));
+      toast(t("⚠️ غير مسموح لك بترقية مستخدمين لدور المشرف الأعلى.", "⚠️ You are not authorized to promote users to Super Admin."), "error");
       return;
     }
     bulkUpdateRoles(selectedIds, role);
     setSelectedIds([]);
-    alert(t("⚡ تم تحديث الصلاحيات للمستخدمين المحددين بنجاح.", "⚡ User roles updated successfully."));
+    toast(t("⚡ تم تحديث الصلاحيات للمستخدمين المحددين بنجاح.", "⚡ User roles updated successfully."), "success");
   };
 
   const handleBulkDelete = () => {
@@ -111,21 +170,22 @@ export default function UserManagementPage() {
     if (confirm(t(`هل أنت متأكد من حذف ${selectedIds.length} مستخدمين نهائياً؟`, `Are you sure you want to permanently delete ${selectedIds.length} users?`))) {
       bulkDeleteUsers(selectedIds);
       setSelectedIds([]);
-      alert(t("🗑️ تم حذف الحسابات المحددة بنجاح.", "🗑️ Selected accounts deleted successfully."));
+      toast(t("🗑️ تم حذف الحسابات المحددة بنجاح.", "🗑️ Selected accounts deleted successfully."), "success");
     }
   };
 
   // Single Actions Guarded
   const handleRoleChange = (uid: string, targetRole: UserProfile["role"], uRole: string) => {
     if (targetRole === "super-admin" && currentUser?.role !== "super-admin") {
-      alert(t("⚠️ فقط المشرف الأعلى (Super Admin) يملك صلاحية تعيين مشرفين أعلى.", "⚠️ Only Super Admins can assign Super Admin role."));
+      toast(t("⚠️ فقط المشرف الأعلى (Super Admin) يملك صلاحية تعيين مشرفين أعلى.", "⚠️ Only Super Admins can assign Super Admin role."), "error");
       return;
     }
     if (uRole === "super-admin" && currentUser?.role !== "super-admin") {
-      alert(t("⚠️ لا يمكنك تعديل صلاحيات المشرف الأعلى.", "⚠️ You cannot edit Super Admin permissions."));
+      toast(t("⚠️ لا يمكنك تعديل صلاحيات المشرف الأعلى.", "⚠️ You cannot edit Super Admin permissions."), "error");
       return;
     }
     updateUserRole(uid, targetRole);
+    toast(t("✨ تم تعديل صلاحية المستخدم بنجاح.", "✨ User role updated successfully."), "success");
   };
 
   const openEditModal = (u: UserProfile) => {
@@ -145,7 +205,7 @@ export default function UserManagementPage() {
       studentId: editStudentId
     });
     setEditingUser(null);
-    alert(t("✅ تم تعديل بيانات ملف العضو بنجاح.", "✅ User profile updated successfully."));
+    toast(t("✨ تم تعديل بيانات ملف العضو بنجاح!", "✨ User profile updated successfully!"), "success");
   };
 
   const [onlineSessions, setOnlineSessions] = React.useState<any[]>([]);
@@ -271,6 +331,15 @@ export default function UserManagementPage() {
               <option value="active">{t("نشط", "Active")}</option>
               <option value="suspended">{t("موقوف 🚫", "Suspended 🚫")}</option>
             </select>
+
+            {/* Add User Button */}
+            <Button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs px-4 h-10 rounded-xl cursor-pointer shrink-0 flex items-center gap-1.5 shadow-md"
+            >
+              <UserCheck className="h-4 w-4" />
+              <span>{t("إضافة حساب جديد ➕", "Add New Account ➕")}</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -365,7 +434,7 @@ export default function UserManagementPage() {
                       {/* User Info */}
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <span className="text-xl">{u.avatar || "👤"}</span>
+                          <span className="text-xl">{getUserDisplayAvatar(u)}</span>
                           <div>
                             <h4 className="font-bold text-zinc-900 dark:text-zinc-50">{u.name}</h4>
                             <p className="text-[10px] text-zinc-400">{u.email}</p>
@@ -374,12 +443,27 @@ export default function UserManagementPage() {
                       </td>
 
                       <td className="p-4 font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                        {u.studentId || "N/A"}
+                        {u.role === "student" ? (
+                          u.studentId || "N/A"
+                        ) : (
+                          <span className="text-[10px] font-mono px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-200/80 dark:border-zinc-700/80 inline-flex items-center gap-1">
+                            💳 {u.studentId || (u.role === "super-admin" ? "SUP-001" : u.role === "admin" ? "ADM-001" : "MOD-001")}
+                          </span>
+                        )}
                       </td>
 
-                      <td className="p-4 text-zinc-600 dark:text-zinc-400">
-                        <div>{u.department}</div>
-                        <div className="text-[9px] text-zinc-400">{u.level}</div>
+                      <td className="p-4 text-zinc-600 dark:text-zinc-400 text-xs">
+                        {u.role === "student" ? (
+                          <>
+                            <span className="font-semibold block">{u.department}</span>
+                            <span className="text-[10px] text-zinc-400 block">{u.level}</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="font-bold text-cyan-600 dark:text-cyan-400 block">{u.level}</span>
+                            <span className="text-[10px] text-zinc-400 block">{u.department}</span>
+                          </>
+                        )}
                       </td>
 
                       {/* Role Selector */}
@@ -401,12 +485,12 @@ export default function UserManagementPage() {
                       {/* Status */}
                       <td className="p-4">
                         {isSuspended ? (
-                          <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700 dark:bg-red-950/20 text-[9px]">
-                            {t("موقوف 🚫", "Suspended 🚫")}
+                          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-300 text-[10px] font-bold py-0.5 px-2 rounded-lg">
+                            🚫 {t("موقوف مؤقتاً", "Suspended")}
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700 dark:bg-green-950/20 text-[9px]">
-                            {t("نشط ✓", "Active ✓")}
+                          <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-[10px] font-bold py-0.5 px-2 rounded-lg">
+                            🟢 {t("نشط", "Active")}
                           </Badge>
                         )}
                       </td>
@@ -425,8 +509,11 @@ export default function UserManagementPage() {
 
                           {/* Reset pass */}
                           <button
-                            onClick={() => resetUserPassword(u.id)}
-                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer"
+                            onClick={() => {
+                              resetUserPassword(u.id);
+                              toast(t(`🔑 تم تصفير كلمة المرور للحساب (${u.name}) بنجاح!`, `🔑 Password reset for (${u.name})!`), "success");
+                            }}
+                            className="p-1.5 rounded-lg text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950/20 transition-colors cursor-pointer"
                             title={t("تصفير كلمة المرور", "Reset Password")}
                           >
                             <Key className="h-3.5 w-3.5" />
@@ -434,13 +521,20 @@ export default function UserManagementPage() {
 
                           {/* Suspend / Unsuspend */}
                           <button
-                            onClick={() => suspendUser(u.id, !isSuspended)}
-                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            onClick={() => {
+                              suspendUser(u.id, !isSuspended);
+                              if (!isSuspended) {
+                                toast(t(`🚫 تم تجميد وإيقاف حساب (${u.name}) مؤقتاً (دون حذف بياناته).`, `🚫 Account for (${u.name}) suspended temporarily. Data preserved.`), "info");
+                              } else {
+                                toast(t(`⚡ تم إعادة تنشيط حساب (${u.name}) بنجاح!`, `⚡ Account for (${u.name}) reactivated!`), "success");
+                              }
+                            }}
+                            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                               isSuspended
-                                ? "text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20"
-                                : "text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+                                ? "text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/50"
+                                : "text-amber-600 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/50"
                             }`}
-                            title={isSuspended ? t("إلغاء الإيقاف", "Unsuspend") : t("إيقاف الحساب", "Suspend")}
+                            title={isSuspended ? t("إعادة تنشيط الحساب ⚡", "Reactivate Account ⚡") : t("تجميد / إيقاف الحساب مؤقتاً 🚫", "Suspend Account 🚫")}
                           >
                             {isSuspended ? <UserCheck className="h-3.5 w-3.5" /> : <UserMinus className="h-3.5 w-3.5" />}
                           </button>
@@ -495,12 +589,16 @@ export default function UserManagementPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الرقم الأكاديمي", "Student ID")}</label>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {editingUser?.role === "student" ? t("الرقم الأكاديمي", "Student ID") : t("كود الكادر والإدارة", "Staff ID")}
+                  </label>
                   <Input value={editStudentId} onChange={(e) => setEditStudentId(e.target.value)} className="text-xs font-mono" />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الفرقة الدراسية", "Academic Year")}</label>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {editingUser?.role === "student" ? t("الفرقة الدراسية", "Academic Year") : t("القطاع / الصفة الوظيفية", "Staff Sector / Title")}
+                  </label>
                   <Input value={editLevel} onChange={(e) => setEditLevel(e.target.value)} className="text-xs" />
                 </div>
               </div>
@@ -511,6 +609,95 @@ export default function UserManagementPage() {
               </Button>
               <Button size="sm" onClick={saveEdit} className="text-xs font-bold cursor-pointer">
                 {t("حفظ التغييرات", "Save Changes")}
+              </Button>
+            </div>
+          </Card>
+        </div>,
+        document.body
+      )}
+
+      {/* Add New User Modal */}
+      {isAddModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
+          <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <UserCheck className="h-5 w-5 text-violet-600" />
+                <span>{t("إضافة حساب إداري أو طالب جديد ➕", "Add New Account ➕")}</span>
+              </CardTitle>
+              <CardDescription className="text-xs">
+                {t("قم بإدخال بيانات الحساب واختيار الصلاحية المطلوبة.", "Enter user details and assign desired role.")}
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="pt-4 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل", "Full Name")}</label>
+                <Input
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="مثال: د. محمد الإداري"
+                  className="text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني", "Email Address")}</label>
+                <Input
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الصلاحية والرتبة", "Role Clearance")}</label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value as UserProfile["role"])}
+                  className="w-full h-10 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
+                >
+                  <option value="student">{t("طالب 🎓", "Student 🎓")}</option>
+                  <option value="moderator">{t("منسق محتوى 👩‍🏫", "Content Moderator 👩‍🏫")}</option>
+                  <option value="admin">{t("مسؤول نظام ⚙️", "System Admin ⚙️")}</option>
+                  <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {newRole === "student" ? t("القسم والكلية", "Department") : t("القطاع الوظيفي", "Sector")}
+                  </label>
+                  <Input
+                    value={newDepartment}
+                    onChange={(e) => setNewDepartment(e.target.value)}
+                    placeholder={newRole === "student" ? "تكنولوجيا المعلومات (IT)" : "إدارة المنصة والسياسات"}
+                    className="text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {newRole === "student" ? t("الفرقة الدراسية", "Academic Year") : t("الصفة الوظيفية", "Staff Title")}
+                  </label>
+                  <Input
+                    value={newLevel}
+                    onChange={(e) => setNewLevel(e.target.value)}
+                    placeholder={newRole === "student" ? "الفرقة الأولى" : "الكادر الإداري والفني"}
+                    className="text-xs"
+                  />
+                </div>
+              </div>
+            </CardContent>
+
+            <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 shrink-0 flex gap-2 justify-end bg-zinc-50/50 dark:bg-zinc-950/50">
+              <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(false)} className="text-xs font-bold cursor-pointer">
+                {t("إلغاء", "Cancel")}
+              </Button>
+              <Button size="sm" onClick={handleCreateUser} className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold cursor-pointer">
+                {t("إنشاء الحساب فوراً ⚡", "Create Account ⚡")}
               </Button>
             </div>
           </Card>
