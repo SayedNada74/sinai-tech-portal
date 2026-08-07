@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [department, setDepartment] = React.useState("تكنولوجيا المعلومات (IT)");
+  const [department] = React.useState("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,24 +155,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Department Specialization */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("القسم التخصصي", "Department Specialization")}</label>
-                <div className="relative">
-                  <BookOpen className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none`} />
-                  <select
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    disabled={isLoading}
-                    className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
-                  >
-                    <option value="تكنولوجيا المعلومات (IT)">{t("قسم تكنولوجيا المعلومات (IT)", "Information Technology (IT)")}</option>
-                    <option value="علوم الحاسب (CS)">{t("قسم علوم الحاسب (CS)", "Computer Science (CS)")}</option>
-                    <option value="نظم المعلومات (IS)">{t("قسم نظم المعلومات (IS)", "Information Systems (IS)")}</option>
-                    <option value="الذكاء الاصطناعي وعلوم البيانات (AI)">{t("قسم الذكاء الاصطناعي (AI)", "Artificial Intelligence (AI)")}</option>
-                  </select>
-                </div>
-              </div>
+
 
               {/* Student ID */}
               <div className="space-y-1.5">
