@@ -110,7 +110,8 @@ function CallbackHandler() {
         role: "student",
         badges: ["حساب موثق"],
         points: 100,
-        following: []
+        following: [],
+        needsOnboarding: !authUser.user_metadata?.student_id
       };
 
       // Persist in local storage for instantaneous client hydration

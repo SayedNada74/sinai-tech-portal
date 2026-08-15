@@ -24,6 +24,7 @@ export interface UserProfile {
   badges?: string[];
   points?: number;
   following?: string[];
+  needsOnboarding?: boolean;
 }
 
 interface AuthContextType {

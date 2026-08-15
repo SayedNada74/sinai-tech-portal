@@ -13,6 +13,7 @@ import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { MobileSidebar } from "@/components/MobileSidebar";
 import { MobileTaskbar } from "@/components/MobileTaskbar";
 import { GlobalSearchBar } from "@/components/GlobalSearchBar";
+import { CompleteProfileModal } from "@/components/complete-profile-modal";
 import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
 import { cn, getLocalizedUserName } from "@/lib/utils";
 import {
@@ -305,6 +306,9 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             </div>
           )}
         </AnimatePresence>
+
+        {/* Onboarding Modal for New OAuth Registrations */}
+        <CompleteProfileModal />
 
         {/* Mobile Fixed Navigation Bar */}
         <MobileTaskbar />
