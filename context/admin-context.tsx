@@ -5,6 +5,7 @@ import { COURSES, Course } from "@/lib/courses-data";
 import { RESOURCES, Resource } from "@/lib/resources-data";
 import { ROADMAPS, Roadmap } from "@/lib/roadmaps-data";
 import { useAuth, UserProfile } from "./auth-context";
+import { fetchFromSupabase, insertToSupabase, updateInSupabase, isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export interface Announcement {
   id: string;
@@ -343,28 +344,41 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // User Actions
-  const updateUserRole = (userId: string, role: UserProfile["role"]) => {
+  const updateUserRole = async (userId: string, role: UserProfile["role"]) => {
     const target = users.find(u => u.id === userId);
     const updated = users.map(u => u.id === userId ? { ...u, role } : u);
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction("تغيير صلاحية مستخدم", `تم تغيير صلاحية المستخدم ${target?.email} إلى: ${role}`, "auth");
+
+    if (isSupabaseConfigured) {
+      await updateInSupabase("profiles", userId, { role });
+    }
   };
 
-  const suspendUser = (userId: string, suspend: boolean) => {
+  const suspendUser = async (userId: string, suspend: boolean) => {
     const target = users.find(u => u.id === userId);
-    const updated = users.map(u => u.id === userId ? { ...u, bio: suspend ? "[SUSPENDED]" + u.bio : u.bio.replace("[SUSPENDED]", "") } : u);
+    const newBio = suspend ? "[SUSPENDED]" + (target?.bio || "") : (target?.bio || "").replace("[SUSPENDED]", "");
+    const updated = users.map(u => u.id === userId ? { ...u, bio: newBio } : u);
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction(suspend ? "إيقاف حساب مستخدم" : "تنشيط حساب مستخدم", `تم تعديل حالة الحساب للبريد: ${target?.email}`, "auth");
+
+    if (isSupabaseConfigured) {
+      await updateInSupabase("profiles", userId, { bio: newBio });
+    }
   };
 
-  const deleteUser = (userId: string) => {
+  const deleteUser = async (userId: string) => {
     const target = users.find(u => u.id === userId);
     const updated = users.filter(u => u.id !== userId);
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction("حذف حساب مستخدم", `تم إزالة الحساب تماماً للبريد: ${target?.email}`, "auth");
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from("profiles").delete().eq("id", userId);
+    }
   };
 
   const resetUserPassword = (userId: string) => {
@@ -372,7 +386,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAction("إعادة تعيين كلمة المرور", `تم إرسال رابط تصفير كلمة المرور للمستخدم: ${target?.email}`, "auth");
   };
 
-  const addUserAccount = (newUser: Partial<UserProfile> & { role: UserProfile["role"] }) => {
+  const addUserAccount = async (newUser: Partial<UserProfile> & { role: UserProfile["role"] }) => {
     const id = `user-${Date.now()}`;
     const fullUser: UserProfile = {
       id,
@@ -391,9 +405,23 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction("إضافة حساب مستخدم جديد", `تم إنشاء حساب جديد بنجاح للبريد: ${fullUser.email} برتبة: ${fullUser.role}`, "auth");
+
+    if (isSupabaseConfigured) {
+      await insertToSupabase("profiles", {
+        id: fullUser.id,
+        email: fullUser.email,
+        name: fullUser.name,
+        role: fullUser.role,
+        level: fullUser.level,
+        department: fullUser.department,
+        student_id: fullUser.studentId,
+        avatar: fullUser.avatar,
+        bio: fullUser.bio
+      });
+    }
   };
 
-  const updateUserProfileAdmin = (userId: string, data: Partial<UserProfile>) => {
+  const updateUserProfileAdmin = async (userId: string, data: Partial<UserProfile>) => {
     const updated = users.map(u => u.id === userId ? { ...u, ...data } : u);
     setUsers(updated);
     saveState("su_registered_users", updated);

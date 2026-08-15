@@ -178,10 +178,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 department: cp.department || "تكنولوجيا المعلومات (IT)",
                 studentId: cp.student_id || cp.studentId || "20261001",
                 bio: cp.bio || "طالب مسجل في المنصة",
-                skills: cp.skills || [],
-                socialLinks: cp.socialLinks || {},
+                skills: Array.isArray(cp.skills) ? cp.skills : (typeof cp.skills === "string" ? JSON.parse(cp.skills || "[]") : []),
+                socialLinks: cp.social_links || cp.socialLinks || {},
                 avatar: cp.avatar || "🎓",
                 role: cp.role || "student",
+                cvUrl: cp.cv_url || cp.cvUrl || "",
+                projects: Array.isArray(cp.projects) ? cp.projects : (typeof cp.projects === "string" ? JSON.parse(cp.projects || "[]") : []),
                 badges: cp.badges || ["طالب"],
                 points: cp.points || 50,
                 following: cp.following || []
@@ -527,6 +529,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       student_id: updatedUser.studentId,
       bio: updatedUser.bio,
       avatar: updatedUser.avatar,
+      role: updatedUser.role,
+      social_links: updatedUser.socialLinks || {},
+      socialLinks: updatedUser.socialLinks || {},
+      skills: updatedUser.skills || [],
+      cv_url: updatedUser.cvUrl || "",
+      projects: updatedUser.projects || [],
+      points: updatedUser.points || 50,
+      badges: updatedUser.badges || [],
     });
 
     setUser(updatedUser);
