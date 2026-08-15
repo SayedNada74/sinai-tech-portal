@@ -436,11 +436,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
     }
 
-    const userId = `user-${Date.now()}`;
+    let finalUserId = `user-${Date.now()}`;
     const generatedStudentId = studentId || `2026${Math.floor(1000 + Math.random() * 9000)}`;
 
+    // Save profile to Supabase Cloud DB & Auth if available
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const callbackUrl = getAuthCallbackURL();
+        const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: callbackUrl,
+            data: { name, level, department, student_id: generatedStudentId }
+          }
+        });
+        if (signUpData?.user?.id) {
+          finalUserId = signUpData.user.id;
+        }
+      } catch (e) {
+        console.warn("Supabase signUp error:", e);
+      }
+    }
+
     const newUser: UserProfile = {
-      id: userId,
+      id: finalUserId,
       name,
       email,
       password: password || "123456", // Store user's chosen password
@@ -459,25 +479,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       following: []
     };
 
-    // Save profile to Supabase Cloud DB & Auth if available
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const callbackUrl = getAuthCallbackURL();
-        await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: callbackUrl,
-            data: { name, level, department, student_id: generatedStudentId }
-          }
-        });
-      } catch (e) {
-        console.warn("Supabase signUp error:", e);
-      }
-    }
-
     await insertToSupabase("profiles", {
-      id: userId,
+      id: finalUserId,
       email,
       password: password || "123456",
       name,
@@ -564,7 +567,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...updatedFields,
     };
 
-    await updateInSupabase("profiles", user.id, {
+    const updatePayload = {
       name: updatedUser.name,
       level: updatedUser.level,
       department: updatedUser.department,
@@ -579,7 +582,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       projects: updatedUser.projects || [],
       points: updatedUser.points || 50,
       badges: updatedUser.badges || [],
-    });
+    };
+
+    const res = await updateInSupabase("profiles", user.id, updatePayload);
+
+    // Fallback update by email if ID update matched 0 rows (e.g. legacy ID mismatch)
+    if (isSupabaseConfigured && supabase && (!res || (Array.isArray(res) && res.length === 0))) {
+      console.warn("Update by ID matched 0 rows, running fallback update by email for:", user.email);
+      await supabase
+        .from("profiles")
+        .update(updatePayload)
+        .eq("email", user.email.toLowerCase().trim());
+    }
 
     setUser(updatedUser);
     localStorage.setItem("su_user_session", JSON.stringify(updatedUser));
