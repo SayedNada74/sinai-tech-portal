@@ -387,7 +387,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addUserAccount = async (newUser: Partial<UserProfile> & { role: UserProfile["role"] }) => {
-    const id = `user-${Date.now()}`;
+    const id = typeof crypto !== "undefined" ? crypto.randomUUID() : `usr-${Date.now()}`;
     const fullUser: UserProfile = {
       id,
       name: newUser.name || "عضو جديد",

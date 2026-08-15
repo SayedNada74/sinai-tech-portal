@@ -23,10 +23,10 @@ export function CompleteProfileModal() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (user && (user.needsOnboarding || !user.studentId || user.studentId.startsWith("2026"))) {
+    if (user && (user.needsOnboarding || user.isProfileComplete === false)) {
       setName(user.name || "");
       setLevel(user.level || "الفرقة الأولى");
-      setStudentId(user.studentId && !user.studentId.startsWith("2026") ? user.studentId : "");
+      setStudentId(user.studentId || "");
       setDepartment(user.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)");
       setIsOpen(true);
     } else {
@@ -55,6 +55,7 @@ export function CompleteProfileModal() {
         level,
         studentId: studentId.trim(),
         department,
+        isProfileComplete: true,
         needsOnboarding: false
       });
 

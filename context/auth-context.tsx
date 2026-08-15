@@ -25,6 +25,7 @@ export interface UserProfile {
   points?: number;
   following?: string[];
   needsOnboarding?: boolean;
+  isProfileComplete?: boolean;
 }
 
 interface AuthContextType {
@@ -169,8 +170,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           cloudProfiles.forEach((cp) => {
             if (cp.email) {
               const idx = currentUsers.findIndex((u) => u.email.toLowerCase() === cp.email.toLowerCase());
+              const isCompleted = cp.is_profile_completed !== false;
               const mappedUser: UserProfile = {
-                id: cp.id || `user-${Date.now()}`,
+                id: cp.id || (typeof crypto !== "undefined" ? crypto.randomUUID() : `user-${cp.email}`),
                 name: cp.name || cp.email.split("@")[0],
                 email: cp.email,
                 password: cp.password || "123456",
@@ -186,7 +188,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 projects: Array.isArray(cp.projects) ? cp.projects : (typeof cp.projects === "string" ? JSON.parse(cp.projects || "[]") : []),
                 badges: cp.badges || ["طالب"],
                 points: cp.points || 50,
-                following: cp.following || []
+                following: cp.following || [],
+                isProfileComplete: isCompleted,
+                needsOnboarding: !isCompleted
               };
               if (idx === -1) {
                 currentUsers.push(mappedUser);
@@ -196,6 +200,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           });
           localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+
+          // Immediately hydrate active logged-in user state from cloud data
+          const savedSession = localStorage.getItem("su_user_session");
+          if (savedSession) {
+            try {
+              const activeSession = JSON.parse(savedSession);
+              const freshCloudUser = currentUsers.find(u => u.email.toLowerCase() === activeSession.email.toLowerCase());
+              if (freshCloudUser) {
+                setUser(freshCloudUser);
+                localStorage.setItem("su_user_session", JSON.stringify(freshCloudUser));
+              }
+            } catch (e) {}
+          }
         }
       }
     };
@@ -295,6 +312,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } catch (e) { }
 
           const matched = currentUsers.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
+          const isCompleted = dbProfile ? (dbProfile.is_profile_completed !== false) : true;
           const sessionUser: UserProfile = {
             id: dbProfile?.id || data.user.id,
             name: dbProfile?.name || data.user.user_metadata?.name || matched?.name || email.split("@")[0],
@@ -313,6 +331,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             badges: dbProfile?.badges || matched?.badges || ["طالب"],
             points: dbProfile?.points || matched?.points || 50,
             following: dbProfile?.following || matched?.following || [],
+            isProfileComplete: isCompleted,
+            needsOnboarding: !isCompleted,
             rememberMe
           };
 
@@ -582,6 +602,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       projects: updatedUser.projects || [],
       points: updatedUser.points || 50,
       badges: updatedUser.badges || [],
+      is_profile_completed: updatedUser.isProfileComplete ?? true
     };
 
     const res = await updateInSupabase("profiles", user.id, updatePayload);

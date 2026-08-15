@@ -109,6 +109,7 @@ function CallbackHandler() {
       const userLevel = existingProfile?.level || authUser.user_metadata?.level || "الفرقة الأولى";
       const userDepartment = existingProfile?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
       const userStudentId = existingProfile?.student_id || existingProfile?.studentId || authUser.user_metadata?.student_id || `2026${Math.floor(1000 + Math.random() * 9000)}`;
+      const isCompleted = existingProfile ? (existingProfile.is_profile_completed !== false) : false;
 
       const sessionUser = {
         id: existingProfile?.id || authUser.id,
@@ -127,7 +128,8 @@ function CallbackHandler() {
         badges: existingProfile?.badges || ["حساب موثق"],
         points: existingProfile?.points || 100,
         following: existingProfile?.following || [],
-        needsOnboarding: !userStudentId || userStudentId.startsWith("2026")
+        isProfileComplete: isCompleted,
+        needsOnboarding: !isCompleted
       };
 
       // Persist in local storage for instantaneous client hydration
@@ -155,7 +157,8 @@ function CallbackHandler() {
             social_links: sessionUser.socialLinks,
             skills: sessionUser.skills,
             cv_url: sessionUser.cvUrl,
-            projects: sessionUser.projects
+            projects: sessionUser.projects,
+            is_profile_completed: isCompleted
           });
         }
       } catch (e) {
