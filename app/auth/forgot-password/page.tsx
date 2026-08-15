@@ -10,18 +10,39 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { GraduationCap, Mail, ArrowLeft, Send } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getAuthCallbackURL } from "@/lib/auth-helpers";
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState("");
   const [isSending, setIsSending] = React.useState(false);
   const [isSent, setIsSent] = React.useState(false);
+  const [error, setError] = React.useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-
+    setError("");
     setIsSending(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200)); // Simulate delay
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: getAuthCallbackURL(),
+        });
+        if (resetErr) {
+          setError(resetErr.message);
+          setIsSending(false);
+          return;
+        }
+      } catch (err: any) {
+        console.warn("Supabase resetPasswordForEmail error:", err);
+      }
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    }
+
     setIsSending(false);
     setIsSent(true);
   };

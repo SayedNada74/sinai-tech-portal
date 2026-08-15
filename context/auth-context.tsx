@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { fetchFromSupabase, insertToSupabase, updateInSupabase, isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { getAuthCallbackURL } from "@/lib/auth-helpers";
 
 export interface UserProfile {
   id: string;
@@ -27,6 +28,7 @@ export interface UserProfile {
 
 interface AuthContextType {
   user: UserProfile | null;
+  setUser: (user: UserProfile | null) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<boolean>;
@@ -415,10 +417,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Save profile to Supabase Cloud DB & Auth if available
     if (isSupabaseConfigured && supabase) {
       try {
+        const callbackUrl = getAuthCallbackURL();
         await supabase.auth.signUp({
           email,
           password,
           options: {
+            emailRedirectTo: callbackUrl,
             data: { name, level, department, student_id: generatedStudentId }
           }
         });
@@ -455,10 +459,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
+        const callbackUrl = getAuthCallbackURL();
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: provider,
           options: {
-            redirectTo: typeof window !== "undefined" ? `${window.location.origin}/dashboard` : undefined
+            redirectTo: callbackUrl
           }
         });
         if (!error && data?.url) {
@@ -542,6 +547,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         isAuthenticated: !!user,
         isLoading,
         login,

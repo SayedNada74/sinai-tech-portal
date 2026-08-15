@@ -10,6 +10,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { GraduationCap, Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+
 export default function ResetPasswordPage() {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -33,7 +35,22 @@ export default function ResetPasswordPage() {
     }
 
     setIsResetting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate delay
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error: updateErr } = await supabase.auth.updateUser({ password });
+        if (updateErr) {
+          setError(updateErr.message);
+          setIsResetting(false);
+          return;
+        }
+      } catch (err: any) {
+        console.warn("Supabase updateUser password error:", err);
+      }
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    }
+
     setIsResetting(false);
     setIsSuccess(true);
   };

@@ -58,6 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="ar"
+      data-scroll-behavior="smooth"
       className={`${ibmPlexArabic.variable} ${jakarta.variable} font-sans h-full antialiased`}
       suppressHydrationWarning
     >
