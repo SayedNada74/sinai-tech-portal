@@ -91,27 +91,43 @@ function CallbackHandler() {
 
     async function syncSessionAndRedirect(authUser: any) {
       const userEmail = authUser.email || "";
-      const userName = authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء";
-      const userLevel = authUser.user_metadata?.level || "الفرقة الأولى";
-      const userDepartment = authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
-      const userStudentId = authUser.user_metadata?.student_id || `2026${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // Check if existing profile already exists in Supabase DB
+      let existingProfile: any = null;
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data } = await supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
+          if (data) existingProfile = data;
+          else {
+            const { data: byEmail } = await supabase.from("profiles").select("*").eq("email", userEmail).maybeSingle();
+            if (byEmail) existingProfile = byEmail;
+          }
+        } catch (e) {}
+      }
+
+      const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء";
+      const userLevel = existingProfile?.level || authUser.user_metadata?.level || "الفرقة الأولى";
+      const userDepartment = existingProfile?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
+      const userStudentId = existingProfile?.student_id || existingProfile?.studentId || authUser.user_metadata?.student_id || `2026${Math.floor(1000 + Math.random() * 9000)}`;
 
       const sessionUser = {
-        id: authUser.id,
+        id: existingProfile?.id || authUser.id,
         name: userName,
         email: userEmail,
         level: userLevel,
         department: userDepartment,
         studentId: userStudentId,
-        bio: "مستخدم مسجل وموثق في المنصة الأكاديمية.",
-        skills: [],
-        socialLinks: {},
-        avatar: authUser.user_metadata?.avatar_url || "🎓",
-        role: "student",
-        badges: ["حساب موثق"],
-        points: 100,
-        following: [],
-        needsOnboarding: !authUser.user_metadata?.student_id
+        bio: existingProfile?.bio || "مستخدم مسجل وموثق في المنصة الأكاديمية.",
+        skills: Array.isArray(existingProfile?.skills) ? existingProfile.skills : (typeof existingProfile?.skills === "string" ? JSON.parse(existingProfile.skills || "[]") : []),
+        socialLinks: existingProfile?.social_links || existingProfile?.socialLinks || {},
+        avatar: existingProfile?.avatar || authUser.user_metadata?.avatar_url || "🎓",
+        role: existingProfile?.role || "student",
+        cvUrl: existingProfile?.cv_url || existingProfile?.cvUrl || "",
+        projects: Array.isArray(existingProfile?.projects) ? existingProfile.projects : (typeof existingProfile?.projects === "string" ? JSON.parse(existingProfile.projects || "[]") : []),
+        badges: existingProfile?.badges || ["حساب موثق"],
+        points: existingProfile?.points || 100,
+        following: existingProfile?.following || [],
+        needsOnboarding: !userStudentId || userStudentId.startsWith("2026")
       };
 
       // Persist in local storage for instantaneous client hydration
@@ -126,16 +142,22 @@ function CallbackHandler() {
 
       // Upsert profile in Supabase Database
       try {
-        await insertToSupabase("profiles", {
-          id: authUser.id,
-          email: userEmail,
-          name: userName,
-          role: "student",
-          level: userLevel,
-          department: userDepartment,
-          student_id: userStudentId,
-          avatar: sessionUser.avatar
-        });
+        if (isSupabaseConfigured && supabase) {
+          await supabase.from("profiles").upsert({
+            id: sessionUser.id,
+            email: userEmail,
+            name: userName,
+            role: sessionUser.role,
+            level: userLevel,
+            department: userDepartment,
+            student_id: userStudentId,
+            avatar: sessionUser.avatar,
+            social_links: sessionUser.socialLinks,
+            skills: sessionUser.skills,
+            cv_url: sessionUser.cvUrl,
+            projects: sessionUser.projects
+          });
+        }
       } catch (e) {
         console.warn("Profile database sync warning:", e);
       }

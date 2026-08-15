@@ -287,21 +287,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (!error && data?.user) {
-          const matched = currentUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
-          const sessionUser: UserProfile = matched || {
-            id: data.user.id,
-            name: data.user.user_metadata?.name || email.split("@")[0],
-            email: email,
-            level: data.user.user_metadata?.level || "الفرقة الأولى",
-            department: data.user.user_metadata?.department || "تكنولوجيا المعلومات (IT)",
-            studentId: data.user.user_metadata?.student_id || "20261001",
-            bio: "مستخدم مسجل في المنصة",
-            skills: [],
-            socialLinks: {},
-            avatar: "🎓",
-            role: "student",
+          // Query complete profile row from Supabase Cloud DB
+          let dbProfile: any = null;
+          try {
+            const { data: profileRow } = await supabase.from("profiles").select("*").eq("email", email.toLowerCase().trim()).maybeSingle();
+            if (profileRow) dbProfile = profileRow;
+          } catch (e) { }
+
+          const matched = currentUsers.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
+          const sessionUser: UserProfile = {
+            id: dbProfile?.id || data.user.id,
+            name: dbProfile?.name || data.user.user_metadata?.name || matched?.name || email.split("@")[0],
+            email: email.toLowerCase().trim(),
+            password: password,
+            level: dbProfile?.level || matched?.level || data.user.user_metadata?.level || "الفرقة الأولى",
+            department: dbProfile?.department || matched?.department || data.user.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
+            studentId: dbProfile?.student_id || dbProfile?.studentId || matched?.studentId || data.user.user_metadata?.student_id || "20261001",
+            bio: dbProfile?.bio || matched?.bio || "طالب مسجل في المنصة الأكاديمية.",
+            skills: Array.isArray(dbProfile?.skills) ? dbProfile.skills : (typeof dbProfile?.skills === "string" ? JSON.parse(dbProfile.skills || "[]") : matched?.skills || []),
+            socialLinks: dbProfile?.social_links || dbProfile?.socialLinks || matched?.socialLinks || {},
+            avatar: dbProfile?.avatar || matched?.avatar || "🎓",
+            role: dbProfile?.role || matched?.role || "student",
+            cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || matched?.cvUrl || "",
+            projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : matched?.projects || []),
+            badges: dbProfile?.badges || matched?.badges || ["طالب"],
+            points: dbProfile?.points || matched?.points || 50,
+            following: dbProfile?.following || matched?.following || [],
             rememberMe
           };
+
+          // Update local cache
+          const matchedIdx = currentUsers.findIndex(u => u.email.toLowerCase() === sessionUser.email.toLowerCase());
+          if (matchedIdx !== -1) {
+            currentUsers[matchedIdx] = sessionUser;
+          } else {
+            currentUsers.push(sessionUser);
+          }
+          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
 
           setUser(sessionUser);
           localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -335,7 +357,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const expectedPassword = matchedUser.password || "123456";
     if (expectedPassword !== password) {
       setIsLoading(false);
-      return false; // Strictly return false on password mismatch!
+      return false;
     }
 
     // FAILED: Check if account is suspended
@@ -344,9 +366,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("🚫 هذا الحساب مجمد وموقوف مؤقتاً بقرار إداري. جميع بياناتك ومحفوظاتك وتقدمك الأكاديمي محفوظ بأمان، يرجى التواصل مع إدارة النظام.");
     }
 
+    // Try fetching Cloud profile if available
+    let dbProfile: any = null;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: profileRow } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).maybeSingle();
+        if (profileRow) dbProfile = profileRow;
+      } catch (e) {}
+    }
+
     // SUCCESS: Authenticate and grant user session
     const sessionUser: UserProfile = {
       ...matchedUser,
+      name: dbProfile?.name || matchedUser.name,
+      level: dbProfile?.level || matchedUser.level,
+      department: dbProfile?.department || matchedUser.department,
+      studentId: dbProfile?.student_id || dbProfile?.studentId || matchedUser.studentId,
+      bio: dbProfile?.bio || matchedUser.bio,
+      skills: Array.isArray(dbProfile?.skills) ? dbProfile.skills : (typeof dbProfile?.skills === "string" ? JSON.parse(dbProfile.skills || "[]") : matchedUser.skills || []),
+      socialLinks: dbProfile?.social_links || dbProfile?.socialLinks || matchedUser.socialLinks || {},
+      avatar: dbProfile?.avatar || matchedUser.avatar,
+      role: dbProfile?.role || matchedUser.role,
+      cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || matchedUser.cvUrl || "",
+      projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : matchedUser.projects || []),
       rememberMe
     };
 

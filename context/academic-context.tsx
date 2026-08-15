@@ -69,8 +69,11 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
   // Load state from localStorage on mount or user change
   React.useEffect(() => {
     if (user) {
-      const storageKey = `su_academic_${user.id}`;
-      const saved = localStorage.getItem(storageKey);
+      const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
+      const storageKey = `su_academic_${userEmailKey}`;
+      const legacyKey = `su_academic_${user.id}`;
+      const saved = localStorage.getItem(storageKey) || localStorage.getItem(legacyKey);
+
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -81,7 +84,6 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
           console.error("Failed to parse academic storage", e);
         }
       } else {
-        // Clear to default if no storage for this user
         setCompletedCourses([]);
         setPlannedCourses([]);
         setTargetGpa(3.5);
@@ -95,12 +97,15 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
   // Save changes to localStorage helper
   const saveState = (completed: CompletedCourseState[], planned: string[], target: number) => {
     if (user) {
-      const storageKey = `su_academic_${user.id}`;
-      localStorage.setItem(storageKey, JSON.stringify({
+      const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
+      const storageKey = `su_academic_${userEmailKey}`;
+      const payload = JSON.stringify({
         completedCourses: completed,
         plannedCourses: planned,
         targetGpa: target
-      }));
+      });
+      localStorage.setItem(storageKey, payload);
+      localStorage.setItem(`su_academic_${user.id}`, payload);
     }
   };
 
