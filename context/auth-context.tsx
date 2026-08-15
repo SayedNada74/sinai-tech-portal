@@ -141,92 +141,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   React.useEffect(() => {
-    // 1. Initialize registered users list & sanitize passwords
-    const savedRegs = localStorage.getItem("su_registered_users");
-    let currentUsers: UserProfile[] = [];
-    if (savedRegs) {
+    let isMounted = true;
+
+    // Helper to hydrate single user from Supabase Cloud DB using UUID
+    const hydrateUserFromCloud = async (authUser: any) => {
+      if (!isSupabaseConfigured || !supabase || !authUser) return null;
+
       try {
-        currentUsers = JSON.parse(savedRegs);
-      } catch (e) { }
-    }
+        const userEmail = authUser.email ? authUser.email.toLowerCase().trim() : "";
+        let profileRow: any = null;
 
-    // Merge default accounts and ensure legacy accounts have fallback passwords
-    DEFAULT_ACCOUNTS.forEach((da) => {
-      const idx = currentUsers.findIndex((u) => u.email.toLowerCase() === da.email.toLowerCase());
-      if (idx === -1) {
-        currentUsers.push(da);
-      } else {
-        // Ensure default accounts retain correct role & password
-        currentUsers[idx].password = currentUsers[idx].password || da.password;
-        currentUsers[idx].role = currentUsers[idx].role || da.role;
-      }
-    });
-
-    // Fetch cloud profiles from Supabase if available for cross-device sync
-    const syncCloudProfiles = async () => {
-      if (isSupabaseConfigured) {
-        const cloudProfiles = await fetchFromSupabase<any>("profiles");
-        if (cloudProfiles && Array.isArray(cloudProfiles) && cloudProfiles.length > 0) {
-          cloudProfiles.forEach((cp) => {
-            if (cp.email) {
-              const idx = currentUsers.findIndex((u) => u.email.toLowerCase() === cp.email.toLowerCase());
-              const isCompleted = cp.is_profile_completed !== false;
-              const mappedUser: UserProfile = {
-                id: cp.id || (typeof crypto !== "undefined" ? crypto.randomUUID() : `user-${cp.email}`),
-                name: cp.name || cp.email.split("@")[0],
-                email: cp.email,
-                password: cp.password || "123456",
-                level: cp.level || "الفرقة الأولى",
-                department: cp.department || "تكنولوجيا المعلومات (IT)",
-                studentId: cp.student_id || cp.studentId || "20261001",
-                bio: cp.bio || "طالب مسجل في المنصة",
-                skills: Array.isArray(cp.skills) ? cp.skills : (typeof cp.skills === "string" ? JSON.parse(cp.skills || "[]") : []),
-                socialLinks: cp.social_links || cp.socialLinks || {},
-                avatar: cp.avatar || "🎓",
-                role: cp.role || "student",
-                cvUrl: cp.cv_url || cp.cvUrl || "",
-                projects: Array.isArray(cp.projects) ? cp.projects : (typeof cp.projects === "string" ? JSON.parse(cp.projects || "[]") : []),
-                badges: cp.badges || ["طالب"],
-                points: cp.points || 50,
-                following: cp.following || [],
-                isProfileComplete: isCompleted,
-                needsOnboarding: !isCompleted
-              };
-              if (idx === -1) {
-                currentUsers.push(mappedUser);
-              } else {
-                currentUsers[idx] = { ...currentUsers[idx], ...mappedUser };
-              }
-            }
-          });
-          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
-
-          // Immediately hydrate active logged-in user state from cloud data
-          const savedSession = localStorage.getItem("su_user_session");
-          if (savedSession) {
+        // 1. Direct query by Supabase Auth UUID
+        const { data: byId } = await supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
+        if (byId) {
+          profileRow = byId;
+        } else if (userEmail) {
+          // 2. Query by Email if ID mismatched (legacy migration)
+          const { data: byEmail } = await supabase.from("profiles").select("*").eq("email", userEmail).maybeSingle();
+          if (byEmail) {
+            profileRow = byEmail;
+            // Execute Safe Legacy Migration: update ID to match auth.users.id UUID
             try {
-              const activeSession = JSON.parse(savedSession);
-              const freshCloudUser = currentUsers.find(u => u.email.toLowerCase() === activeSession.email.toLowerCase());
-              if (freshCloudUser) {
-                setUser(freshCloudUser);
-                localStorage.setItem("su_user_session", JSON.stringify(freshCloudUser));
-              }
-            } catch (e) {}
+              await supabase.from("profiles").update({ id: authUser.id }).eq("email", userEmail);
+              profileRow.id = authUser.id;
+            } catch (migErr) {
+              console.warn("Legacy profile ID migration warning:", migErr);
+            }
           }
         }
+
+        const isCompleted = profileRow ? (profileRow.is_profile_completed !== false) : true;
+        const sessionUser: UserProfile = {
+          id: profileRow?.id || authUser.id,
+          name: profileRow?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء",
+          email: userEmail || authUser.email,
+          level: profileRow?.level || authUser.user_metadata?.level || "الفرقة الأولى",
+          department: profileRow?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
+          studentId: profileRow?.student_id || profileRow?.studentId || authUser.user_metadata?.student_id || "20261001",
+          bio: profileRow?.bio || "طالب مسجل في المنصة الأكاديمية.",
+          skills: Array.isArray(profileRow?.skills) ? profileRow.skills : (typeof profileRow?.skills === "string" ? JSON.parse(profileRow.skills || "[]") : []),
+          socialLinks: profileRow?.social_links || profileRow?.socialLinks || {},
+          avatar: profileRow?.avatar || authUser.user_metadata?.avatar_url || "🎓",
+          role: profileRow?.role || "student",
+          cvUrl: profileRow?.cv_url || profileRow?.cvUrl || "",
+          projects: Array.isArray(profileRow?.projects) ? profileRow.projects : (typeof profileRow?.projects === "string" ? JSON.parse(profileRow.projects || "[]") : []),
+          badges: profileRow?.badges || ["طالب"],
+          points: profileRow?.points || 50,
+          following: profileRow?.following || [],
+          isProfileComplete: isCompleted,
+          needsOnboarding: !isCompleted
+        };
+
+        if (isMounted) {
+          setUser(sessionUser);
+          localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
+        }
+        return sessionUser;
+      } catch (e) {
+        console.warn("Supabase user hydration warning:", e);
+        return null;
       }
     };
-    syncCloudProfiles();
 
-    // Ensure any user without a password has a default fallback password
-    currentUsers = currentUsers.map((u) => ({
-      ...u,
-      password: u.password || "123456"
-    }));
-
-    localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
-
-    // 2. Check active user session
+    // 1. Initial Local Cache Hydration for instant UI feedback
     const savedUser = localStorage.getItem("su_user_session");
     if (savedUser) {
       try {
@@ -235,7 +212,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("su_user_session");
       }
     }
-    setIsLoading(false);
+
+    // 2. Authoritative Supabase Auth Hydration & Real-time Session Listener
+    if (isSupabaseConfigured && supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user && isMounted) {
+          hydrateUserFromCloud(session.user);
+        }
+        if (isMounted) setIsLoading(false);
+      });
+
+      const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!isMounted) return;
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") {
+          if (session?.user) {
+            await hydrateUserFromCloud(session.user);
+          }
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          localStorage.removeItem("su_user_session");
+        }
+        setIsLoading(false);
+      });
+
+      return () => {
+        isMounted = false;
+        authListener?.subscription?.unsubscribe();
+      };
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   // 3. Heartbeat for real-time active session tracking

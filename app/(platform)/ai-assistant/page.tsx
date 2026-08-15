@@ -6,6 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { useAcademic } from "@/context/academic-context";
 import { getAiResponse, sleep, AiMessage, StudentContext } from "@/lib/ai-engine";
 import { getLocalizedUserName } from "@/lib/utils";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -65,28 +66,77 @@ export default function AiAssistantPage() {
   const [inputVal, setInputVal] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Load saved chat sessions from localStorage on mount
+  // Load saved chat sessions from Supabase Cloud DB and local cache on mount
   React.useEffect(() => {
+    let isMounted = true;
+    const userCacheKey = user?.id ? `su_ai_chat_sessions_${user.id}` : "su_ai_chat_sessions";
+
     try {
-      const saved = localStorage.getItem("su_ai_chat_sessions");
+      const saved = localStorage.getItem(userCacheKey) || localStorage.getItem("su_ai_chat_sessions");
       if (saved) {
         const parsed: ChatSession[] = JSON.parse(saved);
         if (parsed.length > 0) {
           setSessions(parsed);
         }
       }
-    } catch (e) {
-      console.warn("Failed to load AI sessions", e);
-    }
-  }, []);
+    } catch (e) { }
 
-  // Save sessions to localStorage whenever they update
-  const saveSessionsToStorage = (updatedSessions: ChatSession[]) => {
+    // Authoritative Cloud Fetch from Supabase ai_conversations table
+    const fetchAiCloud = async () => {
+      if (isSupabaseConfigured && supabase && user?.id) {
+        try {
+          const { data, error } = await supabase
+            .from("ai_conversations")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false });
+
+          if (!error && data && Array.isArray(data) && data.length > 0 && isMounted) {
+            const mappedSessions: ChatSession[] = data.map((conv: any) => ({
+              id: conv.id,
+              title: conv.title || "محادثة مخصصة",
+              createdAt: conv.created_at || new Date().toISOString(),
+              messages: Array.isArray(conv.messages) ? conv.messages : (typeof conv.messages === "string" ? JSON.parse(conv.messages || "[]") : [])
+            }));
+            setSessions(mappedSessions);
+            localStorage.setItem(userCacheKey, JSON.stringify(mappedSessions));
+          }
+        } catch (err) {
+          console.warn("AI Cloud fetch error:", err);
+        }
+      }
+    };
+
+    fetchAiCloud();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
+
+  // Save sessions to local cache and Supabase Cloud DB whenever they update
+  const saveSessionsToStorage = async (updatedSessions: ChatSession[]) => {
     setSessions(updatedSessions);
+    const userCacheKey = user?.id ? `su_ai_chat_sessions_${user.id}` : "su_ai_chat_sessions";
     try {
-      localStorage.setItem("su_ai_chat_sessions", JSON.stringify(updatedSessions));
-    } catch (e) {
-      console.warn("Failed to save AI sessions", e);
+      localStorage.setItem(userCacheKey, JSON.stringify(updatedSessions));
+    } catch (e) { }
+
+    // Persist to Supabase Cloud DB
+    if (isSupabaseConfigured && supabase && user?.id) {
+      try {
+        for (const session of updatedSessions) {
+          await supabase.from("ai_conversations").upsert({
+            id: session.id,
+            user_id: user.id,
+            title: session.title,
+            messages: session.messages,
+            updated_at: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.warn("AI Cloud save warning:", err);
+      }
     }
   };
 

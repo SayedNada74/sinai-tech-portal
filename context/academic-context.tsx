@@ -4,6 +4,7 @@ import * as React from "react";
 import { Course } from "@/lib/courses-data";
 import { useAuth } from "./auth-context";
 import { useAdmin } from "./admin-context";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export const GRADE_POINTS: Record<string, number> = {
   "A+": 4.0,
@@ -66,8 +67,9 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     return courses.reduce((sum, c) => sum + c.credits, 0);
   }, [courses]);
 
-  // Load state from localStorage on mount or user change
+  // Load state from Supabase Cloud DB and local cache on mount or user change
   React.useEffect(() => {
+    let isMounted = true;
     if (user) {
       const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
       const storageKey = `su_academic_${userEmailKey}`;
@@ -80,22 +82,60 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
           setCompletedCourses(parsed.completedCourses || []);
           setPlannedCourses(parsed.plannedCourses || []);
           setTargetGpa(parsed.targetGpa || 3.5);
-        } catch (e) {
-          console.error("Failed to parse academic storage", e);
-        }
-      } else {
-        setCompletedCourses([]);
-        setPlannedCourses([]);
-        setTargetGpa(3.5);
+        } catch (e) { }
       }
+
+      // Authoritative Cloud Fetch from Supabase academic_progress table
+      const fetchAcademicCloud = async () => {
+        if (isSupabaseConfigured && supabase && user.id) {
+          try {
+            const { data, error } = await supabase
+              .from("academic_progress")
+              .select("*")
+              .eq("user_id", user.id)
+              .maybeSingle();
+
+            if (!error && data && isMounted) {
+              const cloudCompleted = Array.isArray(data.completed_courses)
+                ? data.completed_courses
+                : (typeof data.completed_courses === "string" ? JSON.parse(data.completed_courses || "[]") : []);
+              const cloudPlanned = Array.isArray(data.planned_courses)
+                ? data.planned_courses
+                : (typeof data.planned_courses === "string" ? JSON.parse(data.planned_courses || "[]") : []);
+              const cloudGpa = Number(data.target_gpa) || 3.5;
+
+              setCompletedCourses(cloudCompleted);
+              setPlannedCourses(cloudPlanned);
+              setTargetGpa(cloudGpa);
+
+              // Update local cache
+              const payload = JSON.stringify({
+                completedCourses: cloudCompleted,
+                plannedCourses: cloudPlanned,
+                targetGpa: cloudGpa
+              });
+              localStorage.setItem(storageKey, payload);
+              localStorage.setItem(`su_academic_${user.id}`, payload);
+            }
+          } catch (err) {
+            console.warn("Academic cloud fetch error:", err);
+          }
+        }
+      };
+
+      fetchAcademicCloud();
     } else {
       setCompletedCourses([]);
       setPlannedCourses([]);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
 
-  // Save changes to localStorage helper
-  const saveState = (completed: CompletedCourseState[], planned: string[], target: number) => {
+  // Save changes to localStorage cache and Supabase Cloud DB
+  const saveState = async (completed: CompletedCourseState[], planned: string[], target: number) => {
     if (user) {
       const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
       const storageKey = `su_academic_${userEmailKey}`;
@@ -104,8 +144,25 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
         plannedCourses: planned,
         targetGpa: target
       });
+
+      // 1. Cache locally
       localStorage.setItem(storageKey, payload);
       localStorage.setItem(`su_academic_${user.id}`, payload);
+
+      // 2. Persist to Supabase Cloud DB
+      if (isSupabaseConfigured && supabase && user.id) {
+        try {
+          await supabase.from("academic_progress").upsert({
+            user_id: user.id,
+            completed_courses: completed,
+            planned_courses: planned,
+            target_gpa: target,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "user_id" });
+        } catch (err) {
+          console.warn("Academic progress cloud save warning:", err);
+        }
+      }
     }
   };
 
