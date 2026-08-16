@@ -411,6 +411,23 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   // Load user specific state from localStorage on user change
   React.useEffect(() => {
     if (user) {
+      if (user.social_state) {
+        try {
+          const parsed = typeof user.social_state === "string" ? JSON.parse(user.social_state) : user.social_state;
+          if (parsed.careers) setCareers(parsed.careers);
+          if (parsed.events) setEvents(parsed.events);
+          if (parsed.reminders) setReminders(parsed.reminders);
+          if (parsed.notifications) setNotifications(parsed.notifications);
+          if (parsed.savedJobs) setSavedJobs(parsed.savedJobs);
+          if (parsed.savedEvents) setSavedEvents(parsed.savedEvents);
+          if (parsed.savedPosts) setSavedPosts(parsed.savedPosts);
+          if (parsed.moodleUrl) setMoodleUrl(parsed.moodleUrl);
+          return; // skip local storage if cloud state exists
+        } catch (e) {
+          console.error("Failed to parse cloud social state", e);
+        }
+      }
+
       const savedDb = localStorage.getItem(`su_social_${user.id}`);
       if (savedDb) {
         try {
@@ -450,6 +467,11 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         moodleUrl: updates.moodleUrl !== undefined ? updates.moodleUrl : (current.moodleUrl || moodleUrl),
       };
       localStorage.setItem(key, JSON.stringify(data));
+      
+      // Async save to cloud
+      if (user) {
+         updateProfile({ social_state: data }).catch(err => console.warn("Cloud sync failed for social_state:", err));
+      }
     }
   };
 

@@ -36,3 +36,8 @@ CREATE TABLE public.ai_conversations (
 
 ALTER TABLE public.ai_conversations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public AI Conversations Access" ON public.ai_conversations FOR ALL USING (true) WITH CHECK (true);
+
+
+-- 3. Unified Learning and Social State across all devices
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS learning_state JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS social_state JSONB DEFAULT '{}'::jsonb;

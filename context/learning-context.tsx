@@ -56,7 +56,7 @@ const LearningContext = React.createContext<LearningContextType | undefined>(und
 const INITIAL_REVIEWS: CourseReview[] = [];
 
 export function LearningProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
 
   const [bookmarks, setBookmarks] = React.useState<BookmarkItem[]>([]);
   const [reviews, setReviews] = React.useState<CourseReview[]>(INITIAL_REVIEWS);
@@ -69,6 +69,22 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage on user change
   React.useEffect(() => {
     if (user) {
+      if (user.learning_state) {
+        try {
+          const parsed = typeof user.learning_state === "string" ? JSON.parse(user.learning_state) : user.learning_state;
+          setBookmarks(parsed.bookmarks || []);
+          setReviews(parsed.reviews || INITIAL_REVIEWS);
+          setLikedResources(parsed.likedResources || []);
+          setRatedResources(parsed.ratedResources || {});
+          setDownloadedResources(parsed.downloadedResources || {});
+          setRoadmapProgress(parsed.roadmapProgress || {});
+          setRecentlyViewed(parsed.recentlyViewed || []);
+          return; // skip local storage if cloud state exists
+        } catch (e) {
+          console.error("Failed to parse cloud learning state", e);
+        }
+      }
+
       const storageKey = `su_learning_${user.id}`;
       const saved = localStorage.getItem(storageKey);
       if (saved) {
@@ -115,9 +131,7 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
           current = JSON.parse(saved);
         } catch (e) {}
       }
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
+      const finalPayload = {
           bookmarks,
           reviews,
           likedResources,
@@ -127,8 +141,17 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
           recentlyViewed,
           ...current, // use the freshest data from localStorage
           ...updates  // apply the new updates on top
-        })
+        };
+      
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify(finalPayload)
       );
+
+      // Async save to cloud
+      if (user) {
+         updateProfile({ learning_state: finalPayload }).catch(err => console.warn("Cloud sync failed for learning_state:", err));
+      }
     }
   };
 

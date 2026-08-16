@@ -26,6 +26,9 @@ export interface UserProfile {
   following?: string[];
   needsOnboarding?: boolean;
   isProfileComplete?: boolean;
+  is_profile_completed: boolean;
+  learning_state?: any;
+  social_state?: any;
 }
 
 interface AuthContextType {
