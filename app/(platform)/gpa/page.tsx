@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useApp } from "@/context/app-context";
-import { useAcademic, GRADE_POINTS, GRADE_LABELS } from "@/context/academic-context";
+import { useAcademic, GRADE_POINTS, GRADE_OPTIONS, GRADE_LABELS } from "@/context/academic-context";
 import { useAdmin } from "@/context/admin-context";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
@@ -301,7 +301,7 @@ export default function GpaPage() {
                               onChange={(e) => updateCalcRow(row.id, "grade", e.target.value)}
                               className="w-full h-11 px-2 rounded-xl border border-zinc-200 bg-white text-center text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer"
                             >
-                              {Object.keys(GRADE_POINTS).map((g) => (
+                              {GRADE_OPTIONS.map((g) => (
                                 <option key={g} value={g}>{g}</option>
                               ))}
                             </select>

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useApp } from "@/context/app-context";
-import { useAcademic } from "@/context/academic-context";
+import { useAcademic, GRADE_OPTIONS } from "@/context/academic-context";
 import { useAdmin } from "@/context/admin-context";
 import { PERIODS } from "@/lib/courses-data";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -276,7 +276,7 @@ export default function CurriculumProgressChecklist() {
                                   className="h-8 pl-4 pr-7 rounded-lg border border-zinc-200 bg-white text-[10px] font-black text-zinc-850 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed appearance-none"
                                 >
                                   {!completed && <option value="">--</option>}
-                                  {["A+", "A", "B+", "B", "C+", "C", "D+", "D"].map((g) => (
+                                  {GRADE_OPTIONS.map((g) => (
                                     <option key={g} value={g}>{g}</option>
                                   ))}
                                 </select>
