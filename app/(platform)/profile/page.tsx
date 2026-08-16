@@ -30,7 +30,8 @@ export default function ProfilePage() {
   const { t, lang, dir } = useApp();
   const { user, updateProfile, isLoading } = useAuth();
 
-  const [name, setName] = React.useState("");
+  const [nameAr, setNameAr] = React.useState("");
+  const [nameEn, setNameEn] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [level, setLevel] = React.useState("");
   const [studentId, setStudentId] = React.useState("");
@@ -56,7 +57,8 @@ export default function ProfilePage() {
   // Initialize fields from Auth context
   React.useEffect(() => {
     if (user) {
-      setName(user.name || "");
+      setNameAr(user.nameAr || "");
+      setNameEn(user.nameEn || "");
       setEmail(user.email || "");
       setLevel(user.level || "");
       setStudentId(user.studentId || "");
@@ -74,7 +76,7 @@ export default function ProfilePage() {
   // Calculate profile completion percentage
   const completionPercentage = React.useMemo(() => {
     let score = 0;
-    if (name) score += 15;
+    if (nameAr || nameEn) score += 15;
     if (email) score += 15;
     if (studentId) score += 10;
     if (bio && bio.length > 10) score += 15;
@@ -170,7 +172,9 @@ export default function ProfilePage() {
 
     try {
       const success = await updateProfile({
-        name,
+        nameAr,
+        nameEn,
+        name: typeof window !== "undefined" && document.documentElement.dir === "rtl" ? nameAr : nameEn,
         email,
         level,
         studentId,
@@ -295,7 +299,7 @@ export default function ProfilePage() {
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </div>
 
-                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-50">{name}</h3>
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-50">{(isRtl ? nameAr : nameEn) || "Admin"}</h3>
                 <p className="text-xs text-zinc-500 font-mono mt-0.5">{email}</p>
 
                 <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-right space-y-2.5">
@@ -352,8 +356,12 @@ export default function ProfilePage() {
               <CardContent className="pt-6 space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل للمسؤول", "Admin Full Name")}</label>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} className="h-11 text-xs" />
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">الاسم الكامل (عربي)</label>
+                    <Input value={nameAr} onChange={(e) => setNameAr(e.target.value)} className="h-11 text-xs" dir="rtl" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Full Name (English)</label>
+                    <Input value={nameEn} onChange={(e) => setNameEn(e.target.value)} className="h-11 text-xs" dir="ltr" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني الرسمي", "Official Admin Email")}</label>
@@ -491,7 +499,7 @@ export default function ProfilePage() {
               </div>
 
               <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
-                {name || t("طالب مستجد", "Freshman Student")}
+                {(isRtl ? nameAr : nameEn) || t("طالب مستجد", "Freshman Student")}
               </h3>
               <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1">{level} · {user?.department}</p>
 
@@ -645,23 +653,45 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Full name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:col-span-2">
+                {/* Full name (Arabic) */}
                 <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("الاسم الكامل", "Full Name")}
+                    الاسم الكامل (عربي)
                   </label>
                   <div className="relative">
                     <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                     <Input
                       type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={nameAr}
+                      onChange={(e) => setNameAr(e.target.value)}
                       className={isRtl ? "pr-10" : "pl-10"}
                       disabled={isLoading}
                       required
+                      dir="rtl"
                     />
                   </div>
                 </div>
+
+                {/* Full name (English) */}
+                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    Full Name (English)
+                  </label>
+                  <div className="relative">
+                    <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                    <Input
+                      type="text"
+                      value={nameEn}
+                      onChange={(e) => setNameEn(e.target.value)}
+                      className={isRtl ? "pr-10" : "pl-10"}
+                      disabled={isLoading}
+                      required
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+              </div>
 
                 {/* Email */}
                 <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>

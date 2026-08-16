@@ -191,15 +191,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (savedRegs) {
       try {
         currentUsers = JSON.parse(savedRegs);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Ensure we have some default roles for demo
     const defaultAccounts: UserProfile[] = [
-      { id: "user-student", name: "أحمد الطالب", email: "student@example.com", level: "الفرقة الأولى", department: "تكنولوجيا المعلومات (IT)", studentId: "20230101", bio: "حساب طالب تجريبي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🧑‍🎓", role: "student", is_profile_completed: true },
-      { id: "user-admin", name: "سيد المسؤول", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
-      { id: "user-super", name: "أحمد المشرف الأعلى", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
-      { id: "user-mod", name: "منى المنسقة", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسقة ومراجعة المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👩‍🏫", role: "moderator", is_profile_completed: true }
+      { id: "user-student", name: "سيد الطالب", nameAr: "سيد الطالب", nameEn: "Sayed Student", email: "student@example.com", level: "الفرقة الرابعة", department: "تكنولوجيا المعلومات (IT)", studentId: "20230101", bio: "حساب طالب تجريبي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🧑‍🎓", role: "student", is_profile_completed: true },
+      { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
+      { id: "user-super", name: "سيد مشرف", nameAr: "سيد مشرف", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
+      { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🛡️", role: "moderator", is_profile_completed: true }
     ];
 
     defaultAccounts.forEach(da => {
@@ -250,7 +250,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     // 3. Resources setup
     const savedResources = localStorage.getItem("su_resources_db");
     if (savedResources) {
-      try { setResources(JSON.parse(savedResources)); } catch (e) {}
+      try { setResources(JSON.parse(savedResources)); } catch (e) { }
     } else {
       setResources(RESOURCES);
       localStorage.setItem("su_resources_db", JSON.stringify(RESOURCES));
@@ -304,22 +304,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     // 5. CMS items
     const savedAnn = localStorage.getItem("su_announcements");
-    if (savedAnn) { try { setAnnouncements(JSON.parse(savedAnn)); } catch (e) {} }
+    if (savedAnn) { try { setAnnouncements(JSON.parse(savedAnn)); } catch (e) { } }
 
     const savedFaq = localStorage.getItem("su_faqs");
-    if (savedFaq) { try { setFaqs(JSON.parse(savedFaq)); } catch (e) {} }
+    if (savedFaq) { try { setFaqs(JSON.parse(savedFaq)); } catch (e) { } }
 
     const savedAudit = localStorage.getItem("su_audit_logs");
-    if (savedAudit) { try { setAuditLogs(JSON.parse(savedAudit)); } catch (e) {} }
+    if (savedAudit) { try { setAuditLogs(JSON.parse(savedAudit)); } catch (e) { } }
 
     const savedSettings = localStorage.getItem("su_settings");
-    if (savedSettings) { try { setSettings(JSON.parse(savedSettings)); } catch (e) {} }
+    if (savedSettings) { try { setSettings(JSON.parse(savedSettings)); } catch (e) { } }
 
     const savedAi = localStorage.getItem("su_ai_config");
-    if (savedAi) { try { setAiConfig(JSON.parse(savedAi)); } catch (e) {} }
+    if (savedAi) { try { setAiConfig(JSON.parse(savedAi)); } catch (e) { } }
 
     const savedIncidents = localStorage.getItem("su_incidents");
-    if (savedIncidents) { try { setIncidents(JSON.parse(savedIncidents)); } catch (e) {} }
+    if (savedIncidents) { try { setIncidents(JSON.parse(savedIncidents)); } catch (e) { } }
   }, []);
 
   // Save changes wrapper helper
@@ -394,7 +394,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       email: newUser.email || `user_${Date.now()}@example.com`,
       level: newUser.level || (newUser.role === "student" ? "الفرقة الأولى" : "الكادر الإداري والفني"),
       department: newUser.department || (newUser.role === "student" ? "تكنولوجيا المعلومات (IT)" : "إدارة المنصة والسياسات"),
-      studentId: newUser.studentId || (newUser.role === "super-admin" ? `SUP-${Math.floor(100+Math.random()*900)}` : newUser.role === "admin" ? `ADM-${Math.floor(100+Math.random()*900)}` : newUser.role === "moderator" ? `MOD-${Math.floor(100+Math.random()*900)}` : `${Math.floor(20230000+Math.random()*9999)}`),
+      studentId: newUser.studentId || (newUser.role === "super-admin" ? `SUP-${Math.floor(100 + Math.random() * 900)}` : newUser.role === "admin" ? `ADM-${Math.floor(100 + Math.random() * 900)}` : newUser.role === "moderator" ? `MOD-${Math.floor(100 + Math.random() * 900)}` : `${Math.floor(20230000 + Math.random() * 9999)}`),
       bio: newUser.bio || "حساب جديد في المنصة",
       skills: [],
       socialLinks: { github: "", linkedin: "" },

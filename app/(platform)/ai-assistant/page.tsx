@@ -5,7 +5,7 @@ import { useApp } from "@/context/app-context";
 import { useAuth } from "@/context/auth-context";
 import { useAcademic } from "@/context/academic-context";
 import { getAiResponse, sleep, AiMessage, StudentContext } from "@/lib/ai-engine";
-import { getLocalizedUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +39,7 @@ export interface ChatSession {
 }
 
 export default function AiAssistantPage() {
-  const { t, lang, dir } = useApp();
+  const { t, lang, dir, userName } = useApp();
   const { user } = useAuth();
   const {
     cumulativeGpa,
@@ -242,7 +242,7 @@ export default function AiAssistantPage() {
   };
 
   const isRtl = dir === "rtl";
-  const displayName = getLocalizedUserName(user?.name?.split(" ")[0], lang === "ar" ? "ar" : "en");
+  const displayName = userName.split(" ")[0];
 
   // Quick Action Capabilities for the New Chat Screen
   const quickCapabilities = [

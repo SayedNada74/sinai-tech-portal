@@ -8,6 +8,8 @@ import { getAuthCallbackURL } from "@/lib/auth-helpers";
 export interface UserProfile {
   id: string;
   name: string;
+  nameAr?: string;
+  nameEn?: string;
   email: string;
   password?: string;
   level: string;
@@ -37,7 +39,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<boolean>;
-  register: (name: string, email: string, password: string, level?: string, department?: string, studentId?: string) => Promise<boolean>;
+  register: (nameAr: string, nameEn: string, email: string, password: string, level?: string, department?: string, studentId?: string) => Promise<boolean>;
   loginWithProvider: (provider: "google" | "github") => Promise<boolean>;
   logout: () => Promise<void>;
   updateProfile: (updatedProfile: Partial<UserProfile>) => Promise<boolean>;
@@ -115,6 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const sessionUser: UserProfile = {
               id: profileRow.id || authUser.id,
               name: profileRow.name || prev?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء",
+              nameAr: profileRow.name_ar || prev?.nameAr || "",
+              nameEn: profileRow.name_en || prev?.nameEn || "",
               email: userEmail || authUser.email,
               level: profileRow.level || prev?.level || authUser.user_metadata?.level || "الفرقة الأولى",
               department: profileRow.department || prev?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
@@ -254,6 +258,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const sessionUser: UserProfile = {
             id: dbProfile?.id || data.user.id,
             name: dbProfile?.name || data.user.user_metadata?.name || matched?.name || email.split("@")[0],
+            nameAr: dbProfile?.name_ar || matched?.nameAr || "",
+            nameEn: dbProfile?.name_en || matched?.nameEn || "",
             email: email.toLowerCase().trim(),
             password: password,
             level: dbProfile?.level || matched?.level || data.user.user_metadata?.level || "الفرقة الأولى",
@@ -313,6 +319,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           matchedUser = {
             id: cloudRow.id,
             name: cloudRow.name || lowerInputEmail.split("@")[0],
+            nameAr: cloudRow.name_ar || "",
+            nameEn: cloudRow.name_en || "",
             email: cloudRow.email || lowerInputEmail,
             password: cloudRow.password || password,
             level: cloudRow.level || "الفرقة الأولى",
@@ -396,7 +404,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (
-    name: string,
+    nameAr: string,
+    nameEn: string,
     email: string,
     password: string,
     level: string = "الفرقة الأولى",
@@ -452,12 +461,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isSupabaseConfigured && supabase) {
       try {
         const callbackUrl = getAuthCallbackURL();
+        const fullStudentName = typeof window !== "undefined" && document.documentElement.dir === "rtl" ? nameAr : nameEn;
         const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: callbackUrl,
-            data: { name, level, department, student_id: generatedStudentId }
+            data: { name: fullStudentName, level, department, student_id: generatedStudentId }
           }
         });
         
@@ -482,9 +492,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    const fullStudentName = typeof window !== "undefined" && document.documentElement.dir === "rtl" ? nameAr : nameEn;
+
     const newUser: UserProfile = {
       id: finalUserId,
-      name,
+      name: fullStudentName,
+      nameAr,
+      nameEn,
       email,
       password: password || "123456", // Store user's chosen password
       level,
@@ -508,7 +522,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: finalUserId,
         email,
         password: password || "123456",
-        name,
+        name: fullStudentName,
+        name_ar: nameAr,
+        name_en: nameEn,
         role: "student",
         level,
         department,
@@ -608,6 +624,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const updatePayload = {
       name: updatedUser.name,
+      name_ar: updatedUser.nameAr || "",
+      name_en: updatedUser.nameEn || "",
       level: updatedUser.level,
       department: updatedUser.department,
       student_id: updatedUser.studentId,

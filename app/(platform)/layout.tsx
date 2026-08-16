@@ -15,7 +15,7 @@ import { MobileTaskbar } from "@/components/MobileTaskbar";
 import { GlobalSearchBar } from "@/components/GlobalSearchBar";
 import { CompleteProfileModal } from "@/components/complete-profile-modal";
 import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
-import { cn, getLocalizedUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   Bell,
   Trophy,
@@ -35,7 +35,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { notifications, markAsRead, markAllAsRead, clearNotifications } = useSocial();
-  const { theme, setTheme, dir, t, lang, setLang } = useApp();
+  const { theme, setTheme, dir, t, lang, setLang, userName } = useApp();
   const { settings } = useAdmin();
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
@@ -123,8 +123,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             <div className="flex items-center gap-4">
               <span className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
                 {lang === "ar"
-                  ? `أهلاً بك، ${getLocalizedUserName(user?.name?.split(" ")[0], "ar")} 👋`
-                  : `Welcome, ${getLocalizedUserName(user?.name?.split(" ")[0], "en")} 👋`}
+                  ? `أهلاً بك، ${userName.split(" ")[0] || "طالب"} 👋`
+                  : `Welcome, ${userName.split(" ")[0] || "Student"} 👋`}
               </span>
 
               {/* Fake Search input that triggers Ctrl+K search on click */}

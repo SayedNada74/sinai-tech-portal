@@ -13,7 +13,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
-import { getLocalizedUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -38,7 +38,7 @@ import {
 export default function DashboardPage() {
   const { user } = useAuth();
   const { courses, users: adminUsers } = useAdmin();
-  const { t, dir, lang, userRole } = useApp();
+  const { t, dir, lang, userRole, userName } = useApp();
   const { reminders } = useSocial();
 
   const {
@@ -207,8 +207,8 @@ export default function DashboardPage() {
             </Badge>
             <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight mb-2.5">
               {lang === "ar"
-                ? `أهلاً بك، ${getLocalizedUserName(user?.name, "ar")} 👋`
-                : `Welcome, ${getLocalizedUserName(user?.name, "en")} 👋`}
+                ? `أهلاً بك، ${userName.split(" ")[0]} 👋`
+                : `Welcome, ${userName.split(" ")[0]} 👋`}
             </h1>
             <p className="text-xs sm:text-sm text-cyan-100 max-w-xl leading-relaxed">
               {isAdmin

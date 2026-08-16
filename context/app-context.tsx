@@ -128,7 +128,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [lang]);
 
   // 5. User settings mapping
-  const userName = user?.name || "";
+  const userName = user ? (lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : "";
   const setUserName = React.useCallback((n: string) => {
     updateProfile({ name: n });
   }, [updateProfile]);
@@ -144,7 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user) return null;
     return {
       uid: user.id,
-      displayName: user.name,
+      displayName: lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name),
       email: user.email,
       photoURL: user.avatar
     };

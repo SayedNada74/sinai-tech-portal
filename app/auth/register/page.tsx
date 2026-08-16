@@ -18,7 +18,8 @@ export default function RegisterPage() {
   const { t, dir, lang } = useApp();
   const { toast } = useToast();
   const { register, isLoading } = useAuth();
-  const [name, setName] = React.useState("");
+  const [nameAr, setNameAr] = React.useState("");
+  const [nameEn, setNameEn] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [studentId, setStudentId] = React.useState("");
   const [level, setLevel] = React.useState("الفرقة الأولى");
@@ -32,8 +33,8 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      const errMsg = t("الرجاء ملء جميع الحقول المطلوبة (الاسم والبريد وكلمة المرور).", "Please fill in all required fields.");
+    if (!nameAr.trim() || !nameEn.trim() || !email.trim() || !password.trim()) {
+      const errMsg = t("الرجاء ملء جميع الحقول المطلوبة (الاسم باللغتين والبريد وكلمة المرور).", "Please fill in all required fields (Both names, Email, Password).");
       setError(errMsg);
       toast(`⚠️ ${errMsg}`, "error");
       return;
@@ -60,7 +61,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const success = await register(name.trim(), email.trim(), password.trim(), level, department, studentId.trim());
+      const success = await register(nameAr.trim(), nameEn.trim(), email.trim(), password.trim(), level, department, studentId.trim());
       if (success) {
         toast(t("🎉 تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء.", "🎉 Account created successfully! Welcome to Sinai University Portal."), "success");
         router.push("/dashboard");
@@ -104,19 +105,39 @@ export default function RegisterPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Full Name */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل", "Full Name")}</label>
-                <div className="relative">
-                  <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                  <Input
-                    type="text"
-                    placeholder={t("اسم الطالب", "Student Name")}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
-                    disabled={isLoading}
-                  />
+              <div className="grid grid-cols-2 gap-4">
+                {/* Full Name (Arabic) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">الاسم الكامل (عربي)</label>
+                  <div className="relative">
+                    <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                    <Input
+                      type="text"
+                      placeholder="اسم الطالب"
+                      value={nameAr}
+                      onChange={(e) => setNameAr(e.target.value)}
+                      className={lang === "ar" ? "pr-10 text-xs text-right" : "pl-10 text-xs text-right"}
+                      disabled={isLoading}
+                      dir="rtl"
+                    />
+                  </div>
+                </div>
+
+                {/* Full Name (English) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Full Name (English)</label>
+                  <div className="relative">
+                    <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                    <Input
+                      type="text"
+                      placeholder="Student Name"
+                      value={nameEn}
+                      onChange={(e) => setNameEn(e.target.value)}
+                      className={lang === "ar" ? "pr-10 text-xs text-left" : "pl-10 text-xs text-left"}
+                      disabled={isLoading}
+                      dir="ltr"
+                    />
+                  </div>
                 </div>
               </div>
 
