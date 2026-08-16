@@ -49,7 +49,7 @@ export default function CurriculumProgressChecklist() {
   // Handle checking/unchecking a course
   const handleCheckCourse = (code: string, checked: boolean) => {
     if (checked) {
-      markCompleted(code, "A");
+      markCompleted(code, ""); // Start with empty grade
     } else {
       removeCourse(code);
     }
@@ -203,7 +203,7 @@ export default function CurriculumProgressChecklist() {
                       {periodCourses.map((c) => {
                         const completed = isCompleted(c.code);
                         const planned = isPlanned(c.code);
-                        const currentGrade = getCourseGrade(c.code) || "A";
+                        const currentGrade = getCourseGrade(c.code) || "";
 
                         return (
                           <div
@@ -268,12 +268,13 @@ export default function CurriculumProgressChecklist() {
                                 {c.credits} {t("ساعة", "Hours")}
                               </span>
 
-                              {/* Interactive Grade Selector Dropdown */}
                               <GradeSelect
                                 value={completed ? currentGrade : ""}
-                                onChange={(val) => markCompleted(c.code, val)}
+                                onChange={(val) => {
+                                  markCompleted(c.code, val);
+                                }}
                                 options={GRADE_OPTIONS}
-                                disabled={!completed}
+                                disabled={false}
                                 className="h-8 w-[75px]"
                               />
 
