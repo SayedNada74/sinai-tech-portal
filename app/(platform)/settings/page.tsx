@@ -104,8 +104,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Hand Navigation / Side cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Column 1 */}
         <div className="space-y-6">
           {/* Theme card */}
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
@@ -328,8 +328,8 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        {/* Form panel */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Column 2 */}
+        <div className="space-y-6">
           {/* Preferences */}
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">

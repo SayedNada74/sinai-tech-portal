@@ -980,37 +980,39 @@ export default function ProfilePage() {
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between p-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/50">
-                <div>
-                  <h4 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50">{t("عرض المهارات وروابط التواصل", "Show Skills & Social Links")}</h4>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-1 max-w-[250px] sm:max-w-md">
-                    {t("إذا تم الإيقاف، لن يرى الطلاب الآخرون مهاراتك أو روابط حساباتك.", "If disabled, other students won't see your skills or social links.")}
-                  </p>
+              <div className="max-w-3xl mx-auto space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/50">
+                  <div>
+                    <h4 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50">{t("عرض المهارات وروابط التواصل", "Show Skills & Social Links")}</h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-1">
+                      {t("إذا تم الإيقاف، لن يرى الطلاب الآخرون مهاراتك أو روابط حساباتك.", "If disabled, other students won't see your skills or social links.")}
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-center">
+                    <input type="checkbox" className="sr-only peer" checked={publicSkills} onChange={(e) => setPublicSkills(e.target.checked)} />
+                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
+                  </label>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                  <input type="checkbox" className="sr-only peer" checked={publicSkills} onChange={(e) => setPublicSkills(e.target.checked)} />
-                  <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
-                </label>
-              </div>
 
-              <div className="flex items-center justify-between p-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/50">
-                <div>
-                  <h4 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50">{t("عرض المشاريع ومعرض الأعمال", "Show Projects & Portfolio")}</h4>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-1 max-w-[250px] sm:max-w-md">
-                    {t("إذا تم الإيقاف، سيتم إخفاء قسم المشاريع من ملفك العام.", "If disabled, the projects section will be hidden from your public profile.")}
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/50">
+                  <div>
+                    <h4 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50">{t("عرض المشاريع ومعرض الأعمال", "Show Projects & Portfolio")}</h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-1">
+                      {t("إذا تم الإيقاف، سيتم إخفاء قسم المشاريع من ملفك العام.", "If disabled, the projects section will be hidden from your public profile.")}
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-center">
+                    <input type="checkbox" className="sr-only peer" checked={publicProjects} onChange={(e) => setPublicProjects(e.target.checked)} />
+                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
+                  </label>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                  <input type="checkbox" className="sr-only peer" checked={publicProjects} onChange={(e) => setPublicProjects(e.target.checked)} />
-                  <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
-                </label>
               </div>
             </CardContent>
           </Card>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3.5 pt-2">
-            <Button type="submit" className="px-8 shadow-md" isLoading={isLoading} disabled={isLoading}>
+          <div className="flex justify-center sm:justify-end gap-3.5 pt-4">
+            <Button type="submit" className="w-full sm:w-auto px-10 shadow-md font-bold" isLoading={isLoading} disabled={isLoading}>
               {t("حفظ كل التعديلات", "Save All Changes")}
             </Button>
           </div>
