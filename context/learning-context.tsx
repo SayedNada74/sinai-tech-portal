@@ -125,7 +125,8 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
           downloadedResources,
           roadmapProgress,
           recentlyViewed,
-          ...updates
+          ...current, // use the freshest data from localStorage
+          ...updates  // apply the new updates on top
         })
       );
     }
