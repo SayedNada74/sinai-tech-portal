@@ -301,7 +301,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // If not found in local storage, query Supabase Cloud DB profiles table for cross-device authentication
     if (!matchedUser && isSupabaseConfigured && supabase) {
       try {
-        const { data: cloudRow } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).maybeSingle();
+        const { data: cloudRows } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).limit(1);
+        const cloudRow = cloudRows?.[0];
         if (cloudRow) {
           const isCompleted = cloudRow.is_profile_completed !== false;
           matchedUser = {
@@ -357,7 +358,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let dbProfile: any = null;
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data: profileRow } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).maybeSingle();
+        const { data: profileRows } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).limit(1);
+        const profileRow = profileRows?.[0];
         if (profileRow) dbProfile = profileRow;
       } catch (e) {}
     }
@@ -365,6 +367,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // SUCCESS: Authenticate and grant user session
     const sessionUser: UserProfile = {
       ...matchedUser,
+      id: dbProfile?.id || matchedUser.id,
       name: dbProfile?.name || matchedUser.name,
       level: dbProfile?.level || matchedUser.level,
       department: dbProfile?.department || matchedUser.department,
@@ -613,15 +616,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const res = await updateInSupabase("profiles", user.id, updatePayload);
-
-    // Fallback update by email if ID update matched 0 rows (e.g. legacy ID mismatch)
-    if (isSupabaseConfigured && supabase && (!res || (Array.isArray(res) && res.length === 0))) {
-      console.warn("Update by ID matched 0 rows, running fallback update by email for:", user.email);
-      await supabase
-        .from("profiles")
-        .update(updatePayload)
-        .eq("email", user.email.toLowerCase().trim());
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const fullPayload = { 
+          ...updatePayload, 
+          id: user.id, 
+          email: user.email 
+        };
+        const { error } = await supabase.from("profiles").upsert(fullPayload, { onConflict: "id" }).select();
+        
+        if (error) {
+          console.warn("Supabase upsert by ID failed, attempting by email fallback:", error);
+          // If ID conflict fails (e.g., ID changed but email same), try updating by email
+          const { data: existingUser } = await supabase.from("profiles").select("id").eq("email", user.email.toLowerCase().trim()).maybeSingle();
+          if (existingUser) {
+             await supabase.from("profiles").update(updatePayload).eq("id", existingUser.id);
+          } else {
+             // Force insert if totally missing
+             await supabase.from("profiles").insert([fullPayload]);
+          }
+        }
+      } catch (err) {
+        console.warn("Cloud sync error during updateProfile:", err);
+      }
     }
 
     setUser(updatedUser);
