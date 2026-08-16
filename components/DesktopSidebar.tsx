@@ -21,7 +21,8 @@ import {
   Moon,
   LogOut,
   GraduationCap,
-  Shield
+  Shield,
+  Users
 } from "lucide-react";
 
 import { useAdmin } from "@/context/admin-context";
@@ -47,6 +48,7 @@ export function DesktopSidebar() {
         { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
         { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
         { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+        { labelAr: "دليل الطلاب", labelEn: "Student Directory", href: "/directory", icon: Users, key: "directory" },
         { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
         { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers, key: "roadmaps" },
         { labelAr: "الملف الشخصي", labelEn: "Admin Profile", href: "/profile", icon: User, key: "profile" },
@@ -60,6 +62,7 @@ export function DesktopSidebar() {
         { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator, key: "gpa" },
         { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
         { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+        { labelAr: "دليل الطلاب", labelEn: "Student Directory", href: "/directory", icon: Users, key: "directory" },
         { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
         { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers, key: "roadmaps" },
         { labelAr: "الملف الشخصي", labelEn: "Student Profile", href: "/profile", icon: User, key: "profile" },

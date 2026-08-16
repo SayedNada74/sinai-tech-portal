@@ -31,6 +31,7 @@ export interface UserProfile {
   is_profile_completed: boolean;
   learning_state?: any;
   social_state?: any;
+  privacySettings?: { publicSkills: boolean; publicProjects: boolean };
 }
 
 interface AuthContextType {
@@ -137,7 +138,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               needsOnboarding: !isCompleted,
               is_profile_completed: isCompleted,
               learning_state: profileRow.learning_state || prev?.learning_state,
-              social_state: profileRow.social_state || prev?.social_state
+              social_state: profileRow.social_state || prev?.social_state,
+              privacySettings: typeof profileRow.privacy_settings === "string" 
+                               ? JSON.parse(profileRow.privacy_settings) 
+                               : (profileRow.privacy_settings || prev?.privacySettings || { publicSkills: true, publicProjects: true })
             };
 
             localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -633,6 +637,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       points: updatedUser.points || 50,
       badges: updatedUser.badges || [],
       is_profile_completed: updatedUser.isProfileComplete ?? true,
+      privacy_settings: updatedUser.privacySettings || { publicSkills: true, publicProjects: true },
       learning_state: updatedUser.learning_state !== undefined ? updatedUser.learning_state : user.learning_state,
       social_state: updatedUser.social_state !== undefined ? updatedUser.social_state : user.social_state
     };

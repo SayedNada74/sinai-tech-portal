@@ -24,7 +24,8 @@ import {
   Shield,
   Sun,
   Moon,
-  Globe
+  Globe,
+  Users
 } from "lucide-react";
 
 interface MobileSidebarProps {
@@ -48,6 +49,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen },
         { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare },
+        { labelAr: "دليل الطلاب", labelEn: "Student Directory", href: "/directory", icon: Users },
         { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase },
         { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers },
         { labelAr: "الملف الشخصي", labelEn: "Admin Profile", href: "/profile", icon: User },
@@ -58,10 +60,11 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         { labelAr: "المرشد الذكي (AI)", labelEn: "AI Assistant", href: "/ai-assistant", icon: Bot },
         { labelAr: "الخطة الدراسية والتقدم", labelEn: "Curriculum Checklist", href: "/departments", icon: CheckCircle },
         { labelAr: "مخطط التسجيل الذكي", labelEn: "Registration Planner", href: "/planner", icon: Compass },
-        { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator },
-        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen },
-        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare },
-        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase },
+        { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator, key: "gpa" },
+        { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
+        { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+        { labelAr: "دليل الطلاب", labelEn: "Student Directory", href: "/directory", icon: Users, key: "directory" },
+        { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
         { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers },
         { labelAr: "الملف الشخصي", labelEn: "Student Profile", href: "/profile", icon: User },
         { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings }

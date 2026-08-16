@@ -436,15 +436,27 @@ export default function CourseDetailPage({ params }: PageProps) {
                   courseReviews.map((rev) => (
                     <div key={rev.id} className="p-4 bg-zinc-50 dark:bg-zinc-950/20 border border-zinc-200/40 dark:border-zinc-850/50 rounded-2xl space-y-3">
                       <div className="flex justify-between items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold">
-                            {rev.author[0]}
+                        {rev.authorId ? (
+                          <Link href={`/profile/${rev.authorId}`} className="flex items-center gap-2 group hover:opacity-80 transition-opacity">
+                            <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold group-hover:bg-violet-200 dark:group-hover:bg-violet-900/50">
+                              {rev.author[0]}
+                            </div>
+                            <div>
+                              <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{rev.author}</h5>
+                              <span className="text-[9px] text-zinc-400 dark:text-zinc-500 block">{rev.date}</span>
+                            </div>
+                          </Link>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold">
+                              {rev.author[0]}
+                            </div>
+                            <div>
+                              <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200">{rev.author}</h5>
+                              <span className="text-[9px] text-zinc-400 dark:text-zinc-500 block">{rev.date}</span>
+                            </div>
                           </div>
-                          <div>
-                            <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200">{rev.author}</h5>
-                            <span className="text-[9px] text-zinc-400 dark:text-zinc-500 block">{rev.date}</span>
-                          </div>
-                        </div>
+                        )}
 
                         {/* Stars */}
                         <div className="flex gap-0.5">

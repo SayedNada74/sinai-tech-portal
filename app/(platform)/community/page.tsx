@@ -3,7 +3,9 @@
 import * as React from "react";
 import { useApp } from "@/context/app-context";
 import { useAuth } from "@/context/auth-context";
+import { useAdmin } from "@/context/admin-context";
 import { useSocial, CommunityPost, PostComment } from "@/context/social-context";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +30,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function CommunityPage() {
   const { t, lang, dir } = useApp();
   const { user } = useAuth();
+  const { users } = useAdmin();
   const {
     posts,
     createPost,
@@ -211,7 +214,13 @@ export default function CommunityPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{post.author}</span>
+                            {users.find(u => u.email === post.authorEmail)?.id ? (
+                              <Link href={`/profile/${users.find(u => u.email === post.authorEmail)?.id}`} className="font-bold text-sm text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                {post.author}
+                              </Link>
+                            ) : (
+                              <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{post.author}</span>
+                            )}
                             <Badge className="bg-zinc-100 text-zinc-750 dark:bg-zinc-800 dark:text-zinc-350 text-[10px] py-0 px-2 font-bold rounded-md">
                               {categoryArabic[post.category] ? t(categoryArabic[post.category].ar, categoryArabic[post.category].en) : post.category}
                             </Badge>
@@ -358,7 +367,13 @@ export default function CommunityPage() {
                                           </div>
                                           <div className="flex-1 space-y-1 min-w-0">
                                             <div className="flex justify-between items-center">
-                                              <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{comment.author}</span>
+                                              {users.find(u => u.email === comment.authorEmail)?.id ? (
+                                                <Link href={`/profile/${users.find(u => u.email === comment.authorEmail)?.id}`} className="font-bold text-xs text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                                  {comment.author}
+                                                </Link>
+                                              ) : (
+                                                <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{comment.author}</span>
+                                              )}
                                               <div className="flex gap-2 items-center">
                                                 <span className="text-[9px] text-zinc-400">{comment.date}</span>
                                                 {isCommentOwn && (
@@ -384,7 +399,13 @@ export default function CommunityPage() {
                                               </div>
                                               <div className="flex-1 space-y-0.5 min-w-0">
                                                 <div className="flex justify-between items-center">
-                                                  <span className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200">{reply.author}</span>
+                                                  {users.find(u => u.email === reply.authorEmail)?.id ? (
+                                                    <Link href={`/profile/${users.find(u => u.email === reply.authorEmail)?.id}`} className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                                      {reply.author}
+                                                    </Link>
+                                                  ) : (
+                                                    <span className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200">{reply.author}</span>
+                                                  )}
                                                   <div className="flex gap-2 items-center">
                                                     <span className="text-[9px] text-zinc-400">{reply.date}</span>
                                                     {reply.authorEmail === user?.email && (

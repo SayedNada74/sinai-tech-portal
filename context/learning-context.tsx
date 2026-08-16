@@ -21,6 +21,7 @@ export interface CourseReview {
   comment: string;
   tips: string;
   author: string;
+  authorId?: string;
   date: string;
   helpfulCount: number;
   helpfulUsers: string[]; // user IDs who liked this review
@@ -36,7 +37,7 @@ interface LearningContextType {
   recentlyViewed: { id: string; type: string; title: string; path: string; timestamp: number }[];
   toggleBookmark: (id: string, type: BookmarkItem["type"], title: string, link: string) => void;
   isBookmarked: (id: string) => boolean;
-  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "date" | "helpfulCount" | "helpfulUsers">) => void;
+  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">) => void;
   toggleHelpfulReview: (reviewId: string) => void;
   toggleLikeResource: (id: string) => void;
   isResourceLiked: (id: string) => boolean;
@@ -173,13 +174,14 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
 
   const addReview = (
     courseCode: string,
-    review: Omit<CourseReview, "id" | "courseCode" | "author" | "date" | "helpfulCount" | "helpfulUsers">
+    review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">
   ) => {
     const newReview: CourseReview = {
       ...review,
       id: Math.random().toString(36).substring(2, 9),
       courseCode,
       author: user?.name || "طالب مجهول",
+      authorId: user?.id,
       date: new Date().toISOString().split("T")[0],
       helpfulCount: 0,
       helpfulUsers: []
