@@ -449,8 +449,8 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Avatar Sidebar & Profile Picture Upload */}
         <div className="space-y-6 lg:col-span-1">
           <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
@@ -897,7 +897,10 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+        </div>
 
+        <div className="space-y-6">
           {/* Portfolio & Projects Section */}
           <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
             <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 flex flex-row items-center justify-between">
