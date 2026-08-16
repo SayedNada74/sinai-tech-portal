@@ -620,7 +620,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       projects: updatedUser.projects || [],
       points: updatedUser.points || 50,
       badges: updatedUser.badges || [],
-      is_profile_completed: updatedUser.isProfileComplete ?? true
+      is_profile_completed: updatedUser.isProfileComplete ?? true,
+      learning_state: updatedUser.learning_state !== undefined ? updatedUser.learning_state : user.learning_state,
+      social_state: updatedUser.social_state !== undefined ? updatedUser.social_state : user.social_state
     };
 
     // Uniqueness validation for social links
