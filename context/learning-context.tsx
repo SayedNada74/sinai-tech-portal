@@ -266,6 +266,8 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addRecentlyViewed = (id: string, type: string, title: string, path: string) => {
+    if (recentlyViewed.length > 0 && recentlyViewed[0].id === id) return;
+    
     // Keep only top 4 items, avoid duplicates
     let newViewed = recentlyViewed.filter((item) => item.id !== id);
     newViewed.unshift({ id, type, title, path, timestamp: Date.now() });
