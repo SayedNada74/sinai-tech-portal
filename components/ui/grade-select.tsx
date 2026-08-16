@@ -47,7 +47,12 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
       
       updatePosition();
       
-      const handleScroll = () => setIsOpen(false);
+      const handleScroll = (e: Event) => {
+        if (dropdownRef.current && (e.target === dropdownRef.current || dropdownRef.current.contains(e.target as Node))) {
+          return;
+        }
+        setIsOpen(false);
+      };
       window.addEventListener("scroll", handleScroll, true); // true to catch scroll in any scrollable container
       window.addEventListener("resize", handleScroll);
       
@@ -74,7 +79,7 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
         >
           <div className="flex items-center gap-2">
             <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 shrink-0" />
-            <span className="mt-0.5">{value || "--"}</span>
+            <span className="mt-0.5 whitespace-nowrap">{value || "-"}</span>
           </div>
           <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 text-zinc-400 opacity-70 shrink-0 ml-1 transition-transform ${isOpen ? "rotate-180" : ""}`} />
         </button>
@@ -104,7 +109,7 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
                   onClick={() => { onChange(""); setIsOpen(false); }}
                   className="w-full flex items-center px-3 py-2 text-xs sm:text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 >
-                  --
+                  -
                 </button>
               )}
               {options.map((opt) => (
