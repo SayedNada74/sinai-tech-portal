@@ -220,22 +220,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     const savedUsersStr = localStorage.getItem("su_registered_users");
-    let currentUsers: UserProfile[] = DEFAULT_ACCOUNTS;
+    let currentUsers: UserProfile[] = [];
     if (savedUsersStr) {
       try {
         currentUsers = JSON.parse(savedUsersStr) as UserProfile[];
       } catch (e) { }
     }
-
-    DEFAULT_ACCOUNTS.forEach((da) => {
-      const idx = currentUsers.findIndex((u) => u.email.toLowerCase() === da.email.toLowerCase());
-      if (idx === -1) {
-        currentUsers.push(da);
-      } else {
-        currentUsers[idx].password = currentUsers[idx].password || da.password;
-        currentUsers[idx].role = currentUsers[idx].role || da.role;
-      }
-    });
 
     // Sanitize
     currentUsers = currentUsers.map((u) => ({
@@ -426,8 +416,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("⚠️ كلمة المرور ضعيفة! يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).");
     }
 
-    // Check if email already registered across all registered, default accounts, and Supabase Cloud DB
-    const allExistingUsers = [...DEFAULT_ACCOUNTS, ...savedUsers];
+    // Ensure email uniqueness globally
+    const allExistingUsers = [...savedUsers];
     if (allExistingUsers.some((u) => u.email.toLowerCase() === lowerEmail)) {
       setIsLoading(false);
       throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
