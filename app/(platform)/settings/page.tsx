@@ -38,25 +38,10 @@ export default function SettingsPage() {
     return ["google"];
   });
 
-  const [currentPassword, setCurrentPassword] = React.useState("");
-  const [newPassword, setNewPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
-
   const [moodleInput, setMoodleInput] = React.useState(moodleUrl);
   const [isSyncing, setIsSyncing] = React.useState(false);
   const [showInstructions, setShowInstructions] = React.useState(false);
   const [moodleError, setMoodleError] = React.useState("");
-
-  const [notifications, setNotifications] = React.useState({
-    emailAnnouncements: true,
-    emailDeadlines: true,
-    browserAlerts: false,
-  });
-
-  const [privacy, setPrivacy] = React.useState({
-    showProfile: true,
-    showGpa: false,
-  });
 
   const [message, setMessage] = React.useState({ type: "", text: "" });
   const [isSaving, setIsSaving] = React.useState(false);
@@ -94,49 +79,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage({ type: "", text: "" });
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setMessage({
-        type: "error",
-        text: t("الرجاء إدخال الحقول بالكامل لتغيير كلمة المرور.", "Please fill in all fields to change the password.")
-      });
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setMessage({
-        type: "error",
-        text: t("كلمتا المرور الجديدتان غير متطابقتين.", "The new passwords do not match.")
-      });
-      return;
-    }
-
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSaving(false);
-
-    setMessage({
-      type: "success",
-      text: t("تم تغيير كلمة المرور بنجاح (محاكاة).", "Password changed successfully (simulated).")
-    });
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-  };
-
-  const handleGenericSave = async () => {
-    setMessage({ type: "", text: "" });
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setIsSaving(false);
-    setMessage({
-      type: "success",
-      text: t("تم حفظ خيارات الإعدادات بنجاح!", "Settings options saved successfully!")
-    });
-  };
 
   const isDark = theme === "dark";
 
@@ -200,33 +142,6 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Performance & Animation (Low Power Mode) */}
-          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
-              <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Zap className="h-4 w-4 text-cyan-450 dark:text-cyan-400 animate-pulse" />
-                {t("الأداء والحركة", "Performance & Effects")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3.5 pt-2">
-              <div className="flex items-center justify-between text-xs">
-                <div>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200 block">{t("وضع توفير الطاقة", "Low Power Mode")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("إيقاف جميع الحركات والرسوميات لزيادة السرعة", "Disables all animations and spring effects")}</span>
-                </div>
-                <button
-                  onClick={() => setLowPowerMode(!lowPowerMode)}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    lowPowerMode ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-805"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    lowPowerMode ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Moodle sync card */}
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
@@ -438,166 +353,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Change password */}
-          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Lock className="h-4.5 w-4.5 text-zinc-400" />
-                {t("تغيير كلمة المرور", "Security & Password")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handlePasswordSubmit} className="space-y-4 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                <div className="space-y-1.5">
-                  <label className="block mb-1">{t("كلمة المرور الحالية", "Current Password")}</label>
-                  <Input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="h-11 rounded-xl"
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block mb-1">{t("كلمة المرور الجديدة", "New Password")}</label>
-                    <Input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="h-11 rounded-xl"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block mb-1">{t("تأكيد كلمة المرور الجديدة", "Confirm New Password")}</label>
-                    <Input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="h-11 rounded-xl"
-                    />
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <Button type="submit" disabled={isSaving} className="btn-primary text-xs h-11 px-6 w-full sm:w-auto">
-                    {isSaving ? t("جاري الحفظ...", "Saving...") : t("حفظ كلمة المرور الجديدة", "Update Password")}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
 
-          {/* Notifications */}
-          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Bell className="h-4.5 w-4.5 text-zinc-400" />
-                {t("تفضيلات التنبيهات", "Notification Settings")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/10 last:border-0 last:pb-0 text-xs">
-                <div>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-250 block">{t("الإعلانات والأخبار الأكاديمية", "Announcements & College News")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("تلقي إشعارات البريد الإلكتروني للقرارات الجديدة", "Receive emails for new college decisions")}</span>
-                </div>
-                <button
-                  onClick={() => setNotifications({ ...notifications, emailAnnouncements: !notifications.emailAnnouncements })}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    notifications.emailAnnouncements ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-800"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    notifications.emailAnnouncements ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/10 last:border-0 last:pb-0 text-xs">
-                <div>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-250 block">{t("تذكير مواعيد الواجبات والمهام", "Deadlines & Task Reminders")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("تنبيهات تلقائية قبل 24 ساعة من تسليم واجبات مودل سيناء", "Automatic alerts 24h before Moodle submissions")}</span>
-                </div>
-                <button
-                  onClick={() => setNotifications({ ...notifications, emailDeadlines: !notifications.emailDeadlines })}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    notifications.emailDeadlines ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-800"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    notifications.emailDeadlines ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/10 last:border-0 last:pb-0 text-xs">
-                <div>
-                  <span className="font-bold text-zinc-800 dark:text-zinc-250 block">{t("إشعارات المتصفح الفورية", "Browser Push Notifications")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("عرض تنبيهات فورية داخل المتصفح عند بدء محاضرة أو إعلان", "Instant popups for lectures, calendars or forum posts")}</span>
-                </div>
-                <button
-                  onClick={() => setNotifications({ ...notifications, browserAlerts: !notifications.browserAlerts })}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    notifications.browserAlerts ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-800"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    notifications.browserAlerts ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Privacy */}
-          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Eye className="h-4.5 w-4.5 text-zinc-400" />
-                {t("إعدادات الخصوصية والأمان", "Privacy & Safety Options")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/10 last:border-0 last:pb-0 text-xs">
-                <div>
-                  <span className="font-bold text-zinc-850 dark:text-zinc-250 block">{t("عرض الملف للزملاء بالكلية", "Public Student Profile")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("السماح لبقية طلاب جامعة سيناء بالبحث عن حسابك والاطلاع على المهارات", "Allow Sinai students to search and view your academic achievements")}</span>
-                </div>
-                <button
-                  onClick={() => setPrivacy({ ...privacy, showProfile: !privacy.showProfile })}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    privacy.showProfile ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-800"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    privacy.showProfile ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/10 last:border-0 last:pb-0 text-xs">
-                <div>
-                  <span className="font-bold text-zinc-850 dark:text-zinc-250 block">{t("مشاركة المعدل في لوحة الصدارة", "Share Cumulative GPA on Leaderboards")}</span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">{t("عرض ترتيبك الفعلي الحقيقي بناءً على المعدل التراكمي للدفعة", "Display your name and true rank on the university leaderboard")}</span>
-                </div>
-                <button
-                  onClick={() => setPrivacy({ ...privacy, showGpa: !privacy.showGpa })}
-                  className={`h-6.5 w-11 rounded-full p-0.5 transition-colors cursor-pointer ${
-                    privacy.showGpa ? "bg-cyan-600" : "bg-zinc-350 dark:bg-zinc-800"
-                  }`}
-                >
-                  <div className={`h-5.5 w-5.5 rounded-full bg-white transition-transform ${
-                    privacy.showGpa ? (lang === "ar" ? "-translate-x-4.5" : "translate-x-4.5") : ""
-                  }`} />
-                </button>
-              </div>
-
-              <div className="pt-2 text-right">
-                <Button type="button" onClick={handleGenericSave} className="btn-primary text-xs h-11 px-6 w-full sm:w-auto">
-                  {t("حفظ خيارات الخصوصية والتنبيهات", "Save Privacy & Notifications")}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
