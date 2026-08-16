@@ -271,6 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             following: dbProfile?.following || matched?.following || [],
             isProfileComplete: isCompleted,
             needsOnboarding: !isCompleted,
+            is_profile_completed: isCompleted,
             rememberMe
           };
 
@@ -328,7 +329,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             points: cloudRow.points || 50,
             following: cloudRow.following || [],
             isProfileComplete: isCompleted,
-            needsOnboarding: !isCompleted
+            needsOnboarding: !isCompleted,
+            is_profile_completed: isCompleted
           };
 
           currentUsers.push(matchedUser);
@@ -383,6 +385,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: dbProfile?.role || matchedUser.role,
       cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || matchedUser.cvUrl || "",
       projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : matchedUser.projects || []),
+      is_profile_completed: dbProfile?.is_profile_completed !== false,
       rememberMe
     };
 
@@ -568,7 +571,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       projects: [],
       badges: ["الدخول عبر الهوية الرقمية"],
       points: 100,
-      following: []
+      following: [],
+      is_profile_completed: false
     };
 
     setUser(providerUser);
