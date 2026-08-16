@@ -130,7 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               points: profileRow.points || prev?.points || 50,
               following: profileRow.following || prev?.following || [],
               isProfileComplete: isCompleted,
-              needsOnboarding: !isCompleted
+              needsOnboarding: !isCompleted,
+              is_profile_completed: isCompleted
             };
 
             localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -443,6 +444,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const generatedStudentId = studentId || `2026${Math.floor(1000 + Math.random() * 9000)}`;
 
     // Save profile to Supabase Cloud DB & Auth if available
+    let requiresEmailConfirmation = false;
+    
     if (isSupabaseConfigured && supabase) {
       try {
         const callbackUrl = getAuthCallbackURL();
@@ -454,10 +457,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             data: { name, level, department, student_id: generatedStudentId }
           }
         });
+        
+        if (signUpErr) {
+           setIsLoading(false);
+           throw new Error(`⚠️ ${signUpErr.message}`);
+        }
+        
         if (signUpData?.user?.id) {
           finalUserId = signUpData.user.id;
         }
-      } catch (e) {
+        
+        // If user is returned but session is null, email confirmation is required!
+        if (signUpData?.user && !signUpData.session) {
+           requiresEmailConfirmation = true;
+        }
+      } catch (e: any) {
+        if (e.message) {
+            throw e; // rethrow formatted error
+        }
         console.warn("Supabase signUp error:", e);
       }
     }
@@ -479,24 +496,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       projects: [],
       badges: ["الدخول الأول"],
       points: 50,
-      following: []
+      following: [],
+      is_profile_completed: false
     };
 
-    await insertToSupabase("profiles", {
-      id: finalUserId,
-      email,
-      password: password || "123456",
-      name,
-      role: "student",
-      level,
-      department,
-      student_id: generatedStudentId,
-      avatar: "🎓"
-    });
+    try {
+      await insertToSupabase("profiles", {
+        id: finalUserId,
+        email,
+        password: password || "123456",
+        name,
+        role: "student",
+        level,
+        department,
+        student_id: generatedStudentId,
+        avatar: "🎓"
+      });
+    } catch (err) {}
 
     // Save to local storage list
     savedUsers.push(newUser);
     localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
+
+    if (requiresEmailConfirmation) {
+      setIsLoading(false);
+      throw new Error("📧 تم إرسال رابط التأكيد بنجاح! يرجى مراجعة بريدك الإلكتروني (Inbox/Spam) والضغط على الرابط لتفعيل الحساب وتسجيل الدخول.");
+    }
 
     // Sign in active session
     setUser(newUser);
