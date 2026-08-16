@@ -42,98 +42,6 @@ interface AuthContextType {
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-// Standard predefined accounts with strict role definitions & passwords
-const DEFAULT_ACCOUNTS: UserProfile[] = [
-  {
-    id: "user-1",
-    name: "سيد محمود",
-    email: "sayed@example.com",
-    password: "123",
-    level: "الفرقة الأولى",
-    department: "تكنولوجيا المعلومات (IT)",
-    studentId: "20230109",
-    bio: "طالب متحمس لبرمجة وتطوير تطبيقات الويب والذكاء الاصطناعي بجامعة سيناء.",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Next.js"],
-    socialLinks: { github: "https://github.com/sayed-mahmoud", linkedin: "https://linkedin.com/in/sayed-mahmoud" },
-    avatar: "🧑‍🎓",
-    role: "student",
-    cvUrl: "resume.pdf",
-    projects: [
-      { title: "SU IT Guide Platform", description: "البوابة الذكية المخصصة لمساعدة وتوجيه طلاب تقنية المعلومات بجامعة سيناء.", link: "https://github.com/sayed-mahmoud/su-it-guide" }
-    ],
-    badges: ["الدخول الأول", "مكتمل الملف الشخصي"],
-    points: 350,
-    following: []
-  },
-  {
-    id: "user-admin",
-    name: "سيد المسؤول",
-    email: "admin@example.com",
-    password: "admin",
-    level: "الكادر الإداري والفني",
-    department: "إدارة المنصة والسياسات",
-    studentId: "ADM-001",
-    bio: "مسؤول النظام الإداري",
-    skills: [],
-    socialLinks: {},
-    avatar: "⚙️",
-    role: "admin",
-    badges: ["مدير النظام"],
-    points: 1000,
-    following: []
-  },
-  {
-    id: "user-super",
-    name: "أحمد المشرف الأعلى",
-    email: "super@example.com",
-    password: "super",
-    level: "الإدارة العليا للجامعة",
-    department: "الإشراف والرقابة العامة",
-    studentId: "SUP-001",
-    bio: "المشرف الأعلى على المنصة",
-    skills: [],
-    socialLinks: {},
-    avatar: "👑",
-    role: "super-admin",
-    badges: ["مشرف أعلى"],
-    points: 1000,
-    following: []
-  },
-  {
-    id: "user-student",
-    name: "أحمد الطالب",
-    email: "student@example.com",
-    password: "123",
-    level: "الفرقة الأولى",
-    department: "تكنولوجيا المعلومات (IT)",
-    studentId: "20230101",
-    bio: "حساب طالب تجريبي",
-    skills: [],
-    socialLinks: {},
-    avatar: "🧑‍🎓",
-    role: "student",
-    badges: ["طالب"],
-    points: 100,
-    following: []
-  },
-  {
-    id: "user-mod",
-    name: "منى المنسقة",
-    email: "mod@example.com",
-    password: "mod",
-    level: "كادر التنسيق والرقابة",
-    department: "الرقابة وجودة المحتوى",
-    studentId: "MOD-001",
-    bio: "منسقة ومراجعة المحتوى الأكاديمي والمنتدى",
-    skills: [],
-    socialLinks: {},
-    avatar: "👩‍🏫",
-    role: "moderator",
-    badges: ["منسق محتوى"],
-    points: 500,
-    following: []
-  }
-];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<UserProfile | null>(null);
@@ -393,12 +301,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // 2. Strict Local Credentials Check
     const lowerInputEmail = email.toLowerCase().trim();
-    const isDemoAccount = DEFAULT_ACCOUNTS.some(da => da.email.toLowerCase() === lowerInputEmail);
-    if (!isDemoAccount) {
-      if (!lowerInputEmail.endsWith("@su.edu.eg") && !lowerInputEmail.endsWith("@sinai.edu.eg")) {
-        setIsLoading(false);
-        throw new Error("⚠️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
-      }
+    if (!lowerInputEmail.endsWith("@su.edu.eg") && !lowerInputEmail.endsWith("@sinai.edu.eg")) {
+      setIsLoading(false);
+      throw new Error("⚠️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
     }
 
     let matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
@@ -692,6 +597,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       badges: updatedUser.badges || [],
       is_profile_completed: updatedUser.isProfileComplete ?? true
     };
+
+    // Uniqueness validation for social links
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const linksToCheck = Object.values(updatedUser.socialLinks || {}).filter(url => typeof url === 'string' && url.trim().length > 0);
+        if (linksToCheck.length > 0) {
+          // Check if any of these links exist in other profiles
+          const { data: allProfiles } = await supabase.from("profiles").select("id, social_links").neq("id", user.id);
+          if (allProfiles) {
+            for (const profile of allProfiles) {
+              const otherLinks = Object.values(profile.social_links || {});
+              const conflict = linksToCheck.some(link => otherLinks.includes(link));
+              if (conflict) {
+                setIsLoading(false);
+                throw new Error("🚫 عذراً، هذا الرابط (Portfolio/GitHub/LinkedIn) مسجل بالفعل باسم طالب آخر في المنصة. يرجى استخدام الروابط الخاصة بك فقط.");
+              }
+            }
+          }
+        }
+      } catch (err: any) {
+        setIsLoading(false);
+        if (err.message.includes("مسجل بالفعل")) throw err;
+        console.warn("Uniqueness check warning:", err);
+      }
+    }
 
     const res = await updateInSupabase("profiles", user.id, updatePayload);
 
