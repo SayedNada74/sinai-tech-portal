@@ -179,65 +179,137 @@ const INITIAL_POSTS: CommunityPost[] = [
   }
 ];
 
-// Seeded Realistic Careers & Internships
+// Seeded Realistic Careers & Internships (Focus on Internships & Fresh Grads)
 const INITIAL_CAREERS: CareerOpportunity[] = [
   {
     id: "job-1",
-    title: "Software Engineering Intern - Summer 2026",
+    title: "ITI - 9 Month Intensive Training Program",
+    company: "Information Technology Institute (ITI)",
+    location: "Ismailia / Cairo / Smart Village",
+    type: "training",
+    experience: "entry",
+    department: "all",
+    description: "The most prestigious IT training program in Egypt. Tracks include Full-Stack, AI, Data Science, and Cybersecurity. Fully funded with a monthly stipend. Perfect for fresh IT graduates from Sinai University.",
+    link: "https://iti.gov.eg/iti/intake",
+    dateAdded: "2026-08-15"
+  },
+  {
+    id: "job-2",
+    title: "Orange Digital Center (ODC) - Web Dev BootCamp",
+    company: "Orange Egypt",
+    location: "Cairo, Egypt",
+    type: "internship",
+    experience: "entry",
+    department: "IT",
+    description: "Intensive 3-month Bootcamp on MERN Stack (MongoDB, Express, React, Node). Priority given to 3rd and 4th-year students. Great chance to get hired directly at Orange after completion.",
+    link: "https://www.orangedigitalcenters.com/",
+    dateAdded: "2026-08-16"
+  },
+  {
+    id: "job-3",
+    title: "Software Engineering Intern - Fall 2026",
     company: "Valeo Egypt",
     location: "Cairo, Egypt (Smart Village)",
     type: "internship",
     experience: "entry",
     department: "CS",
-    description: "Valeo is looking for passionate CS/IT students for our Summer 2026 Internship. You will work with embedded systems, C++, and automotive software. Requirements: Strong problem-solving, basics of C/C++, and currently in 3rd or 4th year.",
+    description: "Join Valeo's Embedded Systems and Automotive Software team for a 3-month Fall Internship. Required: Strong problem-solving, basics of C/C++, and Data Structures. Open to undergrads.",
     link: "https://valeo.wd3.myworkdayjobs.com/Valeo_Jobs",
-    dateAdded: "2026-08-15"
+    dateAdded: "2026-08-14"
   },
   {
-    id: "job-2",
-    title: "Frontend Developer (React/Next.js) - Junior",
+    id: "job-4",
+    title: "Vodafone _VOIS Discover Graduate Program",
+    company: "Vodafone Intelligent Solutions",
+    location: "Alexandria / Cairo, Egypt",
+    type: "graduate",
+    experience: "entry",
+    department: "IS",
+    description: "A 2-year rotational graduate program designed for fresh tech grads. You will rotate across Data Analytics, Cloud, and Software Development teams.",
+    link: "https://careers.vodafone.com/vois/discover",
+    dateAdded: "2026-08-10"
+  },
+  {
+    id: "job-5",
+    title: "Microsoft Learn Student Ambassador (MLSA)",
+    company: "Microsoft",
+    location: "Remote / Campus",
+    type: "internship",
+    experience: "entry",
+    department: "all",
+    description: "Become a community leader on Sinai University campus! Host events, get free Azure credits, and gain direct access to Microsoft engineers for mentorship.",
+    link: "https://studentambassadors.microsoft.com/",
+    dateAdded: "2026-08-05"
+  },
+  {
+    id: "job-6",
+    title: "Junior Data Analyst",
     company: "e-finance",
     location: "Remote / Hybrid",
     type: "graduate",
     experience: "entry",
-    department: "IT",
-    description: "Are you a fresh graduate passionate about modern web development? We are hiring a Junior Frontend Developer to build scalable fintech solutions using React and Next.js. Must have a strong portfolio.",
-    link: "https://wuzzuf.net/jobs/p/frontend-junior",
-    dateAdded: "2026-08-14"
-  },
-  {
-    id: "job-3",
-    title: "ITIDA Summer Training Program (NTI)",
-    company: "Ministry of Communications (MCIT)",
-    location: "Multiple Locations (Egypt)",
-    type: "training",
-    experience: "all",
-    department: "all",
-    description: "The National Telecommunication Institute (NTI) summer training covers tracks like Cybersecurity, AI, Cloud Computing, and Mobile App Development. Free for all Egyptian university students in IT/CS fields.",
-    link: "https://www.nti.sci.eg/training",
-    dateAdded: "2026-08-10"
-  },
-  {
-    id: "job-4",
-    title: "Junior Data Analyst",
-    company: "Vodafone Intelligent Solutions (_VOIS)",
-    location: "Alexandria, Egypt",
-    type: "part-time",
-    experience: "entry",
     department: "IS",
-    description: "Join _VOIS as a junior data analyst! You will help analyze telecom data using Python, SQL, and PowerBI. Great opportunity for IS students in their final year.",
-    link: "https://careers.vodafone.com/vois",
+    description: "e-finance is hiring a Junior Data Analyst to work on national fintech projects. Required: SQL, basic Python, and PowerBI. Fresh graduates are welcome to apply.",
+    link: "https://wuzzuf.net/jobs/p/efinance-data",
     dateAdded: "2026-08-12"
   },
   {
-    id: "job-5",
+    id: "job-7",
+    title: "Cybersecurity & Networks Intern",
+    company: "Banque Misr",
+    location: "Cairo, Egypt",
+    type: "internship",
+    experience: "entry",
+    department: "IT",
+    description: "A specialized 2-month internship in the IT Security department. Learn about SOC, Penetration Testing basics, and banking network infrastructure.",
+    link: "https://www.banquemisr.com/en/careers",
+    dateAdded: "2026-08-13"
+  },
+  {
+    id: "job-8",
+    title: "NTI - Cloud Computing Track (AWS/Azure)",
+    company: "National Telecommunication Institute",
+    location: "Ismailia / Online",
+    type: "training",
+    experience: "entry",
+    department: "CS",
+    description: "Free intensive training on Cloud Architecture for 3rd and 4th-year students. Includes free certification vouchers for AWS Cloud Practitioner.",
+    link: "https://www.nti.sci.eg/",
+    dateAdded: "2026-08-01"
+  },
+  {
+    id: "job-9",
+    title: "Instabug - Software Testing & QA Intern",
+    company: "Instabug",
+    location: "Cairo, Egypt",
+    type: "internship",
+    experience: "entry",
+    department: "CS",
+    description: "Passionate about quality? Join Instabug as a QA Intern. You'll learn automated testing (Cypress/Selenium) and help ensure the stability of SDKs used by millions.",
+    link: "https://instabug.com/careers",
+    dateAdded: "2026-08-11"
+  },
+  {
+    id: "job-10",
+    title: "Frontend Development Intern (React)",
+    company: "Robusta Studio",
+    location: "Cairo, Egypt",
+    type: "internship",
+    experience: "entry",
+    department: "IT",
+    description: "Robusta is looking for a frontend intern! If you have built projects using React and Tailwind CSS, we want you to join our agile teams for 3 months.",
+    link: "https://careers.robustastudio.com/",
+    dateAdded: "2026-08-08"
+  },
+  {
+    id: "job-11",
     title: "Dell Technologies Hackathon 2026",
     company: "Dell Technologies",
     location: "Virtual / Online",
     type: "hackathon",
     experience: "all",
     department: "all",
-    description: "Compete with teams across the MENA region in Dell's annual hackathon focused on AI and Sustainability. Great prizes and direct interview opportunities for seniors.",
+    description: "Compete with teams across the MENA region in Dell's annual hackathon focused on AI and Sustainability. Direct interview opportunities for finalists.",
     link: "https://www.dell.com/hackathon",
     dateAdded: "2026-08-16"
   }
