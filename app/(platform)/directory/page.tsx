@@ -27,8 +27,15 @@ export default function DirectoryPage() {
   }, [users]);
 
   const filteredUsers = React.useMemo(() => {
+    // If search is empty, don't show any users (privacy protection)
+    if (!searchQuery || searchQuery.trim() === "") {
+      return [];
+    }
+
     return users.filter((u) => {
-      // Don't show super admins or system accounts if they are hidden (optional), but we show everyone for now
+      // Hide admin accounts from the directory completely
+      if (u.role && u.role !== "student") return false;
+
       const matchesSearch = 
         u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.nameAr?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,7 +149,9 @@ export default function DirectoryPage() {
             <div className="col-span-full py-20 text-center">
               <Users className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
               <p className="text-zinc-500 font-bold">
-                {t("لم يتم العثور على أي طلاب مطابقين للبحث.", "No students found matching your search.")}
+                {(!searchQuery || searchQuery.trim() === "")
+                  ? t("اكتب اسم الطالب أو الرقم الأكاديمي في شريط البحث لعرض النتائج.", "Type a student name or academic ID in the search bar to view results.")
+                  : t("لم يتم العثور على أي طلاب مطابقين للبحث.", "No students found matching your search.")}
               </p>
             </div>
           )}

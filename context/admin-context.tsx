@@ -196,9 +196,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     // Ensure we have some default roles for demo
     const defaultAccounts: UserProfile[] = [
-      { id: "user-student", name: "سيد الطالب", nameAr: "سيد الطالب", nameEn: "Sayed Student", email: "student@example.com", level: "الفرقة الرابعة", department: "تكنولوجيا المعلومات (IT)", studentId: "20230101", bio: "حساب طالب تجريبي", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🧑‍🎓", role: "student", is_profile_completed: true },
       { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
-      { id: "user-super", name: "سيد مشرف", nameAr: "سيد مشرف", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
+      { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
       { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🛡️", role: "moderator", is_profile_completed: true }
     ];
 
@@ -214,7 +213,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             studentId: da.studentId,
             level: da.level,
             department: da.department,
-            role: da.role
+            role: da.role,
+            name: da.name,
+            nameAr: da.nameAr,
+            nameEn: da.nameEn,
+            avatar: da.avatar
           };
         }
       }
