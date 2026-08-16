@@ -62,7 +62,10 @@ export default function RegisterPage() {
 
     try {
       const success = await register(nameAr.trim(), nameEn.trim(), email.trim(), password.trim(), level, department, studentId.trim());
-      if (success) {
+      if (success === "requires_verification") {
+        toast(t("📧 تم إرسال رابط التأكيد. يرجى مراجعة بريدك الإلكتروني.", "📧 Verification link sent. Please check your email."), "success");
+        router.push("/auth/verify-email");
+      } else if (success) {
         toast(t("🎉 تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء.", "🎉 Account created successfully! Welcome to Sinai University Portal."), "success");
         router.push("/dashboard");
       } else {

@@ -39,7 +39,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<boolean>;
-  register: (nameAr: string, nameEn: string, email: string, password: string, level?: string, department?: string, studentId?: string) => Promise<boolean>;
+  register: (nameAr: string, nameEn: string, email: string, password: string, level?: string, department?: string, studentId?: string) => Promise<boolean | "requires_verification">;
   loginWithProvider: (provider: "google" | "github") => Promise<boolean>;
   logout: () => Promise<void>;
   updateProfile: (updatedProfile: Partial<UserProfile>) => Promise<boolean>;
@@ -135,7 +135,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               following: profileRow.following || prev?.following || [],
               isProfileComplete: isCompleted,
               needsOnboarding: !isCompleted,
-              is_profile_completed: isCompleted
+              is_profile_completed: isCompleted,
+              learning_state: profileRow.learning_state || prev?.learning_state,
+              social_state: profileRow.social_state || prev?.social_state
             };
 
             localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -403,15 +405,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true;
   };
 
-  const register = async (
-    nameAr: string,
-    nameEn: string,
-    email: string,
-    password: string,
-    level: string = "الفرقة الأولى",
-    department: string = "تكنولوجيا المعلومات (IT)",
-    studentId: string = ""
-  ): Promise<boolean> => {
+  const register = async (nameAr: string, nameEn: string, email: string, password: string, level = "الفرقة الأولى", department = "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)", studentId = ""): Promise<boolean | "requires_verification"> => {
     setIsLoading(true);
 
     const savedUsersStr = localStorage.getItem("su_registered_users") || "[]";
@@ -539,7 +533,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (requiresEmailConfirmation) {
       setIsLoading(false);
-      throw new Error("📧 تم إرسال رابط التأكيد بنجاح! يرجى مراجعة بريدك الإلكتروني (Inbox/Spam) والضغط على الرابط لتفعيل الحساب وتسجيل الدخول.");
+      return "requires_verification";
     }
 
     // Sign in active session
