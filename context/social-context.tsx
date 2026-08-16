@@ -179,8 +179,69 @@ const INITIAL_POSTS: CommunityPost[] = [
   }
 ];
 
-// Clean Live Careers
-const INITIAL_CAREERS: CareerOpportunity[] = [];
+// Seeded Realistic Careers & Internships
+const INITIAL_CAREERS: CareerOpportunity[] = [
+  {
+    id: "job-1",
+    title: "Software Engineering Intern - Summer 2026",
+    company: "Valeo Egypt",
+    location: "Cairo, Egypt (Smart Village)",
+    type: "internship",
+    experience: "entry",
+    department: "CS",
+    description: "Valeo is looking for passionate CS/IT students for our Summer 2026 Internship. You will work with embedded systems, C++, and automotive software. Requirements: Strong problem-solving, basics of C/C++, and currently in 3rd or 4th year.",
+    link: "https://valeo.wd3.myworkdayjobs.com/Valeo_Jobs",
+    dateAdded: "2026-08-15"
+  },
+  {
+    id: "job-2",
+    title: "Frontend Developer (React/Next.js) - Junior",
+    company: "e-finance",
+    location: "Remote / Hybrid",
+    type: "graduate",
+    experience: "entry",
+    department: "IT",
+    description: "Are you a fresh graduate passionate about modern web development? We are hiring a Junior Frontend Developer to build scalable fintech solutions using React and Next.js. Must have a strong portfolio.",
+    link: "https://wuzzuf.net/jobs/p/frontend-junior",
+    dateAdded: "2026-08-14"
+  },
+  {
+    id: "job-3",
+    title: "ITIDA Summer Training Program (NTI)",
+    company: "Ministry of Communications (MCIT)",
+    location: "Multiple Locations (Egypt)",
+    type: "training",
+    experience: "all",
+    department: "all",
+    description: "The National Telecommunication Institute (NTI) summer training covers tracks like Cybersecurity, AI, Cloud Computing, and Mobile App Development. Free for all Egyptian university students in IT/CS fields.",
+    link: "https://www.nti.sci.eg/training",
+    dateAdded: "2026-08-10"
+  },
+  {
+    id: "job-4",
+    title: "Junior Data Analyst",
+    company: "Vodafone Intelligent Solutions (_VOIS)",
+    location: "Alexandria, Egypt",
+    type: "part-time",
+    experience: "entry",
+    department: "IS",
+    description: "Join _VOIS as a junior data analyst! You will help analyze telecom data using Python, SQL, and PowerBI. Great opportunity for IS students in their final year.",
+    link: "https://careers.vodafone.com/vois",
+    dateAdded: "2026-08-12"
+  },
+  {
+    id: "job-5",
+    title: "Dell Technologies Hackathon 2026",
+    company: "Dell Technologies",
+    location: "Virtual / Online",
+    type: "hackathon",
+    experience: "all",
+    department: "all",
+    description: "Compete with teams across the MENA region in Dell's annual hackathon focused on AI and Sustainability. Great prizes and direct interview opportunities for seniors.",
+    link: "https://www.dell.com/hackathon",
+    dateAdded: "2026-08-16"
+  }
+];
 
 // Clean Live Events
 const INITIAL_EVENTS: EventItem[] = [];
