@@ -279,6 +279,19 @@ export default function ProfilePage() {
                     <Camera className="h-5 w-5" />
                     <span>{t("تغيير الصورة", "Change Avatar")}</span>
                   </button>
+                  {avatar.length > 10 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAvatar("⚙️");
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      title={t("حذف الصورة", "Remove Picture")}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </div>
 
@@ -458,11 +471,23 @@ export default function ProfilePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs gap-1.5 h-8 font-bold border-dashed"
+                  className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1"
                 >
                   <Upload className="h-3.5 w-3.5" />
                   <span>{t("رفع صورة من الجهاز", "Upload Custom Picture")}</span>
                 </Button>
+                {avatar.length > 10 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAvatar("🎓")}
+                    className="text-xs h-8 font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/50 dark:hover:bg-red-900/20"
+                    title={t("حذف الصورة", "Remove Picture")}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
 
               <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
