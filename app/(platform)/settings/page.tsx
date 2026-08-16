@@ -104,10 +104,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Column 1 */}
-        <div className="space-y-6">
-          {/* Theme card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        {/* Theme card */}
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400">
@@ -142,6 +140,28 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
+          {/* Language Preferences */}
+          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
+            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
+              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                <Globe className="h-4.5 w-4.5 text-zinc-400" />
+                {t("تفضيلات اللغة", "Language Preferences")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                <label className="block mb-1">{t("لغة المنصة الافتراضية", "Default Portal Language")}</label>
+                <select
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value as "ar" | "en")}
+                  className="w-full h-11 pr-4 pl-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-cyan-500 transition-all duration-200 cursor-pointer"
+                >
+                  <option value="ar">العربية (Arabic)</option>
+                  <option value="en">الإنجليزية (English)</option>
+                </select>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Moodle sync card */}
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
@@ -326,35 +346,6 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Column 2 */}
-        <div className="space-y-6">
-          {/* Preferences */}
-          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Globe className="h-4.5 w-4.5 text-zinc-400" />
-                {t("تفضيلات اللغة", "Language Preferences")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                <label className="block mb-1">{t("لغة المنصة الافتراضية", "Default Portal Language")}</label>
-                <select
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value as "ar" | "en")}
-                  className="w-full h-11 pr-4 pl-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-cyan-500 transition-all duration-200 cursor-pointer"
-                >
-                  <option value="ar">العربية (Arabic)</option>
-                  <option value="en">الإنجليزية (English)</option>
-                </select>
-              </div>
-            </CardContent>
-          </Card>
-
-
-        </div>
       </div>
     </div>
   );
