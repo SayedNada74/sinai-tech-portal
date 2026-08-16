@@ -13,6 +13,7 @@ import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, Al
 import { useToast } from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { GradeSelect } from "@/components/ui/grade-select";
 
 interface SemesterCourseInput {
   id: string;
@@ -296,15 +297,12 @@ export default function GpaPage() {
                           {/* Grade */}
                           <div className="col-span-6 sm:col-span-2">
                             <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("التقدير", "Grade")}</label>
-                            <select
+                            <GradeSelect
                               value={row.grade}
-                              onChange={(e) => updateCalcRow(row.id, "grade", e.target.value)}
-                              className="w-full h-11 px-2 rounded-xl border border-zinc-200 bg-white text-center text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer"
-                            >
-                              {GRADE_OPTIONS.map((g) => (
-                                <option key={g} value={g}>{g}</option>
-                              ))}
-                            </select>
+                              onChange={(val) => updateCalcRow(row.id, "grade", val)}
+                              options={GRADE_OPTIONS}
+                              className="w-full h-11"
+                            />
                           </div>
 
                           {/* Actions */}

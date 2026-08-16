@@ -6,6 +6,7 @@ import { useAcademic, GRADE_OPTIONS } from "@/context/academic-context";
 import { useAdmin } from "@/context/admin-context";
 import { PERIODS } from "@/lib/courses-data";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { GradeSelect } from "@/components/ui/grade-select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle } from "lucide-react";
@@ -268,20 +269,13 @@ export default function CurriculumProgressChecklist() {
                               </span>
 
                               {/* Interactive Grade Selector Dropdown */}
-                              <div className="relative">
-                                <select
-                                  value={completed ? currentGrade : ""}
-                                  disabled={!completed}
-                                  onChange={(e) => markCompleted(c.code, e.target.value)}
-                                  className="h-8 pl-4 pr-7 rounded-lg border border-zinc-200 bg-white text-[10px] font-black text-zinc-850 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed appearance-none"
-                                >
-                                  {!completed && <option value="">--</option>}
-                                  {GRADE_OPTIONS.map((g) => (
-                                    <option key={g} value={g}>{g}</option>
-                                  ))}
-                                </select>
-                                <Star className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-amber-500 pointer-events-none" />
-                              </div>
+                              <GradeSelect
+                                value={completed ? currentGrade : ""}
+                                onChange={(val) => markCompleted(c.code, val)}
+                                options={GRADE_OPTIONS}
+                                disabled={!completed}
+                                className="h-8 w-[75px]"
+                              />
 
                               {/* Planned bookmark toggle */}
                               <button

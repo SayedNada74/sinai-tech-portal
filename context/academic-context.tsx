@@ -19,7 +19,7 @@ export const GRADE_POINTS: Record<string, number> = {
   "F": 0.0
 };
 
-export const GRADE_OPTIONS = ["A+", "A", "A-", "B+", "B", "C+", "C", "D+", "F"];
+export const GRADE_OPTIONS = ["A+", "A", "A-", "B+", "B", "C+", "C", "D", "F"];
 
 
 export const GRADE_LABELS: Record<string, string> = {
@@ -30,8 +30,8 @@ export const GRADE_LABELS: Record<string, string> = {
   "B": "جيد جداً (B)",
   "C+": "جيد مرتفع (C+)",
   "C": "جيد (C)",
-  "D+": "مقبول (D+)",
-  "D": "مقبول (D)", // Legacy fallback
+  "D+": "مقبول (D+)", // Keep for backward compatibility
+  "D": "مقبول (D)", 
   "F": "راسب (F)"
 };
 
