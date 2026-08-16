@@ -170,33 +170,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        const isCompleted = profileRow ? (profileRow.is_profile_completed !== false) : true;
-        const sessionUser: UserProfile = {
-          id: profileRow?.id || authUser.id,
-          name: profileRow?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء",
-          email: userEmail || authUser.email,
-          level: profileRow?.level || authUser.user_metadata?.level || "الفرقة الأولى",
-          department: profileRow?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
-          studentId: profileRow?.student_id || profileRow?.studentId || authUser.user_metadata?.student_id || "20261001",
-          bio: profileRow?.bio || "طالب مسجل في المنصة الأكاديمية.",
-          skills: Array.isArray(profileRow?.skills) ? profileRow.skills : (typeof profileRow?.skills === "string" ? JSON.parse(profileRow.skills || "[]") : []),
-          socialLinks: profileRow?.social_links || profileRow?.socialLinks || {},
-          avatar: profileRow?.avatar || authUser.user_metadata?.avatar_url || "🎓",
-          role: profileRow?.role || "student",
-          cvUrl: profileRow?.cv_url || profileRow?.cvUrl || "",
-          projects: Array.isArray(profileRow?.projects) ? profileRow.projects : (typeof profileRow?.projects === "string" ? JSON.parse(profileRow.projects || "[]") : []),
-          badges: profileRow?.badges || ["طالب"],
-          points: profileRow?.points || 50,
-          following: profileRow?.following || [],
-          isProfileComplete: isCompleted,
-          needsOnboarding: !isCompleted
+        // PROTECTION: If profile row not found in Supabase, do NOT overwrite active user state with empty defaults!
+        if (!profileRow) {
+          console.warn("No Supabase profile row found for user:", authUser.id);
+          return null;
+        }
+
+        const parseJson = (val: any, fallback: any) => {
+          if (!val) return fallback;
+          if (typeof val === "string") {
+            try { return JSON.parse(val); } catch (e) { return fallback; }
+          }
+          return val;
         };
 
+        const cloudSocial = parseJson(profileRow.social_links || profileRow.socialLinks, {});
+        const cloudSkills = parseJson(profileRow.skills, []);
+        const cloudProjects = parseJson(profileRow.projects, []);
+        const isCompleted = profileRow.is_profile_completed !== false;
+
         if (isMounted) {
-          setUser(sessionUser);
-          localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
+          setUser((prev) => {
+            const mergedSocial = (cloudSocial && Object.keys(cloudSocial).length > 0)
+              ? cloudSocial
+              : (prev?.socialLinks || {});
+            const mergedSkills = (cloudSkills && cloudSkills.length > 0)
+              ? cloudSkills
+              : (prev?.skills || []);
+            const mergedProjects = (cloudProjects && cloudProjects.length > 0)
+              ? cloudProjects
+              : (prev?.projects || []);
+
+            const sessionUser: UserProfile = {
+              id: profileRow.id || authUser.id,
+              name: profileRow.name || prev?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء",
+              email: userEmail || authUser.email,
+              level: profileRow.level || prev?.level || authUser.user_metadata?.level || "الفرقة الأولى",
+              department: profileRow.department || prev?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
+              studentId: profileRow.student_id || profileRow.studentId || prev?.studentId || authUser.user_metadata?.student_id || "20261001",
+              bio: profileRow.bio || prev?.bio || "طالب مسجل في المنصة الأكاديمية.",
+              skills: mergedSkills,
+              socialLinks: mergedSocial,
+              avatar: profileRow.avatar || prev?.avatar || authUser.user_metadata?.avatar_url || "🎓",
+              role: profileRow.role || prev?.role || "student",
+              cvUrl: profileRow.cv_url || profileRow.cvUrl || prev?.cvUrl || "",
+              projects: mergedProjects,
+              badges: profileRow.badges || prev?.badges || ["طالب"],
+              points: profileRow.points || prev?.points || 50,
+              following: profileRow.following || prev?.following || [],
+              isProfileComplete: isCompleted,
+              needsOnboarding: !isCompleted
+            };
+
+            localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
+            return sessionUser;
+          });
         }
-        return sessionUser;
+        return profileRow;
       } catch (e) {
         console.warn("Supabase user hydration warning:", e);
         return null;
@@ -224,7 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (!isMounted) return;
-        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") {
+        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
           if (session?.user) {
             await hydrateUserFromCloud(session.user);
           }
