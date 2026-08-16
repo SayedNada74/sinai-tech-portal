@@ -401,9 +401,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
+    let matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
 
-    // FAILED: Email does NOT exist in registered users
+    // If not found in local storage, query Supabase Cloud DB profiles table for cross-device authentication
+    if (!matchedUser && isSupabaseConfigured && supabase) {
+      try {
+        const { data: cloudRow } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).maybeSingle();
+        if (cloudRow) {
+          const isCompleted = cloudRow.is_profile_completed !== false;
+          matchedUser = {
+            id: cloudRow.id,
+            name: cloudRow.name || lowerInputEmail.split("@")[0],
+            email: cloudRow.email || lowerInputEmail,
+            password: cloudRow.password || password,
+            level: cloudRow.level || "الفرقة الأولى",
+            department: cloudRow.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
+            studentId: cloudRow.student_id || cloudRow.studentId || "20261001",
+            bio: cloudRow.bio || "طالب مسجل في المنصة الأكاديمية.",
+            skills: Array.isArray(cloudRow.skills) ? cloudRow.skills : (typeof cloudRow.skills === "string" ? JSON.parse(cloudRow.skills || "[]") : []),
+            socialLinks: cloudRow.social_links || cloudRow.socialLinks || {},
+            avatar: cloudRow.avatar || "🎓",
+            role: cloudRow.role || "student",
+            cvUrl: cloudRow.cv_url || cloudRow.cvUrl || "",
+            projects: Array.isArray(cloudRow.projects) ? cloudRow.projects : (typeof cloudRow.projects === "string" ? JSON.parse(cloudRow.projects || "[]") : []),
+            badges: cloudRow.badges || ["طالب"],
+            points: cloudRow.points || 50,
+            following: cloudRow.following || [],
+            isProfileComplete: isCompleted,
+            needsOnboarding: !isCompleted
+          };
+
+          currentUsers.push(matchedUser);
+          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+        }
+      } catch (e) {
+        console.warn("Supabase cloud profile query failed:", e);
+      }
+    }
+
+    // FAILED: Email does NOT exist in registered users or Supabase DB
     if (!matchedUser) {
       setIsLoading(false);
       return false;
@@ -485,11 +521,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("⚠️ كلمة المرور ضعيفة! يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).");
     }
 
-    // Check if email already registered across all registered and default accounts
+    // Check if email already registered across all registered, default accounts, and Supabase Cloud DB
     const allExistingUsers = [...DEFAULT_ACCOUNTS, ...savedUsers];
     if (allExistingUsers.some((u) => u.email.toLowerCase() === lowerEmail)) {
       setIsLoading(false);
       throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: existingCloud } = await supabase.from("profiles").select("id, email").eq("email", lowerEmail).maybeSingle();
+        if (existingCloud) {
+          setIsLoading(false);
+          throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
+        }
+      } catch (e) {}
     }
 
     let finalUserId = `user-${Date.now()}`;
@@ -610,6 +656,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await new Promise((resolve) => setTimeout(resolve, 300));
     setUser(null);
     localStorage.removeItem("su_user_session");
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn("Supabase sign out warning:", e);
+      }
+    }
     setIsLoading(false);
     router.push("/");
   };
@@ -632,7 +685,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       avatar: updatedUser.avatar,
       role: updatedUser.role,
       social_links: updatedUser.socialLinks || {},
-      socialLinks: updatedUser.socialLinks || {},
       skills: updatedUser.skills || [],
       cv_url: updatedUser.cvUrl || "",
       projects: updatedUser.projects || [],

@@ -105,6 +105,14 @@ function CallbackHandler() {
         } catch (e) {}
       }
 
+      const parseJson = (val: any, fallback: any) => {
+        if (!val) return fallback;
+        if (typeof val === "string") {
+          try { return JSON.parse(val); } catch (e) { return fallback; }
+        }
+        return val;
+      };
+
       const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء";
       const userLevel = existingProfile?.level || authUser.user_metadata?.level || "الفرقة الأولى";
       const userDepartment = existingProfile?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
@@ -119,12 +127,12 @@ function CallbackHandler() {
         department: userDepartment,
         studentId: userStudentId,
         bio: existingProfile?.bio || "مستخدم مسجل وموثق في المنصة الأكاديمية.",
-        skills: Array.isArray(existingProfile?.skills) ? existingProfile.skills : (typeof existingProfile?.skills === "string" ? JSON.parse(existingProfile.skills || "[]") : []),
-        socialLinks: existingProfile?.social_links || existingProfile?.socialLinks || {},
+        skills: parseJson(existingProfile?.skills, []),
+        socialLinks: parseJson(existingProfile?.social_links || existingProfile?.socialLinks, {}),
         avatar: existingProfile?.avatar || authUser.user_metadata?.avatar_url || "🎓",
         role: existingProfile?.role || "student",
         cvUrl: existingProfile?.cv_url || existingProfile?.cvUrl || "",
-        projects: Array.isArray(existingProfile?.projects) ? existingProfile.projects : (typeof existingProfile?.projects === "string" ? JSON.parse(existingProfile.projects || "[]") : []),
+        projects: parseJson(existingProfile?.projects, []),
         badges: existingProfile?.badges || ["حساب موثق"],
         points: existingProfile?.points || 100,
         following: existingProfile?.following || [],
@@ -142,10 +150,11 @@ function CallbackHandler() {
         setUser(sessionUser);
       }
 
-      // Upsert profile in Supabase Database
-      try {
-        if (isSupabaseConfigured && supabase) {
-          await supabase.from("profiles").upsert({
+      // Only insert into Supabase if the profile DOES NOT exist. 
+      // Do NOT upsert on every login to prevent overwriting saved user data!
+      if (!existingProfile && isSupabaseConfigured && supabase) {
+        try {
+          await supabase.from("profiles").insert({
             id: sessionUser.id,
             email: userEmail,
             name: userName,
@@ -154,15 +163,11 @@ function CallbackHandler() {
             department: userDepartment,
             student_id: userStudentId,
             avatar: sessionUser.avatar,
-            social_links: sessionUser.socialLinks,
-            skills: sessionUser.skills,
-            cv_url: sessionUser.cvUrl,
-            projects: sessionUser.projects,
-            is_profile_completed: isCompleted
+            is_profile_completed: false
           });
+        } catch (e) {
+          console.warn("Profile database insert warning:", e);
         }
-      } catch (e) {
-        console.warn("Profile database sync warning:", e);
       }
 
       if (isMounted) {
