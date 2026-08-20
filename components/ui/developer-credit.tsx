@@ -12,18 +12,18 @@ export function DeveloperCredit() {
 
   return (
     <div 
-      className={`fixed bottom-6 ${isRtl ? 'left-6 items-start' : 'right-6 items-end'} z-[100] flex flex-col`}
+      className={`relative flex flex-col w-full`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            exit={{ opacity: 0, y: 5, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="mb-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl rounded-2xl p-1.5 w-48 overflow-hidden"
+            className="absolute bottom-full left-0 right-0 mb-2 bg-zinc-950 dark:bg-zinc-900 border border-zinc-800 dark:border-zinc-700 shadow-xl rounded-xl p-1.5 z-50 overflow-hidden"
             dir="ltr" // keep ltr for the github/portfolio english text
           >
             <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-850/60 mb-1">
@@ -35,7 +35,7 @@ export function DeveloperCredit() {
               href="https://github.com/SayedNada74"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:text-teal-700 dark:hover:text-teal-400 rounded-xl transition-all"
+              className="flex items-center justify-between px-2.5 py-2 text-xs font-bold text-zinc-300 hover:bg-zinc-800 rounded-lg transition-all"
             >
               <span>GitHub</span>
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -46,7 +46,7 @@ export function DeveloperCredit() {
               href="https://sayed-nada-portfolio.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:text-teal-700 dark:hover:text-teal-400 rounded-xl transition-all"
+              className="flex items-center justify-between px-2.5 py-2 text-xs font-bold text-zinc-300 hover:bg-zinc-800 rounded-lg transition-all mt-0.5"
             >
               <span>Portfolio</span>
               <Globe className="h-4 w-4" />
@@ -57,9 +57,9 @@ export function DeveloperCredit() {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 px-5 py-2.5 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:shadow-xl rounded-full transition-all duration-300 group"
+        className="flex w-full items-center justify-between px-3 py-2 bg-transparent border border-zinc-200/80 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-xl transition-all duration-300 group"
       >
-        <span className="text-xs font-extrabold text-zinc-800 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors" dir="ltr">
+        <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors" dir="ltr">
           Developed by Sayed Nada
         </span>
         <Code2 className="h-4 w-4 text-teal-600 dark:text-teal-400 group-hover:rotate-12 transition-transform" />
