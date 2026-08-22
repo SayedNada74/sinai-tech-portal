@@ -111,6 +111,7 @@ function validateSafeMoodleUrl(rawUrl: string): { isValid: boolean; error?: stri
       hostname.includes("moodle") ||
       hostname.includes("lms");
 
+    const path = parsed.pathname.toLowerCase();
     const isCalendarPath =
       path.includes("calendar") ||
       path.includes("export") ||

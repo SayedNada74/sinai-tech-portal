@@ -139,43 +139,127 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user]);
 
-  // Save changes to localStorage cache and Supabase Cloud DB
-  const saveState = async (completed: CompletedCourseState[], planned: string[], target: number) => {
-    if (user) {
-      const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
-      const storageKey = `su_academic_${userEmailKey}`;
-      const payload = JSON.stringify({
-        completedCourses: completed,
-        plannedCourses: planned,
-        targetGpa: target
-      });
+  // ============================================================================
+  // COALESCED DEBOUNCED SYNC ENGINE
+  // ============================================================================
+  // Holds the latest academic payload to persist to Supabase
+  const pendingSyncRef = React.useRef<{
+    completed: CompletedCourseState[];
+    planned: string[];
+    targetGpa: number;
+  } | null>(null);
 
-      // 1. Cache locally
-      localStorage.setItem(storageKey, payload);
-      localStorage.setItem(`su_academic_${user.id}`, payload);
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const isSyncingRef = React.useRef<boolean>(false);
+  const hasPendingNextSyncRef = React.useRef<boolean>(false);
+  const userRef = React.useRef(user);
+  userRef.current = user;
 
-      // 2. Persist to Supabase Cloud DB
-      if (isSupabaseConfigured && supabase && user.id) {
-        try {
-          await supabase.from("academic_progress").upsert({
-            user_id: user.id,
-            completed_courses: completed,
-            planned_courses: planned,
-            target_gpa: target,
-            updated_at: new Date().toISOString()
-          }, { onConflict: "user_id" });
-        } catch (err) {
-          console.warn("Academic progress cloud save warning:", err);
-        }
+  // Flushes the latest coalesced payload to Supabase Cloud DB with serialized lock
+  const flushSyncToCloud = React.useCallback(async () => {
+    const currentUser = userRef.current;
+    if (!isSupabaseConfigured || !supabase || !currentUser?.id || !pendingSyncRef.current) {
+      return;
+    }
+
+    if (isSyncingRef.current) {
+      // Mark that a newer update arrived during an active in-flight request
+      hasPendingNextSyncRef.current = true;
+      return;
+    }
+
+    isSyncingRef.current = true;
+    hasPendingNextSyncRef.current = false;
+
+    // Snapshot the current payload to send
+    const snapshot = { ...pendingSyncRef.current };
+
+    try {
+      const { error } = await supabase.from("academic_progress").upsert({
+        user_id: currentUser.id,
+        completed_courses: snapshot.completed,
+        planned_courses: snapshot.planned,
+        target_gpa: snapshot.targetGpa,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id" });
+
+      if (error) {
+        console.warn("[Academic Sync] Cloud upsert warning:", error.message);
+      }
+    } catch (err: any) {
+      console.warn("[Academic Sync] Network or unexpected error:", err?.message || err);
+    } finally {
+      isSyncingRef.current = false;
+
+      // If newer updates arrived while the network request was in-flight, immediately sync the latest coalesced state
+      if (hasPendingNextSyncRef.current) {
+        hasPendingNextSyncRef.current = false;
+        flushSyncToCloud();
       }
     }
-  };
+  }, []);
+
+  // Schedules a debounced sync (700ms) while keeping local cache instantly updated
+  const queueAcademicUpdate = React.useCallback((
+    completed: CompletedCourseState[],
+    planned: string[],
+    target: number
+  ) => {
+    const currentUser = userRef.current;
+    if (!currentUser) return;
+
+    // 1. Instant Synchronous LocalStorage Cache Update (Optimistic Local-First)
+    const userEmailKey = currentUser.email
+      ? currentUser.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_')
+      : currentUser.id;
+    const storageKey = `su_academic_${userEmailKey}`;
+    const legacyKey = `su_academic_${currentUser.id}`;
+
+    const payload = JSON.stringify({
+      completedCourses: completed,
+      plannedCourses: planned,
+      targetGpa: target
+    });
+
+    try {
+      localStorage.setItem(storageKey, payload);
+      localStorage.setItem(legacyKey, payload);
+    } catch (e) {
+      console.warn("[Academic Sync] LocalStorage write error:", e);
+    }
+
+    // 2. Update Pending Cloud Payload
+    pendingSyncRef.current = {
+      completed,
+      planned,
+      targetGpa: target
+    };
+
+    // 3. Reset and schedule debounced sync timer (700ms)
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      flushSyncToCloud();
+    }, 700);
+  }, [flushSyncToCloud]);
+
+  // Cleanup on unmount or user change
+  React.useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      // If there's an uncommitted pending payload on unmount, attempt an immediate flush
+      if (pendingSyncRef.current && userRef.current?.id) {
+        flushSyncToCloud();
+      }
+    };
+  }, [flushSyncToCloud]);
 
   const markCompleted = (code: string, grade: string) => {
-    // Remove from planned first
     const newPlanned = plannedCourses.filter((c) => c !== code);
-    
-    // Add/Update completed
     const newCompleted = [...completedCourses];
     const index = newCompleted.findIndex((c) => c.code === code);
     if (index !== -1) {
@@ -186,14 +270,11 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
 
     setPlannedCourses(newPlanned);
     setCompletedCourses(newCompleted);
-    saveState(newCompleted, newPlanned, targetGpa);
+    queueAcademicUpdate(newCompleted, newPlanned, targetGpa);
   };
 
   const markPlanned = (code: string) => {
-    // Remove from completed
     const newCompleted = completedCourses.filter((c) => c.code !== code);
-    
-    // Add to planned if not exists
     const newPlanned = [...plannedCourses];
     if (!newPlanned.includes(code)) {
       newPlanned.push(code);
@@ -201,7 +282,7 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
 
     setCompletedCourses(newCompleted);
     setPlannedCourses(newPlanned);
-    saveState(newCompleted, newPlanned, targetGpa);
+    queueAcademicUpdate(newCompleted, newPlanned, targetGpa);
   };
 
   const removeCourse = (code: string) => {
@@ -210,7 +291,7 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
 
     setCompletedCourses(newCompleted);
     setPlannedCourses(newPlanned);
-    saveState(newCompleted, newPlanned, targetGpa);
+    queueAcademicUpdate(newCompleted, newPlanned, targetGpa);
   };
 
   const resetAll = () => {
@@ -218,13 +299,16 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     setPlannedCourses([]);
     setTargetGpa(3.5);
     if (user) {
+      const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
+      localStorage.removeItem(`su_academic_${userEmailKey}`);
       localStorage.removeItem(`su_academic_${user.id}`);
     }
+    queueAcademicUpdate([], [], 3.5);
   };
 
   const updateTargetGpa = (val: number) => {
     setTargetGpa(val);
-    saveState(completedCourses, plannedCourses, val);
+    queueAcademicUpdate(completedCourses, plannedCourses, val);
   };
 
   // Check state helpers
