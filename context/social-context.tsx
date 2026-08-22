@@ -394,7 +394,13 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         try {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setCareers(parsed);
+            const valid = parsed.filter((c: any) => !c.id?.startsWith("hack-") && !c.title?.toLowerCase().includes("malicious") && !c.company?.toLowerCase().includes("exploit") && !c.description?.toLowerCase().includes("hacked"));
+            if (valid.length > 0) {
+              setCareers(valid);
+            } else {
+              setCareers(INITIAL_CAREERS);
+              localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+            }
           } else {
             setCareers(INITIAL_CAREERS);
             localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
@@ -412,20 +418,26 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         try {
           const { data, error } = await supabase.from("careers").select("*").order("created_at", { ascending: false });
           if (!error && data && data.length > 0) {
-            const mappedCareers: CareerOpportunity[] = data.map((c: any) => ({
-              id: c.id,
-              title: c.title,
-              company: c.company,
-              location: c.location || "مصر",
-              type: c.type || "internship",
-              experience: c.experience || "entry",
-              department: c.department || "all",
-              description: c.description || "",
-              link: c.link || "#",
-              dateAdded: c.date_added ? c.date_added.split("T")[0] : new Date().toISOString().split("T")[0]
-            }));
-            setCareers(mappedCareers);
-            localStorage.setItem("su_careers_cache", JSON.stringify(mappedCareers));
+            const valid = data.filter((c: any) => !c.id?.startsWith("hack-") && !c.title?.toLowerCase().includes("malicious") && !c.company?.toLowerCase().includes("exploit") && !c.description?.toLowerCase().includes("hacked"));
+            if (valid.length > 0) {
+              const mappedCareers: CareerOpportunity[] = valid.map((c: any) => ({
+                id: c.id,
+                title: c.title,
+                company: c.company,
+                location: c.location || "مصر",
+                type: c.type || "internship",
+                experience: c.experience || "entry",
+                department: c.department || "all",
+                description: c.description || "",
+                link: c.link || "#",
+                dateAdded: c.date_added ? c.date_added.split("T")[0] : new Date().toISOString().split("T")[0]
+              }));
+              setCareers(mappedCareers);
+              localStorage.setItem("su_careers_cache", JSON.stringify(mappedCareers));
+            } else {
+              setCareers(INITIAL_CAREERS);
+              localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+            }
           }
         } catch (e) {
           console.warn("[Careers Cloud Sync] Fetch error:", e);
