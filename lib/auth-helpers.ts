@@ -24,3 +24,10 @@ export function getAuthCallbackURL(): string {
   }
   return `${getURL()}/auth/callback`;
 }
+
+export function getPasswordResetCallbackURL(): string {
+  if (typeof window !== "undefined" && window.location.origin) {
+    return `${window.location.origin}/auth/callback?next=/auth/reset-password`;
+  }
+  return `${getURL()}/auth/callback?next=/auth/reset-password`;
+}

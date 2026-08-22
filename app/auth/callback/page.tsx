@@ -34,12 +34,22 @@ function CallbackHandler() {
           throw new Error(errorDescription || errorParam || "فشل التحقق من الهوية من قبل المزود.");
         }
 
+        // Check if this is a Password Recovery flow
+        const isRecovery =
+          searchParams.get("type") === "recovery" ||
+          searchParams.get("next") === "/auth/reset-password" ||
+          (typeof window !== "undefined" && (window.location.hash.includes("type=recovery") || window.location.href.includes("reset-password")));
+
         // 2. Handle PKCE Code Exchange (`?code=...`)
         const code = searchParams.get("code");
         if (code) {
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
           if (data?.session && data?.user) {
+            if (isRecovery) {
+              if (isMounted) router.push("/auth/reset-password");
+              return;
+            }
             await syncSessionAndRedirect(data.user);
             return;
           }
@@ -51,7 +61,7 @@ function CallbackHandler() {
         if (tokenHash && type) {
           const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
           if (error) throw error;
-          if (type === "recovery") {
+          if (type === "recovery" || isRecovery) {
             if (isMounted) router.push("/auth/reset-password");
             return;
           }
@@ -66,6 +76,10 @@ function CallbackHandler() {
           const { data: { session }, error } = await supabase.auth.getSession();
           if (error) throw error;
           if (session?.user) {
+            if (isRecovery) {
+              if (isMounted) router.push("/auth/reset-password");
+              return;
+            }
             await syncSessionAndRedirect(session.user);
             return;
           }
@@ -74,6 +88,10 @@ function CallbackHandler() {
         // 5. Fallback check for active Supabase session
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+          if (isRecovery) {
+            if (isMounted) router.push("/auth/reset-password");
+            return;
+          }
           await syncSessionAndRedirect(session.user);
           return;
         }

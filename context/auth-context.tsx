@@ -180,7 +180,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (!isMounted) return;
-        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        if (event === "PASSWORD_RECOVERY") {
+          if (session?.user) {
+            await hydrateUserFromCloud(session.user);
+          }
+          router.push("/auth/reset-password");
+          setIsLoading(false);
+          return;
+        } else if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
           if (session?.user) {
             await hydrateUserFromCloud(session.user);
           }

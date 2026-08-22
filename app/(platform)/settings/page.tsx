@@ -23,7 +23,7 @@ import {
 
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getAuthCallbackURL } from "@/lib/auth-helpers";
+import { getPasswordResetCallbackURL } from "@/lib/auth-helpers";
 
 export default function SettingsPage() {
   const { lang, setLang, theme, setTheme, t, dir, lowPowerMode, setLowPowerMode } = useApp();
@@ -120,7 +120,7 @@ export default function SettingsPage() {
     try {
       if (isSupabaseConfigured && supabase) {
         const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-          redirectTo: getAuthCallbackURL()
+          redirectTo: getPasswordResetCallbackURL()
         });
         if (error) throw error;
       }

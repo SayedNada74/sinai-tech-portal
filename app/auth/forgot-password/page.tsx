@@ -11,7 +11,7 @@ import { GraduationCap, Mail, ArrowLeft, Send } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getAuthCallbackURL } from "@/lib/auth-helpers";
+import { getPasswordResetCallbackURL } from "@/lib/auth-helpers";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState("");
@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
     if (isSupabaseConfigured && supabase) {
       try {
         const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: getAuthCallbackURL(),
+          redirectTo: getPasswordResetCallbackURL(),
         });
         if (resetErr) {
           setError(resetErr.message);

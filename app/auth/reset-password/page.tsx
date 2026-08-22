@@ -39,11 +39,14 @@ export default function ResetPasswordPage() {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { error: updateErr } = await supabase.auth.updateUser({ password });
+        const { data: updateData, error: updateErr } = await supabase.auth.updateUser({ password });
         if (updateErr) {
           setError(updateErr.message);
           setIsResetting(false);
           return;
+        }
+        if (updateData?.user?.id) {
+          await supabase.from("profiles").update({ password }).eq("id", updateData.user.id);
         }
       } catch (err: any) {
         console.warn("Supabase updateUser password error:", err);
