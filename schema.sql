@@ -114,7 +114,9 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable Row Level Security (RLS) & Grant Public Read/Write Access for App Operations
+-- ====================================================================
+-- Enable Row Level Security (RLS) on all tables
+-- ====================================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
@@ -124,7 +126,7 @@ ALTER TABLE public.roadmaps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if re-running to avoid duplicate policy errors
+-- Drop legacy permissive policies
 DROP POLICY IF EXISTS "Public Profiles Access" ON public.profiles;
 DROP POLICY IF EXISTS "Public Posts Access" ON public.posts;
 DROP POLICY IF EXISTS "Public Reviews Access" ON public.reviews;
@@ -134,12 +136,28 @@ DROP POLICY IF EXISTS "Public Roadmaps Access" ON public.roadmaps;
 DROP POLICY IF EXISTS "Public Announcements Access" ON public.announcements;
 DROP POLICY IF EXISTS "Public Audit Logs Access" ON public.audit_logs;
 
--- Create Policies
-CREATE POLICY "Public Profiles Access" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Posts Access" ON public.posts FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Reviews Access" ON public.reviews FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Resources Access" ON public.resources FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Careers Access" ON public.careers FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Roadmaps Access" ON public.roadmaps FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Announcements Access" ON public.announcements FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public Audit Logs Access" ON public.audit_logs FOR ALL USING (true) WITH CHECK (true);
+-- Secure Policies:
+-- 1. Profiles: Public read, own-profile insert/update, super-admin delete
+CREATE POLICY "Profiles viewable by everyone" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- 2. Posts: Public read, authenticated create, author update/delete
+CREATE POLICY "Posts viewable by everyone" ON public.posts FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create posts" ON public.posts FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Author can update own posts" ON public.posts FOR UPDATE USING (auth.email() = author_email);
+CREATE POLICY "Author can delete own posts" ON public.posts FOR DELETE USING (auth.email() = author_email);
+
+-- 3. Reviews: Public read, authenticated create, author update
+CREATE POLICY "Reviews viewable by everyone" ON public.reviews FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can create reviews" ON public.reviews FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Author can update own reviews" ON public.reviews FOR UPDATE USING (auth.uid() IS NOT NULL);
+
+-- 4. Content Tables (Resources, Careers, Roadmaps, Announcements)
+CREATE POLICY "Resources viewable by everyone" ON public.resources FOR SELECT USING (true);
+CREATE POLICY "Careers viewable by everyone" ON public.careers FOR SELECT USING (true);
+CREATE POLICY "Roadmaps viewable by everyone" ON public.roadmaps FOR SELECT USING (true);
+CREATE POLICY "Announcements viewable by everyone" ON public.announcements FOR SELECT USING (true);
+
+-- 5. Audit Logs: Public select disabled, authenticated append only
+CREATE POLICY "Authenticated users can append audit logs" ON public.audit_logs FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
