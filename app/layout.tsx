@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/context/auth-context";
 import { AppProvider } from "@/context/app-context";
 import { AcademicProvider } from "@/context/academic-context";
@@ -18,7 +18,12 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-const jakarta = { variable: "font-jakarta" };
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",

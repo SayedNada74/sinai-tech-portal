@@ -21,27 +21,27 @@ export function Logo({
 }: LogoProps) {
   const sizeMap = {
     sm: {
-      box: "h-8 w-8 rounded-lg p-0.5",
-      title: "text-xs",
-      sub: "text-[9px] tracking-wider",
-      gap: "gap-2"
-    },
-    md: {
-      box: "h-10 w-10 rounded-xl p-1",
-      title: "text-sm font-extrabold",
-      sub: "text-[10.5px] font-extrabold tracking-widest",
+      box: "h-9 w-9 rounded-xl p-1",
+      title: "text-[13px] font-black tracking-tight",
+      sub: "text-[9.5px] font-bold tracking-widest",
       gap: "gap-2.5"
     },
-    lg: {
-      box: "h-12 w-12 rounded-xl p-1.5",
-      title: "text-base font-extrabold",
-      sub: "text-xs font-extrabold tracking-widest",
+    md: {
+      box: "h-11 w-11 rounded-2xl p-1.5",
+      title: "text-[15px] font-black tracking-tight",
+      sub: "text-[10px] font-bold tracking-widest",
       gap: "gap-3"
     },
+    lg: {
+      box: "h-14 w-14 rounded-2xl p-2",
+      title: "text-lg font-black tracking-tight",
+      sub: "text-xs font-bold tracking-widest",
+      gap: "gap-3.5"
+    },
     xl: {
-      box: "h-16 w-16 rounded-2xl p-2",
-      title: "text-xl font-black",
-      sub: "text-xs font-extrabold tracking-[0.25em]",
+      box: "h-18 w-18 rounded-2xl p-2.5 shadow-lg shadow-violet-500/10",
+      title: "text-2xl font-black tracking-tight mt-1.5",
+      sub: "text-[11px] font-bold tracking-[0.25em] mt-0.5",
       gap: "gap-2 flex-col items-center text-center"
     }
   };

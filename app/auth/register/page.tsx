@@ -92,10 +92,10 @@ export default function RegisterPage() {
         className="w-full max-w-md"
       >
         {/* Logo and Header */}
-        <div className="flex flex-col items-center mb-8">
-          <Logo size="xl" href="/" className="mb-4" />
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{t("إنشاء حساب جديد", "Create New Account")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{t("ابدأ رحلتك الأكاديمية الذكية اليوم", "Start your academic journey today")}</p>
+        <div className="flex flex-col items-center mb-6 text-center">
+          <Logo size="xl" href="/" className="mb-3" />
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{t("إنشاء حساب جديد", "Create New Account")}</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-normal">{t("ابدأ رحلتك الأكاديمية الذكية اليوم", "Start your academic journey today")}</p>
         </div>
 
         <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60">

@@ -59,8 +59,8 @@ export default function ForgotPasswordPage() {
         className="w-full max-w-md"
       >
         {/* Logo */}
-        <div className="flex flex-col items-center mb-8">
-          <Logo size="xl" href="/" className="mb-4" />
+        <div className="flex flex-col items-center mb-6">
+          <Logo size="xl" href="/" className="mb-2" />
         </div>
 
         <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60">
