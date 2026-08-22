@@ -237,6 +237,33 @@ export default function ProfilePage() {
     e.preventDefault();
     setMessage({ type: "", text: "" });
 
+    // Check if user made any actual modifications
+    const hasChanges =
+      (nameAr !== (user?.nameAr || "")) ||
+      (nameEn !== (user?.nameEn || "")) ||
+      (email !== (user?.email || "")) ||
+      (level !== (user?.level || "")) ||
+      (studentId !== (user?.studentId || "")) ||
+      (bio !== (user?.bio || "")) ||
+      (avatar !== (user?.avatar || "🎓")) ||
+      (cvUrl !== (user?.cvUrl || "")) ||
+      (github !== (user?.socialLinks?.github || "")) ||
+      (linkedin !== (user?.socialLinks?.linkedin || "")) ||
+      (portfolioUrl !== (user?.socialLinks?.website || "")) ||
+      (publicSkills !== (user?.privacySettings?.publicSkills ?? true)) ||
+      (publicProjects !== (user?.privacySettings?.publicProjects ?? true)) ||
+      JSON.stringify(skills) !== JSON.stringify(user?.skills || []) ||
+      JSON.stringify(projects) !== JSON.stringify(user?.projects || []);
+
+    if (!hasChanges) {
+      setMessage({
+        type: "success",
+        text: t("البيانات محدثة ومحفوظة بالفعل في السحابة!", "Data is already up to date and saved in cloud!")
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     try {
       const success = await updateProfile({
         nameAr,
