@@ -1,10 +1,10 @@
 -- ==============================================================================================
--- 🛡️ SINAI TECH PORTAL — 1-CLICK PRODUCTION SECURITY & HARDENED RLS MIGRATION
--- Copy and run this ENTIRE script in Supabase SQL Editor:
+-- 🛡️ SINAI TECH PORTAL — HARDENED PRODUCTION SECURITY & STRICT LEAST-PRIVILEGE RLS MIGRATION
+-- Copy and execute in Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/odjodsorkpdgixzyiyyc/sql
 -- ==============================================================================================
 
--- 1. Ensure required columns exist on profiles table
+-- 1. Ensure required columns and data safety
 ALTER TABLE IF EXISTS public.profiles 
   ADD COLUMN IF NOT EXISTS name_ar TEXT,
   ADD COLUMN IF NOT EXISTS name_en TEXT,
@@ -12,6 +12,9 @@ ALTER TABLE IF EXISTS public.profiles
   ADD COLUMN IF NOT EXISTS is_profile_completed BOOLEAN DEFAULT false,
   ADD COLUMN IF NOT EXISTS privacy_settings JSONB DEFAULT '{"publicSkills": true, "publicProjects": true}'::jsonb,
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- SECURITY: Drop plain password column from profiles if it exists (passwords live in auth.users only)
+ALTER TABLE IF EXISTS public.profiles DROP COLUMN IF EXISTS password;
 
 -- 2. Ensure academic_progress and ai_conversations tables exist
 CREATE TABLE IF NOT EXISTS public.academic_progress (
@@ -43,13 +46,16 @@ CREATE TABLE IF NOT EXISTS public.ai_messages (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Create Helper Functions for Role Authorization (Security Definer)
+-- Ensure reviews table has author_id for strict ownership checks
+ALTER TABLE IF EXISTS public.reviews
+  ADD COLUMN IF NOT EXISTS author_id TEXT;
+
+-- 3. Security Definer Helper Functions with Hardened search_path
 CREATE OR REPLACE FUNCTION public.current_user_role()
 RETURNS TEXT AS $$
 DECLARE
   v_role TEXT;
 BEGIN
-  -- Check role by auth.uid() matching either text or uuid
   SELECT role INTO v_role 
   FROM public.profiles 
   WHERE id::text = auth.uid()::text 
@@ -57,46 +63,58 @@ BEGIN
   
   RETURN COALESCE(v_role, 'student');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, pg_temp;
 
 CREATE OR REPLACE FUNCTION public.is_admin_or_super()
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN public.current_user_role() IN ('admin', 'super-admin');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, pg_temp;
 
 CREATE OR REPLACE FUNCTION public.is_staff_or_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN public.current_user_role() IN ('moderator', 'admin', 'super-admin');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, pg_temp;
 
--- 4. Create Role Privilege Escalation Protection Trigger
+-- 4. Role Privilege Escalation Protection Trigger (Applies to INSERT & UPDATE)
 CREATE OR REPLACE FUNCTION public.protect_profile_role()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- If role column is being modified
-  IF (NEW.role IS DISTINCT FROM OLD.role) THEN
-    -- Block regular students / moderators from elevating roles
-    IF NOT EXISTS (
-      SELECT 1 FROM public.profiles 
-      WHERE id::text = auth.uid()::text AND role = 'super-admin'
-    ) THEN
-      -- Silently revert the role back to old role to prevent privilege escalation
-      NEW.role := OLD.role;
+  -- On INSERT, enforce student role unless caller is an existing super-admin
+  IF (TG_OP = 'INSERT') THEN
+    IF (NEW.role IS NOT NULL AND NEW.role != 'student') THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM public.profiles 
+        WHERE id::text = auth.uid()::text AND role = 'super-admin'
+      ) THEN
+        NEW.role := 'student';
+      END IF;
+    END IF;
+  END IF;
+
+  -- On UPDATE, prevent non-super-admins from changing their role
+  IF (TG_OP = 'UPDATE') THEN
+    IF (NEW.role IS DISTINCT FROM OLD.role) THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM public.profiles 
+        WHERE id::text = auth.uid()::text AND role = 'super-admin'
+      ) THEN
+        NEW.role := OLD.role;
+      END IF;
     END IF;
   END IF;
   
   NEW.updated_at := NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 DROP TRIGGER IF EXISTS tr_protect_profile_role ON public.profiles;
 CREATE TRIGGER tr_protect_profile_role
-BEFORE UPDATE ON public.profiles
+BEFORE INSERT OR UPDATE ON public.profiles
 FOR EACH ROW
 EXECUTE FUNCTION public.protect_profile_role();
 
@@ -118,13 +136,12 @@ ALTER TABLE IF EXISTS public.ai_messages ENABLE ROW LEVEL SECURITY;
 
 
 -- ==============================================================================================
--- 6. DROP ALL DANGEROUS PUBLIC / PERMISSIVE POLICIES
+-- 6. DROP ALL LEGACY / PERMISSIVE POLICIES
 -- ==============================================================================================
 DO $$ 
 DECLARE 
   r RECORD;
 BEGIN
-  -- Drop any legacy permissive policies
   FOR r IN (
     SELECT schemaname, tablename, policyname 
     FROM pg_policies 
@@ -142,22 +159,18 @@ END $$;
 -- -------------------------------------------------------------
 -- PROFILES
 -- -------------------------------------------------------------
--- 1. Anyone can view student public profiles (Directory, Community, Leaderboard)
 CREATE POLICY "Profiles viewable by everyone" 
 ON public.profiles FOR SELECT 
 USING (true);
 
--- 2. User can only insert their own profile matching auth.uid()
 CREATE POLICY "Users can insert own profile" 
 ON public.profiles FOR INSERT 
-WITH CHECK (auth.uid()::text = id::text OR auth.uid() IS NULL);
+WITH CHECK (auth.uid()::text = id::text);
 
--- 3. User can ONLY update their own profile; Super Admins can update any profile
 CREATE POLICY "Users can update own profile or super admin" 
 ON public.profiles FOR UPDATE 
 USING (auth.uid()::text = id::text OR public.current_user_role() = 'super-admin');
 
--- 4. Only Super Admins can delete user profiles
 CREATE POLICY "Only super admin can delete profiles" 
 ON public.profiles FOR DELETE 
 USING (public.current_user_role() = 'super-admin');
@@ -225,20 +238,20 @@ WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "Author or staff can update posts" 
 ON public.posts FOR UPDATE 
 USING (
-  auth.email() = author_email OR 
+  (auth.email() IS NOT NULL AND auth.email() = author_email) OR 
   public.is_staff_or_admin()
 );
 
 CREATE POLICY "Author or staff can delete posts" 
 ON public.posts FOR DELETE 
 USING (
-  auth.email() = author_email OR 
+  (auth.email() IS NOT NULL AND auth.email() = author_email) OR 
   public.is_staff_or_admin()
 );
 
 
 -- -------------------------------------------------------------
--- COURSE REVIEWS
+-- COURSE REVIEWS (Strict Least-Privilege Author / Staff Only)
 -- -------------------------------------------------------------
 CREATE POLICY "Reviews viewable by everyone" 
 ON public.reviews FOR SELECT 
@@ -250,11 +263,17 @@ WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Author or staff can update reviews" 
 ON public.reviews FOR UPDATE 
-USING (public.is_staff_or_admin() OR auth.uid() IS NOT NULL);
+USING (
+  (auth.uid()::text = author_id::text) OR 
+  public.is_staff_or_admin()
+);
 
 CREATE POLICY "Author or staff can delete reviews" 
 ON public.reviews FOR DELETE 
-USING (public.is_staff_or_admin());
+USING (
+  (auth.uid()::text = author_id::text) OR 
+  public.is_staff_or_admin()
+);
 
 
 -- -------------------------------------------------------------
@@ -312,7 +331,7 @@ WITH CHECK (auth.uid() IS NOT NULL);
 
 
 -- ==============================================================================================
--- 8. PERFORMANCE INDEXES (ELIMINATES UNINDEXED QUERY WARNINGS)
+-- 8. PERFORMANCE INDEXES
 -- ==============================================================================================
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 CREATE INDEX IF NOT EXISTS idx_academic_user_id ON public.academic_progress(user_id);
