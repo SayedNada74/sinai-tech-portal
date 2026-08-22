@@ -54,6 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
+  // In-flight mutex locks for rapid click hardening & idempotency
+  const inFlightOAuthRef = React.useRef<Set<string>>(new Set());
+  const inFlightUpdateProfileRef = React.useRef(false);
+
   React.useEffect(() => {
     let isMounted = true;
 
@@ -573,10 +577,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginWithProvider = async (provider: "google" | "github"): Promise<boolean> => {
+    if (inFlightOAuthRef.current.has(provider)) {
+      console.warn(`[OAuth Idempotency] Duplicate OAuth request blocked for: ${provider}`);
+      return false;
+    }
+    inFlightOAuthRef.current.add(provider);
     setIsLoading(true);
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         const callbackUrl = getAuthCallbackURL();
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: provider,
@@ -588,36 +597,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           window.location.href = data.url;
           return true;
         }
-      } catch (e) {
-        console.warn("Supabase OAuth error:", e);
       }
+
+      // Fallback OAuth session (Strictly Student Role!)
+      const providerUser: UserProfile = {
+        id: `user-${provider}-${Date.now()}`,
+        name: provider === "google" ? "طالب Google" : "طالب GitHub",
+        email: provider === "google" ? "student.google@gmail.com" : "student.git@github.com",
+        level: "الفرقة الأولى",
+        department: "تكنولوجيا المعلومات (IT)",
+        studentId: `2026${Math.floor(1000 + Math.random() * 9000)}`,
+        bio: `مستخدم مسجل عبر ${provider}`,
+        skills: [],
+        socialLinks: { github: "", linkedin: "" },
+        avatar: provider === "google" ? "🌐" : "🐈",
+        role: "student",
+        cvUrl: "",
+        projects: [],
+        badges: ["الدخول عبر الهوية الرقمية"],
+        points: 100,
+        following: [],
+        is_profile_completed: false
+      };
+
+      setUser(providerUser);
+      localStorage.setItem("su_user_session", JSON.stringify(providerUser));
+      return true;
+    } catch (e) {
+      console.warn("Supabase OAuth error:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightOAuthRef.current.delete(provider);
+      }, 1500);
+      setIsLoading(false);
     }
-
-    // Fallback OAuth session (Strictly Student Role!)
-    const providerUser: UserProfile = {
-      id: `user-${provider}-${Date.now()}`,
-      name: provider === "google" ? "طالب Google" : "طالب GitHub",
-      email: provider === "google" ? "student.google@gmail.com" : "student.git@github.com",
-      level: "الفرقة الأولى",
-      department: "تكنولوجيا المعلومات (IT)",
-      studentId: `2026${Math.floor(1000 + Math.random() * 9000)}`,
-      bio: `مستخدم مسجل عبر ${provider}`,
-      skills: [],
-      socialLinks: { github: "", linkedin: "" },
-      avatar: provider === "google" ? "🌐" : "🐈",
-      role: "student",
-      cvUrl: "",
-      projects: [],
-      badges: ["الدخول عبر الهوية الرقمية"],
-      points: 100,
-      following: [],
-      is_profile_completed: false
-    };
-
-    setUser(providerUser);
-    localStorage.setItem("su_user_session", JSON.stringify(providerUser));
-    setIsLoading(false);
-    return true;
   };
 
   const logout = async () => {
@@ -638,17 +652,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (updatedFields: Partial<UserProfile>): Promise<boolean> => {
     if (!user) return false;
+    if (inFlightUpdateProfileRef.current) {
+      console.warn("[Profile Idempotency] Concurrent updateProfile blocked");
+      return false;
+    }
+    inFlightUpdateProfileRef.current = true;
     setIsLoading(true);
 
-    const updatedUser = {
-      ...user,
-      ...updatedFields,
-    };
+    try {
+      const updatedUser = {
+        ...user,
+        ...updatedFields,
+      };
 
-    const updatePayload = {
-      name: updatedUser.name,
-      name_ar: updatedUser.nameAr || "",
-      name_en: updatedUser.nameEn || "",
+      const updatePayload = {
+        name: updatedUser.name,
+        name_ar: updatedUser.nameAr || "",
+        name_en: updatedUser.nameEn || "",
       level: updatedUser.level,
       department: updatedUser.department,
       student_id: updatedUser.studentId,
@@ -730,6 +750,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(false);
     return true;
+    } finally {
+      inFlightUpdateProfileRef.current = false;
+    }
   };
 
   return (

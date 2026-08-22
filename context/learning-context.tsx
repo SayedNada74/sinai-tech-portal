@@ -38,7 +38,7 @@ interface LearningContextType {
   recentlyViewed: { id: string; type: string; title: string; path: string; timestamp: number }[];
   toggleBookmark: (id: string, type: BookmarkItem["type"], title: string, link: string) => void;
   isBookmarked: (id: string) => boolean;
-  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">) => Promise<void>;
+  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">) => Promise<boolean>;
   deleteReview: (reviewId: string) => Promise<boolean>;
   toggleHelpfulReview: (reviewId: string) => void;
   toggleLikeResource: (id: string) => void;
@@ -246,11 +246,26 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     return bookmarks.some((b) => b.id === id);
   };
 
-  // 4. ADD REVIEW (Direct row-level INSERT to public.reviews with author_id)
+  // Action in-flight mutex locks for rapid-click protection & idempotency
+  const inFlightReviewsRef = React.useRef<Set<string>>(new Set());
+  const inFlightDeleteRef = React.useRef<Set<string>>(new Set());
+
+  // 5. ADD REVIEW (Direct row-level INSERT to public.reviews with author_id & In-Flight Lock)
   const addReview = async (
     courseCode: string,
     review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">
-  ): Promise<void> => {
+  ): Promise<boolean> => {
+    if (!user) return false;
+
+    // Idempotency lock key per user + course
+    const lockKey = `${user.id}_${courseCode.trim().toLowerCase()}`;
+    if (inFlightReviewsRef.current.has(lockKey)) {
+      console.warn(`[Idempotency Guard] Duplicate addReview call blocked for: ${lockKey}`);
+      return false;
+    }
+
+    inFlightReviewsRef.current.add(lockKey);
+
     const newReviewId = `rev-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const reviewDate = new Date().toISOString().split("T")[0];
     const authorName = user?.name || "طالب سيناء";
@@ -269,6 +284,7 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
 
     // Optimistic UI update & Cache
     setReviews((prev) => {
+      if (prev.some(r => r.id === newReviewId)) return prev;
       const updated = [newReview, ...prev];
       if (typeof window !== "undefined") {
         localStorage.setItem("su_course_reviews_cache", JSON.stringify(updated));
@@ -276,9 +292,9 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       return updated;
     });
 
-    // Authoritative Cloud INSERT
-    if (isSupabaseConfigured && supabase && user) {
-      try {
+    try {
+      // Authoritative Cloud INSERT
+      if (isSupabaseConfigured && supabase && user) {
         const { error } = await supabase.from("reviews").insert({
           id: newReviewId,
           course_code: courseCode,
@@ -297,15 +313,28 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
 
         if (error) {
           console.error("Supabase insert review error:", error.message);
+          return false;
         }
-      } catch (err) {
-        console.error("Exception adding review to Supabase:", err);
       }
+      return true;
+    } catch (err) {
+      console.error("Exception adding review to Supabase:", err);
+      return false;
+    } finally {
+      // Release lock after cooldown to prevent rapid spamming
+      setTimeout(() => {
+        inFlightReviewsRef.current.delete(lockKey);
+      }, 1000);
     }
   };
 
-  // 5. DELETE REVIEW (Author or Admin Only via RLS)
+  // 6. DELETE REVIEW (Author or Admin Only via RLS & In-Flight Lock)
   const deleteReview = async (reviewId: string): Promise<boolean> => {
+    if (inFlightDeleteRef.current.has(reviewId)) {
+      return false;
+    }
+    inFlightDeleteRef.current.add(reviewId);
+
     // Optimistic UI update
     setReviews((prev) => {
       const updated = prev.filter((r) => r.id !== reviewId);
@@ -315,21 +344,24 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       return updated;
     });
 
-    // Cloud DELETE
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      // Cloud DELETE
+      if (isSupabaseConfigured && supabase) {
         const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
         if (error) {
           console.error("Supabase delete review error:", error.message);
           return false;
         }
-        return true;
-      } catch (err) {
-        console.error("Exception deleting review from Supabase:", err);
-        return false;
       }
+      return true;
+    } catch (err) {
+      console.error("Exception deleting review from Supabase:", err);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightDeleteRef.current.delete(reviewId);
+      }, 500);
     }
-    return true;
   };
 
   // 6. TOGGLE HELPFUL (Safe per-user local toggle)

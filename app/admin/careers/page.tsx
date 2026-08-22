@@ -49,6 +49,7 @@ export default function AdminCareersPage() {
   const [formLink, setFormLink] = React.useState("https://example.com");
   const [formDept, setFormDept] = React.useState<CareerOpportunity["department"]>("all");
   const [formExp, setFormExp] = React.useState<CareerOpportunity["experience"]>("entry");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const openCreateModal = () => {
     setEditingId(null);
@@ -89,39 +90,48 @@ export default function AdminCareersPage() {
     });
   }, [careers, searchTerm, typeFilter]);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!formTitle || !formCompany || !formLink) {
       toast(t("⚠️ يرجى ملء المسمّى الوظيفي، اسم الشركة، ورابط التقديم.", "⚠️ Please enter job title, company name, and application URL."), "error");
       return;
     }
 
-    if (editingId) {
-      editCareer(editingId, {
-        title: formTitle,
-        company: formCompany,
-        location: formLocation || "مصر / Remotely",
-        type: formType,
-        description: formDesc || "فرصة ممتازة لطلاب وخريجي حاسبات سيناء.",
-        link: formLink,
-        department: formDept,
-        experience: formExp
-      });
-      toast(t("✨ تم تعديل بيانات الفرصة بنجاح!", "✨ Opportunity updated successfully!"), "success");
-    } else {
-      addCareer({
-        title: formTitle,
-        company: formCompany,
-        location: formLocation || "مصر / Remotely",
-        type: formType,
-        description: formDesc || "فرصة ممتازة لطلاب وخريجي حاسبات سيناء.",
-        link: formLink,
-        department: formDept,
-        experience: formExp
-      });
-      toast(t("✨ تم نشر فرصة التوظيف/التدريب بنجاح!", "✨ Opportunity published successfully!"), "success");
+    setIsSubmitting(true);
+    try {
+      if (editingId) {
+        await editCareer(editingId, {
+          title: formTitle,
+          company: formCompany,
+          location: formLocation || "مصر / Remotely",
+          type: formType,
+          description: formDesc || "فرصة ممتازة لطلاب وخريجي حاسبات سيناء.",
+          link: formLink,
+          department: formDept,
+          experience: formExp
+        });
+        toast(t("✨ تم تعديل بيانات الفرصة بنجاح!", "✨ Opportunity updated successfully!"), "success");
+      } else {
+        await addCareer({
+          title: formTitle,
+          company: formCompany,
+          location: formLocation || "مصر / Remotely",
+          type: formType,
+          description: formDesc || "فرصة ممتازة لطلاب وخريجي حاسبات سيناء.",
+          link: formLink,
+          department: formDept,
+          experience: formExp
+        });
+        toast(t("✨ تم نشر فرصة التوظيف/التدريب بنجاح!", "✨ Opportunity published successfully!"), "success");
+      }
+      setModalOpen(false);
+    } catch (err) {
+      toast(t("حدث خطأ أثناء حفظ الفرصة.", "An error occurred while saving the opportunity."), "error");
+    } finally {
+      setIsSubmitting(false);
     }
-    setModalOpen(false);
   };
 
   return (
@@ -290,7 +300,7 @@ export default function AdminCareersPage() {
               <Button type="button" variant="outline" size="sm" onClick={() => setModalOpen(false)} className="text-xs font-bold cursor-pointer">
                 {t("إلغاء", "Cancel")}
               </Button>
-              <Button type="submit" form="career-form" size="sm" className="text-xs font-bold cursor-pointer">
+              <Button type="submit" form="career-form" size="sm" className="text-xs font-bold cursor-pointer" isLoading={isSubmitting} disabled={isSubmitting}>
                 {editingId ? t("حفظ التحديثات", "Save Changes") : t("نشر الفرصة", "Publish Opportunity")}
               </Button>
             </div>

@@ -100,20 +100,20 @@ interface SocialContextType {
   clearMoodle: () => void;
 
   // Post Actions
-  createPost: (title: string, content: string, category: CommunityPost["category"], attachmentName?: string, attachmentUrl?: string) => void;
-  editPost: (id: string, title: string, content: string, category: CommunityPost["category"]) => void;
-  deletePost: (id: string) => void;
+  createPost: (title: string, content: string, category: CommunityPost["category"], attachmentName?: string, attachmentUrl?: string) => Promise<boolean>;
+  editPost: (id: string, title: string, content: string, category: CommunityPost["category"]) => Promise<boolean>;
+  deletePost: (id: string) => Promise<boolean>;
   likePost: (id: string) => void;
   reportPost: (id: string) => void;
-  addComment: (postId: string, content: string) => void;
-  addReply: (postId: string, commentId: string, content: string) => void;
+  addComment: (postId: string, content: string) => Promise<boolean>;
+  addReply: (postId: string, commentId: string, content: string) => Promise<boolean>;
   deleteComment: (postId: string, commentId: string) => void;
   deleteReply: (postId: string, commentId: string, replyId: string) => void;
 
   // Career Actions
-  addCareer: (career: Omit<CareerOpportunity, "id" | "dateAdded">) => void;
-  editCareer: (id: string, career: Omit<CareerOpportunity, "id" | "dateAdded">) => void;
-  deleteCareer: (id: string) => void;
+  addCareer: (career: Omit<CareerOpportunity, "id" | "dateAdded">) => Promise<boolean>;
+  editCareer: (id: string, career: Omit<CareerOpportunity, "id" | "dateAdded">) => Promise<boolean>;
+  deleteCareer: (id: string) => Promise<boolean>;
   toggleSaveJob: (id: string) => void;
   isJobSaved: (id: string) => boolean;
 
@@ -424,8 +424,14 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       }
     };
     window.addEventListener("storage", handleStorageEvent);
-    return () => window.removeEventListener("storage", handleStorageEvent);
   }, []);
+
+  // Action in-flight mutex locks for rapid-click protection & idempotency
+  const inFlightCareersRef = React.useRef<Set<string>>(new Set());
+  const inFlightPostsRef = React.useRef<Set<string>>(new Set());
+  const inFlightCommentsRef = React.useRef<Set<string>>(new Set());
+  const inFlightRepliesRef = React.useRef<Set<string>>(new Set());
+  const inFlightLikesRef = React.useRef<Set<string>>(new Set());
 
   const saveGlobalPosts = (updatedPosts: CommunityPost[]) => {
     setPosts(updatedPosts);
@@ -593,11 +599,18 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     saveSocialState({ notifications: updatedNotifs });
   };
 
-  // Community logic
-  const createPost = (title: string, content: string, category: CommunityPost["category"], attachmentName?: string, attachmentUrl?: string) => {
-    if (!user) return;
+  // Community logic (with In-Flight Mutex Locks)
+  const createPost = async (title: string, content: string, category: CommunityPost["category"], attachmentName?: string, attachmentUrl?: string): Promise<boolean> => {
+    if (!user) return false;
+    const lockKey = `post_${user.id}_${title.trim().toLowerCase()}`;
+    if (inFlightPostsRef.current.has(lockKey)) {
+      console.warn(`[Social Idempotency] Duplicate createPost blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightPostsRef.current.add(lockKey);
+
     const newPost: CommunityPost = {
-      id: `post-${Date.now()}`,
+      id: `post-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       title,
       category,
       content,
@@ -615,34 +628,73 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     const updated = [newPost, ...posts];
     saveGlobalPosts(updated);
 
-    insertToSupabase("posts", {
-      id: newPost.id,
-      title: newPost.title,
-      content: newPost.content,
-      category: newPost.category,
-      author: newPost.author,
-      author_email: newPost.authorEmail,
-      avatar: newPost.avatar,
-      date: newPost.date,
-      likes: newPost.likes,
-      reported: false,
-      attachment_name: attachmentName,
-      attachment_url: attachmentUrl
-    });
-
-    awardPoints(20, "إضافة منشور");
+    try {
+      await insertToSupabase("posts", {
+        id: newPost.id,
+        title: newPost.title,
+        content: newPost.content,
+        category: newPost.category,
+        author: newPost.author,
+        author_email: newPost.authorEmail,
+        avatar: newPost.avatar,
+        date: newPost.date,
+        likes: newPost.likes,
+        reported: false,
+        attachment_name: attachmentName,
+        attachment_url: attachmentUrl
+      });
+      awardPoints(20, "إضافة منشور");
+      return true;
+    } catch (e) {
+      console.warn("[Social Sync] Post insert warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightPostsRef.current.delete(lockKey);
+      }, 1000);
+    }
   };
 
-  const editPost = (id: string, title: string, content: string, category: CommunityPost["category"]) => {
+  const editPost = async (id: string, title: string, content: string, category: CommunityPost["category"]): Promise<boolean> => {
+    const lockKey = `edit_post_${id}`;
+    if (inFlightPostsRef.current.has(lockKey)) return false;
+    inFlightPostsRef.current.add(lockKey);
+
     const updated = posts.map(p => p.id === id ? { ...p, title, content, category } : p);
     saveGlobalPosts(updated);
-    updateInSupabase("posts", id, { title, content, category });
+
+    try {
+      await updateInSupabase("posts", id, { title, content, category });
+      return true;
+    } catch (e) {
+      console.warn("[Social Sync] Post edit warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightPostsRef.current.delete(lockKey);
+      }, 500);
+    }
   };
 
-  const deletePost = (id: string) => {
+  const deletePost = async (id: string): Promise<boolean> => {
+    const lockKey = `delete_post_${id}`;
+    if (inFlightPostsRef.current.has(lockKey)) return false;
+    inFlightPostsRef.current.add(lockKey);
+
     const updated = posts.filter(p => p.id !== id);
     saveGlobalPosts(updated);
-    deleteFromSupabase("posts", id);
+
+    try {
+      await deleteFromSupabase("posts", id);
+      return true;
+    } catch (e) {
+      console.warn("[Social Sync] Post delete warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightPostsRef.current.delete(lockKey);
+      }, 500);
+    }
   };
 
   const likePost = (id: string) => {
@@ -665,22 +717,28 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     updateInSupabase("posts", id, { reported: true });
   };
 
-  const addComment = (postId: string, content: string) => {
-    if (!user) return;
+  const addComment = async (postId: string, content: string): Promise<boolean> => {
+    if (!user || !content.trim()) return false;
+    const lockKey = `comment_${user.id}_${postId}_${content.trim().toLowerCase()}`;
+    if (inFlightCommentsRef.current.has(lockKey)) {
+      console.warn(`[Social Idempotency] Duplicate addComment blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightCommentsRef.current.add(lockKey);
+
     const newComment: PostComment = {
-      id: `comment-${Date.now()}`,
+      id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       postId,
       author: user.name,
       authorEmail: user.email,
       avatar: user.avatar,
-      content,
+      content: content.trim(),
       date: new Date().toISOString().split("T")[0],
       replies: []
     };
 
     const updated = posts.map(p => {
       if (p.id === postId) {
-        // Send a notification if post author is not current user
         if (p.authorEmail !== user.email) {
           const newNot: NotificationItem = {
             id: `not-${Date.now()}`,
@@ -701,16 +759,28 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
     saveGlobalPosts(updated);
     awardPoints(10, "إضافة تعليق");
+
+    setTimeout(() => {
+      inFlightCommentsRef.current.delete(lockKey);
+    }, 1000);
+    return true;
   };
 
-  const addReply = (postId: string, commentId: string, content: string) => {
-    if (!user) return;
+  const addReply = async (postId: string, commentId: string, content: string): Promise<boolean> => {
+    if (!user || !content.trim()) return false;
+    const lockKey = `reply_${user.id}_${commentId}_${content.trim().toLowerCase()}`;
+    if (inFlightRepliesRef.current.has(lockKey)) {
+      console.warn(`[Social Idempotency] Duplicate addReply blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightRepliesRef.current.add(lockKey);
+
     const newReply: PostReply = {
-      id: `reply-${Date.now()}`,
+      id: `reply-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       author: user.name,
       authorEmail: user.email,
       avatar: user.avatar,
-      content,
+      content: content.trim(),
       date: new Date().toISOString().split("T")[0]
     };
 
@@ -745,6 +815,11 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
     saveGlobalPosts(updated);
     awardPoints(5, "الرد على تعليق");
+
+    setTimeout(() => {
+      inFlightRepliesRef.current.delete(lockKey);
+    }, 1000);
+    return true;
   };
 
   const deleteComment = (postId: string, commentId: string) => {
@@ -776,25 +851,32 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
   // Careers bookmarks
   const toggleSaveJob = (id: string) => {
-    const updated = savedJobs.includes(id) ? savedJobs.filter(j => j !== id) : [...savedJobs, id];
+    const updated = savedJobs.includes(id) ? savedJobs.filter(j => j !== id) : Array.from(new Set([...savedJobs, id]));
     setSavedJobs(updated);
     saveSocialState({ savedJobs: updated });
   };
 
   const isJobSaved = (id: string) => savedJobs.includes(id);
 
-  const addCareer = async (careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
+  const addCareer = async (careerData: Omit<CareerOpportunity, "id" | "dateAdded">): Promise<boolean> => {
+    const lockKey = `add_career_${careerData.title.trim()}_${careerData.company.trim()}`;
+    if (inFlightCareersRef.current.has(lockKey)) {
+      console.warn(`[Careers Idempotency] Duplicate addCareer blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightCareersRef.current.add(lockKey);
+
     const newCareer: CareerOpportunity = {
       ...careerData,
-      id: `car-${Date.now()}`,
+      id: `car-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       dateAdded: new Date().toISOString().split("T")[0]
     };
     const updated = [newCareer, ...careers];
     setCareers(updated);
     localStorage.setItem("su_careers_cache", JSON.stringify(updated));
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("careers").insert([{
           id: newCareer.id,
           title: newCareer.title,
@@ -807,19 +889,29 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
           experience: newCareer.experience,
           date_added: new Date().toISOString()
         }]);
-      } catch (e) {
-        console.warn("[Careers Cloud Sync] Insert warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Careers Cloud Sync] Insert warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightCareersRef.current.delete(lockKey);
+      }, 1000);
     }
   };
 
-  const editCareer = async (id: string, careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
+  const editCareer = async (id: string, careerData: Omit<CareerOpportunity, "id" | "dateAdded">): Promise<boolean> => {
+    const lockKey = `edit_career_${id}`;
+    if (inFlightCareersRef.current.has(lockKey)) return false;
+    inFlightCareersRef.current.add(lockKey);
+
     const updated = careers.map((c) => (c.id === id ? { ...c, ...careerData } : c));
     setCareers(updated);
     localStorage.setItem("su_careers_cache", JSON.stringify(updated));
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("careers").update({
           title: careerData.title,
           company: careerData.company,
@@ -830,29 +922,45 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
           department: careerData.department,
           experience: careerData.experience
         }).eq("id", id);
-      } catch (e) {
-        console.warn("[Careers Cloud Sync] Update warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Careers Cloud Sync] Update warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightCareersRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  const deleteCareer = async (id: string) => {
+  const deleteCareer = async (id: string): Promise<boolean> => {
+    const lockKey = `delete_career_${id}`;
+    if (inFlightCareersRef.current.has(lockKey)) return false;
+    inFlightCareersRef.current.add(lockKey);
+
     const updated = careers.filter((c) => c.id !== id);
     setCareers(updated);
     localStorage.setItem("su_careers_cache", JSON.stringify(updated));
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("careers").delete().eq("id", id);
-      } catch (e) {
-        console.warn("[Careers Cloud Sync] Delete warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Careers Cloud Sync] Delete warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightCareersRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
   // Events bookmarks
   const toggleSaveEvent = (id: string) => {
-    const updated = savedEvents.includes(id) ? savedEvents.filter(e => e !== id) : [...savedEvents, id];
+    const updated = savedEvents.includes(id) ? savedEvents.filter(e => e !== id) : Array.from(new Set([...savedEvents, id]));
     setSavedEvents(updated);
     saveSocialState({ savedEvents: updated });
   };

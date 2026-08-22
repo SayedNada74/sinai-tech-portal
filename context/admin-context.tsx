@@ -92,16 +92,16 @@ interface AdminContextType {
   archiveCourse: (code: string, archive: boolean) => void;
 
   // Resource methods
-  approveResource: (id: string, approve: boolean) => void;
-  addResourceAdmin: (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating" | "reviews">) => void;
-  editResourceAdmin: (id: string, updated: Partial<Resource>) => void;
-  deleteResourceAdmin: (id: string) => void;
-  featureResource: (id: string, featured: boolean) => void;
+  approveResource: (id: string, approve: boolean) => Promise<boolean>;
+  addResourceAdmin: (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating" | "reviews">) => Promise<boolean>;
+  editResourceAdmin: (id: string, updated: Partial<Resource>) => Promise<boolean>;
+  deleteResourceAdmin: (id: string) => Promise<boolean>;
+  featureResource: (id: string, featured: boolean) => Promise<boolean>;
 
   // Announcement methods
-  addAnnouncement: (ann: Omit<Announcement, "id" | "date">) => void;
-  updateAnnouncement: (id: string, updated: Partial<Announcement>) => void;
-  deleteAnnouncement: (id: string) => void;
+  addAnnouncement: (ann: Omit<Announcement, "id" | "date">) => Promise<boolean>;
+  updateAnnouncement: (id: string, updated: Partial<Announcement>) => Promise<boolean>;
+  deleteAnnouncement: (id: string) => Promise<boolean>;
 
   // Roadmap methods
   addRoadmap: (roadmap: Omit<Roadmap, "id">) => void;
@@ -182,6 +182,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = React.useState<PlatformSettings>(DEFAULT_SETTINGS);
   const [incidents, setIncidents] = React.useState<ErrorIncident[]>(INITIAL_INCIDENTS);
   const [aiConfig, setAiConfig] = React.useState(DEFAULT_AI_CONFIG);
+
+  // Action in-flight mutex locks for rapid-click protection & idempotency
+  const inFlightAdminActionRef = React.useRef<Set<string>>(new Set());
 
   // Initialize and Sync states
   React.useEffect(() => {
@@ -533,8 +536,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAction(archive ? "أرشفة مقرر" : "إعادة تفعيل مقرر مؤرشف", `المقرر المستهدف: ${code}`, "course");
   };
 
-  // Resource Actions
-  const approveResource = async (id: string, approve: boolean) => {
+  // Resource Actions (with In-Flight Mutex Locks)
+  const approveResource = async (id: string, approve: boolean): Promise<boolean> => {
+    const lockKey = `approve_res_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const target = resources.find(r => r.id === id);
     const newAuthor = approve ? (target?.author || "").replace("[PENDING]", "").trim() : "[PENDING] " + (target?.author || "").replace("[PENDING]", "").trim();
     const updated = resources.map(r => r.id === id ? { ...r, author: newAuthor } : r);
@@ -542,16 +549,29 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     saveState("su_resources_db", updated);
     logAction(approve ? "موافقة على مصدر" : "تعليق الموافقة للمصدر", `المصدر الأكاديمي: ${target?.title}`, "resource");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("resources").update({ author: newAuthor }).eq("id", id);
-      } catch (e) {
-        console.warn("[Admin Resources] Cloud update warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Resources] Cloud update warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  const addResourceAdmin = async (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating">) => {
+  const addResourceAdmin = async (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating">): Promise<boolean> => {
+    const lockKey = `add_res_${res.title.trim()}_${res.courseCode.trim()}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) {
+      console.warn(`[Admin Idempotency] Duplicate addResourceAdmin blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightAdminActionRef.current.add(lockKey);
+
     const newRes: Resource = {
       ...res,
       id: `res-admin-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -564,8 +584,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     saveState("su_resources_db", updated);
     logAction("إضافة ملف ومصدر دراسي", `رفع ملف: ${newRes.title}`, "resource");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("resources").insert([{
           id: newRes.id,
           title: newRes.title,
@@ -578,20 +598,30 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           rating: newRes.rating,
           url: newRes.url
         }]);
-      } catch (e) {
-        console.warn("[Admin Resources] Cloud insert warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Resources] Cloud insert warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 1000);
     }
   };
 
-  const editResourceAdmin = async (id: string, updatedFields: Partial<Resource>) => {
+  const editResourceAdmin = async (id: string, updatedFields: Partial<Resource>): Promise<boolean> => {
+    const lockKey = `edit_res_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const updated = resources.map(r => r.id === id ? { ...r, ...updatedFields } : r);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction("تعديل ملف أكاديمي", `المعرف: ${id}`, "resource");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         const payload: Record<string, any> = {};
         if (updatedFields.title !== undefined) payload.title = updatedFields.title;
         if (updatedFields.description !== undefined) payload.description = updatedFields.description;
@@ -604,46 +634,79 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (Object.keys(payload).length > 0) {
           await supabase.from("resources").update(payload).eq("id", id);
         }
-      } catch (e) {
-        console.warn("[Admin Resources] Cloud update warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Resources] Cloud update warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  const deleteResourceAdmin = async (id: string) => {
+  const deleteResourceAdmin = async (id: string): Promise<boolean> => {
+    const lockKey = `delete_res_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const target = resources.find(r => r.id === id);
     const updated = resources.filter(r => r.id !== id);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction("حذف ملف ومصدر دراسي", `تم إزالة المصدر: ${target?.title}`, "resource");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("resources").delete().eq("id", id);
-      } catch (e) {
-        console.warn("[Admin Resources] Cloud delete warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Resources] Cloud delete warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  const featureResource = async (id: string, featured: boolean) => {
+  const featureResource = async (id: string, featured: boolean): Promise<boolean> => {
+    const lockKey = `feature_res_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const newRating = featured ? 5 : 4;
     const updated = resources.map(r => r.id === id ? { ...r, rating: newRating } : r);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction(featured ? "تثبيت مصدر مميز" : "إلغاء تثبيت المصدر المميز", `المعرف: ${id}`, "resource");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("resources").update({ rating: newRating }).eq("id", id);
-      } catch (e) {
-        console.warn("[Admin Resources] Cloud feature update warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Resources] Cloud feature update warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  // Announcement Actions
-  const addAnnouncement = async (ann: Omit<Announcement, "id" | "date">) => {
+  // Announcement Actions (with In-Flight Mutex Locks)
+  const addAnnouncement = async (ann: Omit<Announcement, "id" | "date">): Promise<boolean> => {
+    const lockKey = `add_ann_${ann.title.trim()}_${ann.category}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) {
+      console.warn(`[Admin Idempotency] Duplicate addAnnouncement blocked for: ${lockKey}`);
+      return false;
+    }
+    inFlightAdminActionRef.current.add(lockKey);
+
     const newAnn: Announcement = {
       ...ann,
       id: `ann-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -654,9 +717,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     saveState("su_announcements", updated);
     logAction("نشر إعلان جديد", `عنوان الإعلان: ${newAnn.title}`, "announcement");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        await supabase.from("announcements").insert([{
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase.from("announcements").insert([{
           id: newAnn.id,
           title: newAnn.title,
           content: newAnn.content,
@@ -664,39 +727,69 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           date: newAnn.date,
           published: newAnn.published
         }]);
-      } catch (e) {
-        console.warn("[Admin Announcements] Cloud insert warning:", e);
+        if (error) {
+          console.warn("[Admin Announcements] Cloud insert error:", error.message);
+          return false;
+        }
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Announcements] Cloud insert warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 1000);
     }
   };
 
-  const updateAnnouncement = async (id: string, updatedFields: Partial<Announcement>) => {
+  const updateAnnouncement = async (id: string, updatedFields: Partial<Announcement>): Promise<boolean> => {
+    const lockKey = `update_ann_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const updated = announcements.map(a => a.id === id ? { ...a, ...updatedFields } : a);
     setAnnouncements(updated);
     saveState("su_announcements", updated);
     logAction("تعديل الإعلان منشور", `المعرف: ${id}`, "announcement");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("announcements").update(updatedFields).eq("id", id);
-      } catch (e) {
-        console.warn("[Admin Announcements] Cloud update warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Announcements] Cloud update warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 
-  const deleteAnnouncement = async (id: string) => {
+  const deleteAnnouncement = async (id: string): Promise<boolean> => {
+    const lockKey = `delete_ann_${id}`;
+    if (inFlightAdminActionRef.current.has(lockKey)) return false;
+    inFlightAdminActionRef.current.add(lockKey);
+
     const updated = announcements.filter(a => a.id !== id);
     setAnnouncements(updated);
     saveState("su_announcements", updated);
     logAction("حذف إعلان", `تم إزالة الإعلان بنجاح.`, "announcement");
 
-    if (isSupabaseConfigured && supabase) {
-      try {
+    try {
+      if (isSupabaseConfigured && supabase) {
         await supabase.from("announcements").delete().eq("id", id);
-      } catch (e) {
-        console.warn("[Admin Announcements] Cloud delete warning:", e);
       }
+      return true;
+    } catch (e) {
+      console.warn("[Admin Announcements] Cloud delete warning:", e);
+      return false;
+    } finally {
+      setTimeout(() => {
+        inFlightAdminActionRef.current.delete(lockKey);
+      }, 500);
     }
   };
 

@@ -65,6 +65,7 @@ export default function AiAssistantPage() {
   const [activeSessionId, setActiveSessionId] = React.useState<string>("");
   const [inputVal, setInputVal] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const inFlightDeleteSessionRef = React.useRef<Set<string>>(new Set());
 
   // Load saved chat sessions from Supabase Cloud DB and local cache on mount
   React.useEffect(() => {
@@ -201,6 +202,12 @@ export default function AiAssistantPage() {
   // Delete a specific session (Local state + Single row deletion in Supabase)
   const deleteSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (inFlightDeleteSessionRef.current.has(sessionId)) {
+      console.warn(`[AI Idempotency] Duplicate deleteSession blocked for: ${sessionId}`);
+      return;
+    }
+    inFlightDeleteSessionRef.current.add(sessionId);
+
     const updated = sessions.filter((s) => s.id !== sessionId);
     updateLocalSessions(updated);
 
@@ -208,17 +215,21 @@ export default function AiAssistantPage() {
       setActiveSessionId("");
     }
 
-    // Delete single session from Supabase Cloud DB
-    if (isSupabaseConfigured && supabase && user?.id) {
-      try {
+    try {
+      // Delete single session from Supabase Cloud DB
+      if (isSupabaseConfigured && supabase && user?.id) {
         await supabase
           .from("ai_conversations")
           .delete()
           .eq("id", sessionId)
           .eq("user_id", user.id);
-      } catch (err) {
-        console.warn("[AI Session Delete] Cloud delete warning:", err);
       }
+    } catch (err) {
+      console.warn("[AI Session Delete] Cloud delete warning:", err);
+    } finally {
+      setTimeout(() => {
+        inFlightDeleteSessionRef.current.delete(sessionId);
+      }, 500);
     }
   };
 

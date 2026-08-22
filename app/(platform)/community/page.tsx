@@ -89,27 +89,37 @@ export default function CommunityPage() {
     "University News": { ar: "أخبار الجامعة", en: "University News" }
   };
 
+  const [isSubmittingPost, setIsSubmittingPost] = React.useState(false);
+  const [submittingCommentPostId, setSubmittingCommentPostId] = React.useState<string | null>(null);
+  const [submittingReplyCommentId, setSubmittingReplyCommentId] = React.useState<string | null>(null);
+
   const filteredPosts = posts.filter(
     (p) => selectedCategory === "الكل" || p.category === selectedCategory
   );
 
-  const handleCreatePost = (e: React.FormEvent) => {
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingPost) return;
     if (!newTitle.trim() || !newContent.trim()) return;
-    
-    createPost(
-      newTitle,
-      newContent,
-      newCategory,
-      newFile ? newFile : undefined,
-      newFile ? "#/downloads/" + newFile : undefined
-    );
 
-    setNewTitle("");
-    setNewContent("");
-    setNewCategory("General Discussion");
-    setNewFile("");
-    setIsCreateOpen(false);
+    setIsSubmittingPost(true);
+    try {
+      await createPost(
+        newTitle.trim(),
+        newContent.trim(),
+        newCategory,
+        newFile ? newFile : undefined,
+        newFile ? "#/downloads/" + newFile : undefined
+      );
+
+      setNewTitle("");
+      setNewContent("");
+      setNewCategory("General Discussion");
+      setNewFile("");
+      setIsCreateOpen(false);
+    } finally {
+      setIsSubmittingPost(false);
+    }
   };
 
   const handleStartEdit = (post: CommunityPost) => {
@@ -119,26 +129,38 @@ export default function CommunityPage() {
     setEditCategory(post.category);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPostId || !editTitle.trim() || !editContent.trim()) return;
-    editPost(editingPostId, editTitle, editContent, editCategory);
+    await editPost(editingPostId, editTitle.trim(), editContent.trim(), editCategory);
     setEditingPostId(null);
   };
 
-  const handleAddComment = (postId: string) => {
+  const handleAddComment = async (postId: string) => {
     const text = commentInputs[postId] || "";
-    if (!text.trim()) return;
-    addComment(postId, text);
-    setCommentInputs({ ...commentInputs, [postId]: "" });
-    setExpandedComments({ ...expandedComments, [postId]: true });
+    if (!text.trim() || submittingCommentPostId === postId) return;
+
+    setSubmittingCommentPostId(postId);
+    try {
+      await addComment(postId, text.trim());
+      setCommentInputs({ ...commentInputs, [postId]: "" });
+      setExpandedComments({ ...expandedComments, [postId]: true });
+    } finally {
+      setSubmittingCommentPostId(null);
+    }
   };
 
-  const handleAddReply = (postId: string, commentId: string) => {
+  const handleAddReply = async (postId: string, commentId: string) => {
     const text = replyInputs[commentId] || "";
-    if (!text.trim()) return;
-    addReply(postId, commentId, text);
-    setReplyInputs({ ...replyInputs, [commentId]: "" });
+    if (!text.trim() || submittingReplyCommentId === commentId) return;
+
+    setSubmittingReplyCommentId(commentId);
+    try {
+      await addReply(postId, commentId, text.trim());
+      setReplyInputs({ ...replyInputs, [commentId]: "" });
+    } finally {
+      setSubmittingReplyCommentId(null);
+    }
   };
 
   const toggleComments = (postId: string) => {
@@ -440,6 +462,8 @@ export default function CommunityPage() {
                                               size="sm"
                                               onClick={() => handleAddReply(post.id, comment.id)}
                                               className="h-8 px-3 text-xs"
+                                              isLoading={submittingReplyCommentId === comment.id}
+                                              disabled={submittingReplyCommentId === comment.id}
                                             >
                                               {t("رد", "Reply")}
                                             </Button>
@@ -470,6 +494,8 @@ export default function CommunityPage() {
                                   size="sm"
                                   onClick={() => handleAddComment(post.id)}
                                   className="h-10 px-5 text-xs font-bold"
+                                  isLoading={submittingCommentPostId === post.id}
+                                  disabled={submittingCommentPostId === post.id}
                                 >
                                   {t("تعليق", "Comment")}
                                 </Button>
@@ -591,7 +617,7 @@ export default function CommunityPage() {
                   <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
                     {t("إلغاء", "Cancel")}
                   </Button>
-                  <Button type="submit" className="px-6">
+                  <Button type="submit" className="px-6" isLoading={isSubmittingPost} disabled={isSubmittingPost}>
                     {t("نشر الآن", "Publish Now")}
                   </Button>
                 </div>

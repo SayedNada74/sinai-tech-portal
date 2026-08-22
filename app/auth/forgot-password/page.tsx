@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || isSending) return;
     setError("");
     setIsSending(true);
 

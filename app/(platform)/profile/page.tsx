@@ -53,6 +53,8 @@ export default function ProfilePage() {
 
   const [message, setMessage] = React.useState({ type: "", text: "" });
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = React.useState(false);
+  const isUploadingImageRef = React.useRef(false);
 
   // Privacy Settings
   const [publicSkills, setPublicSkills] = React.useState(true);
@@ -158,47 +160,70 @@ export default function ProfilePage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (isUploadingImageRef.current) return;
+    isUploadingImageRef.current = true;
+    setIsUploadingImage(true);
 
     if (file.size > 5 * 1024 * 1024) {
       setMessage({
         type: "error",
         text: t("حجم الصورة كبير جداً. يرجى اختيار صورة أقل من 5 ميجابايت.", "Image size too large. Please select an image under 5MB.")
       });
+      isUploadingImageRef.current = false;
+      setIsUploadingImage(false);
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      if (typeof reader.result === "string") {
-        // Compress image using Canvas to ensure it easily fits in Supabase TEXT column and localStorage
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const MAX_SIZE = 256;
-          let width = img.width;
-          let height = img.height;
+      try {
+        if (typeof reader.result === "string") {
+          // Compress image using Canvas to ensure it easily fits in Supabase TEXT column and localStorage
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              const MAX_SIZE = 256;
+              let width = img.width;
+              let height = img.height;
 
-          if (width > height && width > MAX_SIZE) {
-            height *= MAX_SIZE / width;
-            width = MAX_SIZE;
-          } else if (height > MAX_SIZE) {
-            width *= MAX_SIZE / height;
-            height = MAX_SIZE;
-          }
+              if (width > height && width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              } else if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
 
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-            setAvatar(compressedBase64);
-          } else {
-            setAvatar(reader.result as string); // fallback
-          }
-        };
-        img.src = reader.result;
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext("2d");
+              if (ctx) {
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+                setAvatar(compressedBase64);
+              } else {
+                setAvatar(reader.result as string); // fallback
+              }
+            } finally {
+              isUploadingImageRef.current = false;
+              setIsUploadingImage(false);
+            }
+          };
+          img.onerror = () => {
+            isUploadingImageRef.current = false;
+            setIsUploadingImage(false);
+          };
+          img.src = reader.result;
+        }
+      } catch {
+        isUploadingImageRef.current = false;
+        setIsUploadingImage(false);
       }
+    };
+    reader.onerror = () => {
+      isUploadingImageRef.current = false;
+      setIsUploadingImage(false);
     };
     reader.readAsDataURL(file);
   };

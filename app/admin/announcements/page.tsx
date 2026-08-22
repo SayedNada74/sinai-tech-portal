@@ -47,6 +47,7 @@ export default function AnnouncementCMSPage() {
   const [formCategory, setFormCategory] = React.useState<Announcement["category"]>("news");
   const [formScheduledDate, setFormScheduledDate] = React.useState("");
   const [formPublished, setFormPublished] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Filtering
   const filteredAnnouncements = React.useMemo(() => {
@@ -83,33 +84,42 @@ export default function AnnouncementCMSPage() {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!formTitle || !formContent) {
       toast(t("⚠️ يرجى إدخال عنوان الإعلان ونصه التفصيلي.", "⚠️ Please enter announcement title and detailed content."), "error");
       return;
     }
 
-    if (editingId) {
-      updateAnnouncement(editingId, {
-        title: formTitle,
-        content: formContent,
-        category: formCategory,
-        scheduledDate: formScheduledDate || undefined,
-        published: formPublished
-      });
-      toast(t("✨ تم تحديث بيانات الإعلان بنجاح!", "✨ Announcement updated successfully!"), "success");
-    } else {
-      addAnnouncement({
-        title: formTitle,
-        content: formContent,
-        category: formCategory,
-        scheduledDate: formScheduledDate || undefined,
-        published: formPublished
-      });
-      toast(t("✨ تم نشر الإعلان الجديد على المنصة بنجاح!", "✨ New announcement published successfully!"), "success");
+    setIsSubmitting(true);
+    try {
+      if (editingId) {
+        await updateAnnouncement(editingId, {
+          title: formTitle,
+          content: formContent,
+          category: formCategory,
+          scheduledDate: formScheduledDate || undefined,
+          published: formPublished
+        });
+        toast(t("✨ تم تحديث بيانات الإعلان بنجاح!", "✨ Announcement updated successfully!"), "success");
+      } else {
+        await addAnnouncement({
+          title: formTitle,
+          content: formContent,
+          category: formCategory,
+          scheduledDate: formScheduledDate || undefined,
+          published: formPublished
+        });
+        toast(t("✨ تم نشر الإعلان الجديد على المنصة بنجاح!", "✨ New announcement published successfully!"), "success");
+      }
+      setModalOpen(false);
+    } catch (err) {
+      toast(t("حدث خطأ أثناء حفظ الإعلان.", "An error occurred while saving the announcement."), "error");
+    } finally {
+      setIsSubmitting(false);
     }
-    setModalOpen(false);
   };
 
   return (
@@ -254,7 +264,7 @@ export default function AnnouncementCMSPage() {
               <Button type="button" variant="outline" size="sm" onClick={() => setModalOpen(false)} className="text-xs font-bold cursor-pointer">
                 {t("إلغاء", "Cancel")}
               </Button>
-              <Button type="submit" form="announcement-form" size="sm" className="text-xs font-bold cursor-pointer">
+              <Button type="submit" form="announcement-form" size="sm" className="text-xs font-bold cursor-pointer" isLoading={isSubmitting} disabled={isSubmitting}>
                 {editingId ? t("تحديث الإعلان", "Update Announcement") : t("نشر الإعلان", "Publish Announcement")}
               </Button>
             </div>

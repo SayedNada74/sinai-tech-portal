@@ -83,6 +83,7 @@ export default function CourseDetailPage({ params }: PageProps) {
   const [attendance, setAttendance] = React.useState(true);
   const [comment, setComment] = React.useState("");
   const [tips, setTips] = React.useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = React.useState(false);
 
   const isRtl = dir === "rtl";
   const BackArrow = isRtl ? ArrowRight : ArrowLeft;
@@ -131,25 +132,40 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   const { toast } = useToast();
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingReview) return;
+
     if (!comment.trim() || !tips.trim()) {
       toast(t("⚠️ يرجى كتابة تعليقك ونصيحتك الأكاديمية لمساعدة زملائك.", "⚠️ Please write your review and study tips to help your peers."), "error");
       return;
     }
-    addReview(course.code, {
-      rating,
-      difficulty,
-      workload,
-      examDifficulty: examDiff,
-      attendance,
-      comment,
-      tips
-    });
-    setComment("");
-    setTips("");
-    setShowReviewForm(false);
-    toast(t("✨ تم نشر مراجعتك بنجاح! شكرًا لك على مساهمتك القيمة.", "✨ Your review has been published successfully! Thank you for your feedback."), "success");
+
+    setIsSubmittingReview(true);
+    try {
+      const success = await addReview(course.code, {
+        rating,
+        difficulty,
+        workload,
+        examDifficulty: examDiff,
+        attendance,
+        comment: comment.trim(),
+        tips: tips.trim()
+      });
+
+      if (success !== false) {
+        setComment("");
+        setTips("");
+        setShowReviewForm(false);
+        toast(t("✨ تم نشر مراجعتك بنجاح! شكرًا لك على مساهمتك القيمة.", "✨ Your review has been published successfully! Thank you for your feedback."), "success");
+      } else {
+        toast(t("حدث خطأ أو تم إرسال المراجعة مسبقاً.", "An error occurred or review already submitted."), "error");
+      }
+    } catch (err) {
+      toast(t("فشل نشر المراجعة. حاول مرة أخرى.", "Failed to publish review. Please try again."), "error");
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   const getIcon = (type: string) => {
@@ -427,7 +443,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                     <Button type="button" variant="outline" size="sm" onClick={() => setShowReviewForm(false)} className="text-xs">
                       {t("إلغاء", "Cancel")}
                     </Button>
-                    <Button type="submit" size="sm" className="text-xs">
+                    <Button type="submit" size="sm" className="text-xs font-bold" isLoading={isSubmittingReview} disabled={isSubmittingReview}>
                       {t("نشر المراجعة", "Submit Review")}
                     </Button>
                   </div>

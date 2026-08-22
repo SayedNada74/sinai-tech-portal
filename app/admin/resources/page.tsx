@@ -64,11 +64,12 @@ export default function ResourceManagementPage() {
   const [formCourse, setFormCourse] = React.useState("");
   const [formType, setFormType] = React.useState<Resource["type"]>("book");
   const [formLink, setFormLink] = React.useState("");
-  const [formAuthor, setFormAuthor] = React.useState("");
+  const [formAuthor, setFormAuthor] = React.useState("إدارة الكلية");
 
   // Drag and Drop Mock State
   const [dragging, setDragging] = React.useState(false);
   const [uploadedFile, setUploadedFile] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Filtered resources
   const filteredResources = React.useMemo(() => {
@@ -77,6 +78,7 @@ export default function ResourceManagementPage() {
       const matchQuery =
         !query ||
         r.title.toLowerCase().includes(query) ||
+        r.description.toLowerCase().includes(query) ||
         r.courseCode.toLowerCase().includes(query) ||
         r.author.toLowerCase().includes(query);
 
@@ -121,35 +123,44 @@ export default function ResourceManagementPage() {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!formTitle || !formCourse) {
       toast(t("⚠️ يرجى إدخال عنوان الملف وكود المادة المرتبطة.", "⚠️ Please enter resource title and associated course code."));
       return;
     }
 
-    if (editingId) {
-      editResourceAdmin(editingId, {
-        title: formTitle,
-        description: formDesc,
-        courseCode: formCourse,
-        type: formType,
-        url: formLink || "#",
-        author: formAuthor
-      });
-      toast(t("✅ تم تعديل بيانات المصدر بنجاح.", "✅ Resource updated successfully."));
-    } else {
-      addResourceAdmin({
-        title: formTitle,
-        description: formDesc || "ملخص ومستند دراسي مساعد للطلاب.",
-        courseCode: formCourse,
-        type: formType,
-        url: formLink || "#",
-        author: formAuthor || "إدارة الكلية"
-      });
-      toast(t("✨ تم إضافة الملف والمصدر الأكاديمي بنجاح.", "✨ Academic resource added successfully."));
+    setIsSubmitting(true);
+    try {
+      if (editingId) {
+        await editResourceAdmin(editingId, {
+          title: formTitle,
+          description: formDesc,
+          courseCode: formCourse,
+          type: formType,
+          url: formLink || "#",
+          author: formAuthor
+        });
+        toast(t("✅ تم تعديل بيانات المصدر بنجاح.", "✅ Resource updated successfully."));
+      } else {
+        await addResourceAdmin({
+          title: formTitle,
+          description: formDesc || "ملخص ومستند دراسي مساعد للطلاب.",
+          courseCode: formCourse,
+          type: formType,
+          url: formLink || "#",
+          author: formAuthor || "إدارة الكلية"
+        });
+        toast(t("✨ تم إضافة الملف والمصدر الأكاديمي بنجاح.", "✨ Academic resource added successfully."));
+      }
+      setModalOpen(false);
+    } catch (err) {
+      toast(t("حدث خطأ أثناء حفظ المصدر.", "An error occurred while saving the resource."));
+    } finally {
+      setIsSubmitting(false);
     }
-    setModalOpen(false);
   };
 
   return (
@@ -386,7 +397,7 @@ export default function ResourceManagementPage() {
               <Button type="button" variant="outline" size="sm" onClick={() => setModalOpen(false)} className="text-xs font-bold cursor-pointer">
                 {t("إلغاء", "Cancel")}
               </Button>
-              <Button type="submit" form="resource-form" size="sm" className="text-xs font-bold cursor-pointer">
+              <Button type="submit" form="resource-form" size="sm" className="text-xs font-bold cursor-pointer" isLoading={isSubmitting} disabled={isSubmitting}>
                 {editingId ? t("تحديث بيانات المصدر", "Update Resource") : t("نشر المصدر للمكتبة", "Publish Resource")}
               </Button>
             </div>
