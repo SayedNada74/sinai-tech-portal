@@ -101,18 +101,27 @@ function validateSafeMoodleUrl(rawUrl: string): { isValid: boolean; error?: stri
       return { isValid: false, error: "النطاقات الداخلية المحلية غير مسموح بها." };
     }
 
-    // 5. Educational and LMS Domain / Path verification
-    // Moodle calendar exports typically contain 'calendar/export_execute.php' or 'export' or have .ics extension
-    const path = parsed.pathname.toLowerCase();
-    const isMoodlePath = path.includes("calendar") || path.includes("export") || path.endsWith(".ics") || parsed.searchParams.has("authtoken") || parsed.searchParams.has("userid");
-    
-    // We also support trusted university domains
-    const isUniversityDomain = hostname.endsWith(".edu.eg") || hostname.endsWith(".sinai.edu.eg") || hostname.endsWith(".su.edu.eg") || hostname.includes("moodle");
+    // 5. Educational and LMS Domain & Path verification
+    // Must be a recognized university, LMS, or Moodle domain
+    const isAllowedDomain =
+      hostname.endsWith(".edu.eg") ||
+      hostname.endsWith(".sinai.edu.eg") ||
+      hostname.endsWith(".su.edu.eg") ||
+      hostname.endsWith(".moodle.org") ||
+      hostname.includes("moodle") ||
+      hostname.includes("lms");
 
-    if (!isMoodlePath && !isUniversityDomain) {
+    const isCalendarPath =
+      path.includes("calendar") ||
+      path.includes("export") ||
+      path.endsWith(".ics") ||
+      parsed.searchParams.has("authtoken") ||
+      parsed.searchParams.has("userid");
+
+    if (!isAllowedDomain || !isCalendarPath) {
       return {
         isValid: false,
-        error: "الرابط المدخل لا يبدو كرابط تقويم أو مقررات Moodle صالح. يرجى التأكد من نسخ رابط تصدير التقويم (ICS / Moodle Calendar URL)."
+        error: "الرابط المدخل غير مصرح به. يسمح فقط بروابط تقويم Moodle والأنظمة الجامعية الرسمية المعتمدة (.edu.eg / Moodle / LMS)."
       };
     }
 

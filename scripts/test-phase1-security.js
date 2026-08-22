@@ -68,8 +68,8 @@ async function runSecurityTests() {
       if (host.endsWith(".local") || host.endsWith(".internal") || host.endsWith(".lan")) return { valid: false, reason: "Internal domain" };
       
       const isMoodlePath = parsed.pathname.includes("calendar") || parsed.pathname.includes("export") || parsed.pathname.endsWith(".ics") || parsed.searchParams.has("authtoken");
-      const isUniDomain = host.endsWith(".edu.eg") || host.endsWith(".sinai.edu.eg") || host.endsWith(".su.edu.eg") || host.includes("moodle");
-      if (!isMoodlePath && !isUniDomain) return { valid: false, reason: "Untrusted non-academic domain" };
+      const isUniDomain = host.endsWith(".edu.eg") || host.endsWith(".sinai.edu.eg") || host.endsWith(".su.edu.eg") || host.endsWith(".moodle.org") || host.includes("moodle") || host.includes("lms");
+      if (!isMoodlePath || !isUniDomain) return { valid: false, reason: "Untrusted non-academic domain or invalid calendar path" };
       
       return { valid: true };
     } catch (e) {
