@@ -31,7 +31,7 @@ import {
 
 export default function ReviewModerationPage() {
   const { t, dir, lang } = useApp();
-  const { reviews } = useLearning();
+  const { reviews, deleteReview } = useLearning();
   const { posts, deletePost, reportPost } = useSocial();
   const { logAction, courses } = useAdmin();
 
@@ -81,17 +81,9 @@ export default function ReviewModerationPage() {
     }
   };
 
-  const handleDeleteReview = (id: string, author: string) => {
+  const handleDeleteReview = async (id: string, author: string) => {
     if (confirm(t(`هل أنت متأكد من إزالة مراجعة الطالب "${author}" نهائياً؟`, `Permanently delete review by "${author}"?`))) {
-      const storageKey = `su_learning_user-admin`;
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          parsed.reviews = (parsed.reviews || []).filter((r: any) => r.id !== id);
-          localStorage.setItem(storageKey, JSON.stringify(parsed));
-        } catch (e) {}
-      }
+      await deleteReview(id);
       logAction("حذف مراجعة مقرر", `تم حذف مراجعة الطالب ${author} لعدم ملاءمتها.`, "review");
     }
   };

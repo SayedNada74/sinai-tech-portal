@@ -6,6 +6,7 @@ import { useApp } from "@/context/app-context";
 import { PERIODS } from "@/lib/courses-data";
 import { RESOURCES, Resource } from "@/lib/resources-data";
 import { useLearning, CourseReview } from "@/context/learning-context";
+import { useAuth } from "@/context/auth-context";
 import { useAdmin } from "@/context/admin-context";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   Star,
   FileText,
   ThumbsUp,
+  Trash2,
   Bookmark,
   BookmarkCheck,
   MessageSquare,
@@ -46,10 +48,11 @@ const PERIODS_EN: Record<string, string> = {
 };
 
 export default function CourseDetailPage({ params }: PageProps) {
-  const { t, lang, dir } = useApp();
+  const { t, lang, dir, userRole } = useApp();
   const resolvedParams = React.use(params);
   const code = decodeURIComponent(resolvedParams.code);
 
+  const { user } = useAuth();
   const { courses } = useAdmin();
   const course = courses.find((c) => c.code.toLowerCase() === code.toLowerCase());
 
@@ -58,6 +61,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     toggleBookmark,
     reviews,
     addReview,
+    deleteReview,
     toggleHelpfulReview,
     incrementDownload,
     addRecentlyViewed
@@ -484,8 +488,25 @@ export default function CourseDetailPage({ params }: PageProps) {
                         </p>
                       </div>
 
-                      {/* Helpful upvote */}
-                      <div className="flex justify-end pt-1">
+                      {/* Review Actions Footer: Delete (Author/Admin) & Helpful upvote */}
+                      <div className="flex justify-between items-center pt-1">
+                        {(user?.id === rev.authorId || userRole === "admin" || userRole === "super-admin") ? (
+                          <button
+                            onClick={async () => {
+                              if (confirm(t("هل أنت متأكد من حذف هذه المراجعة؟", "Are you sure you want to delete this review?"))) {
+                                await deleteReview(rev.id);
+                                toast(t("تم حذف المراجعة بنجاح.", "Review deleted successfully."), "success");
+                              }
+                            }}
+                            className="flex items-center gap-1 text-[10px] font-bold text-red-500/80 hover:text-red-600 transition-colors cursor-pointer"
+                            title={t("حذف المراجعة", "Delete Review")}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            <span>{t("حذف", "Delete")}</span>
+                          </button>
+                        ) : <div />}
+
+                        {/* Helpful upvote */}
                         <button
                           onClick={() => toggleHelpfulReview(rev.id)}
                           className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 cursor-pointer"

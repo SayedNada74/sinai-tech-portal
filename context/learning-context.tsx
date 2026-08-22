@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useAuth } from "./auth-context";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export interface BookmarkItem {
   id: string;
@@ -24,7 +25,7 @@ export interface CourseReview {
   authorId?: string;
   date: string;
   helpfulCount: number;
-  helpfulUsers: string[]; // user IDs who liked this review
+  helpfulUsers?: string[]; // user IDs who liked this review
 }
 
 interface LearningContextType {
@@ -37,7 +38,8 @@ interface LearningContextType {
   recentlyViewed: { id: string; type: string; title: string; path: string; timestamp: number }[];
   toggleBookmark: (id: string, type: BookmarkItem["type"], title: string, link: string) => void;
   isBookmarked: (id: string) => boolean;
-  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">) => void;
+  addReview: (courseCode: string, review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">) => Promise<void>;
+  deleteReview: (reviewId: string) => Promise<boolean>;
   toggleHelpfulReview: (reviewId: string) => void;
   toggleLikeResource: (id: string) => void;
   isResourceLiked: (id: string) => boolean;
@@ -53,28 +55,80 @@ interface LearningContextType {
 
 const LearningContext = React.createContext<LearningContextType | undefined>(undefined);
 
-// Static mock reviews database to populate items instantly
-const INITIAL_REVIEWS: CourseReview[] = [];
-
 export function LearningProvider({ children }: { children: React.ReactNode }) {
   const { user, updateProfile } = useAuth();
 
   const [bookmarks, setBookmarks] = React.useState<BookmarkItem[]>([]);
-  const [reviews, setReviews] = React.useState<CourseReview[]>(INITIAL_REVIEWS);
+  const [reviews, setReviews] = React.useState<CourseReview[]>(() => {
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem("su_course_reviews_cache");
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch (e) {}
+      }
+    }
+    return [];
+  });
   const [likedResources, setLikedResources] = React.useState<string[]>([]);
   const [ratedResources, setRatedResources] = React.useState<Record<string, number>>({});
   const [downloadedResources, setDownloadedResources] = React.useState<Record<string, number>>({});
   const [roadmapProgress, setRoadmapProgress] = React.useState<Record<string, string[]>>({});
   const [recentlyViewed, setRecentlyViewed] = React.useState<LearningContextType["recentlyViewed"]>([]);
 
-  // Load from localStorage on user change
+  // 1. AUTHORITATIVE CLOUD HYDRATION FOR COURSE REVIEWS (public.reviews)
+  const fetchCloudReviews = React.useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.warn("Supabase reviews fetch warning:", error.message);
+        return;
+      }
+
+      if (data) {
+        const mappedReviews: CourseReview[] = data.map((row: any) => ({
+          id: row.id,
+          courseCode: row.course_code || "",
+          rating: Number(row.rating) || 5,
+          difficulty: Number(row.difficulty) || 3,
+          workload: Number(row.workload) || 3,
+          attendance: row.attendance !== false,
+          examDifficulty: Number(row.exam_difficulty) || 3,
+          comment: row.comment || "",
+          tips: row.tips || "",
+          author: row.author || "طالب سيناء",
+          authorId: row.author_id,
+          date: row.date || new Date().toISOString().split("T")[0],
+          helpfulCount: Number(row.helpful_count) || 0,
+          helpfulUsers: []
+        }));
+
+        setReviews(mappedReviews);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("su_course_reviews_cache", JSON.stringify(mappedReviews));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load reviews from Supabase:", err);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchCloudReviews();
+  }, [fetchCloudReviews]);
+
+  // 2. Load personal learning state (bookmarks, progress, ratings) on user change
   React.useEffect(() => {
     if (user) {
       if (user.learning_state) {
         try {
           const parsed = typeof user.learning_state === "string" ? JSON.parse(user.learning_state) : user.learning_state;
           setBookmarks(parsed.bookmarks || []);
-          setReviews(parsed.reviews || INITIAL_REVIEWS);
           setLikedResources(parsed.likedResources || []);
           setRatedResources(parsed.ratedResources || {});
           setDownloadedResources(parsed.downloadedResources || {});
@@ -92,7 +146,6 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
         try {
           const parsed = JSON.parse(saved);
           setBookmarks(parsed.bookmarks || []);
-          setReviews(parsed.reviews || INITIAL_REVIEWS);
           setLikedResources(parsed.likedResources || []);
           setRatedResources(parsed.ratedResources || {});
           setDownloadedResources(parsed.downloadedResources || {});
@@ -103,7 +156,6 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         setBookmarks([]);
-        setReviews(INITIAL_REVIEWS);
         setLikedResources([]);
         setRatedResources({});
         setDownloadedResources({});
@@ -112,7 +164,6 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
       }
     } else {
       setBookmarks([]);
-      setReviews(INITIAL_REVIEWS);
       setLikedResources([]);
       setRatedResources({});
       setDownloadedResources({});
@@ -121,7 +172,7 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Save helper
+  // 3. Save helper for personal learning state (Strictly excludes reviews!)
   const saveState = (updates: Partial<any>) => {
     if (user) {
       const storageKey = `su_learning_${user.id}`;
@@ -133,25 +184,24 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {}
       }
       const finalPayload = {
-          bookmarks,
-          reviews,
-          likedResources,
-          ratedResources,
-          downloadedResources,
-          roadmapProgress,
-          recentlyViewed,
-          ...current, // use the freshest data from localStorage
-          ...updates  // apply the new updates on top
-        };
+        bookmarks,
+        likedResources,
+        ratedResources,
+        downloadedResources,
+        roadmapProgress,
+        recentlyViewed,
+        ...current, // use the freshest data from localStorage
+        ...updates  // apply the new updates on top
+      };
       
       localStorage.setItem(
         storageKey,
         JSON.stringify(finalPayload)
       );
 
-      // Async save to cloud
+      // Async save personal learning state to cloud
       if (user) {
-         updateProfile({ learning_state: finalPayload }).catch(err => console.warn("Cloud sync failed for learning_state:", err));
+        updateProfile({ learning_state: finalPayload }).catch(err => console.warn("Cloud sync failed for learning_state:", err));
       }
     }
   };
@@ -172,44 +222,117 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     return bookmarks.some((b) => b.id === id);
   };
 
-  const addReview = (
+  // 4. ADD REVIEW (Direct row-level INSERT to public.reviews with author_id)
+  const addReview = async (
     courseCode: string,
     review: Omit<CourseReview, "id" | "courseCode" | "author" | "authorId" | "date" | "helpfulCount" | "helpfulUsers">
-  ) => {
+  ): Promise<void> => {
+    const newReviewId = `rev-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const reviewDate = new Date().toISOString().split("T")[0];
+    const authorName = user?.name || "طالب سيناء";
+    const authorId = user?.id;
+
     const newReview: CourseReview = {
       ...review,
-      id: Math.random().toString(36).substring(2, 9),
+      id: newReviewId,
       courseCode,
-      author: user?.name || "طالب مجهول",
-      authorId: user?.id,
-      date: new Date().toISOString().split("T")[0],
+      author: authorName,
+      authorId: authorId,
+      date: reviewDate,
       helpfulCount: 0,
       helpfulUsers: []
     };
-    const newReviews = [newReview, ...reviews];
-    setReviews(newReviews);
-    saveState({ reviews: newReviews });
+
+    // Optimistic UI update & Cache
+    setReviews((prev) => {
+      const updated = [newReview, ...prev];
+      if (typeof window !== "undefined") {
+        localStorage.setItem("su_course_reviews_cache", JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    // Authoritative Cloud INSERT
+    if (isSupabaseConfigured && supabase && user) {
+      try {
+        const { error } = await supabase.from("reviews").insert({
+          id: newReviewId,
+          course_code: courseCode,
+          rating: review.rating,
+          difficulty: review.difficulty,
+          workload: review.workload,
+          attendance: review.attendance,
+          exam_difficulty: review.examDifficulty,
+          comment: review.comment,
+          tips: review.tips,
+          author: authorName,
+          author_id: authorId,
+          date: reviewDate,
+          helpful_count: 0
+        });
+
+        if (error) {
+          console.error("Supabase insert review error:", error.message);
+        }
+      } catch (err) {
+        console.error("Exception adding review to Supabase:", err);
+      }
+    }
   };
 
-  const toggleHelpfulReview = (reviewId: string) => {
-    if (!user) return;
-    const newReviews = reviews.map((r) => {
-      if (r.id === reviewId) {
-        const liked = r.helpfulUsers.includes(user.id);
-        const helpfulUsers = liked
-          ? r.helpfulUsers.filter((uid) => uid !== user.id)
-          : [...r.helpfulUsers, user.id];
-        const helpfulCount = liked ? Math.max(0, r.helpfulCount - 1) : r.helpfulCount + 1;
-        return {
-          ...r,
-          helpfulCount,
-          helpfulUsers
-        };
+  // 5. DELETE REVIEW (Author or Admin Only via RLS)
+  const deleteReview = async (reviewId: string): Promise<boolean> => {
+    // Optimistic UI update
+    setReviews((prev) => {
+      const updated = prev.filter((r) => r.id !== reviewId);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("su_course_reviews_cache", JSON.stringify(updated));
       }
-      return r;
+      return updated;
     });
-    setReviews(newReviews);
-    saveState({ reviews: newReviews });
+
+    // Cloud DELETE
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+        if (error) {
+          console.error("Supabase delete review error:", error.message);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.error("Exception deleting review from Supabase:", err);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // 6. TOGGLE HELPFUL (Safe per-user local toggle)
+  const toggleHelpfulReview = (reviewId: string) => {
+    if (typeof window === "undefined") return;
+    const likedKey = `su_helpful_reviews_${user?.id || "anon"}`;
+    let likedList: string[] = [];
+    try {
+      const saved = localStorage.getItem(likedKey);
+      if (saved) likedList = JSON.parse(saved);
+    } catch (e) {}
+
+    const alreadyLiked = likedList.includes(reviewId);
+    const newLikedList = alreadyLiked ? likedList.filter((id) => id !== reviewId) : [...likedList, reviewId];
+    localStorage.setItem(likedKey, JSON.stringify(newLikedList));
+
+    setReviews((prev) => {
+      const updated = prev.map((r) => {
+        if (r.id === reviewId) {
+          const newCount = alreadyLiked ? Math.max(0, r.helpfulCount - 1) : r.helpfulCount + 1;
+          return { ...r, helpfulCount: newCount };
+        }
+        return r;
+      });
+      localStorage.setItem("su_course_reviews_cache", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const toggleLikeResource = (id: string) => {
@@ -291,6 +414,7 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
         toggleBookmark,
         isBookmarked,
         addReview,
+        deleteReview,
         toggleHelpfulReview,
         toggleLikeResource,
         isResourceLiked,
