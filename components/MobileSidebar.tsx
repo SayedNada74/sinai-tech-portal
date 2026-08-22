@@ -27,6 +27,7 @@ import {
   Globe,
   Users
 } from "lucide-react";
+import { DeveloperCredit } from "@/components/ui/developer-credit";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -183,6 +184,10 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <LogOut className="h-4.5 w-4.5" />
                 <span>{t("تسجيل الخروج", "Logout")}</span>
               </button>
+
+              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800/60 mt-2">
+                <DeveloperCredit variant="sidebar" />
+              </div>
             </div>
           </motion.div>
         </div>

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 
 import { useAdmin } from "@/context/admin-context";
+import { DeveloperCredit } from "@/components/ui/developer-credit";
 
 export function DesktopSidebar() {
   const pathname = usePathname();
@@ -185,6 +186,9 @@ export function DesktopSidebar() {
             <LogOut className="h-3.5 w-3.5" />
           </button>
         </div>
+
+        {/* Developer Credit */}
+        <DeveloperCredit variant="sidebar" />
       </div>
     </aside>
   );
