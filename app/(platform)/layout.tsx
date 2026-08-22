@@ -75,6 +75,22 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <Logo size="sm" href="/dashboard" />
 
           <div className="flex items-center gap-1.5">
+            {/* Search Trigger for Mobile */}
+            <button
+              onClick={() => {
+                const event = new KeyboardEvent("keydown", {
+                  key: "k",
+                  ctrlKey: true,
+                  bubbles: true
+                });
+                window.dispatchEvent(event);
+              }}
+              title={t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}
+              className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+
             {/* Language Toggle */}
             <button
               onClick={() => setLang(lang === "ar" ? "en" : "ar")}
@@ -244,6 +260,25 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
           {/* Main workspace container */}
           <main className="flex-1 min-w-0 p-4 sm:p-8 pb-24 sm:pb-8 overflow-y-auto bg-zinc-50 dark:bg-zinc-950">
+            {/* Mobile Quick Search Pill Bar */}
+            <div className="sm:hidden mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  const event = new KeyboardEvent("keydown", {
+                    key: "k",
+                    ctrlKey: true,
+                    bubbles: true
+                  });
+                  window.dispatchEvent(event);
+                }}
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-all text-xs font-medium cursor-pointer"
+              >
+                <Search className="h-4 w-4 shrink-0 text-zinc-400" />
+                <span className="text-zinc-500 dark:text-zinc-400 font-semibold">{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
+              </button>
+            </div>
+
             <PageTransitionWrapper>{children}</PageTransitionWrapper>
           </main>
         </div>
