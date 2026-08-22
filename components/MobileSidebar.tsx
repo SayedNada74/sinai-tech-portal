@@ -37,12 +37,15 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { lang, setLang, theme, setTheme, t, dir, userRole } = useApp();
   const { shouldAnimate } = useAnimationProps();
 
   const isRtl = dir === "rtl";
   const isAdminUser = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
+
+  const userAvatar = user?.avatar || "🎓";
+  const isImageAvatar = userAvatar.startsWith("data:image/") || userAvatar.startsWith("http");
 
   const menuItems = isAdminUser
     ? [
@@ -175,17 +178,33 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 </button>
               </div>
 
-              {/* Logout button */}
-              <button
-                onClick={() => {
-                  onClose();
-                  logout();
-                }}
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-red-500 rounded-xl hover:bg-red-500/10 transition-all cursor-pointer border border-red-500/20 bg-red-500/5"
-              >
-                <LogOut className="h-4.5 w-4.5" />
-                <span>{t("تسجيل الخروج", "Logout")}</span>
-              </button>
+              {/* User Profile Card */}
+              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-2xs">
+                <div className="h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-base overflow-hidden shrink-0">
+                  {isImageAvatar ? (
+                    <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    userAvatar
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h5 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{user?.name || t("طالب سيناء", "Student")}</h5>
+                  <span className="text-[10px] text-zinc-400 block truncate leading-none mt-0.5">
+                    {userRole === "student" ? t("طالب الكلية", "Faculty Student") : t("مشرف المنصة", "Admin")}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    onClose();
+                    logout();
+                  }}
+                  className="p-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  title={t("تسجيل الخروج", "Logout")}
+                  aria-label="Logout"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
 
               <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 mt-2">
                 <DeveloperCredit variant="sidebar" />
