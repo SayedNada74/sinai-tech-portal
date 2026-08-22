@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/context/auth-context";
 import { AppProvider } from "@/context/app-context";
 import { AcademicProvider } from "@/context/academic-context";
@@ -18,10 +18,10 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-inter",
+  variable: "--font-english",
   display: "swap",
 });
 
@@ -71,7 +71,7 @@ export default function RootLayout({
     <html
       lang="ar"
       data-scroll-behavior="smooth"
-      className={`${ibmPlexArabic.variable} ${inter.variable} font-sans h-full antialiased`}
+      className={`${ibmPlexArabic.variable} ${plusJakartaSans.variable} font-sans h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
