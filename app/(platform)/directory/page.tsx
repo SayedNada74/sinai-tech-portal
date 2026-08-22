@@ -48,6 +48,28 @@ export default function DirectoryPage() {
     });
   }, [users, searchQuery, filterLevel]);
 
+  const getLevelLabel = (lvl?: string) => {
+    if (!lvl) return "";
+    if (lang === "en") {
+      if (lvl.includes("الأول") || lvl === "Level 1" || lvl === "Year 1") return "Level 1 (Freshman)";
+      if (lvl.includes("الثاني") || lvl === "Level 2" || lvl === "Year 2") return "Level 2 (Sophomore)";
+      if (lvl.includes("الثالث") || lvl === "Level 3" || lvl === "Year 3") return "Level 3 (Junior)";
+      if (lvl.includes("الرابع") || lvl === "Level 4" || lvl === "Year 4") return "Level 4 (Senior)";
+    }
+    return lvl;
+  };
+
+  const getDeptLabel = (dept?: string) => {
+    if (!dept) return "";
+    if (lang === "en") {
+      if (dept.includes("تكنولوجيا المعلومات") || dept === "IT") return "Information Technology (IT)";
+      if (dept.includes("علوم الحاسب") || dept === "CS") return "Computer Science (CS)";
+      if (dept.includes("نظم المعلومات") || dept === "IS") return "Information Systems (IS)";
+      if (dept.includes("عام") || dept.includes("أساسي")) return "General Computer Science";
+    }
+    return dept;
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700" dir={dir}>
       {/* Header */}
@@ -91,7 +113,7 @@ export default function DirectoryPage() {
                 onClick={() => setFilterLevel(lvl)}
                 className="rounded-xl h-10 px-4 whitespace-nowrap"
               >
-                {lvl}
+                {getLevelLabel(lvl)}
               </Button>
             ))}
           </div>
@@ -127,11 +149,11 @@ export default function DirectoryPage() {
                       
                       <div className="mt-1.5 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 font-bold">
                         <GraduationCap className="h-3.5 w-3.5" />
-                        <span>{user.level}</span>
+                        <span>{getLevelLabel(user.level)}</span>
                       </div>
                       
                       <p className="mt-2 text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                        {user.department}
+                        {getDeptLabel(user.department)}
                       </p>
 
                       <div className="mt-auto pt-4 w-full flex justify-center">

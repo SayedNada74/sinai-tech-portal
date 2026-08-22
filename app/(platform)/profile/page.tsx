@@ -334,6 +334,57 @@ export default function ProfilePage() {
   };
 
   const isRtl = dir === "rtl";
+
+  const getLevelLabel = (lvl?: string) => {
+    if (!lvl) return "";
+    if (lang === "en") {
+      if (lvl.includes("الأول") || lvl === "Level 1" || lvl === "Year 1") return "Year 1 (Freshman)";
+      if (lvl.includes("الثاني") || lvl === "Level 2" || lvl === "Year 2") return "Year 2 (Sophomore)";
+      if (lvl.includes("الثالث") || lvl === "Level 3" || lvl === "Year 3") return "Year 3 (Junior)";
+      if (lvl.includes("الرابع") || lvl === "Level 4" || lvl === "Year 4") return "Year 4 (Senior)";
+    }
+    return lvl;
+  };
+
+  const getDeptLabel = (dept?: string) => {
+    if (!dept) return "";
+    if (lang === "en") {
+      if (dept.includes("تكنولوجيا المعلومات") || dept === "IT") return "Information Technology";
+      if (dept.includes("علوم الحاسب") || dept === "CS") return "Computer Science";
+      if (dept.includes("نظم المعلومات") || dept === "IS") return "Information Systems";
+      if (dept.includes("عام") || dept.includes("أساسي")) return "General Computer Science";
+    }
+    return dept;
+  };
+
+  const getFormattedBio = (b?: string) => {
+    if (!b || !b.trim()) return t("لا توجد سيرة ذاتية.", "No bio provided.");
+    if (lang === "en") {
+      if (b.includes("طالب مسجل في المنصة الأكاديمية") || b.includes("طالب مسجل في المنصة")) {
+        return "Registered student on Sinai University Tech Portal.";
+      }
+      if (b.includes("طالب جديد في منصة")) {
+        return "New student on Sinai University Tech Portal.";
+      }
+      if (b.includes("حساب جديد في المنصة")) {
+        return "New account on the academic platform.";
+      }
+      if (b.includes("مستخدم مسجل وموثق")) {
+        return "Verified student on Sinai University Tech Portal.";
+      }
+      if (b.includes("مسؤول النظام الإداري")) {
+        return "System Administrator";
+      }
+      if (b.includes("المشرف الأعلى على المنصة")) {
+        return "Super Administrator";
+      }
+      if (b.includes("منسق ومراجع المحتوى")) {
+        return "Content Moderator";
+      }
+    }
+    return b;
+  };
+
   const isAdminStaff = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
 
   if (isAdminStaff) {
@@ -624,13 +675,15 @@ export default function ProfilePage() {
               <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
                 {(isRtl ? nameAr : nameEn) || t("طالب مستجد", "Freshman Student")}
               </h3>
-              <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1">{level} · {user?.department}</p>
+              <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1">
+                {getLevelLabel(level)} {user?.department ? ` · ${getDeptLabel(user.department)}` : ""}
+              </p>
 
               {/* Bio summary display (Smart Conditional) */}
               {bio && bio.trim().length > 0 && (
                 <div className={`mt-4 p-3 bg-zinc-50 dark:bg-zinc-950/50 rounded-xl border border-zinc-200/60 dark:border-zinc-850 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed ${isRtl ? "text-right" : "text-left"}`}>
                   <span className="font-bold text-[10px] uppercase text-zinc-400 block mb-1">{t("النبذة التعريفية", "Bio")}</span>
-                  <p>{bio}</p>
+                  <p>{getFormattedBio(bio)}</p>
                 </div>
               )}
 

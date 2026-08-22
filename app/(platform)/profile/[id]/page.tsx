@@ -57,6 +57,56 @@ export default function PublicProfilePage({ params }: PageProps) {
 
   const displayName = lang === "ar" ? (profile.nameAr || profile.name) : (profile.nameEn || profile.name);
 
+  const getLevelLabel = (lvl?: string) => {
+    if (!lvl) return "";
+    if (lang === "en") {
+      if (lvl.includes("الأول") || lvl === "Level 1" || lvl === "Year 1") return "Level 1 (Freshman)";
+      if (lvl.includes("الثاني") || lvl === "Level 2" || lvl === "Year 2") return "Level 2 (Sophomore)";
+      if (lvl.includes("الثالث") || lvl === "Level 3" || lvl === "Year 3") return "Level 3 (Junior)";
+      if (lvl.includes("الرابع") || lvl === "Level 4" || lvl === "Year 4") return "Level 4 (Senior)";
+    }
+    return lvl;
+  };
+
+  const getDeptLabel = (dept?: string) => {
+    if (!dept) return "";
+    if (lang === "en") {
+      if (dept.includes("تكنولوجيا المعلومات") || dept === "IT") return "Information Technology (IT)";
+      if (dept.includes("علوم الحاسب") || dept === "CS") return "Computer Science (CS)";
+      if (dept.includes("نظم المعلومات") || dept === "IS") return "Information Systems (IS)";
+      if (dept.includes("عام") || dept.includes("أساسي")) return "General Computer Science";
+    }
+    return dept;
+  };
+
+  const getFormattedBio = (b?: string) => {
+    if (!b || !b.trim()) return t("لا توجد سيرة ذاتية.", "No bio provided.");
+    if (lang === "en") {
+      if (b.includes("طالب مسجل في المنصة الأكاديمية") || b.includes("طالب مسجل في المنصة")) {
+        return "Registered student on Sinai University Tech Portal.";
+      }
+      if (b.includes("طالب جديد في منصة")) {
+        return "New student on Sinai University Tech Portal.";
+      }
+      if (b.includes("حساب جديد في المنصة")) {
+        return "New account on the academic platform.";
+      }
+      if (b.includes("مستخدم مسجل وموثق")) {
+        return "Verified student on Sinai University Tech Portal.";
+      }
+      if (b.includes("مسؤول النظام الإداري")) {
+        return "System Administrator";
+      }
+      if (b.includes("المشرف الأعلى على المنصة")) {
+        return "Super Administrator";
+      }
+      if (b.includes("منسق ومراجع المحتوى")) {
+        return "Content Moderator";
+      }
+    }
+    return b;
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700" dir={dir}>
       
@@ -92,7 +142,7 @@ export default function PublicProfilePage({ params }: PageProps) {
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>
               <div className="mt-2 flex items-center justify-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <GraduationCap className="h-4 w-4" />
-                <span className="text-sm font-bold">{profile.level} - {profile.department}</span>
+                <span className="text-sm font-bold">{getLevelLabel(profile.level)} {profile.department ? ` - ${getDeptLabel(profile.department)}` : ""}</span>
               </div>
               <Badge variant="outline" className="mt-3 bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 font-bold">
                 {profile.studentId}
@@ -110,7 +160,7 @@ export default function PublicProfilePage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="p-5">
               <p className="text-sm text-zinc-600 dark:text-zinc-300 font-medium leading-relaxed whitespace-pre-wrap">
-                {profile.bio || t("لا توجد سيرة ذاتية.", "No bio provided.")}
+                {getFormattedBio(profile.bio)}
               </p>
             </CardContent>
           </Card>

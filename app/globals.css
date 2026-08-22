@@ -48,14 +48,14 @@ html[dir="rtl"] textarea,
   font-family: var(--font-ibm-plex-arabic), "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* LTR (English) Typography Rules - Exact Original Pre-Change Configuration */
+/* LTR (English) Typography Rules - English font with IBM Plex Sans Arabic fallback */
 html[dir="ltr"] body,
 html[dir="ltr"] input,
 html[dir="ltr"] button,
 html[dir="ltr"] select,
 html[dir="ltr"] textarea,
 [dir="ltr"] {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Arabic", "SF Pro Text", "SF Pro Display", 'Readex Pro', var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", 'Plus Jakarta Sans', var(--font-jakarta), 'Readex Pro', var(--font-ibm-plex-arabic), 'IBM Plex Sans Arabic', system-ui, sans-serif !important;
 }
 
 /* Arabic Text Readability Enhancements */
