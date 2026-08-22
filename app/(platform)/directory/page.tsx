@@ -22,7 +22,8 @@ export default function DirectoryPage() {
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   const levels = React.useMemo(() => {
-    const uniqueLevels = new Set(users.map((u) => u.level).filter(Boolean));
+    const studentUsers = users.filter((u) => !u.role || u.role === "student");
+    const uniqueLevels = new Set(studentUsers.map((u) => u.level).filter(Boolean));
     return Array.from(uniqueLevels);
   }, [users]);
 
@@ -55,6 +56,9 @@ export default function DirectoryPage() {
       if (lvl.includes("الثاني") || lvl === "Level 2" || lvl === "Year 2") return "Level 2 (Sophomore)";
       if (lvl.includes("الثالث") || lvl === "Level 3" || lvl === "Year 3") return "Level 3 (Junior)";
       if (lvl.includes("الرابع") || lvl === "Level 4" || lvl === "Year 4") return "Level 4 (Senior)";
+      if (lvl.includes("الكادر الإداري")) return "Administrative Staff";
+      if (lvl.includes("الإدارة العليا")) return "University Management";
+      if (lvl.includes("كادر التنسيق")) return "Student Coordination Staff";
     }
     return lvl;
   };
@@ -68,6 +72,34 @@ export default function DirectoryPage() {
       if (dept.includes("عام") || dept.includes("أساسي")) return "General Computer Science";
     }
     return dept;
+  };
+
+  const getFormattedBio = (b?: string) => {
+    if (!b || !b.trim()) return t("لا توجد سيرة ذاتية.", "No bio provided.");
+    if (lang === "en") {
+      if (b.includes("طالب مسجل في المنصة الأكاديمية") || b.includes("طالب مسجل في المنصة")) {
+        return "Registered student on Sinai University Tech Portal.";
+      }
+      if (b.includes("طالب جديد في منصة")) {
+        return "New student on Sinai University Tech Portal.";
+      }
+      if (b.includes("حساب جديد في المنصة")) {
+        return "New account on the academic platform.";
+      }
+      if (b.includes("مستخدم مسجل وموثق")) {
+        return "Verified student on Sinai University Tech Portal.";
+      }
+      if (b.includes("مسؤول النظام الإداري")) {
+        return "System Administrator";
+      }
+      if (b.includes("المشرف الأعلى على المنصة")) {
+        return "Super Administrator";
+      }
+      if (b.includes("منسق ومراجع المحتوى")) {
+        return "Content Moderator";
+      }
+    }
+    return b;
   };
 
   return (
@@ -151,6 +183,11 @@ export default function DirectoryPage() {
                         <GraduationCap className="h-3.5 w-3.5" />
                         <span>{getLevelLabel(user.level)}</span>
                       </div>
+                      {user.bio && (
+                        <p className="mt-4 text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed h-[36px]">
+                          {getFormattedBio(user.bio)}
+                        </p>
+                      )}
                       
                       <p className="mt-2 text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                         {getDeptLabel(user.department)}

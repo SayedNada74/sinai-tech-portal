@@ -390,20 +390,20 @@ export default function ProfilePage() {
   if (isAdminStaff) {
     const adminTitle =
       user?.role === "super-admin"
-        ? "👑 المشرف الأعلى للمنصة (Super Admin)"
+        ? t("👑 المشرف الأعلى للمنصة (Super Admin)", "👑 Platform Super Admin")
         : user?.role === "admin"
-        ? "⚙️ مسؤول النظام الإداري (System Admin)"
-        : "👩‍🏫 منسق المحتوى والمنتدى (Content Moderator)";
+        ? t("⚙️ مسؤول النظام الإداري (System Admin)", "⚙️ System Admin")
+        : t("👩‍🏫 منسق المحتوى والمنتدى (Content Moderator)", "👩‍🏫 Content Moderator");
 
     const adminCode =
       user?.role === "super-admin" ? "SUP-001" : user?.role === "admin" ? "ADM-001" : "MOD-001";
 
     const adminSector =
       user?.role === "super-admin"
-        ? "الإدارة العليا للجامعة"
+        ? t("الإدارة العليا للجامعة", "University Management")
         : user?.role === "admin"
-        ? "الكادر الإداري والفني"
-        : "كادر التنسيق والرقابة";
+        ? t("الكادر الإداري والفني", "Administrative Staff")
+        : t("كادر التنسيق والرقابة", "Coordination Staff");
 
     return (
       <div className="max-w-4xl mx-auto space-y-8 animate-fade-in" dir={dir}>
@@ -487,7 +487,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-zinc-500">{t("حالة الحساب:", "Account Status:")}</span>
-                    <Badge className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[10px]">🟢 نشط وتصريح كامل</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[10px]">{t("🟢 نشط وتصريح كامل", "🟢 Active & Cleared")}</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -503,16 +503,16 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="pt-4 space-y-2.5 text-xs">
                 <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">إدارة حسابات الأعضاء والطلاب</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">مكتمل 🔑</Badge>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">{t("إدارة حسابات الأعضاء والطلاب", "Manage Member & Student Accounts")}</span>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">{t("مكتمل 🔑", "Complete 🔑")}</Badge>
                 </div>
                 <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">تعديل المقرر والخطط الدراسية</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">مكتمل 📚</Badge>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">{t("تعديل المقرر والخطط الدراسية", "Modify Curriculum & Study Plans")}</span>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">{t("مكتمل 📚", "Complete 📚")}</Badge>
                 </div>
                 <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">مراقبة سجلات الأمان والتفتيش</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">مكتمل 🛡️</Badge>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">{t("مراقبة سجلات الأمان والتفتيش", "Monitor Security & Audit Logs")}</span>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">{t("مكتمل 🛡️", "Complete 🛡️")}</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -530,11 +530,11 @@ export default function ProfilePage() {
               <CardContent className="pt-6 space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">الاسم الكامل (عربي)</label>
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل (عربي)", "Full Name (Arabic)")}</label>
                     <Input value={nameAr} onChange={(e) => setNameAr(e.target.value)} className="h-11 text-xs" dir="rtl" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Full Name (English)</label>
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل (إنجليزي)", "Full Name (English)")}</label>
                     <Input value={nameEn} onChange={(e) => setNameEn(e.target.value)} className="h-11 text-xs" dir="ltr" />
                   </div>
                   <div className="space-y-2">
@@ -547,7 +547,7 @@ export default function ProfilePage() {
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البيان والوصف الإداري (Bio)", "Admin Bio / Statement")}</label>
                   <textarea
                     rows={3}
-                    value={bio}
+                    value={getFormattedBio(bio)}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder={t("اكتب نص الإشراف والبيان الإداري...", "Write administrative statement...")}
                     className="w-full p-3 text-xs rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none"
@@ -934,7 +934,7 @@ export default function ProfilePage() {
                 </label>
                 <textarea
                   rows={4}
-                  value={bio}
+                  value={getFormattedBio(bio)}
                   onChange={(e) => setBio(e.target.value)}
                   disabled={isLoading}
                   placeholder={t("اكتب نبذة قصيرة عن اهتماماتك الأكاديمية والتقنية...", "Write a short bio about your academic & tech interests...")}
