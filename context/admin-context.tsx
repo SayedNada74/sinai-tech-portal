@@ -250,7 +250,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("su_courses_db", JSON.stringify(COURSES));
     }
 
-    // 3. Resources setup
+    // 3. Resources setup (Hydrate from cache immediately, then authoritative fetch from Supabase)
     const savedResources = localStorage.getItem("su_resources_db");
     if (savedResources) {
       try { setResources(JSON.parse(savedResources)); } catch (e) { }
@@ -258,6 +258,37 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       setResources(RESOURCES);
       localStorage.setItem("su_resources_db", JSON.stringify(RESOURCES));
     }
+
+    const fetchAdminResourcesCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from("resources")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+          if (!error && data && data.length > 0) {
+            const mappedRes: Resource[] = data.map((r: any) => ({
+              id: r.id,
+              title: r.title,
+              description: r.description || "",
+              courseCode: r.course_code || "",
+              type: r.type || "pdf",
+              author: r.author || "إدارة المنصة",
+              uploadDate: r.upload_date || new Date().toISOString().split("T")[0],
+              downloadCount: r.download_count || 0,
+              rating: Number(r.rating) || 5,
+              url: r.url || ""
+            }));
+            setResources(mappedRes);
+            localStorage.setItem("su_resources_db", JSON.stringify(mappedRes));
+          }
+        } catch (err) {
+          console.warn("[Admin Resources] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminResourcesCloud();
 
     // 4. Roadmaps setup - Always merge with default ROADMAPS to ensure titleEn, descriptionEn, durationEn & node En fields exist
     const savedRoadmaps = localStorage.getItem("su_roadmaps_db");
@@ -305,9 +336,36 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("su_roadmaps_db", JSON.stringify(ROADMAPS));
     }
 
-    // 5. CMS items
+    // 5. CMS items: Announcements (Hydrate from cache, then authoritative fetch from Supabase)
     const savedAnn = localStorage.getItem("su_announcements");
     if (savedAnn) { try { setAnnouncements(JSON.parse(savedAnn)); } catch (e) { } }
+
+    const fetchAdminAnnouncementsCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from("announcements")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+          if (!error && data && data.length > 0) {
+            const mappedAnn: Announcement[] = data.map((a: any) => ({
+              id: a.id,
+              title: a.title,
+              content: a.content,
+              category: a.category || "news",
+              date: a.date || new Date().toISOString().split("T")[0],
+              published: Boolean(a.published)
+            }));
+            setAnnouncements(mappedAnn);
+            localStorage.setItem("su_announcements", JSON.stringify(mappedAnn));
+          }
+        } catch (err) {
+          console.warn("[Admin Announcements] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminAnnouncementsCloud();
 
     const savedFaq = localStorage.getItem("su_faqs");
     if (savedFaq) { try { setFaqs(JSON.parse(savedFaq)); } catch (e) { } }
@@ -476,18 +534,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Resource Actions
-  const approveResource = (id: string, approve: boolean) => {
+  const approveResource = async (id: string, approve: boolean) => {
     const target = resources.find(r => r.id === id);
-    const updated = resources.map(r => r.id === id ? { ...r, author: approve ? r.author.replace("[PENDING]", "") : "[PENDING] " + r.author } : r);
+    const newAuthor = approve ? (target?.author || "").replace("[PENDING]", "").trim() : "[PENDING] " + (target?.author || "").replace("[PENDING]", "").trim();
+    const updated = resources.map(r => r.id === id ? { ...r, author: newAuthor } : r);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction(approve ? "موافقة على مصدر" : "تعليق الموافقة للمصدر", `المصدر الأكاديمي: ${target?.title}`, "resource");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("resources").update({ author: newAuthor }).eq("id", id);
+      } catch (e) {
+        console.warn("[Admin Resources] Cloud update warning:", e);
+      }
+    }
   };
 
-  const addResourceAdmin = (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating">) => {
+  const addResourceAdmin = async (res: Omit<Resource, "id" | "uploadDate" | "downloadCount" | "rating">) => {
     const newRes: Resource = {
       ...res,
-      id: `res-admin-${Date.now()}`,
+      id: `res-admin-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       uploadDate: new Date().toISOString().split("T")[0],
       downloadCount: 0,
       rating: 5
@@ -496,55 +563,141 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction("إضافة ملف ومصدر دراسي", `رفع ملف: ${newRes.title}`, "resource");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("resources").insert([{
+          id: newRes.id,
+          title: newRes.title,
+          description: newRes.description,
+          course_code: newRes.courseCode,
+          type: newRes.type,
+          author: newRes.author,
+          upload_date: newRes.uploadDate,
+          download_count: newRes.downloadCount,
+          rating: newRes.rating,
+          url: newRes.url
+        }]);
+      } catch (e) {
+        console.warn("[Admin Resources] Cloud insert warning:", e);
+      }
+    }
   };
 
-  const editResourceAdmin = (id: string, updatedFields: Partial<Resource>) => {
+  const editResourceAdmin = async (id: string, updatedFields: Partial<Resource>) => {
     const updated = resources.map(r => r.id === id ? { ...r, ...updatedFields } : r);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction("تعديل ملف أكاديمي", `المعرف: ${id}`, "resource");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, any> = {};
+        if (updatedFields.title !== undefined) payload.title = updatedFields.title;
+        if (updatedFields.description !== undefined) payload.description = updatedFields.description;
+        if (updatedFields.courseCode !== undefined) payload.course_code = updatedFields.courseCode;
+        if (updatedFields.type !== undefined) payload.type = updatedFields.type;
+        if (updatedFields.author !== undefined) payload.author = updatedFields.author;
+        if (updatedFields.url !== undefined) payload.url = updatedFields.url;
+        if (updatedFields.rating !== undefined) payload.rating = updatedFields.rating;
+
+        if (Object.keys(payload).length > 0) {
+          await supabase.from("resources").update(payload).eq("id", id);
+        }
+      } catch (e) {
+        console.warn("[Admin Resources] Cloud update warning:", e);
+      }
+    }
   };
 
-  const deleteResourceAdmin = (id: string) => {
+  const deleteResourceAdmin = async (id: string) => {
     const target = resources.find(r => r.id === id);
     const updated = resources.filter(r => r.id !== id);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction("حذف ملف ومصدر دراسي", `تم إزالة المصدر: ${target?.title}`, "resource");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("resources").delete().eq("id", id);
+      } catch (e) {
+        console.warn("[Admin Resources] Cloud delete warning:", e);
+      }
+    }
   };
 
-  const featureResource = (id: string, featured: boolean) => {
-    const updated = resources.map(r => r.id === id ? { ...r, rating: featured ? 5 : 4 } : r);
+  const featureResource = async (id: string, featured: boolean) => {
+    const newRating = featured ? 5 : 4;
+    const updated = resources.map(r => r.id === id ? { ...r, rating: newRating } : r);
     setResources(updated);
     saveState("su_resources_db", updated);
     logAction(featured ? "تثبيت مصدر مميز" : "إلغاء تثبيت المصدر المميز", `المعرف: ${id}`, "resource");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("resources").update({ rating: newRating }).eq("id", id);
+      } catch (e) {
+        console.warn("[Admin Resources] Cloud feature update warning:", e);
+      }
+    }
   };
 
   // Announcement Actions
-  const addAnnouncement = (ann: Omit<Announcement, "id" | "date">) => {
+  const addAnnouncement = async (ann: Omit<Announcement, "id" | "date">) => {
     const newAnn: Announcement = {
       ...ann,
-      id: `ann-${Date.now()}`,
+      id: `ann-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       date: new Date().toISOString().split("T")[0]
     };
     const updated = [newAnn, ...announcements];
     setAnnouncements(updated);
     saveState("su_announcements", updated);
     logAction("نشر إعلان جديد", `عنوان الإعلان: ${newAnn.title}`, "announcement");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("announcements").insert([{
+          id: newAnn.id,
+          title: newAnn.title,
+          content: newAnn.content,
+          category: newAnn.category,
+          date: newAnn.date,
+          published: newAnn.published
+        }]);
+      } catch (e) {
+        console.warn("[Admin Announcements] Cloud insert warning:", e);
+      }
+    }
   };
 
-  const updateAnnouncement = (id: string, updatedFields: Partial<Announcement>) => {
+  const updateAnnouncement = async (id: string, updatedFields: Partial<Announcement>) => {
     const updated = announcements.map(a => a.id === id ? { ...a, ...updatedFields } : a);
     setAnnouncements(updated);
     saveState("su_announcements", updated);
     logAction("تعديل الإعلان منشور", `المعرف: ${id}`, "announcement");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("announcements").update(updatedFields).eq("id", id);
+      } catch (e) {
+        console.warn("[Admin Announcements] Cloud update warning:", e);
+      }
+    }
   };
 
-  const deleteAnnouncement = (id: string) => {
+  const deleteAnnouncement = async (id: string) => {
     const updated = announcements.filter(a => a.id !== id);
     setAnnouncements(updated);
     saveState("su_announcements", updated);
     logAction("حذف إعلان", `تم إزالة الإعلان بنجاح.`, "announcement");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("announcements").delete().eq("id", id);
+      } catch (e) {
+        console.warn("[Admin Announcements] Cloud delete warning:", e);
+      }
+    }
   };
 
   // FAQ Actions

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useAuth, UserProfile } from "./auth-context";
-import { fetchFromSupabase, insertToSupabase, updateInSupabase, deleteFromSupabase } from "@/lib/supabase";
+import { fetchFromSupabase, insertToSupabase, updateInSupabase, deleteFromSupabase, supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 // Post Interfaces
 export interface PostReply {
@@ -382,12 +382,39 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         mappedRemote.forEach(p => mergedMap.set(p.id, p));
         const merged = Array.from(mergedMap.values());
 
-        setPosts(merged);
-        localStorage.setItem("su_global_community_posts", JSON.stringify(merged));
+        setPosts(Array.from(mergedMap.values()));
+        localStorage.setItem("su_global_community_posts", JSON.stringify(Array.from(mergedMap.values())));
+      }
+    };
+
+    const loadSharedCareers = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("careers").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length > 0) {
+            const mappedCareers: CareerOpportunity[] = data.map((c: any) => ({
+              id: c.id,
+              title: c.title,
+              company: c.company,
+              location: c.location || "مصر",
+              type: c.type || "internship",
+              experience: c.experience || "entry",
+              department: c.department || "all",
+              description: c.description || "",
+              link: c.link || "#",
+              dateAdded: c.date_added ? c.date_added.split("T")[0] : new Date().toISOString().split("T")[0]
+            }));
+            setCareers(mappedCareers);
+            localStorage.setItem("su_careers_cache", JSON.stringify(mappedCareers));
+          }
+        } catch (e) {
+          console.warn("[Careers Cloud Sync] Fetch error:", e);
+        }
       }
     };
 
     loadSharedPosts();
+    loadSharedCareers();
 
     const handleStorageEvent = (e: StorageEvent) => {
       if (e.key === "su_global_community_posts" && e.newValue) {
@@ -724,7 +751,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
   const isJobSaved = (id: string) => savedJobs.includes(id);
 
-  const addCareer = (careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
+  const addCareer = async (careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
     const newCareer: CareerOpportunity = {
       ...careerData,
       id: `car-${Date.now()}`,
@@ -732,19 +759,63 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     };
     const updated = [newCareer, ...careers];
     setCareers(updated);
-    saveSocialState({ careers: updated });
+    localStorage.setItem("su_careers_cache", JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("careers").insert([{
+          id: newCareer.id,
+          title: newCareer.title,
+          company: newCareer.company,
+          location: newCareer.location,
+          type: newCareer.type,
+          description: newCareer.description,
+          link: newCareer.link,
+          department: newCareer.department,
+          experience: newCareer.experience,
+          date_added: new Date().toISOString()
+        }]);
+      } catch (e) {
+        console.warn("[Careers Cloud Sync] Insert warning:", e);
+      }
+    }
   };
 
-  const editCareer = (id: string, careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
+  const editCareer = async (id: string, careerData: Omit<CareerOpportunity, "id" | "dateAdded">) => {
     const updated = careers.map((c) => (c.id === id ? { ...c, ...careerData } : c));
     setCareers(updated);
-    saveSocialState({ careers: updated });
+    localStorage.setItem("su_careers_cache", JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("careers").update({
+          title: careerData.title,
+          company: careerData.company,
+          location: careerData.location,
+          type: careerData.type,
+          description: careerData.description,
+          link: careerData.link,
+          department: careerData.department,
+          experience: careerData.experience
+        }).eq("id", id);
+      } catch (e) {
+        console.warn("[Careers Cloud Sync] Update warning:", e);
+      }
+    }
   };
 
-  const deleteCareer = (id: string) => {
+  const deleteCareer = async (id: string) => {
     const updated = careers.filter((c) => c.id !== id);
     setCareers(updated);
-    saveSocialState({ careers: updated });
+    localStorage.setItem("su_careers_cache", JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("careers").delete().eq("id", id);
+      } catch (e) {
+        console.warn("[Careers Cloud Sync] Delete warning:", e);
+      }
+    }
   };
 
   // Events bookmarks
