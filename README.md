@@ -91,19 +91,6 @@ npm run dev
 افتح متصفحك وادخل على: [http://localhost:3000](http://localhost:3000)
 
 ---
-
-## 🔐 حسابات التجربة السريعة (Default Demo Accounts)
-
-يمكنك تجربة المنصة والأدوار المختلفة مباشرة باستخدام الحسابات الافتراضية التالية:
-
-| الدور (Role) | البريد الإلكتروني (Email) | كلمة المرور (Password) |
-| :--- | :--- | :--- |
-| **المشرف الأعلى (Super Admin)** | `super@example.com` | `super` |
-| **مسؤول النظام (Admin)** | `admin@example.com` | `admin` |
-| **طالب افتراضي (Student)** | `sayed@example.com` | `123` |
-
----
-
 ## 📁 هيكل المشروع (Project Structure)
 
 ```text
