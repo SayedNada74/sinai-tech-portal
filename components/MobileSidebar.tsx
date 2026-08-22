@@ -28,6 +28,7 @@ import {
   Users
 } from "lucide-react";
 import { DeveloperCredit } from "@/components/ui/developer-credit";
+import { Logo } from "@/components/ui/logo";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -41,7 +42,6 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const { shouldAnimate } = useAnimationProps();
 
   const isRtl = dir === "rtl";
-
   const isAdminUser = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
 
   const menuItems = isAdminUser
@@ -71,52 +71,54 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings }
       ];
 
-  const drawerVariants = {
-    closed: {
-      x: isRtl ? "100%" : "-105%",
-      transition: { type: "tween" as const, duration: 0.25, ease: "easeInOut" as const }
-    },
-    open: {
-      x: 0,
-      transition: { type: "tween" as const, duration: 0.25, ease: "easeInOut" as const }
+  // Prevent background scrolling when mobile sidebar is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  };
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const slideInitial = isRtl ? { x: "100%" } : { x: "-100%" };
+  const slideAnimate = { x: 0 };
+  const slideExit = isRtl ? { x: "100%" } : { x: "-100%" };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex" dir={dir}>
+        <div className="fixed inset-0 z-50 md:hidden" dir={dir}>
           {/* Dimmer Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-zinc-950/65 backdrop-blur-sm"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-zinc-950/60 backdrop-blur-xs"
             onClick={onClose}
           />
 
           {/* Drawer Content */}
           <motion.div
-            variants={drawerVariants}
-            initial={shouldAnimate ? "closed" : "open"}
-            animate="open"
-            exit="closed"
-            className={`w-64 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-900/60 h-full flex flex-col justify-between shadow-2xl relative z-10 overflow-y-auto ${
-              isRtl ? "border-l mr-auto" : "border-r ml-auto"
-            }`}
+            initial={shouldAnimate ? slideInitial : slideAnimate}
+            animate={slideAnimate}
+            exit={slideExit}
+            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            className={`fixed inset-y-0 ${
+              isRtl ? "right-0 border-l" : "left-0 border-r"
+            } z-50 w-72 max-w-[85vw] bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 h-full flex flex-col justify-between shadow-2xl overflow-y-auto overscroll-contain`}
           >
             {/* Header & Close Button */}
             <div>
-              <div className="h-16 px-6 border-b border-zinc-200 dark:border-zinc-900/60 flex items-center justify-between">
-                <div className="flex items-center gap-2 select-none">
-                  <div className="h-7 w-7 rounded-lg bg-cyan-600 flex items-center justify-center text-white font-bold">IT</div>
-                  <span className="font-extrabold text-sm text-zinc-800 dark:text-zinc-100 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">
-                    SU IT Guide
-                  </span>
-                </div>
+              <div className="h-16 px-5 border-b border-zinc-200 dark:border-zinc-850 flex items-center justify-between">
+                <Logo size="sm" href="/dashboard" />
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
+                  aria-label="Close Sidebar"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -144,30 +146,30 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             </div>
 
             {/* Bottom Controls: Language, Theme & Logout */}
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-900/60 bg-zinc-50/50 dark:bg-zinc-950/40 space-y-2">
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-850 bg-zinc-50/50 dark:bg-zinc-950/40 space-y-2">
               {/* Language & Theme Controls Row */}
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-extrabold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer shadow-2xs"
                 >
-                  <Globe className="h-4 w-4 text-cyan-500" />
+                  <Globe className="h-4 w-4 text-violet-600 dark:text-violet-400" />
                   <span>{lang === "ar" ? "English" : "العربية"}</span>
                 </button>
 
                 <button
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-extrabold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer shadow-2xs"
                 >
                   {theme === "dark" ? (
                     <>
                       <Sun className="h-4 w-4 text-amber-400" />
-                      <span>Light</span>
+                      <span>{t("فاتح", "Light")}</span>
                     </>
                   ) : (
                     <>
                       <Moon className="h-4 w-4 text-zinc-600" />
-                      <span>Dark</span>
+                      <span>{t("داكن", "Dark")}</span>
                     </>
                   )}
                 </button>
@@ -185,7 +187,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <span>{t("تسجيل الخروج", "Logout")}</span>
               </button>
 
-              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800/60 mt-2">
+              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 mt-2">
                 <DeveloperCredit variant="sidebar" />
               </div>
             </div>
