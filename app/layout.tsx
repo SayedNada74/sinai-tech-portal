@@ -18,6 +18,8 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
+const jakarta = { variable: "font-jakarta" };
+
 export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
@@ -64,7 +66,7 @@ export default function RootLayout({
     <html
       lang="ar"
       data-scroll-behavior="smooth"
-      className={`${ibmPlexArabic.variable} font-sans h-full antialiased`}
+      className={`${ibmPlexArabic.variable} ${jakarta.variable} font-sans h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
