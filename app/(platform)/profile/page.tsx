@@ -58,29 +58,87 @@ export default function ProfilePage() {
   const [publicSkills, setPublicSkills] = React.useState(true);
   const [publicProjects, setPublicProjects] = React.useState(true);
 
-  // Initialize fields from Auth context
+  const isInitialized = React.useRef(false);
+
+  // Initialize fields from Auth context or draft from localStorage
   React.useEffect(() => {
-    if (user) {
-      setNameAr(user.nameAr || "");
-      setNameEn(user.nameEn || "");
-      setEmail(user.email || "");
-      setLevel(user.level || "");
-      setStudentId(user.studentId || "");
-      setBio(user.bio || "");
-      setGithub(user.socialLinks?.github || "");
-      setLinkedin(user.socialLinks?.linkedin || "");
-      setPortfolioUrl(user.socialLinks?.website || user.socialLinks?.twitter || "");
-      setSkills(user.skills || []);
-      setAvatar(user.avatar || "🎓");
-      setCvUrl(user.cvUrl || "");
-      setProjects(user.projects || []);
-      
-      if (user.privacySettings) {
-        setPublicSkills(user.privacySettings.publicSkills ?? true);
-        setPublicProjects(user.privacySettings.publicProjects ?? true);
+    if (user && !isInitialized.current) {
+      let loadedFromDraft = false;
+      if (typeof window !== "undefined") {
+        try {
+          const draftStr = localStorage.getItem(`su_profile_draft_${user.id}`);
+          if (draftStr) {
+            const draft = JSON.parse(draftStr);
+            setNameAr(draft.nameAr ?? user.nameAr ?? "");
+            setNameEn(draft.nameEn ?? user.nameEn ?? "");
+            setEmail(draft.email ?? user.email ?? "");
+            setLevel(draft.level ?? user.level ?? "");
+            setStudentId(draft.studentId ?? user.studentId ?? "");
+            setBio(draft.bio ?? user.bio ?? "");
+            setGithub(draft.github ?? user.socialLinks?.github ?? "");
+            setLinkedin(draft.linkedin ?? user.socialLinks?.linkedin ?? "");
+            setPortfolioUrl(draft.portfolioUrl ?? user.socialLinks?.website ?? user.socialLinks?.twitter ?? "");
+            setSkills(draft.skills ?? user.skills ?? []);
+            setAvatar(draft.avatar ?? user.avatar ?? "🎓");
+            setCvUrl(draft.cvUrl ?? user.cvUrl ?? "");
+            setProjects(draft.projects ?? user.projects ?? []);
+            setPublicSkills(draft.publicSkills ?? user.privacySettings?.publicSkills ?? true);
+            setPublicProjects(draft.publicProjects ?? user.privacySettings?.publicProjects ?? true);
+            loadedFromDraft = true;
+          }
+        } catch (e) {
+          console.warn("Failed to load profile draft", e);
+        }
       }
+
+      if (!loadedFromDraft) {
+        setNameAr(user.nameAr || "");
+        setNameEn(user.nameEn || "");
+        setEmail(user.email || "");
+        setLevel(user.level || "");
+        setStudentId(user.studentId || "");
+        setBio(user.bio || "");
+        setGithub(user.socialLinks?.github || "");
+        setLinkedin(user.socialLinks?.linkedin || "");
+        setPortfolioUrl(user.socialLinks?.website || user.socialLinks?.twitter || "");
+        setSkills(user.skills || []);
+        setAvatar(user.avatar || "🎓");
+        setCvUrl(user.cvUrl || "");
+        setProjects(user.projects || []);
+        
+        if (user.privacySettings) {
+          setPublicSkills(user.privacySettings.publicSkills ?? true);
+          setPublicProjects(user.privacySettings.publicProjects ?? true);
+        }
+      }
+
+      isInitialized.current = true;
     }
   }, [user]);
+
+  // Persist draft on changes
+  React.useEffect(() => {
+    if (user && isInitialized.current && typeof window !== "undefined") {
+      const draftData = {
+        nameAr,
+        nameEn,
+        email,
+        level,
+        studentId,
+        bio,
+        github,
+        linkedin,
+        portfolioUrl,
+        skills,
+        avatar,
+        cvUrl,
+        projects,
+        publicSkills,
+        publicProjects
+      };
+      localStorage.setItem(`su_profile_draft_${user.id}`, JSON.stringify(draftData));
+    }
+  }, [user, nameAr, nameEn, email, level, studentId, bio, github, linkedin, portfolioUrl, skills, avatar, cvUrl, projects, publicSkills, publicProjects]);
 
   // Calculate profile completion percentage
   const completionPercentage = React.useMemo(() => {
@@ -197,6 +255,9 @@ export default function ProfilePage() {
       });
 
       if (success) {
+        if (typeof window !== "undefined" && user) {
+          localStorage.removeItem(`su_profile_draft_${user.id}`);
+        }
         setMessage({ type: "success", text: t("تم تحديث صورة الشخصية وملف الطالب بنجاح!", "Profile image and student profile updated successfully!") });
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {

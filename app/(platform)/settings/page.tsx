@@ -21,6 +21,8 @@ import {
   Zap
 } from "lucide-react";
 
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+
 export default function SettingsPage() {
   const { lang, setLang, theme, setTheme, t, dir, lowPowerMode, setLowPowerMode } = useApp();
   const { moodleUrl, syncMoodle, clearMoodle } = useSocial();
@@ -38,7 +40,7 @@ export default function SettingsPage() {
     return ["google"];
   });
 
-  const [moodleInput, setMoodleInput] = React.useState(moodleUrl);
+  const [moodleInput, setMoodleInput] = useLocalStorage("su_settings_moodle_input", moodleUrl || "");
   const [isSyncing, setIsSyncing] = React.useState(false);
   const [showInstructions, setShowInstructions] = React.useState(false);
   const [moodleError, setMoodleError] = React.useState("");
@@ -47,8 +49,10 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
-    setMoodleInput(moodleUrl);
-  }, [moodleUrl]);
+    if (moodleUrl) {
+      setMoodleInput(moodleUrl);
+    }
+  }, [moodleUrl, setMoodleInput]);
 
   const handleToggleProvider = async (provider: "google" | "github") => {
     const isConnected = connectedProviders.includes(provider);

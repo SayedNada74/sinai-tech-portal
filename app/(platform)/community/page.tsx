@@ -26,6 +26,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 
 export default function CommunityPage() {
   const { t, lang, dir } = useApp();
@@ -44,12 +45,12 @@ export default function CommunityPage() {
     deleteReply
   } = useSocial();
 
-  const [selectedCategory, setSelectedCategory] = React.useState<string>("الكل");
-  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
-  const [newTitle, setNewTitle] = React.useState("");
-  const [newContent, setNewContent] = React.useState("");
-  const [newCategory, setNewCategory] = React.useState<CommunityPost["category"]>("General Discussion");
-  const [newFile, setNewFile] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = useLocalStorage<string>("su_community_selected_category", "الكل");
+  const [isCreateOpen, setIsCreateOpen] = useLocalStorage("su_community_is_create_open", false);
+  const [newTitle, setNewTitle] = useLocalStorage("su_community_draft_title", "");
+  const [newContent, setNewContent] = useLocalStorage("su_community_draft_content", "");
+  const [newCategory, setNewCategory] = useLocalStorage<CommunityPost["category"]>("su_community_draft_category", "General Discussion");
+  const [newFile, setNewFile] = useLocalStorage("su_community_draft_file", "");
 
   // Edit Post states
   const [editingPostId, setEditingPostId] = React.useState<string | null>(null);
@@ -58,9 +59,9 @@ export default function CommunityPage() {
   const [editCategory, setEditCategory] = React.useState<CommunityPost["category"]>("General Discussion");
 
   // Comment input state
-  const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
+  const [commentInputs, setCommentInputs] = useLocalStorage<Record<string, string>>("su_community_comment_inputs", {});
   // Reply input state
-  const [replyInputs, setReplyInputs] = React.useState<Record<string, string>>({});
+  const [replyInputs, setReplyInputs] = useLocalStorage<Record<string, string>>("su_community_reply_inputs", {});
   // Expanded comments accordion state
   const [expandedComments, setExpandedComments] = React.useState<Record<string, boolean>>({});
 

@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { GradeSelect } from "@/components/ui/grade-select";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 
 interface SemesterCourseInput {
   id: string;
@@ -44,10 +45,10 @@ export default function GpaPage() {
     }, 400);
   };
 
-  const [activeTab, setActiveTab] = React.useState<"calculator" | "predictor">("calculator");
+  const [activeTab, setActiveTab] = useLocalStorage<"calculator" | "predictor">("su_gpa_active_tab", "calculator");
 
   // --- Semester GPA Calculator States ---
-  const [calcCourses, setCalcCourses] = React.useState<SemesterCourseInput[]>([]);
+  const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
   const [savedSuccess, setSavedSuccess] = React.useState(false);
 
   const addCalcRow = () => {
