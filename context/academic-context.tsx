@@ -139,6 +139,28 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user]);
 
+  // Cross-Tab Storage Event Listener for real-time academic sync across open tabs
+  React.useEffect(() => {
+    if (!user || typeof window === "undefined") return;
+    const userEmailKey = user.email ? user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, '_') : user.id;
+    const storageKey = `su_academic_${userEmailKey}`;
+    const legacyKey = `su_academic_${user.id}`;
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if ((e.key === storageKey || e.key === legacyKey) && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.completedCourses !== undefined) setCompletedCourses(parsed.completedCourses);
+          if (parsed.plannedCourses !== undefined) setPlannedCourses(parsed.plannedCourses);
+          if (parsed.targetGpa !== undefined) setTargetGpa(parsed.targetGpa);
+        } catch (err) {}
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, [user]);
+
   // ============================================================================
   // COALESCED DEBOUNCED SYNC ENGINE
   // ============================================================================

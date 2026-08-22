@@ -61,6 +61,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (savedLPM) setLowPowerModeState(savedLPM === "true");
   }, [applyThemeToDOM]);
 
+  // Cross-Tab Storage Event Listener for theme and language synchronization
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if ((e.key === "app_theme" || e.key === "theme") && e.newValue) {
+        const newTheme = e.newValue as "dark" | "light";
+        setThemeState(newTheme);
+        applyThemeToDOM(newTheme);
+      } else if (e.key === "app_lang" && e.newValue) {
+        const newLang = e.newValue as "ar" | "en";
+        setLangState(newLang);
+        if (typeof document !== "undefined") {
+          document.documentElement.dir = newLang === "ar" ? "rtl" : "ltr";
+        }
+      } else if (e.key === "app_lpm" && e.newValue !== null) {
+        setLowPowerModeState(e.newValue === "true");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, [applyThemeToDOM]);
+
   // 2. Setters with Persistence, Theme, and Direction application
   const setLang = React.useCallback((l: "ar" | "en") => {
     setLangState(l);

@@ -196,6 +196,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Cross-Tab Storage Event Listener for real-time session synchronization (e.g. cross-tab logout)
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === "su_user_session") {
+        if (e.newValue === null) {
+          // Tab A logged out: immediately terminate session in all other open tabs
+          setUser(null);
+        } else if (e.newValue && !user) {
+          // Tab A logged in: sync user session into this tab without loop
+          try {
+            const parsed = JSON.parse(e.newValue);
+            if (parsed && parsed.id) {
+              setUser(parsed);
+            }
+          } catch (err) {}
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, [user]);
+
   // 3. Heartbeat for real-time active session tracking
   React.useEffect(() => {
     if (!user) return;

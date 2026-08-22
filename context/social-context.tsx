@@ -474,31 +474,63 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Save changes state wrapper helper
+  // Cross-Tab Storage Event Listener for personal social state
+  React.useEffect(() => {
+    if (!user || typeof window === "undefined") return;
+    const socialKey = `su_social_${user.id}`;
+    const careersKey = "su_careers_cache";
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === socialKey && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.savedJobs !== undefined) setSavedJobs(parsed.savedJobs);
+          if (parsed.savedEvents !== undefined) setSavedEvents(parsed.savedEvents);
+          if (parsed.savedPosts !== undefined) setSavedPosts(parsed.savedPosts);
+          if (parsed.reminders !== undefined) setReminders(parsed.reminders);
+          if (parsed.notifications !== undefined) setNotifications(parsed.notifications);
+          if (parsed.moodleUrl !== undefined) setMoodleUrl(parsed.moodleUrl);
+        } catch (err) {}
+      } else if (e.key === careersKey && e.newValue) {
+        try {
+          setCareers(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, [user]);
+
+  // Save changes state wrapper helper with Type-Aware Merging
   const saveSocialState = (updates: Partial<any>) => {
     if (user) {
       const key = `su_social_${user.id}`;
-      const saved = localStorage.getItem(key);
-      let current: any = {};
-      if (saved) {
-        try { current = JSON.parse(saved); } catch (e) { }
+      let freshest: any = {};
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          try { freshest = JSON.parse(saved); } catch (e) { }
+        }
       }
+
       const data = {
-        careers: updates.careers !== undefined ? updates.careers : (current.careers || careers),
-        events: updates.events !== undefined ? updates.events : (current.events || events),
-        reminders: updates.reminders !== undefined ? updates.reminders : (current.reminders || reminders),
-        notifications: updates.notifications !== undefined ? updates.notifications : (current.notifications || notifications),
-        savedJobs: updates.savedJobs !== undefined ? updates.savedJobs : (current.savedJobs || savedJobs),
-        savedEvents: updates.savedEvents !== undefined ? updates.savedEvents : (current.savedEvents || savedEvents),
-        savedPosts: updates.savedPosts !== undefined ? updates.savedPosts : (current.savedPosts || savedPosts),
-        moodleUrl: updates.moodleUrl !== undefined ? updates.moodleUrl : (current.moodleUrl || moodleUrl),
+        careers: updates.careers !== undefined ? updates.careers : (freshest.careers || careers),
+        events: updates.events !== undefined ? updates.events : (freshest.events || events),
+        reminders: updates.reminders !== undefined ? updates.reminders : (freshest.reminders || reminders),
+        notifications: updates.notifications !== undefined ? updates.notifications : (freshest.notifications || notifications),
+        savedJobs: updates.savedJobs !== undefined ? updates.savedJobs : (freshest.savedJobs || savedJobs),
+        savedEvents: updates.savedEvents !== undefined ? updates.savedEvents : (freshest.savedEvents || savedEvents),
+        savedPosts: updates.savedPosts !== undefined ? updates.savedPosts : (freshest.savedPosts || savedPosts),
+        moodleUrl: updates.moodleUrl !== undefined ? updates.moodleUrl : (freshest.moodleUrl || moodleUrl),
       };
-      localStorage.setItem(key, JSON.stringify(data));
-      
-      // Async save to cloud
-      if (user) {
-         updateProfile({ social_state: data }).catch(err => console.warn("Cloud sync failed for social_state:", err));
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem(key, JSON.stringify(data));
       }
+      
+      // Async save to cloud with freshest merged payload
+      updateProfile({ social_state: data }).catch(err => console.warn("Cloud sync failed for social_state:", err));
     }
   };
 

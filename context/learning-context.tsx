@@ -172,37 +172,61 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // 3. Save helper for personal learning state (Strictly excludes reviews!)
+  // 3. Cross-Tab Storage Event Listener for real-time multi-tab sync
+  React.useEffect(() => {
+    if (!user || typeof window === "undefined") return;
+    const storageKey = `su_learning_${user.id}`;
+    const reviewsKey = "su_course_reviews_cache";
+
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === storageKey && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.bookmarks !== undefined) setBookmarks(parsed.bookmarks);
+          if (parsed.likedResources !== undefined) setLikedResources(parsed.likedResources);
+          if (parsed.ratedResources !== undefined) setRatedResources(parsed.ratedResources);
+          if (parsed.downloadedResources !== undefined) setDownloadedResources(parsed.downloadedResources);
+          if (parsed.roadmapProgress !== undefined) setRoadmapProgress(parsed.roadmapProgress);
+          if (parsed.recentlyViewed !== undefined) setRecentlyViewed(parsed.recentlyViewed);
+        } catch (err) {}
+      } else if (e.key === reviewsKey && e.newValue) {
+        try {
+          setReviews(JSON.parse(e.newValue));
+        } catch (err) {}
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, [user]);
+
+  // 4. Save helper for personal learning state with Type-Aware Merging
   const saveState = (updates: Partial<any>) => {
     if (user) {
       const storageKey = `su_learning_${user.id}`;
-      const saved = localStorage.getItem(storageKey);
-      let current = {};
-      if (saved) {
-        try {
-          current = JSON.parse(saved);
-        } catch (e) {}
+      let freshest: any = {};
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          try { freshest = JSON.parse(saved); } catch (e) {}
+        }
       }
+
       const finalPayload = {
-        bookmarks,
-        likedResources,
-        ratedResources,
-        downloadedResources,
-        roadmapProgress,
-        recentlyViewed,
-        ...current, // use the freshest data from localStorage
-        ...updates  // apply the new updates on top
+        bookmarks: updates.bookmarks !== undefined ? updates.bookmarks : (freshest.bookmarks || bookmarks),
+        likedResources: updates.likedResources !== undefined ? updates.likedResources : (freshest.likedResources || likedResources),
+        ratedResources: { ...(freshest.ratedResources || ratedResources), ...(updates.ratedResources || {}) },
+        downloadedResources: { ...(freshest.downloadedResources || downloadedResources), ...(updates.downloadedResources || {}) },
+        roadmapProgress: { ...(freshest.roadmapProgress || roadmapProgress), ...(updates.roadmapProgress || {}) },
+        recentlyViewed: updates.recentlyViewed !== undefined ? updates.recentlyViewed : (freshest.recentlyViewed || recentlyViewed)
       };
       
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify(finalPayload)
-      );
-
-      // Async save personal learning state to cloud
-      if (user) {
-        updateProfile({ learning_state: finalPayload }).catch(err => console.warn("Cloud sync failed for learning_state:", err));
+      if (typeof window !== "undefined") {
+        localStorage.setItem(storageKey, JSON.stringify(finalPayload));
       }
+
+      // Async save personal learning state to cloud with freshest merged payload
+      updateProfile({ learning_state: finalPayload }).catch(err => console.warn("Cloud sync failed for learning_state:", err));
     }
   };
 
