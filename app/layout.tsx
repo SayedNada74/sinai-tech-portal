@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import { AuthProvider } from "@/context/auth-context";
 import { AppProvider } from "@/context/app-context";
 import { AcademicProvider } from "@/context/academic-context";
@@ -10,8 +11,19 @@ import { ToastProvider } from "@/components/ui/toast";
 import { PWAInstaller } from "@/components/pwa-installer";
 import { Analytics } from "@vercel/analytics/react";
 
-const ibmPlexArabic = { variable: "font-ibm-plex" };
-const jakarta = { variable: "font-jakarta" };
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-ibm-plex-arabic",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
@@ -59,7 +71,7 @@ export default function RootLayout({
     <html
       lang="ar"
       data-scroll-behavior="smooth"
-      className={`${ibmPlexArabic.variable} ${jakarta.variable} font-sans h-full antialiased`}
+      className={`${ibmPlexArabic.variable} ${inter.variable} font-sans h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
