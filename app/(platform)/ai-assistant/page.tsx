@@ -114,31 +114,71 @@ export default function AiAssistantPage() {
     };
   }, [user?.id]);
 
-  // Save sessions to local cache and Supabase Cloud DB whenever they update
-  const saveSessionsToStorage = async (updatedSessions: ChatSession[]) => {
-    setSessions(updatedSessions);
-    const userCacheKey = user?.id ? `su_ai_chat_sessions_${user.id}` : "su_ai_chat_sessions";
-    try {
-      localStorage.setItem(userCacheKey, JSON.stringify(updatedSessions));
-    } catch (e) { }
+  // ============================================================================
+  // ACTIVE-SESSION-ONLY SERIALIZED PERSISTENCE ENGINE
+  // ============================================================================
+  // Map holding pending updates for sessions currently being synced
+  const pendingSessionSyncRef = React.useRef<Map<string, ChatSession>>(new Map());
+  const isSessionSyncingRef = React.useRef<Set<string>>(new Set());
+  const userRef = React.useRef(user);
+  userRef.current = user;
 
-    // Persist to Supabase Cloud DB
-    if (isSupabaseConfigured && supabase && user?.id) {
+  // Persists ONLY the specific active session to Supabase Cloud DB with per-session serial lock
+  const persistSessionToCloud = React.useCallback(async (session: ChatSession) => {
+    const currentUser = userRef.current;
+    if (!isSupabaseConfigured || !supabase || !currentUser?.id || !session?.id) {
+      return;
+    }
+
+    const sessionId = session.id;
+
+    // Buffer the latest snapshot for this session
+    pendingSessionSyncRef.current.set(sessionId, session);
+
+    // If an upsert for this session is already in-flight, it will pick up the latest snapshot in finally block
+    if (isSessionSyncingRef.current.has(sessionId)) {
+      return;
+    }
+
+    isSessionSyncingRef.current.add(sessionId);
+
+    while (pendingSessionSyncRef.current.has(sessionId)) {
+      const snapshot = pendingSessionSyncRef.current.get(sessionId);
+      pendingSessionSyncRef.current.delete(sessionId);
+
+      if (!snapshot) break;
+
       try {
-        for (const session of updatedSessions) {
-          await supabase.from("ai_conversations").upsert({
-            id: session.id,
-            user_id: user.id,
-            title: session.title,
-            messages: session.messages,
-            updated_at: new Date().toISOString()
-          });
+        const { error } = await supabase.from("ai_conversations").upsert({
+          id: snapshot.id,
+          user_id: currentUser.id,
+          title: snapshot.title,
+          messages: snapshot.messages,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "id" });
+
+        if (error) {
+          console.warn("[AI Session Sync] Upsert warning:", error.message);
         }
-      } catch (err) {
-        console.warn("AI Cloud save warning:", err);
+      } catch (err: any) {
+        console.warn("[AI Session Sync] Network or unexpected error:", err?.message || err);
       }
     }
-  };
+
+    isSessionSyncingRef.current.delete(sessionId);
+  }, []);
+
+  // Update local React state and localStorage cache instantly (Local-First)
+  const updateLocalSessions = React.useCallback((updatedSessions: ChatSession[]) => {
+    setSessions(updatedSessions);
+    const currentUser = userRef.current;
+    const userCacheKey = currentUser?.id ? `su_ai_chat_sessions_${currentUser.id}` : "su_ai_chat_sessions";
+    try {
+      localStorage.setItem(userCacheKey, JSON.stringify(updatedSessions));
+    } catch (e) {
+      console.warn("[AI Assistant] LocalStorage write error:", e);
+    }
+  }, []);
 
   const activeSession = sessions.find((s) => s.id === activeSessionId);
   const messages = activeSession?.messages || [];
@@ -158,13 +198,27 @@ export default function AiAssistantPage() {
     setInputVal("");
   };
 
-  // Delete a specific session
-  const deleteSession = (sessionId: string, e: React.MouseEvent) => {
+  // Delete a specific session (Local state + Single row deletion in Supabase)
+  const deleteSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const updated = sessions.filter((s) => s.id !== sessionId);
-    saveSessionsToStorage(updated);
+    updateLocalSessions(updated);
+
     if (activeSessionId === sessionId) {
       setActiveSessionId("");
+    }
+
+    // Delete single session from Supabase Cloud DB
+    if (isSupabaseConfigured && supabase && user?.id) {
+      try {
+        await supabase
+          .from("ai_conversations")
+          .delete()
+          .eq("id", sessionId)
+          .eq("user_id", user.id);
+      } catch (err) {
+        console.warn("[AI Session Delete] Cloud delete warning:", err);
+      }
     }
   };
 
@@ -176,14 +230,13 @@ export default function AiAssistantPage() {
 
     let currentSessionId = activeSessionId;
     let targetSession: ChatSession;
-
     let updatedSessions: ChatSession[];
 
     if (!currentSessionId || !activeSession) {
       // 1. Create a NEW Chat Session
       const newSessionId = `session-${Date.now()}`;
       const titleSnippet = textToSend.slice(0, 26) + (textToSend.length > 26 ? "..." : "");
-      
+
       targetSession = {
         id: newSessionId,
         title: titleSnippet,
@@ -202,7 +255,11 @@ export default function AiAssistantPage() {
       updatedSessions = sessions.map((s) => (s.id === currentSessionId ? targetSession : s));
     }
 
-    saveSessionsToStorage(updatedSessions);
+    // Update Local-first state and cache
+    updateLocalSessions(updatedSessions);
+    // Persist ONLY the active session to Supabase
+    persistSessionToCloud(targetSession);
+
     setInputVal("");
     setIsLoading(true);
 
@@ -211,14 +268,19 @@ export default function AiAssistantPage() {
       const aiReply = getAiResponse(textToSend, studentContext);
       const assistantMsg: AiMessage = { role: "assistant", content: aiReply };
 
+      let finalTargetSession: ChatSession | null = null;
       const finalSessions = updatedSessions.map((s) => {
         if (s.id === currentSessionId) {
-          return { ...s, messages: [...s.messages, assistantMsg] };
+          finalTargetSession = { ...s, messages: [...s.messages, assistantMsg] };
+          return finalTargetSession;
         }
         return s;
       });
 
-      saveSessionsToStorage(finalSessions);
+      updateLocalSessions(finalSessions);
+      if (finalTargetSession) {
+        persistSessionToCloud(finalTargetSession);
+      }
     } catch (e) {
       const errorMsg: AiMessage = {
         role: "assistant",
@@ -228,14 +290,19 @@ export default function AiAssistantPage() {
         )
       };
 
+      let errorTargetSession: ChatSession | null = null;
       const finalSessions = updatedSessions.map((s) => {
         if (s.id === currentSessionId) {
-          return { ...s, messages: [...s.messages, errorMsg] };
+          errorTargetSession = { ...s, messages: [...s.messages, errorMsg] };
+          return errorTargetSession;
         }
         return s;
       });
 
-      saveSessionsToStorage(finalSessions);
+      updateLocalSessions(finalSessions);
+      if (errorTargetSession) {
+        persistSessionToCloud(errorTargetSession);
+      }
     } finally {
       setIsLoading(false);
     }
