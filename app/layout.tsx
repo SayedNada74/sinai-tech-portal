@@ -8,7 +8,6 @@ import { AdminProvider } from "@/context/admin-context";
 import { SocialProvider } from "@/context/social-context";
 import { ToastProvider } from "@/components/ui/toast";
 import { PWAInstaller } from "@/components/pwa-installer";
-import { DeveloperCredit } from "@/components/ui/developer-credit";
 import { Analytics } from "@vercel/analytics/react";
 
 const ibmPlexArabic = { variable: "font-ibm-plex" };
@@ -107,7 +106,6 @@ export default function RootLayout({
                     <ToastProvider>
                       {children}
                       <PWAInstaller />
-                      <DeveloperCredit />
                       <Analytics />
                     </ToastProvider>
                   </SocialProvider>

@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { GraduationCap, Globe, Mail } from "lucide-react";
 import { useApp } from "@/context/app-context";
+import { DeveloperCredit } from "@/components/ui/developer-credit";
 
 export function Footer() {
   const { t, dir } = useApp();
@@ -86,6 +87,7 @@ export function Footer() {
 
       <div className="max-w-7xl mx-auto border-t border-zinc-200/60 dark:border-zinc-900 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-400 dark:text-zinc-500">
         <p>© {new Date().getFullYear()} SU IT Guide. {t("جميع الحقوق محفوظة.", "All rights reserved.")}</p>
+        <DeveloperCredit variant="footer" />
         <p dir="ltr">Built with Next.js, Tailwind CSS & Framer Motion</p>
       </div>
     </footer>

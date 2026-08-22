@@ -9,6 +9,7 @@ import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Set
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { DeveloperCredit } from "@/components/ui/developer-credit";
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -102,6 +103,9 @@ export function Navbar() {
               <Globe className="h-4 w-4 text-violet-600 dark:text-violet-400" />
               <span>{lang === "ar" ? "English" : "العربية"}</span>
             </button>
+
+            {/* Developer Credit */}
+            <DeveloperCredit variant="navbar" />
 
             {isAuthenticated ? (
               /* User Dropdown Menu */
@@ -297,6 +301,11 @@ export function Navbar() {
                   </Link>
                 </>
               )}
+
+              {/* Developer Credit Mobile */}
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-850/60 mt-1 flex justify-center">
+                <DeveloperCredit variant="footer" />
+              </div>
             </div>
           </motion.div>
         )}
