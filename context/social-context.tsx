@@ -388,6 +388,26 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     };
 
     const loadSharedCareers = async () => {
+      // 1. Initial load from local careers cache if present, otherwise default to INITIAL_CAREERS
+      const cached = localStorage.getItem("su_careers_cache");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCareers(parsed);
+          } else {
+            setCareers(INITIAL_CAREERS);
+            localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+          }
+        } catch (e) {
+          setCareers(INITIAL_CAREERS);
+        }
+      } else {
+        setCareers(INITIAL_CAREERS);
+        localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+      }
+
+      // 2. Fetch authoritative cloud careers from Supabase
       if (isSupabaseConfigured && supabase) {
         try {
           const { data, error } = await supabase.from("careers").select("*").order("created_at", { ascending: false });
@@ -441,13 +461,12 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {}
   };
 
-  // Load user specific state from localStorage on user change
+  // Load user specific personal state from localStorage on user change
   React.useEffect(() => {
     if (user) {
       if (user.social_state) {
         try {
           const parsed = typeof user.social_state === "string" ? JSON.parse(user.social_state) : user.social_state;
-          if (parsed.careers) setCareers(parsed.careers);
           if (parsed.events) setEvents(parsed.events);
           if (parsed.reminders) setReminders(parsed.reminders);
           if (parsed.notifications) setNotifications(parsed.notifications);
@@ -465,7 +484,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       if (savedDb) {
         try {
           const parsed = JSON.parse(savedDb);
-          if (parsed.careers) setCareers(parsed.careers);
           if (parsed.events) setEvents(parsed.events);
           if (parsed.reminders) setReminders(parsed.reminders);
           if (parsed.notifications) setNotifications(parsed.notifications);
@@ -521,7 +539,6 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data = {
-        careers: updates.careers !== undefined ? updates.careers : (freshest.careers || careers),
         events: updates.events !== undefined ? updates.events : (freshest.events || events),
         reminders: updates.reminders !== undefined ? updates.reminders : (freshest.reminders || reminders),
         notifications: updates.notifications !== undefined ? updates.notifications : (freshest.notifications || notifications),
