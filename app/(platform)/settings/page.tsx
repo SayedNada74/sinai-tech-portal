@@ -22,11 +22,13 @@ import {
 } from "lucide-react";
 
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getAuthCallbackURL } from "@/lib/auth-helpers";
 
 export default function SettingsPage() {
   const { lang, setLang, theme, setTheme, t, dir, lowPowerMode, setLowPowerMode } = useApp();
   const { moodleUrl, syncMoodle, clearMoodle } = useSocial();
-  const { user, loginWithProvider } = useAuth();
+  const { user, loginWithProvider, updateProfile } = useAuth();
 
   const [connectedProviders, setConnectedProviders] = React.useState<string[]>(() => {
     if (typeof window !== "undefined") {
@@ -47,6 +49,94 @@ export default function SettingsPage() {
 
   const [message, setMessage] = React.useState({ type: "", text: "" });
   const [isSaving, setIsSaving] = React.useState(false);
+
+  // Password Management State
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [isChangingPassword, setIsChangingPassword] = React.useState(false);
+  const [isSendingResetEmail, setIsSendingResetEmail] = React.useState(false);
+  const [passwordFeedback, setPasswordFeedback] = React.useState({ type: "", text: "" });
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isChangingPassword) return;
+
+    if (!newPassword || !confirmPassword) {
+      setPasswordFeedback({
+        type: "error",
+        text: t("يرجى إدخال كلمة المرور وتأكيدها.", "Please enter and confirm your new password.")
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordFeedback({
+        type: "error",
+        text: t("يجب أن تكون كلمة المرور 6 أحرف أو أكثر.", "Password must be at least 6 characters.")
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordFeedback({
+        type: "error",
+        text: t("كلمتا المرور غير متطابقتين.", "Passwords do not match.")
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    setPasswordFeedback({ type: "", text: "" });
+
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+      }
+      await updateProfile({ password: newPassword });
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordFeedback({
+        type: "success",
+        text: t("✨ تم تحديث كلمة المرور بنجاح!", "✨ Password updated successfully!")
+      });
+    } catch (err: any) {
+      setPasswordFeedback({
+        type: "error",
+        text: err?.message || t("حدث خطأ أثناء تحديث كلمة المرور.", "Failed to update password.")
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleSendResetEmail = async () => {
+    if (!user?.email || isSendingResetEmail) return;
+
+    setIsSendingResetEmail(true);
+    setPasswordFeedback({ type: "", text: "" });
+
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+          redirectTo: getAuthCallbackURL()
+        });
+        if (error) throw error;
+      }
+      setPasswordFeedback({
+        type: "success",
+        text: t(`📧 تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك: ${user.email}`, `📧 Password reset link sent to your email: ${user.email}`)
+      });
+    } catch (err: any) {
+      setPasswordFeedback({
+        type: "error",
+        text: err?.message || t("حدث خطأ أثناء إرسال الرابط.", "Failed to send reset link.")
+      });
+    } finally {
+      setIsSendingResetEmail(false);
+    }
+  };
 
   React.useEffect(() => {
     if (moodleUrl) {
@@ -348,6 +438,94 @@ export default function SettingsPage() {
                   </Button>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Security & Password Card */}
+          <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm md:col-span-2">
+            <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
+              <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-cyan-500" />
+                <span>{t("الأمان وكلمة المرور", "Security & Password Management")}</span>
+              </CardTitle>
+              <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                {t("تحديث كلمة المرور لحسابك الأكاديمي أو إرسال رابط استعادة إلى بريدك.", "Update your academic account password or send a reset link to your email.")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-2">
+              {passwordFeedback.text && (
+                <div className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center gap-2.5 ${
+                  passwordFeedback.type === "success"
+                    ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+                    : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+                }`}>
+                  {passwordFeedback.type === "success" ? <CheckCircle className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
+                  <span>{passwordFeedback.text}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                      {t("كلمة المرور الجديدة", "New Password")}
+                    </label>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="h-10 text-xs pr-9 pl-9"
+                        disabled={isChangingPassword}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer p-0.5"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                      {t("تأكيد كلمة المرور الجديدة", "Confirm New Password")}
+                    </label>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="h-10 text-xs"
+                      disabled={isChangingPassword}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                  <Button
+                    type="submit"
+                    className="w-full sm:w-auto btn-primary font-bold text-xs h-10 px-6 cursor-pointer"
+                    isLoading={isChangingPassword}
+                    disabled={isChangingPassword || !newPassword}
+                  >
+                    {t("تحديث كلمة المرور", "Update Password")}
+                  </Button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendResetEmail}
+                    disabled={isSendingResetEmail}
+                    className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer transition-colors"
+                  >
+                    {isSendingResetEmail 
+                      ? t("جاري إرسال الرابط...", "Sending reset link...") 
+                      : t("نسيت كلمة المرور؟ أرسل رابط الاستعادة لبريدي", "Forgot password? Send reset link to my email")}
+                  </button>
+                </div>
+              </form>
             </CardContent>
           </Card>
       </div>
