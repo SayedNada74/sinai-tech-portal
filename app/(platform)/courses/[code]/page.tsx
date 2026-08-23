@@ -197,6 +197,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
         {/* Course Bookmark */}
         <button
+          type="button"
           onClick={() => {
             if (!user) {
               toast(t("يرجى تسجيل الدخول أولاً لحفظ المادة في قائمتك المفضلة.", "Please sign in to bookmark courses."), "info");
@@ -204,16 +205,16 @@ export default function CourseDetailPage({ params }: PageProps) {
             }
             toggleBookmark(course.code, "course", course.arabic, `/courses/${course.code}`);
           }}
-          className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-all cursor-pointer ${
+          className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border-2 transition-all cursor-pointer ${
             bookmarked
-              ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-700 shadow-sm"
-              : "border-violet-500/40 dark:border-violet-500/40 bg-violet-500/10 dark:bg-violet-500/15 hover:bg-violet-500/20 dark:hover:bg-violet-500/25 text-violet-600 dark:text-violet-400 hover:border-violet-600 dark:hover:border-violet-400"
+              ? "bg-violet-600 border-violet-600 text-white shadow-md"
+              : "border-violet-500 bg-violet-500/10 dark:bg-violet-500/20 hover:bg-violet-500/25 text-violet-600 dark:text-violet-400"
           }`}
         >
           {bookmarked ? (
-            <BookmarkCheck className="h-4 w-4 text-white stroke-[2.4]" />
+            <BookmarkCheck className="h-4 w-4 text-white stroke-[2.5]" />
           ) : (
-            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.4]" />
+            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.5]" />
           )}
           <span>{bookmarked ? t("محفوظة في المفضلة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
         </button>
