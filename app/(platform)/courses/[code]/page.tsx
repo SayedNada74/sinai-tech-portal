@@ -207,13 +207,13 @@ export default function CourseDetailPage({ params }: PageProps) {
           className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-all cursor-pointer ${
             bookmarked
               ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-700 shadow-sm"
-              : "border-violet-300 dark:border-violet-800/80 bg-violet-50/80 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-violet-700 dark:text-violet-300 shadow-xs"
+              : "border-violet-500/40 dark:border-violet-500/40 bg-violet-500/10 dark:bg-violet-500/15 hover:bg-violet-500/20 dark:hover:bg-violet-500/25 text-violet-600 dark:text-violet-400 hover:border-violet-600 dark:hover:border-violet-400"
           }`}
         >
           {bookmarked ? (
             <BookmarkCheck className="h-4 w-4 text-white stroke-[2.4]" />
           ) : (
-            <Bookmark className="h-4 w-4 text-violet-700 dark:text-violet-300 stroke-[2.4]" />
+            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.4]" />
           )}
           <span>{bookmarked ? t("محفوظة في المفضلة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
         </button>
