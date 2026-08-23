@@ -138,3 +138,18 @@ export function getLocalizedUserName(name: string | undefined | null, lang: "ar"
 
   return localizedWords.join(" ");
 }
+
+export function getAvatarFallback(avatar?: string, name?: string): string {
+  if (avatar && avatar.length <= 2) return avatar;
+  if (!name) return "??";
+  const parts = name.trim().split(" ").filter(Boolean);
+  if (parts.length === 0) return "??";
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+export function isValidImageAvatar(avatar?: string): boolean {
+  if (!avatar) return false;
+  return avatar.startsWith("http") || avatar.startsWith("data:image/") || avatar.startsWith("blob:");
+}
+

@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
 import {
   User,
   GraduationCap,
@@ -133,10 +134,15 @@ export default function PublicProfilePage({ params }: PageProps) {
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
             <CardContent className="p-6 text-center">
               <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-tr from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden mb-4">
-                {profile.avatar && profile.avatar.startsWith("http") ? (
+                {isValidImageAvatar(profile.avatar) ? (
                   <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-6xl">{profile.avatar || "🎓"}</span>
+                  <span className={cn(
+                    "flex items-center justify-center font-black text-indigo-700 dark:text-indigo-300",
+                    getAvatarFallback(profile.avatar, profile.name).length > 2 ? "text-4xl" : "text-6xl"
+                  )}>
+                    {getAvatarFallback(profile.avatar, profile.name)}
+                  </span>
                 )}
               </div>
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>

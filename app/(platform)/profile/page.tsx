@@ -25,6 +25,7 @@ import {
   Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { t, lang, dir } = useApp();
@@ -444,10 +445,13 @@ export default function ProfilePage() {
             <Card className="border border-zinc-200/60 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm text-center">
               <CardContent className="pt-8">
                 <div className="relative mx-auto h-28 w-28 rounded-3xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-500/30 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
-                  {avatar.startsWith("data:image/") || avatar.startsWith("http") ? (
+                  {isValidImageAvatar(avatar) ? (
                     <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
                   ) : (
-                    <span className="text-5xl">{avatar || "⚙️"}</span>
+                    <span className={cn(
+                      "font-black text-cyan-700 dark:text-cyan-300",
+                      getAvatarFallback(avatar, user?.name).length > 2 ? "text-3xl" : "text-5xl"
+                    )}>{getAvatarFallback(avatar, user?.name)}</span>
                   )}
                   <button
                     type="button"
@@ -621,10 +625,13 @@ export default function ProfilePage() {
             <CardContent className="pt-8">
               {/* Profile Avatar Display & Upload Overlay */}
               <div className="relative mx-auto h-28 w-28 rounded-3xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/40 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
-                {avatar.startsWith("data:image/") || avatar.startsWith("http") ? (
+                {isValidImageAvatar(avatar) ? (
                   <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
                 ) : (
-                  <span className="text-5xl">{avatar}</span>
+                  <span className={cn(
+                    "font-black text-violet-700 dark:text-violet-300",
+                    getAvatarFallback(avatar, user?.name).length > 2 ? "text-3xl" : "text-5xl"
+                  )}>{getAvatarFallback(avatar, user?.name)}</span>
                 )}
 
                 {/* Upload Trigger Hover Overlay */}

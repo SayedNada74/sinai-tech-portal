@@ -7,7 +7,7 @@ import { useAuth } from "@/context/auth-context";
 import { useApp } from "@/context/app-context";
 import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { DeveloperCredit } from "@/components/ui/developer-credit";
 
@@ -53,7 +53,8 @@ export function Navbar() {
   ];
 
   const userAvatar = user?.avatar || "🎓";
-  const isImageAvatar = userAvatar.startsWith("data:image/") || userAvatar.startsWith("http");
+  const userName = user?.name || "";
+  const isImageAvatar = isValidImageAvatar(userAvatar);
 
   return (
     <>
@@ -117,7 +118,10 @@ export function Navbar() {
                   {isImageAvatar ? (
                     <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
-                    userAvatar
+                    <span className={cn(
+                      "font-black text-violet-700 dark:text-violet-300",
+                      getAvatarFallback(userAvatar, userName).length > 2 ? "text-xs" : "text-lg"
+                    )}>{getAvatarFallback(userAvatar, userName)}</span>
                   )}
                 </button>
 
@@ -262,7 +266,10 @@ export function Navbar() {
                       {isImageAvatar ? (
                         <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                       ) : (
-                        userAvatar
+                        <span className={cn(
+                          "font-black text-violet-700 dark:text-violet-300",
+                          getAvatarFallback(userAvatar, userName).length > 2 ? "text-sm" : "text-xl"
+                        )}>{getAvatarFallback(userAvatar, userName)}</span>
                       )}
                     </div>
                     <div className="min-w-0">

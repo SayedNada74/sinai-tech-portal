@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
 
 export default function DirectoryPage() {
   const { t, lang, dir } = useApp();
@@ -168,10 +169,13 @@ export default function DirectoryPage() {
                   <Card className="group h-full border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800/50 rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl transition-all cursor-pointer relative">
                     <CardContent className="p-5 flex flex-col items-center text-center h-full relative z-10">
                       <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-sm overflow-hidden mb-3 group-hover:scale-105 transition-transform">
-                        {user.avatar && user.avatar.startsWith("http") ? (
+                        {isValidImageAvatar(user.avatar) ? (
                           <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-3xl">{user.avatar || "🎓"}</span>
+                          <span className={cn(
+                            "font-black text-indigo-700 dark:text-indigo-300",
+                            getAvatarFallback(user.avatar, user.name).length > 2 ? "text-xl" : "text-3xl"
+                          )}>{getAvatarFallback(user.avatar, user.name)}</span>
                         )}
                       </div>
                       

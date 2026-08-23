@@ -331,6 +331,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             currentUsers.push(sessionUser);
           }
           localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+          window.dispatchEvent(new Event("su_users_updated"));
 
           setUser(sessionUser);
           localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -385,6 +386,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           currentUsers.push(matchedUser);
           localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+          window.dispatchEvent(new Event("su_users_updated"));
         }
       } catch (e) {
         console.warn("Supabase cloud profile query failed:", e);
@@ -570,6 +572,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Save to local storage list
     savedUsers.push(newUser);
     localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
+    window.dispatchEvent(new Event("su_users_updated"));
 
     if (requiresEmailConfirmation) {
       setIsLoading(false);
@@ -753,6 +756,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (userIndex !== -1) {
       savedUsers[userIndex] = updatedUser;
       localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
+      window.dispatchEvent(new Event("su_users_updated"));
     }
 
     setIsLoading(false);

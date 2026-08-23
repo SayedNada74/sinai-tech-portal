@@ -188,45 +188,53 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize and Sync states
   React.useEffect(() => {
-    // 1. Users list setup (load saved registrations, add default ones)
-    const savedRegs = localStorage.getItem("su_registered_users");
-    let currentUsers: UserProfile[] = [];
-    if (savedRegs) {
-      try {
-        currentUsers = JSON.parse(savedRegs);
-      } catch (e) { }
-    }
-
-    // Ensure we have some default roles for demo
-    const defaultAccounts: UserProfile[] = [
-      { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
-      { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
-      { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🛡️", role: "moderator", is_profile_completed: true }
-    ];
-
-    defaultAccounts.forEach(da => {
-      const idx = currentUsers.findIndex(u => u.email.toLowerCase() === da.email.toLowerCase());
-      if (idx === -1) {
-        currentUsers.push(da);
-      } else {
-        // Force sync administrative credentials for demo accounts
-        if (da.role !== "student") {
-          currentUsers[idx] = {
-            ...currentUsers[idx],
-            studentId: da.studentId,
-            level: da.level,
-            department: da.department,
-            role: da.role,
-            name: da.name,
-            nameAr: da.nameAr,
-            nameEn: da.nameEn,
-            avatar: da.avatar
-          };
-        }
+    const loadUsers = () => {
+      const savedRegs = localStorage.getItem("su_registered_users");
+      let currentUsers: UserProfile[] = [];
+      if (savedRegs) {
+        try {
+          currentUsers = JSON.parse(savedRegs);
+        } catch (e) { }
       }
-    });
-    setUsers(currentUsers);
-    localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+
+      // Ensure we have some default roles for demo
+      const defaultAccounts: UserProfile[] = [
+        { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
+        { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
+        { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "🛡️", role: "moderator", is_profile_completed: true }
+      ];
+
+      defaultAccounts.forEach(da => {
+        const idx = currentUsers.findIndex(u => u.email.toLowerCase() === da.email.toLowerCase());
+        if (idx === -1) {
+          currentUsers.push(da);
+        } else {
+          if (da.role !== "student") {
+            currentUsers[idx] = {
+              ...currentUsers[idx],
+              studentId: da.studentId,
+              level: da.level,
+              department: da.department,
+              role: da.role,
+              name: da.name,
+              nameAr: da.nameAr,
+              nameEn: da.nameEn,
+              avatar: da.avatar
+            };
+          }
+        }
+      });
+      setUsers(currentUsers);
+      localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+    };
+
+    loadUsers();
+
+    window.addEventListener("su_users_updated", loadUsers);
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "su_registered_users") loadUsers();
+    };
+    window.addEventListener("storage", handleStorageChange);
 
     // 2. Courses setup - Always merge with default COURSES to ensure descriptionEn & outcomesEn exist
     const savedCourses = localStorage.getItem("su_courses_db");
@@ -384,6 +392,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     const savedIncidents = localStorage.getItem("su_incidents");
     if (savedIncidents) { try { setIncidents(JSON.parse(savedIncidents)); } catch (e) { } }
+
+    return () => {
+      window.removeEventListener("su_users_updated", loadUsers);
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   // Save changes wrapper helper
