@@ -5,17 +5,29 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Spinner } from "@/components/ui/spinner";
 
+const PUBLIC_ROUTES = [
+  "/gpa",
+  "/courses",
+  "/roadmaps",
+  "/departments",
+  "/careers"
+];
+
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+
   React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && !isPublicRoute) {
       // Use replace instead of push to avoid trapped history loops when clicking back
       router.replace("/auth/login");
     }
-  }, [isAuthenticated, isLoading, router, pathname]);
+  }, [isAuthenticated, isLoading, router, pathname, isPublicRoute]);
 
   if (isLoading) {
     return (
@@ -28,7 +40,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isPublicRoute) {
     return null; // Will redirect via useEffect
   }
 

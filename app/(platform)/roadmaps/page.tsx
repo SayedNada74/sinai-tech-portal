@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useApp } from "@/context/app-context";
+import { useAuth } from "@/context/auth-context";
 import { ROADMAPS, Roadmap, RoadmapNode } from "@/lib/roadmaps-data";
 import { useLearning } from "@/context/learning-context";
 import { useAdmin } from "@/context/admin-context";
@@ -202,6 +203,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
 ];
 
 export default function RoadmapsPage() {
+  const { user } = useAuth();
   const { t, lang, dir } = useApp();
   const { roadmaps = ROADMAPS } = useAdmin();
   const {
@@ -222,17 +224,19 @@ export default function RoadmapsPage() {
   }, [selectedGlobalTrackId]);
 
   const currentFacultyRoadmap = React.useMemo(() => {
-    return roadmaps.find((r) => r.id === activeFacultyRoadmapId) || roadmaps[0] || ROADMAPS[0];
+    return roadmaps.find((r) => r.id === activeFacultyRoadmapId) || roadmaps[0];
   }, [roadmaps, activeFacultyRoadmapId]);
 
   const facultyProgressPercentage = React.useMemo(() => {
-    return getRoadmapProgressPercentage(currentFacultyRoadmap.id, currentFacultyRoadmap.nodes.length);
+    return currentFacultyRoadmap ? getRoadmapProgressPercentage(currentFacultyRoadmap.id, currentFacultyRoadmap.nodes.length) : 0;
   }, [currentFacultyRoadmap, getRoadmapProgressPercentage]);
 
   const handleNodeToggle = (nodeId: string) => {
-    toggleRoadmapNode(currentFacultyRoadmap.id, nodeId);
-    const title = lang === "ar" ? currentFacultyRoadmap.title : (currentFacultyRoadmap.titleEn || currentFacultyRoadmap.title);
-    addRecentlyViewed(currentFacultyRoadmap.id, "roadmap", title, "/roadmaps");
+    if (currentFacultyRoadmap) {
+        toggleRoadmapNode(currentFacultyRoadmap.id, nodeId);
+        const title = lang === "ar" ? currentFacultyRoadmap.title : (currentFacultyRoadmap.titleEn || currentFacultyRoadmap.title);
+        addRecentlyViewed(currentFacultyRoadmap.id, "roadmap", title, "/roadmaps");
+    }
   };
 
   const isRtl = dir === "rtl";
@@ -254,6 +258,48 @@ export default function RoadmapsPage() {
           </p>
         </div>
       </div>
+
+      {/* Guest Mode Notification Banner */}
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-cyan-600/10 via-indigo-600/10 to-violet-500/10 border border-cyan-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+        >
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-cyan-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
+                <span>{t("مسارات التعلم مفتوحة للجميع", "Open Career Roadmaps")}</span>
+                <Badge className="bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-none text-[10px] font-bold">
+                  {t("استكشف المهارات المطلوبة ⚡", "Explore Skills ⚡")}
+                </Badge>
+              </h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                {t(
+                  "تصفح مسارات الواجهات الأمامية، الخلفية، والذكاء الاصطناعي بحرية. أنشئ حسابك لتتبع تقدمك وإتمام المهارات خطوة بخطوة.",
+                  "Browse Frontend, Backend, and AI tracks freely. Create an account to track your progress and complete skills step-by-step."
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+            <Link href="/auth/login" className="flex-1 sm:flex-none">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9">
+                {t("تسجيل الدخول", "Sign In")}
+              </Button>
+            </Link>
+            <Link href="/auth/register" className="flex-1 sm:flex-none">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-700 hover:to-indigo-700 text-white shadow-md">
+                {t("إنشاء حساب 🚀", "Register 🚀")}
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* Mode Selector Tabs */}
       <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2 overflow-x-auto scrollbar-none">

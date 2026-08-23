@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, Printer } from "lucide-react";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, Printer, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -97,6 +98,16 @@ export default function GpaPage() {
   }, [calcCourses]);
 
   const handleSaveToCompleted = () => {
+    if (!user) {
+      toast(
+        t(
+          "💡 يرجى تسجيل الدخول أو إنشاء حسابك لحفظ ومزامنة درجاتك في سجلك الأكاديمي.",
+          "💡 Please sign in or create an account to save & sync your grades to your academic profile."
+        ),
+        "info"
+      );
+      return;
+    }
     calcCourses.forEach((c) => {
       if (c.code) {
         markCompleted(c.code, c.grade);
@@ -183,6 +194,48 @@ export default function GpaPage() {
           <span>{t("تصدير / طباعة التقرير (PDF)", "Export / Print PDF Report")}</span>
         </Button>
       </div>
+
+      {/* Guest Mode Notification Banner */}
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-cyan-500/10 border border-violet-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+        >
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
+                <span>{t("وضع التجربة والاستخدام السريع للزوار", "Guest & Free Exploration Mode")}</span>
+                <Badge className="bg-violet-500/20 text-violet-700 dark:text-violet-300 border-none text-[10px] font-bold">
+                  {t("مفتوح بالكامل بدون تسجيل ⚡", "Fully Open & Free ⚡")}
+                </Badge>
+              </h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                {t(
+                  "احسب وتوقع معدلك الفصلي والتراكمي فوراً! لحفظ ومزامنة درجاتك تلقائياً في خطتك الدراسية، يمكنك إنشاء حسابك الجامعي.",
+                  "Calculate and simulate your GPA instantly! Create your university account to automatically save your curriculum record."
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+            <Link href="/auth/login" className="flex-1 sm:flex-none">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9">
+                {t("تسجيل الدخول", "Sign In")}
+              </Button>
+            </Link>
+            <Link href="/auth/register" className="flex-1 sm:flex-none">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md">
+                {t("إنشاء حساب 🚀", "Register 🚀")}
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {isAdmin && (
         <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">

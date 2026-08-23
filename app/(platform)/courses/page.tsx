@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useApp } from "@/context/app-context";
 import { useAcademic } from "@/context/academic-context";
 import { useAdmin } from "@/context/admin-context";
+import { useAuth } from "@/context/auth-context";
 import { Course, PERIODS } from "@/lib/courses-data";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, SlidersHorizontal, ArrowUpDown, Eye, Bookmark, CheckCircle, HelpCircle } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowUpDown, Eye, Bookmark, CheckCircle, HelpCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PERIODS_EN: Record<string, string> = {
@@ -25,6 +26,7 @@ const PERIODS_EN: Record<string, string> = {
 };
 
 export default function CoursesPage() {
+  const { user } = useAuth();
   const { t, lang, dir } = useApp();
   const { courses } = useAdmin();
   const {
@@ -131,6 +133,48 @@ export default function CoursesPage() {
           </p>
         </div>
       </div>
+
+      {/* Guest Mode Notification Banner */}
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-cyan-500/10 border border-violet-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+        >
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
+                <span>{t("دليل المقررات مفتوح للجميع", "Open Course Catalog")}</span>
+                <Badge className="bg-violet-500/20 text-violet-700 dark:text-violet-300 border-none text-[10px] font-bold">
+                  {t("تصفح واستكشف بحرية ⚡", "Free Access ⚡")}
+                </Badge>
+              </h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                {t(
+                  "استكشف كافة المقررات والمتطلبات السابقة. أنشئ حسابك الجامعي لتمييز المواد المنجزة وإضافتها لجدولك الأكاديمي.",
+                  "Explore all courses and prerequisites. Create your student account to track completed courses in your plan."
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+            <Link href="/auth/login" className="flex-1 sm:flex-none">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9">
+                {t("تسجيل الدخول", "Sign In")}
+              </Button>
+            </Link>
+            <Link href="/auth/register" className="flex-1 sm:flex-none">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md">
+                {t("إنشاء حساب 🚀", "Register 🚀")}
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* Search & Sort Panel */}
       <div className="space-y-4">

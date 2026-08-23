@@ -298,9 +298,19 @@ export default function LandingPage() {
                   )}
 
                   <div className={`pt-2 flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
-                    <Link href="/dashboard">
-                      <Button size="sm" className="gap-2 font-bold text-xs cursor-pointer">
-                        <span>{t("تجربة الخدمة مباشرة", "Try Feature Now")}</span>
+                    <Link
+                      href={
+                        activeTab === "gpa"
+                          ? "/gpa"
+                          : activeTab === "courses"
+                          ? "/courses"
+                          : activeTab === "careers"
+                          ? "/roadmaps"
+                          : portalHref
+                      }
+                    >
+                      <Button size="sm" className="gap-2 font-bold text-xs cursor-pointer shadow-md bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl">
+                        <span>{t("تجربة الخدمة مباشرة 🚀", "Try Feature Now 🚀")}</span>
                         <ChevronLeft className={`h-4 w-4 ${lang === "en" ? "rotate-180" : ""}`} />
                       </Button>
                     </Link>
