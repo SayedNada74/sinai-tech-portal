@@ -60,19 +60,10 @@
   color: #09090b !important;
 }
 
-/* Ensure all paragraphs, spans, subtitles, labels in light mode are crisp black */
-.light-mode p:not([class*="text-violet-"]):not([class*="text-cyan-"]):not([class*="text-emerald-"]):not([class*="text-red-"]):not([class*="text-amber-"]):not([class*="text-green-"]):not([class*="text-white"]):not([class*="text-blue-"]):not([class*="text-indigo-"]):not([class*="text-purple-"]),
-.light-mode span:not([class*="text-violet-"]):not([class*="text-cyan-"]):not([class*="text-emerald-"]):not([class*="text-red-"]):not([class*="text-amber-"]):not([class*="text-green-"]):not([class*="text-white"]):not([class*="text-blue-"]):not([class*="text-indigo-"]):not([class*="text-purple-"]):not([class*="bg-"]),
-.light-mode label,
-.light-mode small {
-  color: #09090b;
-}
-
-/* Light mode badge outlines */
-.light-mode .badge,
-.light-mode [class*="Badge"] {
-  color: #09090b;
-  border-color: rgba(9, 9, 11, 0.2);
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #52525b !important;
+  opacity: 0.85 !important;
 }
 
 .light-mode input::placeholder,

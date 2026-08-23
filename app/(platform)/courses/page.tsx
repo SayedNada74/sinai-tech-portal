@@ -370,11 +370,11 @@ export default function CoursesPage() {
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       completed
                         ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
-                        : "border-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400"
+                        : "border-emerald-500 dark:border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
                     }`}
                     title={completed ? t("تراجع عن الإنجاز", "Undo Completion") : t("تحديد كمنجزة", "Mark as Completed")}
                   >
-                    <CheckCircle className={`h-4 w-4 stroke-[2.5] ${completed ? "text-white fill-emerald-600" : "text-emerald-600 dark:text-emerald-400"}`} />
+                    <CheckCircle className={`h-4.5 w-4.5 stroke-[2.4] ${completed ? "text-white fill-emerald-600" : "text-emerald-600 dark:text-emerald-400"}`} />
                   </button>
 
                   <button
@@ -383,11 +383,11 @@ export default function CoursesPage() {
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       planned
                         ? "bg-violet-600 border-violet-600 text-white shadow-md"
-                        : "border-violet-500 bg-violet-500/10 dark:bg-violet-500/20 hover:bg-violet-500/25 text-violet-600 dark:text-violet-400"
+                        : "border-violet-500 dark:border-violet-500/60 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-violet-600 dark:text-violet-400"
                     }`}
                     title={planned ? t("إلغاء الخطة", "Remove from Plan") : t("إضافة للمخطط الدراسي", "Add to Study Plan")}
                   >
-                    <Bookmark className={`h-4 w-4 stroke-[2.5] ${planned ? "text-white fill-white" : "text-violet-600 dark:text-violet-400"}`} />
+                    <Bookmark className={`h-4.5 w-4.5 stroke-[2.4] ${planned ? "text-white fill-white" : "text-violet-600 dark:text-violet-400"}`} />
                   </button>
                 </div>
               </Card>

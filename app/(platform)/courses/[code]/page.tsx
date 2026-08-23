@@ -208,13 +208,13 @@ export default function CourseDetailPage({ params }: PageProps) {
           className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border-2 transition-all cursor-pointer ${
             bookmarked
               ? "bg-violet-600 border-violet-600 text-white shadow-md"
-              : "border-violet-500 bg-violet-500/10 dark:bg-violet-500/20 hover:bg-violet-500/25 text-violet-600 dark:text-violet-400"
+              : "border-violet-500 dark:border-violet-500/60 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-violet-600 dark:text-violet-400"
           }`}
         >
           {bookmarked ? (
-            <BookmarkCheck className="h-4 w-4 text-white stroke-[2.5]" />
+            <BookmarkCheck className="h-4 w-4 text-white stroke-[2.4]" />
           ) : (
-            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.5]" />
+            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.4]" />
           )}
           <span>{bookmarked ? t("محفوظة في المفضلة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
         </button>
