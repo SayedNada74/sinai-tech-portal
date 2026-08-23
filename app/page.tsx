@@ -27,7 +27,11 @@ import {
   ChevronLeft,
   Calendar,
   Zap,
-  Globe
+  Globe,
+  Smartphone,
+  Download,
+  Flame,
+  CheckCircle2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -182,6 +186,63 @@ export default function LandingPage() {
                   </Button>
                 </motion.div>
               </Link>
+            </motion.div>
+
+            {/* Quick Guest Access Strip */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="pt-6 max-w-4xl mx-auto"
+            >
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold mb-4">
+                <Flame className="h-3.5 w-3.5" />
+                <span>{t("أدوات مفتوحة للتجربة السريعة بدون تسجيل ⚡", "Instant Free Exploration Tools (No Login Required) ⚡")}</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-right" dir={dir}>
+                <Link href="/gpa" className="group">
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-violet-500/50 hover:bg-violet-50/50 dark:hover:bg-violet-950/20 transition-all cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-xl bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Calculator className="h-4.5 w-4.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("حاسبة الـ GPA", "GPA Calculator")}</h4>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("حساب فوري وسيناريوهات التخرج", "Instant GPA & What-If Simulation")}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/courses" className="group">
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-cyan-500/50 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 transition-all cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <BookOpen className="h-4.5 w-4.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("دليل المقررات", "Course Explorer")}</h4>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("شجرة المواد والمتطلبات السابقة", "Course Hierarchy & Prerequisites")}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/roadmaps" className="group">
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Compass className="h-4.5 w-4.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("مسارات التعلّم", "Career Roadmaps")}</h4>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("خارطة طريق Frontend, AI, Backend", "Frontend, AI & Backend tracks")}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </motion.div>
 
             {/* Interactive Showcase Tabs */}
@@ -343,6 +404,75 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* How It Works (3 Steps) Section */}
+        <section className="py-20 px-6 bg-zinc-100/40 dark:bg-zinc-900/10">
+          <div className="max-w-6xl mx-auto space-y-14">
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
+                {t("سهولة فائقة في الاستخدام", "Simple & Intuitive")}
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
+                {t("كيف تبدأ رحلتك الأكاديمية في 3 خطوات بسيطة؟", "How to Get Started in 3 Simple Steps")}
+              </h2>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+                {t(
+                  "صُممت المنصة لتوفير الوقت والجهد على طلاب الكلية من اليوم الأول حتى يوم التخرج.",
+                  "Engineered to save time and effort for students from Freshman year until graduation day."
+                )}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative" dir={dir}>
+              {[
+                {
+                  step: "01",
+                  icon: <GraduationCap className="h-6 w-6 text-violet-600 dark:text-violet-400" />,
+                  title: t("حدد فرقتك وقسمك التخصصي", "1. Choose Year & Department"),
+                  desc: t(
+                    "اختر فرقتك الدراسية (الأولى، الثانية، الثالثة، الرابعة) وتخصصك (IT, CS, IS) لتهيئة خطتك الدراسية فوراً.",
+                    "Select your academic level (Year 1 to 4) and specialized track (IT, CS, IS) to tailor your plan."
+                  )
+                },
+                {
+                  step: "02",
+                  icon: <Calendar className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />,
+                  title: t("سجل درجاتك أو اربط تقويم Moodle", "2. Log Grades or Sync Moodle"),
+                  desc: t(
+                    "أدخل تقديراتك للمواد المنجزة، أو انسخ رابط تقويم Moodle iCal لمزامنة مواعيد المحاضرات والامتحانات تلقائياً.",
+                    "Enter your completed grades, or connect your Moodle iCal URL to sync assignment and exam dates."
+                  )
+                },
+                {
+                  step: "03",
+                  icon: <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />,
+                  title: t("احصل على توقعات الـ GPA وإرشاد الـ AI", "3. Get GPA Insights & AI Advice"),
+                  desc: t(
+                    "استمتع بحساب وتوقع فوري للمعدل التراكمي المطلوب للتخرج بامتياز، مع استشارات ذكية من المرشد الأكاديمي الذكي.",
+                    "Enjoy instant GPA predictions to achieve Honors, with 24/7 personalized AI academic counseling."
+                  )
+                }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  whileHover={{ y: -6 }}
+                  className="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-md relative overflow-hidden flex flex-col justify-between"
+                >
+                  <span className="absolute top-4 start-6 text-5xl font-black text-zinc-100 dark:text-zinc-800/60 select-none pointer-events-none">
+                    {item.step}
+                  </span>
+                  <div className="space-y-4 relative z-10 pt-4">
+                    <div className="h-12 w-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-inner">
+                      {item.icon}
+                    </div>
+                    <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-50">{item.title}</h3>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{item.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Core Features Grid Section */}
         <section id="features" className="py-24 px-6 relative">
           <div className="max-w-6xl mx-auto space-y-16">
@@ -389,52 +519,68 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Benefits Breakdown Section */}
-        <section className="py-20 px-6 bg-zinc-100/50 dark:bg-zinc-900/20 border-y border-zinc-200/60 dark:border-zinc-900">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className={`space-y-6 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
-              <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
-                {t("لماذا تختار المنصة؟", "Why Choose SU IT Guide?")}
-              </Badge>
-              <h2 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-tight">
-                {t("تخلص من عشوائية جداول البيانات والتقديرات اليدوية", "Eliminate Manual Spreadsheets & Academic Uncertainty")}
-              </h2>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
-                {t(
-                  "توفر المنصة رؤية فورية وواضحة لتقدمك الأكاديمي، وتنبؤ مستقبلي يحدد لك أهدافك الفصلية بدقة متناهية.",
-                  "Gain clear instant visibility into academic progress with precise target grade predictions."
-                )}
-              </p>
-              <ul className="space-y-3.5">
-                {[
-                  t("تتبع خطتك الدراسية والمواد المتبقية أوتوماتيكياً.", "Automatically track completed and remaining courses."),
-                  t("توقع المعدل التراكمي المستهدف وحساب النقاط المطلوبة.", "Predict target cumulative GPA and required semester points."),
-                  t("مزامنة أوتوماتيكية مع تقويم المودل Moodle iCal.", "Automatic synchronization with Moodle iCal calendar."),
-                  t("دعم كامل للغتين العربية والإنجليزية والنظام الليلة والنهارية.", "100% full bilingual support and smooth Dark/Light mode.")
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0" />
-                    <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* PWA Mobile App Install Section */}
+        <section className="py-20 px-6 bg-gradient-to-b from-zinc-50 to-violet-50/30 dark:from-zinc-950 dark:to-violet-950/10">
+          <div className="max-w-6xl mx-auto">
+            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-900/90 via-indigo-900/90 to-zinc-950 text-white shadow-2xl border border-violet-500/30 relative overflow-hidden">
+              {/* Background Ambient Glows */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="relative flex justify-center">
-              <div className="w-full max-w-md p-8 rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-2xl relative overflow-hidden space-y-6">
-                <div className="absolute -top-12 -left-12 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-                <GraduationCap className="h-16 w-16 opacity-30" />
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-black">{t("جاهز لتنظيم خطتك الأكاديمية؟", "Ready to Organize Your Academic Plan?")}</h3>
-                  <p className="text-xs sm:text-sm text-violet-100 leading-relaxed">
-                    {t("ابدأ الآن بإنشاء حسابك مجاناً وتتبع كافة موادك ودرجاتك بكل يسر.", "Start now for free and easily manage all your courses and grades.")}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                <div className={`lg:col-span-8 space-y-6 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-violet-200">
+                    <Smartphone className="h-4 w-4 text-cyan-300" />
+                    <span>{t("تطبيق الهاتف المحمول PWA", "Mobile App Experience (PWA)")}</span>
+                  </div>
+
+                  <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
+                    {t("منصتك الأكاديمية معك في جيبك أينما كنت 📲", "Your Academic Platform in Your Pocket Everywhere 📲")}
+                  </h2>
+
+                  <p className="text-sm sm:text-base text-zinc-300 max-w-2xl leading-relaxed">
+                    {t(
+                      "ثبّت المنصة كتطبيق فوري على هاتفك (Android أو iPhone) أو جهاز الكمبيوتر بضغطة زر واحدة. استمتع بسرعة فائقة، إمكانية التصفح، وتجربة سلسة بدون الحاجة للتحميل من المتاجر.",
+                      "Install the portal as an instant app on your phone (Android/iOS) or PC with one click. Enjoy fast loading, offline capability, and smooth experience with zero app store hassle."
+                    )}
                   </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
+                      <Zap className="h-4.5 w-4.5 text-amber-400 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-200">{t("سرعة تشغيل فائقة", "Instant Launch Speed")}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
+                      <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-200">{t("حفظ البيانات أوفلاين", "Offline Data Persistence")}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
+                      <Smartphone className="h-4.5 w-4.5 text-cyan-400 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-200">{t("دعم كامل لـ iOS & Android", "Full iOS & Android Support")}</span>
+                    </div>
+                  </div>
                 </div>
-                <Link href={portalHref} className="block pt-2">
-                  <Button className="w-full bg-white text-violet-900 hover:bg-zinc-100 font-extrabold text-xs sm:text-sm py-5 rounded-xl shadow-lg cursor-pointer">
-                    {t("دخول المنصة الآن", "Open Student Platform")}
-                  </Button>
-                </Link>
+
+                <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 text-center">
+                  <div className="p-6 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 w-full max-w-xs space-y-4">
+                    <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg">
+                      <Download className="h-8 w-8 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black text-white">{t("تثبيت التطبيق على جهازك", "Install App on Device")}</h4>
+                      <p className="text-[11px] text-zinc-300 mt-1">{t("اضغط على 'تثبيت' أو 'إضافة للشاشة الرئيسية'", "Tap 'Install' or 'Add to Home Screen'")}</p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        window.dispatchEvent(new Event("trigger-pwa-install"));
+                      }}
+                      className="w-full bg-white text-violet-950 hover:bg-zinc-100 font-extrabold text-xs h-11 rounded-xl shadow-lg cursor-pointer gap-2"
+                    >
+                      <Download className="h-4 w-4 text-violet-700" />
+                      <span>{t("تثبيت التطبيق الآن 🚀", "Install App Now 🚀")}</span>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
