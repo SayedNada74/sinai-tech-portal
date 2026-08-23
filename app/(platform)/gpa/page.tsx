@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, Printer, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -458,6 +458,43 @@ export default function GpaPage() {
           >
             {/* Simulation Controls */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Guest Warning for What-If Simulator */}
+              {!user && (
+                <div className="p-4.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
+                      <AlertTriangle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black">
+                        {t(
+                          "⚠️ تنبيه: محاكي التوقع التراكمي (What-If) يحتاج إلى سجل موادك المكتملة",
+                          "⚠️ Notice: What-If Simulator works best with your completed course history"
+                        )}
+                      </h4>
+                      <p className="text-xs text-amber-800/80 dark:text-amber-300/80 mt-1 leading-relaxed">
+                        {t(
+                          "لكي يحسب النظام التقدير والدرجات المطلوبة للتخرج بدقة 100%، يفضّل تسجيل الدخول لكي يعرف النظام عدد الساعات والمواد التي اجتزتها بالفعل في خطتك الدراسية.",
+                          "For 100% accurate graduation predictions, sign in so the system knows your exact completed credits and past grades."
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                    <Link href="/auth/login" className="flex-1 sm:flex-none">
+                      <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl border-amber-500/40 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10">
+                        {t("تسجيل الدخول", "Sign In")}
+                      </Button>
+                    </Link>
+                    <Link href="/auth/register" className="flex-1 sm:flex-none">
+                      <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-md">
+                        {t("إنشاء حساب 🚀", "Register 🚀")}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-base font-bold">{t("تحديد المعدل المستهدف", "Set Target GPA")}</CardTitle>
@@ -562,19 +599,19 @@ export default function GpaPage() {
         <div className="grid grid-cols-2 gap-4 border border-black p-4 rounded-xl text-xs bg-gray-50">
           <div>
             <span className="font-bold text-gray-700">{t("اسم الطالب:", "Student Name:")} </span>
-            <span className="font-black text-black">{user?.name || (lang === "ar" ? "أحمد الطالب" : "Student")}</span>
+            <span className="font-black text-black">{user ? (lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : t("طالب زائر (تقرير تجريبي)", "Guest Student (Trial Report)")}</span>
           </div>
           <div>
             <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):", "Student ID:")} </span>
-            <span className="font-black text-black">{user?.studentId || "20230101"}</span>
+            <span className="font-black text-black">{user?.studentId || t("غير مسجل (حساب زائر)", "Unregistered (Guest)")}</span>
           </div>
           <div>
             <span className="font-bold text-gray-700">{t("التخصص / القسم الأكاديمي:", "Department / Major:")} </span>
-            <span className="font-black text-black">{user?.department || (lang === "ar" ? "تكنولوجيا المعلومات (IT)" : "Information Technology (IT)")}</span>
+            <span className="font-black text-black">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)", "Information Technology & CS")}</span>
           </div>
           <div>
             <span className="font-bold text-gray-700">{t("المستوى:", "Level / Year:")} </span>
-            <span className="font-black text-black">{user?.level || (lang === "ar" ? "الفرقة الثانية" : "Year 2")}</span>
+            <span className="font-black text-black">{user?.level || t("تقرير استرشادي فصلي", "Guidance & Simulation Report")}</span>
           </div>
         </div>
 
