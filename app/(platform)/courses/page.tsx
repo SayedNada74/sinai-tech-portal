@@ -368,8 +368,8 @@ export default function CoursesPage() {
                     onClick={() => completed ? removeCourse(course.code) : markCompleted(course.code, "A")}
                     className={`p-2 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                       completed
-                        ? "bg-green-600 border-green-600 text-white hover:bg-green-700"
-                        : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-400"
+                        ? "bg-green-600 border-green-600 text-white hover:bg-green-700 shadow-sm"
+                        : "border-zinc-200 hover:border-green-400 hover:bg-green-50/50 dark:border-zinc-800 dark:hover:border-green-600 dark:hover:bg-green-950/30 text-green-600 dark:text-green-400"
                     }`}
                     title={completed ? t("تراجع عن الإنجاز", "Undo Completion") : t("تحديد كمنجزة", "Mark as Completed")}
                   >
@@ -380,12 +380,12 @@ export default function CoursesPage() {
                     onClick={() => planned ? removeCourse(course.code) : markPlanned(course.code)}
                     className={`p-2 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                       planned
-                        ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-750"
-                        : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-400"
+                        ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-700 shadow-sm"
+                        : "border-zinc-200 hover:border-violet-400 hover:bg-violet-50/50 dark:border-zinc-800 dark:hover:border-violet-600 dark:hover:bg-violet-950/30 text-violet-600 dark:text-violet-400"
                     }`}
                     title={planned ? t("إلغاء الخطة", "Remove from Plan") : t("إضافة للمخطط الدراسي", "Add to Study Plan")}
                   >
-                    <Bookmark className="h-4 w-4" />
+                    <Bookmark className={`h-4 w-4 text-violet-600 dark:text-violet-400 ${planned ? "text-white fill-white dark:text-white" : ""}`} />
                   </button>
                 </div>
               </Card>

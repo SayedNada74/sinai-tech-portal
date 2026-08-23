@@ -204,14 +204,14 @@ export default function CourseDetailPage({ params }: PageProps) {
             }
             toggleBookmark(course.code, "course", course.arabic, `/courses/${course.code}`);
           }}
-          className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border transition-colors cursor-pointer ${
+          className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
             bookmarked
-              ? "bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-950/20 dark:border-violet-800 dark:text-violet-400"
-              : "border-zinc-200 text-zinc-500 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
+              ? "bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-950/30 dark:border-violet-800 dark:text-violet-400 shadow-sm"
+              : "border-zinc-200 hover:border-violet-400 hover:bg-violet-50/50 dark:border-zinc-800 dark:hover:border-violet-600 dark:hover:bg-violet-950/30 text-violet-600 dark:text-violet-400"
           }`}
         >
-          {bookmarked ? <BookmarkCheck className="h-4 w-4 text-violet-600 dark:text-violet-400" /> : <Bookmark className="h-4 w-4" />}
-          <span>{bookmarked ? t("محفوظة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
+          {bookmarked ? <BookmarkCheck className="h-4 w-4 text-violet-600 dark:text-violet-400" /> : <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400" />}
+          <span>{bookmarked ? t("محفوظة في المفضلة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
         </button>
       </div>
 
