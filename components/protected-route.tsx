@@ -12,8 +12,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      // Save current path to redirect after login (optional, simple redirect for now)
-      router.push("/auth/login");
+      // Use replace instead of push to avoid trapped history loops when clicking back
+      router.replace("/auth/login");
     }
   }, [isAuthenticated, isLoading, router, pathname]);
 

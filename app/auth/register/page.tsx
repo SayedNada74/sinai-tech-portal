@@ -9,7 +9,7 @@ import { useApp } from "@/context/app-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Mail, Lock, User, Calendar, ShieldAlert, BookOpen, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Mail, Lock, User, Calendar, ShieldAlert, BookOpen, Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { useToast } from "@/components/ui/toast";
@@ -82,6 +82,17 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col justify-center items-center px-6 py-12 relative" dir={dir}>
+      {/* Back to Home Navigation */}
+      <div className="absolute top-6 start-6 z-20">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-zinc-600 dark:text-zinc-400 bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-violet-300 dark:hover:border-violet-700 transition-all cursor-pointer backdrop-blur-md"
+        >
+          {lang === "ar" ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+          <span>{t("العودة للرئيسية", "Back to Home")}</span>
+        </Link>
+      </div>
+
       {/* Background Decorative Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
 

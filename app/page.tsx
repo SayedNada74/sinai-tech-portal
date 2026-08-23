@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { useApp } from "@/context/app-context";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -32,6 +33,8 @@ import { motion } from "framer-motion";
 
 export default function LandingPage() {
   const { t, dir, lang } = useApp();
+  const { isAuthenticated } = useAuth();
+  const portalHref = isAuthenticated ? "/dashboard" : "/auth/login";
   const [activeTab, setActiveTab] = React.useState<"gpa" | "courses" | "ai" | "careers">("gpa");
 
   const containerVariants = {
@@ -163,7 +166,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
             >
-              <Link href="/dashboard" className="w-full sm:w-auto">
+              <Link href={portalHref} className="w-full sm:w-auto">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Button size="lg" className="w-full sm:w-auto px-9 py-6 text-base font-extrabold shadow-xl shadow-violet-600/20 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-2xl gap-2 cursor-pointer">
                     <span>{t("دخول منصة الطالب", "Open Student Portal")}</span>
@@ -417,7 +420,7 @@ export default function LandingPage() {
                     {t("ابدأ الآن بإنشاء حسابك مجاناً وتتبع كافة موادك ودرجاتك بكل يسر.", "Start now for free and easily manage all your courses and grades.")}
                   </p>
                 </div>
-                <Link href="/dashboard" className="block pt-2">
+                <Link href={portalHref} className="block pt-2">
                   <Button className="w-full bg-white text-violet-900 hover:bg-zinc-100 font-extrabold text-xs sm:text-sm py-5 rounded-xl shadow-lg cursor-pointer">
                     {t("دخول المنصة الآن", "Open Student Platform")}
                   </Button>

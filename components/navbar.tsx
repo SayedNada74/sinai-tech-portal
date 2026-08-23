@@ -189,7 +189,7 @@ export function Navbar() {
                 <Link href="/auth/login">
                   <Button variant="outline" size="sm">{t("تسجيل الدخول", "Sign In")}</Button>
                 </Link>
-                <Link href="/dashboard">
+                <Link href="/auth/login">
                   <Button size="sm" className="gap-1.5 font-bold">
                     <Sparkles className="h-4 w-4" />
                     {t("ابدأ التخطيط", "Get Started")}
@@ -311,7 +311,7 @@ export function Navbar() {
                   <Link href="/auth/login" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full">{t("تسجيل الدخول", "Sign In")}</Button>
                   </Link>
-                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Link href="/auth/login" onClick={() => setIsOpen(false)}>
                     <Button className="w-full gap-1.5">
                       <Sparkles className="h-4 w-4" />
                       {t("ابدأ التخطيط", "Get Started")}
