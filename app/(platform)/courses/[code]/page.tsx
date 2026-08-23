@@ -134,6 +134,10 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast(t("يرجى تسجيل الدخول أولاً لتتمكن من كتابة مراجعة للمادة.", "Please sign in first to submit a course review."), "info");
+      return;
+    }
     if (isSubmittingReview) return;
 
     if (!comment.trim() || !tips.trim()) {
@@ -193,7 +197,13 @@ export default function CourseDetailPage({ params }: PageProps) {
 
         {/* Course Bookmark */}
         <button
-          onClick={() => toggleBookmark(course.code, "course", course.arabic, `/courses/${course.code}`)}
+          onClick={() => {
+            if (!user) {
+              toast(t("يرجى تسجيل الدخول أولاً لحفظ المادة في قائمتك المفضلة.", "Please sign in to bookmark courses."), "info");
+              return;
+            }
+            toggleBookmark(course.code, "course", course.arabic, `/courses/${course.code}`);
+          }}
           className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border transition-colors cursor-pointer ${
             bookmarked
               ? "bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-950/20 dark:border-violet-800 dark:text-violet-400"
@@ -354,14 +364,22 @@ export default function CourseDetailPage({ params }: PageProps) {
                 </CardDescription>
               </div>
 
-              <Button size="sm" className="text-xs font-bold" onClick={() => setShowReviewForm(!showReviewForm)}>
-                {t("كتابة مراجعة", "Write Review")}
-              </Button>
+              {user ? (
+                <Button size="sm" className="text-xs font-bold" onClick={() => setShowReviewForm(!showReviewForm)}>
+                  {t("كتابة مراجعة", "Write Review")}
+                </Button>
+              ) : (
+                <Link href="/auth/login">
+                  <Button size="sm" variant="outline" className="text-xs font-bold gap-1 text-violet-600 dark:text-violet-400 border-violet-500/30 hover:bg-violet-50 dark:hover:bg-violet-950/30">
+                    <span>{t("تسجيل الدخول للمشاركة 💬", "Sign In to Review 💬")}</span>
+                  </Button>
+                </Link>
+              )}
             </CardHeader>
 
             <CardContent className="space-y-4">
-              {/* Review Entry Form */}
-              {showReviewForm && (
+              {/* Review Entry Form (Only for logged-in students) */}
+              {user && showReviewForm && (
                 <form onSubmit={handleSubmitReview} className="p-5 border border-dashed border-zinc-250 dark:border-zinc-800 rounded-2xl space-y-4 bg-zinc-50/50 dark:bg-zinc-950/40">
                   <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
                     <Sparkles className="h-4 w-4 text-violet-500" />
