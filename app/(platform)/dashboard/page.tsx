@@ -263,11 +263,11 @@ export default function DashboardPage() {
                   <div className="p-3 bg-zinc-100 dark:bg-zinc-950/60 rounded-xl">
                     <Icon className={`h-5.5 w-5.5 ${stat.color}`} />
                   </div>
-                  <Badge variant="outline" className="text-[10px] py-0.5 border-zinc-200/10 text-zinc-400">
+                  <Badge variant="outline" className="text-[10px] font-bold py-0.5 px-2 rounded-lg border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-400 bg-zinc-100/80 dark:bg-transparent">
                     {t("محدث", "Updated")}
                   </Badge>
                 </div>
-                <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400">{stat.label}</h3>
+                <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-400">{stat.label}</h3>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-50">
                     {idx === 0 && cumulativeGpa > 0 ? (
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                       stat.value
                     )}
                   </span>
-                  <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500">{stat.description}</span>
+                  <span className="text-[10px] font-bold text-zinc-900 dark:text-zinc-400">{stat.description}</span>
                 </div>
               </CardContent>
             </Card>

@@ -25,56 +25,60 @@
   --foreground: #09090b;
 }
 
-/* ─── Light Mode High-Contrast Typography & Accessibility Overhaul ────── */
-.light-mode .text-zinc-400,
-.light-mode .text-gray-400,
-.light-mode .text-neutral-400,
-.light-mode .text-slate-400,
-.light-mode .text-zinc-450 {
-  color: #475569 !important; /* was faint #a1a1aa, now sharp slate-600 */
-}
-
-.light-mode .text-zinc-500,
-.light-mode .text-gray-500,
-.light-mode .text-neutral-500,
-.light-mode .text-slate-500,
-.light-mode .text-zinc-550 {
-  color: #334155 !important; /* was washed out #71717a, now rich slate-700 */
-}
-
-.light-mode .text-zinc-600,
-.light-mode .text-gray-600,
-.light-mode .text-neutral-600,
-.light-mode .text-slate-600,
-.light-mode .text-zinc-650 {
-  color: #1e293b !important; /* dark readable slate-800 */
-}
-
+/* ─── Light Mode Pure Solid Black Typography (Zero Gray Everywhere) ───── */
 .light-mode .text-zinc-300,
+.light-mode .text-zinc-400,
+.light-mode .text-zinc-450,
+.light-mode .text-zinc-500,
+.light-mode .text-zinc-550,
+.light-mode .text-zinc-600,
+.light-mode .text-zinc-650,
+.light-mode .text-zinc-700,
 .light-mode .text-gray-300,
-.light-mode .text-neutral-300 {
-  color: #64748b !important; /* crisp slate-500 */
-}
-
-/* Card titles, badges, inputs and descriptions contrast enhancement */
+.light-mode .text-gray-400,
+.light-mode .text-gray-500,
+.light-mode .text-gray-600,
+.light-mode .text-gray-700,
+.light-mode .text-neutral-300,
+.light-mode .text-neutral-400,
+.light-mode .text-neutral-500,
+.light-mode .text-neutral-600,
+.light-mode .text-slate-300,
+.light-mode .text-slate-400,
+.light-mode .text-slate-500,
+.light-mode .text-slate-600,
+.light-mode .text-muted-foreground,
 .light-mode .card-description,
 .light-mode [class*="CardDescription"],
-.light-mode .text-muted-foreground {
-  color: #334155 !important;
-  font-weight: 500 !important;
+.light-mode [class*="text-zinc-300"],
+.light-mode [class*="text-zinc-400"],
+.light-mode [class*="text-zinc-450"],
+.light-mode [class*="text-zinc-500"],
+.light-mode [class*="text-zinc-550"],
+.light-mode [class*="text-zinc-600"],
+.light-mode [class*="text-zinc-650"] {
+  color: #09090b !important;
+}
+
+/* Ensure all paragraphs, spans, subtitles, labels in light mode are crisp black */
+.light-mode p:not([class*="text-violet-"]):not([class*="text-cyan-"]):not([class*="text-emerald-"]):not([class*="text-red-"]):not([class*="text-amber-"]):not([class*="text-green-"]):not([class*="text-white"]):not([class*="text-blue-"]):not([class*="text-indigo-"]):not([class*="text-purple-"]),
+.light-mode span:not([class*="text-violet-"]):not([class*="text-cyan-"]):not([class*="text-emerald-"]):not([class*="text-red-"]):not([class*="text-amber-"]):not([class*="text-green-"]):not([class*="text-white"]):not([class*="text-blue-"]):not([class*="text-indigo-"]):not([class*="text-purple-"]):not([class*="bg-"]),
+.light-mode label,
+.light-mode small {
+  color: #09090b;
+}
+
+/* Light mode badge outlines */
+.light-mode .badge,
+.light-mode [class*="Badge"] {
+  color: #09090b;
+  border-color: rgba(9, 9, 11, 0.2);
 }
 
 .light-mode input::placeholder,
 .light-mode textarea::placeholder {
-  color: #64748b !important;
-  opacity: 0.9 !important;
-}
-
-/* Make subtle subtitles, badges, and card text in light mode crisp */
-.light-mode p,
-.light-mode span,
-.light-mode label {
-  text-rendering: optimizeLegibility;
+  color: #52525b !important;
+  opacity: 0.8 !important;
 }
 
 body, html, input, button, select, textarea {
