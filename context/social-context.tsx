@@ -81,8 +81,9 @@ export interface NotificationItem {
   title: string;
   content: string;
   date: string;
-  type: "reply" | "resource" | "career" | "event" | "academic" | "badge";
+  type: "reply" | "resource" | "career" | "event" | "academic" | "badge" | "system" | "announcement";
   read: boolean;
+  recipientEmail?: string;
 }
 
 interface SocialContextType {
@@ -131,6 +132,7 @@ interface SocialContextType {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearNotifications: () => void;
+  sendNotificationToUser: (targetEmail: string, notif: Omit<NotificationItem, "id" | "date" | "read">) => void;
 
   // Gamification & Points
   awardPoints: (amount: number, reason: string) => void;
@@ -475,45 +477,89 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
   // Load user specific personal state from localStorage on user change
   React.useEffect(() => {
-    if (user) {
+    if (user && user.id) {
+      const userEmail = user.email ? user.email.toLowerCase().trim() : "";
+      let userNotifs: NotificationItem[] = [];
+
+      // 1. Check cloud social_state
       if (user.social_state) {
         try {
           const parsed = typeof user.social_state === "string" ? JSON.parse(user.social_state) : user.social_state;
           if (parsed.events) setEvents(parsed.events);
           if (parsed.reminders) setReminders(parsed.reminders);
-          if (parsed.notifications) setNotifications(parsed.notifications);
+          if (Array.isArray(parsed.notifications)) {
+            userNotifs = parsed.notifications.filter((n: NotificationItem) => !n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail);
+          }
           if (parsed.savedJobs) setSavedJobs(parsed.savedJobs);
           if (parsed.savedEvents) setSavedEvents(parsed.savedEvents);
           if (parsed.savedPosts) setSavedPosts(parsed.savedPosts);
           if (parsed.moodleUrl) setMoodleUrl(parsed.moodleUrl);
-          return; // skip local storage if cloud state exists
         } catch (e) {
           console.error("Failed to parse cloud social state", e);
         }
       }
 
+      // 2. Check local user-specific DB
       const savedDb = localStorage.getItem(`su_social_${user.id}`);
       if (savedDb) {
         try {
           const parsed = JSON.parse(savedDb);
-          if (parsed.events) setEvents(parsed.events);
-          if (parsed.reminders) setReminders(parsed.reminders);
-          if (parsed.notifications) setNotifications(parsed.notifications);
-          if (parsed.savedJobs) setSavedJobs(parsed.savedJobs);
-          if (parsed.savedEvents) setSavedEvents(parsed.savedEvents);
-          if (parsed.savedPosts) setSavedPosts(parsed.savedPosts);
-          if (parsed.moodleUrl) setMoodleUrl(parsed.moodleUrl);
+          if (parsed.events && (!user.social_state || !user.social_state.events)) setEvents(parsed.events);
+          if (parsed.reminders && (!user.social_state || !user.social_state.reminders)) setReminders(parsed.reminders);
+          if (Array.isArray(parsed.notifications)) {
+            const filtered = parsed.notifications.filter((n: NotificationItem) => !n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail);
+            if (filtered.length > userNotifs.length) {
+              userNotifs = filtered;
+            }
+          }
+          if (parsed.savedJobs && (!user.social_state || !user.social_state.savedJobs)) setSavedJobs(parsed.savedJobs);
+          if (parsed.savedEvents && (!user.social_state || !user.social_state.savedEvents)) setSavedEvents(parsed.savedEvents);
+          if (parsed.savedPosts && (!user.social_state || !user.social_state.savedPosts)) setSavedPosts(parsed.savedPosts);
+          if (parsed.moodleUrl && (!user.social_state || !user.social_state.moodleUrl)) setMoodleUrl(parsed.moodleUrl);
         } catch (e) {
           console.error("Failed to parse social state", e);
         }
       }
+
+      // 3. Check standalone user inbox `su_notifs_${userEmail}`
+      if (userEmail) {
+        const standaloneInbox = localStorage.getItem(`su_notifs_${userEmail}`);
+        if (standaloneInbox) {
+          try {
+            const parsedInbox = JSON.parse(standaloneInbox);
+            if (Array.isArray(parsedInbox) && parsedInbox.length > 0) {
+              const map = new Map<string, NotificationItem>();
+              userNotifs.forEach(n => map.set(n.id, n));
+              parsedInbox.forEach((n: NotificationItem) => {
+                if (!n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail) {
+                  map.set(n.id, n);
+                }
+              });
+              userNotifs = Array.from(map.values()).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+            }
+          } catch (e) {}
+        }
+      }
+
+      setNotifications(userNotifs);
+    } else {
+      // WHEN NO USER IS LOGGED IN, COMPLETELY CLEAR MEMORY
+      setNotifications([]);
+      setEvents([]);
+      setReminders([]);
+      setSavedJobs([]);
+      setSavedEvents([]);
+      setSavedPosts([]);
+      setMoodleUrl("");
     }
-  }, [user]);
+  }, [user?.id, user?.email]);
 
   // Cross-Tab Storage Event Listener for personal social state
   React.useEffect(() => {
     if (!user || typeof window === "undefined") return;
     const socialKey = `su_social_${user.id}`;
+    const userEmail = user.email ? user.email.toLowerCase().trim() : "";
+    const notifsKey = userEmail ? `su_notifs_${userEmail}` : "";
     const careersKey = "su_careers_cache";
 
     const handleStorageEvent = (e: StorageEvent) => {
@@ -524,8 +570,17 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
           if (parsed.savedEvents !== undefined) setSavedEvents(parsed.savedEvents);
           if (parsed.savedPosts !== undefined) setSavedPosts(parsed.savedPosts);
           if (parsed.reminders !== undefined) setReminders(parsed.reminders);
-          if (parsed.notifications !== undefined) setNotifications(parsed.notifications);
+          if (parsed.notifications !== undefined && Array.isArray(parsed.notifications)) {
+            setNotifications(parsed.notifications.filter((n: NotificationItem) => !n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail));
+          }
           if (parsed.moodleUrl !== undefined) setMoodleUrl(parsed.moodleUrl);
+        } catch (err) {}
+      } else if (notifsKey && e.key === notifsKey && e.newValue) {
+        try {
+          const parsedNotifs = JSON.parse(e.newValue);
+          if (Array.isArray(parsedNotifs)) {
+            setNotifications(parsedNotifs.filter((n: NotificationItem) => !n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail));
+          }
         } catch (err) {}
       } else if (e.key === careersKey && e.newValue) {
         try {
@@ -536,12 +591,13 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("storage", handleStorageEvent);
     return () => window.removeEventListener("storage", handleStorageEvent);
-  }, [user]);
+  }, [user?.id, user?.email]);
 
   // Save changes state wrapper helper with Type-Aware Merging
   const saveSocialState = (updates: Partial<any>) => {
-    if (user) {
+    if (user && user.id) {
       const key = `su_social_${user.id}`;
+      const userEmail = user.email ? user.email.toLowerCase().trim() : "";
       let freshest: any = {};
       if (typeof window !== "undefined") {
         const saved = localStorage.getItem(key);
@@ -550,10 +606,16 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      // Filter notifications to ensure only this user's notifications are saved
+      const currentNotifs = updates.notifications !== undefined ? updates.notifications : (freshest.notifications || notifications);
+      const filteredNotifs = Array.isArray(currentNotifs)
+        ? currentNotifs.filter((n: NotificationItem) => !n.recipientEmail || n.recipientEmail.toLowerCase().trim() === userEmail)
+        : [];
+
       const data = {
         events: updates.events !== undefined ? updates.events : (freshest.events || events),
         reminders: updates.reminders !== undefined ? updates.reminders : (freshest.reminders || reminders),
-        notifications: updates.notifications !== undefined ? updates.notifications : (freshest.notifications || notifications),
+        notifications: filteredNotifs,
         savedJobs: updates.savedJobs !== undefined ? updates.savedJobs : (freshest.savedJobs || savedJobs),
         savedEvents: updates.savedEvents !== undefined ? updates.savedEvents : (freshest.savedEvents || savedEvents),
         savedPosts: updates.savedPosts !== undefined ? updates.savedPosts : (freshest.savedPosts || savedPosts),
@@ -562,10 +624,45 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
       if (typeof window !== "undefined") {
         localStorage.setItem(key, JSON.stringify(data));
+        if (userEmail) {
+          localStorage.setItem(`su_notifs_${userEmail}`, JSON.stringify(filteredNotifs));
+        }
       }
       
       // Async save to cloud with freshest merged payload
       updateProfile({ social_state: data }).catch(err => console.warn("Cloud sync failed for social_state:", err));
+    }
+  };
+
+  // Dedicated helper to send notification to a specific user account
+  const sendNotificationToUser = (targetEmail: string, notif: Omit<NotificationItem, "id" | "date" | "read">) => {
+    if (!targetEmail) return;
+    const normalizedTarget = targetEmail.toLowerCase().trim();
+    const fullNotif: NotificationItem = {
+      ...notif,
+      id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      date: new Date().toLocaleString("ar-EG"),
+      read: false,
+      recipientEmail: normalizedTarget
+    };
+
+    // 1. If recipient is currently active:
+    if (user && user.email && user.email.toLowerCase().trim() === normalizedTarget) {
+      setNotifications(prev => {
+        const updated = [fullNotif, ...prev.filter(n => n.id !== fullNotif.id)];
+        saveSocialState({ notifications: updated });
+        return updated;
+      });
+    }
+
+    // 2. Always persist into target user's dedicated inbox
+    if (typeof window !== "undefined") {
+      const targetKey = `su_notifs_${normalizedTarget}`;
+      try {
+        const existing = JSON.parse(localStorage.getItem(targetKey) || "[]");
+        const merged = [fullNotif, ...existing.filter((n: any) => n.id !== fullNotif.id)].slice(0, 50);
+        localStorage.setItem(targetKey, JSON.stringify(merged));
+      } catch (e) {}
     }
   };
 
@@ -602,30 +699,21 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       badges: newBadges
     });
 
-    const newNotif: NotificationItem = {
-      id: `notif-${Date.now()}`,
-      title: `لقد ربحت +${amount} نقطة!`,
-      content: `السبب: ${reason}`,
-      date: new Date().toLocaleString("ar-EG"),
-      type: "badge",
-      read: false
-    };
+    if (user.email) {
+      sendNotificationToUser(user.email, {
+        title: `لقد ربحت +${amount} نقطة!`,
+        content: `السبب: ${reason}`,
+        type: "badge"
+      });
 
-    let updatedNotifs = [newNotif, ...notifications];
-    if (badgeNotification) {
-      const badgeNotif: NotificationItem = {
-        id: `notif-badge-${Date.now()}`,
-        title: `شارة جديدة مفتوحة 🏆`,
-        content: badgeNotification,
-        date: new Date().toLocaleString("ar-EG"),
-        type: "badge",
-        read: false
-      };
-      updatedNotifs = [badgeNotif, ...updatedNotifs];
+      if (badgeNotification) {
+        sendNotificationToUser(user.email, {
+          title: `شارة جديدة مفتوحة 🏆`,
+          content: badgeNotification,
+          type: "badge"
+        });
+      }
     }
-
-    setNotifications(updatedNotifs);
-    saveSocialState({ notifications: updatedNotifs });
   };
 
   // Community logic (with In-Flight Mutex Locks)
@@ -768,18 +856,12 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
     const updated = posts.map(p => {
       if (p.id === postId) {
-        if (p.authorEmail !== user.email) {
-          const newNot: NotificationItem = {
-            id: `not-${Date.now()}`,
+        if (p.authorEmail && user.email && p.authorEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+          sendNotificationToUser(p.authorEmail, {
             title: "رد جديد على منشورك",
-            content: `علق ${user.name} على منشورك '${p.title.substring(0, 20)}...'.`,
-            date: new Date().toLocaleString("ar-EG"),
-            type: "reply",
-            read: false
-          };
-          const updatedNotifs = [newNot, ...notifications];
-          setNotifications(updatedNotifs);
-          saveSocialState({ notifications: updatedNotifs });
+            content: `علق ${user.name} على منشورك '${p.title.substring(0, 25)}...'`,
+            type: "reply"
+          });
         }
         return { ...p, comments: [...p.comments, newComment] };
       }
@@ -818,18 +900,12 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         const commentIndex = p.comments.findIndex(c => c.id === commentId);
         if (commentIndex !== -1) {
           const targetComment = p.comments[commentIndex];
-          if (targetComment.authorEmail !== user.email) {
-            const newNot: NotificationItem = {
-              id: `not-${Date.now()}`,
+          if (targetComment.authorEmail && user.email && targetComment.authorEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+            sendNotificationToUser(targetComment.authorEmail, {
               title: "رد جديد على تعليقك",
-              content: `رد ${user.name} على تعليقك بالمنتدى.`,
-              date: new Date().toLocaleString("ar-EG"),
-              type: "reply",
-              read: false
-            };
-            const updatedNotifs = [newNot, ...notifications];
-            setNotifications(updatedNotifs);
-            saveSocialState({ notifications: updatedNotifs });
+              content: `رد ${user.name} على تعليقك في منشور '${p.title.substring(0, 20)}...' بالمنتدى.`,
+              type: "reply"
+            });
           }
           const updatedComments = [...p.comments];
           updatedComments[commentIndex] = {
@@ -1149,6 +1225,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         markAsRead,
         markAllAsRead,
         clearNotifications,
+        sendNotificationToUser,
         syncMoodle,
         clearMoodle,
         awardPoints
