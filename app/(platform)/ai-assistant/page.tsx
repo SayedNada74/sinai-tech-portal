@@ -575,19 +575,51 @@ export default function AiAssistantPage() {
                         <div className="space-y-2 prose max-w-none dark:prose-invert">
                           {msg.content.split("\n").map((line, lIdx) => {
                             if (line.startsWith("###")) {
-                              return <h3 key={lIdx} className="font-extrabold text-sm text-zinc-900 dark:text-zinc-50 mt-4 mb-2">{line.replace("###", "").trim()}</h3>;
+                              return (
+                                <h3
+                                  key={lIdx}
+                                  className={`font-extrabold text-sm mt-4 mb-2 ${
+                                    isAssistant ? "text-zinc-900 dark:text-zinc-50" : "text-white"
+                                  }`}
+                                >
+                                  {line.replace("###", "").trim()}
+                                </h3>
+                              );
                             }
                             if (line.startsWith("####")) {
-                              return <h4 key={lIdx} className="font-bold text-xs text-zinc-800 dark:text-zinc-100 mt-3 mb-1.5">{line.replace("####", "").trim()}</h4>;
+                              return (
+                                <h4
+                                  key={lIdx}
+                                  className={`font-bold text-xs mt-3 mb-1.5 ${
+                                    isAssistant ? "text-zinc-800 dark:text-zinc-100" : "text-white"
+                                  }`}
+                                >
+                                  {line.replace("####", "").trim()}
+                                </h4>
+                              );
                             }
                             if (line.startsWith("-")) {
                               return (
-                                <li key={lIdx} className={`list-disc ${isRtl ? "pr-4" : "pl-4"} text-xs font-semibold`}>
+                                <li
+                                  key={lIdx}
+                                  className={`list-disc ${isRtl ? "pr-4" : "pl-4"} text-xs font-semibold ${
+                                    isAssistant ? "text-zinc-900 dark:text-zinc-100" : "text-white"
+                                  }`}
+                                >
                                   {line.replace("-", "").trim()}
                                 </li>
                               );
                             }
-                            return <p key={lIdx} className="whitespace-pre-line leading-relaxed text-zinc-900 dark:text-zinc-100">{line}</p>;
+                            return (
+                              <p
+                                key={lIdx}
+                                className={`whitespace-pre-line leading-relaxed ${
+                                  isAssistant ? "text-zinc-900 dark:text-zinc-100" : "text-white"
+                                }`}
+                              >
+                                {line}
+                              </p>
+                            );
                           })}
                         </div>
                       </div>
