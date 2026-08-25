@@ -54,10 +54,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               transition={{ type: "spring", stiffness: 450, damping: 28 }}
               className={`pointer-events-auto p-4 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-bold transition-all ${
                 t.type === "error"
-                  ? "bg-rose-950/95 border-rose-500/60 text-rose-100 shadow-rose-500/25 ring-1 ring-rose-500/40"
+                  ? "bg-rose-50/95 border-rose-300 text-rose-950 shadow-rose-500/15 ring-1 ring-rose-500/20 dark:bg-rose-950/90 dark:border-rose-500/50 dark:text-rose-100 dark:shadow-rose-500/25 dark:ring-rose-500/30"
                   : t.type === "info"
-                  ? "bg-cyan-950/95 border-cyan-500/60 text-cyan-100 shadow-cyan-500/25 ring-1 ring-cyan-500/40"
-                  : "bg-zinc-950/95 border-emerald-500/60 text-emerald-100 shadow-emerald-500/25 ring-1 ring-emerald-500/40"
+                  ? "bg-cyan-50/95 border-cyan-300 text-cyan-950 shadow-cyan-500/15 ring-1 ring-cyan-500/20 dark:bg-cyan-950/90 dark:border-cyan-500/50 dark:text-cyan-100 dark:shadow-cyan-500/25 dark:ring-cyan-500/30"
+                  : "bg-emerald-50/95 border-emerald-300 text-emerald-950 shadow-emerald-500/15 ring-1 ring-emerald-500/20 dark:bg-zinc-950/90 dark:border-emerald-500/50 dark:text-emerald-100 dark:shadow-emerald-500/25 dark:ring-emerald-500/30"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -67,10 +67,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   transition={{ type: "spring", stiffness: 500, damping: 20, delay: 0.05 }}
                   className={`p-2 rounded-xl shrink-0 ${
                     t.type === "error"
-                      ? "bg-rose-500/20 text-rose-400"
+                      ? "bg-rose-500/15 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400"
                       : t.type === "info"
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "bg-emerald-500/20 text-emerald-400"
+                      ? "bg-cyan-500/15 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400"
+                      : "bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
                   }`}
                 >
                   {t.type === "error" ? (
@@ -81,11 +81,26 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                     <CheckCircle2 className="h-5 w-5" />
                   )}
                 </motion.div>
-                <span className="leading-relaxed font-semibold text-zinc-100 text-xs sm:text-sm">{t.message}</span>
+                <span className={`leading-relaxed font-bold text-xs sm:text-sm ${
+                  t.type === "error"
+                    ? "text-rose-950 dark:text-rose-100"
+                    : t.type === "info"
+                    ? "text-cyan-950 dark:text-cyan-100"
+                    : "text-emerald-950 dark:text-emerald-100"
+                }`}>
+                  {t.message}
+                </span>
               </div>
               <button
                 onClick={() => removeToast(t.id)}
-                className="opacity-70 hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-white/10 shrink-0 cursor-pointer text-zinc-400 hover:text-zinc-100"
+                className={`opacity-70 hover:opacity-100 transition-opacity p-1.5 rounded-lg shrink-0 cursor-pointer ${
+                  t.type === "error"
+                    ? "text-rose-700 hover:text-rose-950 hover:bg-rose-200/50 dark:text-rose-400 dark:hover:text-rose-100 dark:hover:bg-white/10"
+                    : t.type === "info"
+                    ? "text-cyan-700 hover:text-cyan-950 hover:bg-cyan-200/50 dark:text-cyan-400 dark:hover:text-cyan-100 dark:hover:bg-white/10"
+                    : "text-emerald-700 hover:text-emerald-950 hover:bg-emerald-200/50 dark:text-emerald-400 dark:hover:text-emerald-100 dark:hover:bg-white/10"
+                }`}
+                aria-label="Close notification"
               >
                 <X className="h-4 w-4" />
               </button>
