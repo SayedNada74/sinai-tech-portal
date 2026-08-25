@@ -8,35 +8,35 @@ import { useApp } from "@/context/app-context";
 import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { DeveloperCredit } from "@/components/ui/developer-credit";
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { theme, setTheme, lang, setLang, t, dir } = useApp();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const isDark = theme === "dark";
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+  // Smooth scroll progress indicator
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    restDelta: 0.001
+  });
 
+  React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
@@ -58,13 +58,14 @@ export function Navbar() {
 
   return (
     <>
+      {/* Dynamic Scroll Progress Bar */}
+      <motion.div
+        style={{ scaleX, transformOrigin: dir === "rtl" ? "right" : "left" }}
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-400 z-[70] shadow-[0_0_12px_rgba(139,92,246,0.7)]"
+      />
+
       <header
-        className={cn(
-          "sticky top-0 z-50 w-full transition-all duration-300 border-b border-transparent",
-          scrolled
-            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-lg shadow-sm border-zinc-200/50 dark:border-zinc-800/50 py-3"
-            : "bg-transparent py-5"
-        )}
+        className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-xl border-b border-zinc-200/80 dark:border-zinc-850/80 shadow-xs py-3.5"
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" dir={dir}>
           {/* Logo */}
@@ -204,26 +205,30 @@ export function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-              className="p-2 rounded-lg border border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 text-xs font-bold cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 text-xs font-bold shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
             >
               {lang === "ar" ? "EN" : "عربي"}
             </button>
             <button
               onClick={toggleTheme}
               suppressHydrationWarning
-              className="p-2 rounded-lg border border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 cursor-pointer"
+              className="p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
+              aria-label="Toggle theme"
             >
               {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-zinc-700" />}
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg border border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 cursor-pointer"
+              className="p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
+              aria-label="Toggle navigation menu"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </header>
+      {/* Spacer to prevent layout shift with fixed header */}
+      <div className="h-[68px] shrink-0" />
 
       {/* Mobile Navigation Drawer */}
       <AnimatePresence>
@@ -235,7 +240,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 top-[70px] bg-zinc-950/60 backdrop-blur-xs z-30 md:hidden"
+              className="fixed inset-0 top-[65px] bg-zinc-950/60 backdrop-blur-xs z-30 md:hidden"
               onClick={() => setIsOpen(false)}
             />
 
@@ -244,7 +249,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="fixed inset-x-0 top-[70px] z-40 md:hidden bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 shadow-2xl py-6 px-6 max-h-[calc(100vh-80px)] overflow-y-auto"
+              className="fixed inset-x-0 top-[65px] z-40 md:hidden bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 shadow-2xl py-6 px-6 max-h-[calc(100vh-75px)] overflow-y-auto"
               dir={dir}
             >
             <nav className="flex flex-col gap-4.5 mb-6">

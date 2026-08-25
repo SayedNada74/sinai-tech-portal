@@ -134,7 +134,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/30 bg-violet-500/10 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 text-xs sm:text-sm font-bold backdrop-blur-md shadow-sm"
             >
               <GraduationCap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-              <span>{t("المنصة الأولى والتعليمية الشاملة لطلاب جامعة سيناء", "Comprehensive Smart Platform for Sinai University Students")}</span>
+              <span>{t("المنصة التعليمية الشاملة لطلاب جامعة سيناء", "The comprehensive educational platform for Sinai University students.")}</span>
             </motion.div>
 
             {/* Hero Main Headline */}
@@ -264,11 +264,10 @@ export default function LandingPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                        activeTab === tab.id
-                          ? "bg-violet-600 text-white shadow-md shadow-violet-600/20"
-                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-                      }`}
+                      className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${activeTab === tab.id
+                        ? "bg-violet-600 text-white shadow-md shadow-violet-600/20"
+                        : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+                        }`}
                     >
                       {tab.icon}
                       <span>{tab.label}</span>
@@ -364,10 +363,10 @@ export default function LandingPage() {
                         activeTab === "gpa"
                           ? "/gpa"
                           : activeTab === "courses"
-                          ? "/courses"
-                          : activeTab === "careers"
-                          ? "/roadmaps"
-                          : portalHref
+                            ? "/courses"
+                            : activeTab === "careers"
+                              ? "/roadmaps"
+                              : portalHref
                       }
                     >
                       <Button size="sm" className="gap-2 font-bold text-xs cursor-pointer shadow-md bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl">
@@ -426,7 +425,9 @@ export default function LandingPage() {
               {[
                 {
                   step: "01",
-                  icon: <GraduationCap className="h-6 w-6 text-violet-600 dark:text-violet-400" />,
+                  icon: GraduationCap,
+                  iconClasses: "bg-violet-100 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 border border-violet-200/80 dark:border-violet-800/60 shadow-sm shadow-violet-500/10",
+                  badgeClasses: "bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20",
                   title: t("حدد فرقتك وقسمك التخصصي", "1. Choose Year & Department"),
                   desc: t(
                     "اختر فرقتك الدراسية (الأولى، الثانية، الثالثة، الرابعة) وتخصصك (IT, CS, IS) لتهيئة خطتك الدراسية فوراً.",
@@ -435,7 +436,9 @@ export default function LandingPage() {
                 },
                 {
                   step: "02",
-                  icon: <Calendar className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />,
+                  icon: Calendar,
+                  iconClasses: "bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200/80 dark:border-cyan-800/60 shadow-sm shadow-cyan-500/10",
+                  badgeClasses: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20",
                   title: t("سجل درجاتك أو اربط تقويم Moodle", "2. Log Grades or Sync Moodle"),
                   desc: t(
                     "أدخل تقديراتك للمواد المنجزة، أو انسخ رابط تقويم Moodle iCal لمزامنة مواعيد المحاضرات والامتحانات تلقائياً.",
@@ -444,31 +447,47 @@ export default function LandingPage() {
                 },
                 {
                   step: "03",
-                  icon: <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />,
+                  icon: Sparkles,
+                  iconClasses: "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 shadow-sm shadow-indigo-500/10",
+                  badgeClasses: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20",
                   title: t("احصل على توقعات الـ GPA وإرشاد الـ AI", "3. Get GPA Insights & AI Advice"),
                   desc: t(
                     "استمتع بحساب وتوقع فوري للمعدل التراكمي المطلوب للتخرج بامتياز، مع استشارات ذكية من المرشد الأكاديمي الذكي.",
                     "Enjoy instant GPA predictions to achieve Honors, with 24/7 personalized AI academic counseling."
                   )
                 }
-              ].map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -6 }}
-                  className="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-md relative overflow-hidden flex flex-col justify-between"
-                >
-                  <span className="absolute top-4 start-6 text-5xl font-black text-zinc-100 dark:text-zinc-800/60 select-none pointer-events-none">
-                    {item.step}
-                  </span>
-                  <div className="space-y-4 relative z-10 pt-4">
-                    <div className="h-12 w-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-inner">
-                      {item.icon}
+              ].map((item, idx) => {
+                const IconComponent = item.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    whileHover={{ y: -6 }}
+                    className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg shadow-zinc-900/5 dark:shadow-black/40 relative overflow-hidden flex flex-col justify-between transition-all"
+                  >
+                    <div className="space-y-5">
+                      {/* Top Header Row with Icon and Step Number Badge */}
+                      <div className="flex items-center justify-between w-full">
+                        <div className={`h-13 w-13 rounded-2xl flex items-center justify-center ${item.iconClasses}`}>
+                          <IconComponent className="h-6 w-6" />
+                        </div>
+                        <span className={`text-xs sm:text-sm font-black px-3 py-1.5 rounded-xl tracking-wider ${item.badgeClasses}`}>
+                          STEP {item.step}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-2.5">
+                        <h3 className="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+                          {item.desc}
+                        </p>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-50">{item.title}</h3>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{item.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -520,25 +539,25 @@ export default function LandingPage() {
         </section>
 
         {/* PWA Mobile App Install Section */}
-        <section className="py-20 px-6 bg-gradient-to-b from-zinc-50 to-violet-50/30 dark:from-zinc-950 dark:to-violet-950/10">
+        <section className="py-20 px-6 bg-gradient-to-b from-zinc-50 to-violet-50/40 dark:from-zinc-950 dark:to-violet-950/20">
           <div className="max-w-6xl mx-auto">
-            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-900/90 via-indigo-900/90 to-zinc-950 text-white shadow-2xl border border-violet-500/30 relative overflow-hidden">
+            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-50/90 via-indigo-50/80 to-purple-50/70 dark:from-violet-950/80 dark:via-indigo-950/70 dark:to-zinc-950 shadow-2xl border border-violet-200/80 dark:border-violet-800/40 relative overflow-hidden transition-all">
               {/* Background Ambient Glows */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/15 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-400/15 dark:bg-violet-600/30 rounded-full blur-3xl pointer-events-none" />
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
                 <div className={`lg:col-span-8 space-y-6 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-violet-200">
-                    <Smartphone className="h-4 w-4 text-cyan-300" />
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 dark:bg-white/10 backdrop-blur-md border border-violet-200 dark:border-white/20 text-xs font-bold text-violet-700 dark:text-violet-200">
+                    <Smartphone className="h-4 w-4 text-violet-600 dark:text-cyan-300" />
                     <span>{t("تطبيق الهاتف المحمول PWA", "Mobile App Experience (PWA)")}</span>
                   </div>
 
-                  <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-zinc-900 dark:text-white">
                     {t("منصتك الأكاديمية معك في جيبك أينما كنت 📲", "Your Academic Platform in Your Pocket Everywhere 📲")}
                   </h2>
 
-                  <p className="text-sm sm:text-base text-zinc-300 max-w-2xl leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 max-w-2xl leading-relaxed font-medium">
                     {t(
                       "ثبّت المنصة كتطبيق فوري على هاتفك (Android أو iPhone) أو جهاز الكمبيوتر بضغطة زر واحدة. استمتع بسرعة فائقة، إمكانية التصفح، وتجربة سلسة بدون الحاجة للتحميل من المتاجر.",
                       "Install the portal as an instant app on your phone (Android/iOS) or PC with one click. Enjoy fast loading, offline capability, and smooth experience with zero app store hassle."
@@ -546,37 +565,37 @@ export default function LandingPage() {
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
-                      <Zap className="h-4.5 w-4.5 text-amber-400 shrink-0" />
-                      <span className="text-xs font-bold text-zinc-200">{t("سرعة تشغيل فائقة", "Instant Launch Speed")}</span>
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 shadow-xs">
+                      <Zap className="h-4.5 w-4.5 text-amber-500 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{t("سرعة تشغيل فائقة", "Instant Launch Speed")}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
-                      <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
-                      <span className="text-xs font-bold text-zinc-200">{t("حفظ البيانات أوفلاين", "Offline Data Persistence")}</span>
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 shadow-xs">
+                      <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{t("حفظ البيانات أوفلاين", "Offline Data Persistence")}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
-                      <Smartphone className="h-4.5 w-4.5 text-cyan-400 shrink-0" />
-                      <span className="text-xs font-bold text-zinc-200">{t("دعم كامل لـ iOS & Android", "Full iOS & Android Support")}</span>
+                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 shadow-xs">
+                      <Smartphone className="h-4.5 w-4.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                      <span className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{t("دعم كامل لـ iOS & Android", "Full iOS & Android Support")}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="p-6 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 w-full max-w-xs space-y-4">
+                  <div className="p-6 rounded-3xl bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-violet-200/90 dark:border-white/20 shadow-xl w-full max-w-xs space-y-4">
                     <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg">
                       <Download className="h-8 w-8 text-white" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-black text-white">{t("تثبيت التطبيق على جهازك", "Install App on Device")}</h4>
-                      <p className="text-[11px] text-zinc-300 mt-1">{t("اضغط على 'تثبيت' أو 'إضافة للشاشة الرئيسية'", "Tap 'Install' or 'Add to Home Screen'")}</p>
+                      <h4 className="text-sm font-black text-zinc-900 dark:text-white">{t("تثبيت التطبيق على جهازك", "Install App on Device")}</h4>
+                      <p className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300 mt-1">{t("اضغط على 'تثبيت' أو 'إضافة للشاشة الرئيسية'", "Tap 'Install' or 'Add to Home Screen'")}</p>
                     </div>
                     <Button
                       onClick={() => {
                         window.dispatchEvent(new Event("trigger-pwa-install"));
                       }}
-                      className="w-full bg-white text-violet-950 hover:bg-zinc-100 font-extrabold text-xs h-11 rounded-xl shadow-lg cursor-pointer gap-2"
+                      className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-extrabold text-xs h-11 rounded-xl shadow-lg shadow-violet-500/25 cursor-pointer gap-2"
                     >
-                      <Download className="h-4 w-4 text-violet-700" />
+                      <Download className="h-4 w-4 text-white" />
                       <span>{t("تثبيت التطبيق الآن 🚀", "Install App Now 🚀")}</span>
                     </Button>
                   </div>

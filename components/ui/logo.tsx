@@ -10,6 +10,7 @@ interface LogoProps {
   href?: string;
   className?: string;
   subtitle?: string;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export function Logo({
@@ -17,7 +18,8 @@ export function Logo({
   showText = true,
   href = "/",
   className,
-  subtitle = "Guide"
+  subtitle = "Guide",
+  onClick
 }: LogoProps) {
   const sizeMap = {
     sm: {
@@ -48,10 +50,22 @@ export function Logo({
 
   const currentSize = sizeMap[size];
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      onClick(e);
+    }
+    if (typeof window !== "undefined") {
+      // If already on the target page, scroll smoothly to the top
+      if (window.location.pathname === href || (href === "/" && window.location.pathname === "/")) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   const logoContent = (
     <div
       className={cn(
-        "flex items-center group cursor-pointer transition-all duration-200",
+        "flex items-center group cursor-pointer transition-all duration-200 select-none",
         size === "xl" ? "flex-col items-center text-center" : "flex-row",
         currentSize.gap,
         className
@@ -67,7 +81,7 @@ export function Logo({
         <img
           src="/uni-logo.jpeg"
           alt="Sinai University Logo"
-          className="h-full w-full object-contain filter drop-shadow-sm select-none"
+          className="h-full w-full object-contain filter drop-shadow-sm select-none pointer-events-none"
         />
       </div>
 
@@ -85,8 +99,16 @@ export function Logo({
   );
 
   if (href) {
-    return <Link href={href}>{logoContent}</Link>;
+    return (
+      <Link href={href} onClick={handleClick} className="inline-block cursor-pointer">
+        {logoContent}
+      </Link>
+    );
   }
 
-  return logoContent;
+  return (
+    <div onClick={handleClick} className="cursor-pointer inline-block">
+      {logoContent}
+    </div>
+  );
 }
