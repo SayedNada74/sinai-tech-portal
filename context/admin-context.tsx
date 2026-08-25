@@ -205,23 +205,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       ];
 
       defaultAccounts.forEach(da => {
-        const idx = currentUsers.findIndex(u => u.email.toLowerCase() === da.email.toLowerCase());
+        const idx = currentUsers.findIndex(u => u.email?.toLowerCase().trim() === da.email.toLowerCase().trim() || u.id === da.id);
         if (idx === -1) {
           currentUsers.push(da);
         } else {
-          if (da.role !== "student") {
-            currentUsers[idx] = {
-              ...currentUsers[idx],
-              studentId: da.studentId,
-              level: da.level,
-              department: da.department,
-              role: da.role,
-              name: da.name,
-              nameAr: da.nameAr,
-              nameEn: da.nameEn,
-              avatar: da.avatar
-            };
-          }
+          currentUsers[idx] = {
+            ...da,
+            ...currentUsers[idx],
+            name: currentUsers[idx].name || da.name,
+            nameAr: currentUsers[idx].nameAr || da.nameAr,
+            nameEn: currentUsers[idx].nameEn || da.nameEn,
+            avatar: currentUsers[idx].avatar || da.avatar,
+            studentId: currentUsers[idx].studentId || da.studentId,
+            level: currentUsers[idx].level || da.level,
+            department: currentUsers[idx].department || da.department,
+            role: currentUsers[idx].role || da.role
+          };
         }
       });
       setUsers(currentUsers);

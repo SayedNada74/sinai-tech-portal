@@ -294,7 +294,7 @@ export default function ProfilePage() {
       const success = await updateProfile({
         nameAr,
         nameEn,
-        name: typeof window !== "undefined" && document.documentElement.dir === "rtl" ? nameAr : nameEn,
+        name: (typeof window !== "undefined" && document.documentElement.dir === "rtl" ? (nameAr || nameEn) : (nameEn || nameAr)) || nameAr || nameEn,
         email,
         level,
         studentId,

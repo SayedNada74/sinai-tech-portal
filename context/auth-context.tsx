@@ -429,6 +429,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...matchedUser,
       id: dbProfile?.id || matchedUser.id,
       name: dbProfile?.name || matchedUser.name,
+      nameAr: dbProfile?.name_ar || matchedUser.nameAr || "",
+      nameEn: dbProfile?.name_en || matchedUser.nameEn || "",
       level: dbProfile?.level || matchedUser.level,
       department: dbProfile?.department || matchedUser.department,
       studentId: dbProfile?.student_id || dbProfile?.studentId || matchedUser.studentId,
@@ -754,12 +756,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const savedUsersStr = localStorage.getItem("su_registered_users") || "[]";
     const savedUsers = JSON.parse(savedUsersStr) as UserProfile[];
-    const userIndex = savedUsers.findIndex((u) => u.id === user.id);
+    const userIndex = savedUsers.findIndex((u) => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
     if (userIndex !== -1) {
-      savedUsers[userIndex] = updatedUser;
-      localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
-      window.dispatchEvent(new Event("su_users_updated"));
+      savedUsers[userIndex] = {
+        ...savedUsers[userIndex],
+        ...updatedUser
+      };
+    } else {
+      savedUsers.push(updatedUser);
     }
+    localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
+    window.dispatchEvent(new Event("su_users_updated"));
 
     setIsLoading(false);
     return true;
