@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useApp } from "@/context/app-context";
+import { useSignupForm } from "@/context/signup-form-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -18,15 +19,11 @@ export default function RegisterPage() {
   const { t, dir, lang } = useApp();
   const { toast } = useToast();
   const { register, isLoading } = useAuth();
-  const [nameAr, setNameAr] = React.useState("");
-  const [nameEn, setNameEn] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [studentId, setStudentId] = React.useState("");
-  const [level, setLevel] = React.useState("الفرقة الأولى");
-  const [password, setPassword] = React.useState("");
+  const { formData, setFormField, resetForm } = useSignupForm();
+
+  const { nameAr, nameEn, email, studentId, level, department, password = "" } = formData;
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [department] = React.useState("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,9 +60,11 @@ export default function RegisterPage() {
     try {
       const success = await register(nameAr.trim(), nameEn.trim(), email.trim(), password.trim(), level, department, studentId.trim());
       if (success === "requires_verification") {
+        resetForm(); // Clean up form state on successful creation
         toast(t("📧 تم إرسال رابط التأكيد. يرجى مراجعة بريدك الإلكتروني.", "📧 Verification link sent. Please check your email."), "success");
         router.push("/auth/verify-email");
       } else if (success) {
+        resetForm(); // Clean up form state on successful creation
         toast(t("🎉 تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء.", "🎉 Account created successfully! Welcome to Sinai University Portal."), "success");
         router.push("/dashboard");
       } else {
@@ -118,7 +117,7 @@ export default function RegisterPage() {
                       type="text"
                       placeholder="اسم الطالب"
                       value={nameAr}
-                      onChange={(e) => setNameAr(e.target.value)}
+                      onChange={(e) => setFormField("nameAr", e.target.value)}
                       className={lang === "ar" ? "pr-10 text-xs text-right" : "pl-10 text-xs text-right"}
                       disabled={isLoading}
                       dir="rtl"
@@ -135,7 +134,7 @@ export default function RegisterPage() {
                       type="text"
                       placeholder="Student Name"
                       value={nameEn}
-                      onChange={(e) => setNameEn(e.target.value)}
+                      onChange={(e) => setFormField("nameEn", e.target.value)}
                       className={lang === "ar" ? "pr-10 text-xs text-left" : "pl-10 text-xs text-left"}
                       disabled={isLoading}
                       dir="ltr"
@@ -153,7 +152,7 @@ export default function RegisterPage() {
                     type="email"
                     placeholder="username@su.edu.eg"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setFormField("email", e.target.value)}
                     className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
                     disabled={isLoading}
                   />
@@ -167,7 +166,7 @@ export default function RegisterPage() {
                   <Calendar className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none`} />
                   <select
                     value={level}
-                    onChange={(e) => setLevel(e.target.value)}
+                    onChange={(e) => setFormField("level", e.target.value)}
                     disabled={isLoading}
                     className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
                   >
@@ -179,8 +178,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-
-
               {/* Student ID */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الرقم الجامعي (ID)", "Student ID")}</label>
@@ -190,7 +187,7 @@ export default function RegisterPage() {
                     type="text"
                     placeholder={t("الرقم الجامعي الخاص بك", "Your Student ID")}
                     value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
+                    onChange={(e) => setFormField("studentId", e.target.value)}
                     className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
                     disabled={isLoading}
                   />
@@ -206,7 +203,7 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setFormField("password", e.target.value)}
                     className={lang === "ar" ? "pr-10 pl-10 text-xs font-mono" : "pl-10 pr-10 text-xs font-mono"}
                     disabled={isLoading}
                   />
