@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { CoursesGridSkeleton } from "@/components/ui/skeleton";
 import { Search, SlidersHorizontal, ArrowUpDown, Eye, Bookmark, CheckCircle, HelpCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,7 +27,7 @@ const PERIODS_EN: Record<string, string> = {
 };
 
 export default function CoursesPage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { t, lang, dir } = useApp();
   const { courses } = useAdmin();
   const {
@@ -118,6 +119,10 @@ export default function CoursesPage() {
       return 0;
     });
   }, [searchTerm, selectedDept, selectedLevel, selectedDiff, selectedStatus, sortBy, isCompleted, isPlanned, lang, courses]);
+
+  if (isLoading) {
+    return <CoursesGridSkeleton />;
+  }
 
   return (
     <div className="space-y-8" dir={dir}>

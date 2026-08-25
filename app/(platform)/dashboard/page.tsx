@@ -16,6 +16,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { DashboardSkeleton } from "@/components/ui/skeleton";
 import {
   GraduationCap,
   Shield,
@@ -36,7 +37,7 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { courses, users: adminUsers } = useAdmin();
   const { t, dir, lang, userRole, userName } = useApp();
   const { reminders } = useSocial();
@@ -194,6 +195,10 @@ export default function DashboardPage() {
     });
     return alerts;
   }, [plannedCourses, completedCourses, courses, t]);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-8" dir={dir}>
