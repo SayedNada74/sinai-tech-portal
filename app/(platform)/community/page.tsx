@@ -108,7 +108,7 @@ export default function CommunityPage() {
   };
 
   // Helper to safely render avatar (handles base64 image strings, image URLs, or unicode emojis)
-  const renderAvatar = (avatar: string | undefined, fallback: string = "🎓") => {
+  const renderAvatar = (avatar: string | undefined, fallback: string = "🧑‍🎓") => {
     const isImg = avatar && (avatar.startsWith("data:image/") || avatar.startsWith("http"));
     if (isImg) {
       return <img src={avatar} alt="" className="h-full w-full object-cover rounded-lg" />;
@@ -256,7 +256,7 @@ export default function CommunityPage() {
                     <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
-                          {renderAvatar(post.avatar, "🎓")}
+                          {renderAvatar(post.avatar, "🧑‍🎓")}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">

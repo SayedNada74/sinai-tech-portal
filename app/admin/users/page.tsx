@@ -315,7 +315,7 @@ export default function UserManagementPage() {
                           {getUserLocalizedName(s)}
                         </h5>
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold shrink-0">
-                          {s.role === "admin" || s.role === "super-admin" ? "⚙️ Admin" : "🎓 Student"}
+                          {s.role === "admin" || s.role === "super-admin" ? "⚙️ Admin" : "🧑‍🎓 Student"}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-500 truncate font-mono">{s.email}</p>
@@ -358,7 +358,7 @@ export default function UserManagementPage() {
               className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
             >
               <option value="ALL">{t("جميع الصلاحيات 🛡️", "All Roles 🛡️")}</option>
-              <option value="student">{t("طلاب 🎓", "Students 🎓")}</option>
+              <option value="student">{t("طلاب 🧑‍🎓", "Students 🧑‍🎓")}</option>
               <option value="moderator">{t("منسقون محتوى 📚", "Moderators 📚")}</option>
               <option value="admin">{t("مسؤولون ⚙️", "Admins ⚙️")}</option>
               <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
@@ -526,7 +526,7 @@ export default function UserManagementPage() {
                           }
                           className="h-8 px-2 rounded-lg border border-zinc-200 bg-white text-[10px] font-bold text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
                         >
-                          <option value="student">{t("طالب 🎓", "Student 🎓")}</option>
+                          <option value="student">{t("طالب 🧑‍🎓", "Student 🧑‍🎓")}</option>
                           <option value="moderator">{t("منسق محتوى 📚", "Moderator 📚")}</option>
                           <option value="admin">{t("مسؤول ⚙️", "Admin ⚙️")}</option>
                           <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
@@ -717,7 +717,7 @@ export default function UserManagementPage() {
                   onChange={(e) => setNewRole(e.target.value as UserProfile["role"])}
                   className="w-full h-10 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
                 >
-                  <option value="student">{t("طالب 🎓", "Student 🎓")}</option>
+                  <option value="student">{t("طالب 🧑‍🎓", "Student 🧑‍🎓")}</option>
                   <option value="moderator">{t("منسق محتوى 📚", "Content Moderator 📚")}</option>
                   <option value="admin">{t("مسؤول نظام ⚙️", "System Admin ⚙️")}</option>
                   <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>

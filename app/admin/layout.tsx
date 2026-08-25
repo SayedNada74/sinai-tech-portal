@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case "moderator":
         return { label: t("منسق محتوى 📚", "Content Moderator 📚"), color: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400" };
       default:
-        return { label: t("طالب 🎓", "Student 🎓"), color: "bg-zinc-100 border-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300" };
+        return { label: t("طالب 🧑‍🎓", "Student 🧑‍🎓"), color: "bg-zinc-100 border-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300" };
     }
   };
 

@@ -475,7 +475,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       bio: newUser.bio || "حساب جديد في المنصة",
       skills: [],
       socialLinks: { github: "", linkedin: "" },
-      avatar: newUser.avatar || (newUser.role === "super-admin" ? "👑" : newUser.role === "admin" ? "⚙️" : newUser.role === "moderator" ? "📚" : "🎓"),
+      avatar: newUser.avatar || (newUser.role === "super-admin" ? "👑" : newUser.role === "admin" ? "⚙️" : newUser.role === "moderator" ? "📚" : "🧑‍🎓"),
       role: newUser.role,
       is_profile_completed: false
     };

@@ -275,7 +275,7 @@ export default function ReviewModerationPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-black text-sm overflow-hidden shrink-0">
-                        {renderAvatar(post.avatar, "🎓")}
+                        {renderAvatar(post.avatar, "🧑‍🎓")}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
