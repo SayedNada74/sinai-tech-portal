@@ -26,7 +26,10 @@ import {
   Power,
   GraduationCap,
   Briefcase,
-  Compass
+  Compass,
+  Sun,
+  Moon,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { t, dir } = useApp();
+  const { t, dir, lang, setLang, theme, setTheme } = useApp();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const allMenuItems = [
@@ -84,21 +87,51 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <AdminProtectedRoute>
       <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 flex flex-col md:flex-row" dir={dir}>
         {/* Mobile Header */}
-        <header className="flex md:hidden items-center justify-between px-5 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm z-50">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-violet-600 flex items-center justify-center text-white">
+        <header className="flex md:hidden items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm z-50">
+          <Link
+            href="/admin"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity"
+            title={t("العودة للرئيسية الإدارية", "Go to Admin Dashboard")}
+          >
+            <div className="h-8 w-8 rounded-lg bg-violet-600 flex items-center justify-center text-white shrink-0 shadow-xs">
               <GraduationCap className="h-4.5 w-4.5" />
             </div>
-            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-50">
-              {t("لوحة الإشراف والتنظيم", "Admin & Management Portal")}
+            <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-50 truncate">
+              {t("لوحة الإشراف والتنظيم", "Admin Portal")}
             </span>
+          </Link>
+
+          <div className="flex items-center gap-1.5">
+            {/* Quick Language Toggle Mobile */}
+            <button
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              title={t("تغيير اللغة", "Change Language")}
+            >
+              {lang === "ar" ? "EN" : "عربي"}
+            </button>
+
+            {/* Quick Theme Toggle Mobile */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              suppressHydrationWarning
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              title={t("تبديل المظهر", "Toggle Theme")}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}
+            </button>
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              aria-label="Toggle sidebar menu"
+            >
+              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
-          >
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </header>
 
         {/* Sidebar Overlay for Mobile */}
@@ -116,8 +149,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           }`}
         >
           <div className="flex flex-col flex-1 overflow-y-auto">
-            {/* Logo */}
-            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            {/* Logo Header with Quick Actions */}
+            <div className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
               <Logo size="sm" href="/admin" subtitle={t("الإشراف", "Admin")} />
             </div>
 
@@ -157,10 +190,41 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </nav>
           </div>
 
-          {/* Footer Controls */}
-          <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2.5">
-            <Link href="/dashboard" className="w-full">
-              <Button variant="outline" className="w-full justify-center gap-2 h-9 text-[10px] font-extrabold">
+          {/* Footer Controls: Language, Theme, Back to Portal & Logout */}
+          <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2 bg-zinc-50/50 dark:bg-zinc-950/30">
+            {/* Language & Theme Switchers Row */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-850 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs"
+                title={t("تغيير لغة المنصة", "Change Language")}
+              >
+                <Globe className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+                <span>{lang === "ar" ? "English" : "العربية"}</span>
+              </button>
+
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                suppressHydrationWarning
+                className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-850 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs"
+                title={t("تبديل المظهر", "Toggle Theme")}
+              >
+                {theme === "dark" ? (
+                  <>
+                    <Sun className="h-3.5 w-3.5 text-amber-400" />
+                    <span>{t("فاتح", "Light")}</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-3.5 w-3.5 text-zinc-600" />
+                    <span>{t("داكن", "Dark")}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <Link href="/dashboard" className="w-full block">
+              <Button variant="outline" className="w-full justify-center gap-2 h-9 text-[10px] font-extrabold shadow-2xs">
                 <BackIcon className="h-4 w-4" />
                 {t("عودة لبوابة الطالب", "Back to Student Portal")}
               </Button>
