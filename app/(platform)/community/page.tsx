@@ -93,6 +93,29 @@ export default function CommunityPage() {
   const [submittingCommentPostId, setSubmittingCommentPostId] = React.useState<string | null>(null);
   const [submittingReplyCommentId, setSubmittingReplyCommentId] = React.useState<string | null>(null);
 
+  // Helper to resolve short localized author name (First 2 names in active website language)
+  const getAuthorDisplayName = (authorEmail?: string, fallbackAuthor?: string) => {
+    const target = users.find(u => u.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim()) || (user?.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim() ? user : null);
+    let raw = fallbackAuthor || "";
+    if (target) {
+      raw = lang === "ar" ? (target.nameAr || target.name || fallbackAuthor || "") : (target.nameEn || target.name || fallbackAuthor || "");
+    }
+    const parts = raw.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0]} ${parts[1]}`;
+    }
+    return raw || fallbackAuthor || (lang === "ar" ? "طالب" : "Student");
+  };
+
+  // Helper to safely render avatar (handles base64 image strings, image URLs, or unicode emojis)
+  const renderAvatar = (avatar: string | undefined, fallback: string = "🎓") => {
+    const isImg = avatar && (avatar.startsWith("data:image/") || avatar.startsWith("http"));
+    if (isImg) {
+      return <img src={avatar} alt="" className="h-full w-full object-cover rounded-lg" />;
+    }
+    return <span>{avatar || fallback}</span>;
+  };
+
   const filteredPosts = posts.filter(
     (p) => selectedCategory === "الكل" || p.category === selectedCategory
   );
@@ -232,17 +255,19 @@ export default function CommunityPage() {
                     {/* Post Top Meta */}
                     <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner">
-                          {post.avatar || "🎓"}
+                        <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
+                          {renderAvatar(post.avatar, "🎓")}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             {users.find(u => u.email === post.authorEmail)?.id ? (
                               <Link href={`/profile/${users.find(u => u.email === post.authorEmail)?.id}`} className="font-bold text-sm text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                                {post.author}
+                                {getAuthorDisplayName(post.authorEmail, post.author)}
                               </Link>
                             ) : (
-                              <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{post.author}</span>
+                              <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                                {getAuthorDisplayName(post.authorEmail, post.author)}
+                              </span>
                             )}
                             <Badge className="bg-zinc-100 text-zinc-750 dark:bg-zinc-800 dark:text-zinc-350 text-[10px] py-0 px-2 font-bold rounded-md">
                               {categoryArabic[post.category] ? t(categoryArabic[post.category].ar, categoryArabic[post.category].en) : post.category}
@@ -385,17 +410,19 @@ export default function CommunityPage() {
                                     return (
                                       <div key={comment.id} className={`space-y-2 ${isRtl ? "text-right" : "text-left"}`}>
                                         <div className="flex gap-2.5 items-start bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 p-3 rounded-xl">
-                                          <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center text-sm shadow-inner shrink-0">
-                                            {comment.avatar || "👤"}
+                                          <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center text-sm shadow-inner overflow-hidden shrink-0">
+                                            {renderAvatar(comment.avatar, "👤")}
                                           </div>
                                           <div className="flex-1 space-y-1 min-w-0">
                                             <div className="flex justify-between items-center">
                                               {users.find(u => u.email === comment.authorEmail)?.id ? (
                                                 <Link href={`/profile/${users.find(u => u.email === comment.authorEmail)?.id}`} className="font-bold text-xs text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                                                  {comment.author}
+                                                  {getAuthorDisplayName(comment.authorEmail, comment.author)}
                                                 </Link>
                                               ) : (
-                                                <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{comment.author}</span>
+                                                <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">
+                                                  {getAuthorDisplayName(comment.authorEmail, comment.author)}
+                                                </span>
                                               )}
                                               <div className="flex gap-2 items-center">
                                                 <span className="text-[9px] text-zinc-400">{comment.date}</span>
@@ -417,17 +444,19 @@ export default function CommunityPage() {
                                         <div className={`${isRtl ? "mr-8 border-r-2 pr-3" : "ml-8 border-l-2 pl-3"} space-y-2 border-zinc-200 dark:border-zinc-800`}>
                                           {comment.replies.map((reply) => (
                                             <div key={reply.id} className="flex gap-2 items-start bg-zinc-100/50 dark:bg-zinc-900/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-850">
-                                              <div className="h-7 w-7 rounded-lg bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-xs shrink-0">
-                                                {reply.avatar || "👤"}
+                                              <div className="h-7 w-7 rounded-lg bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-xs overflow-hidden shrink-0">
+                                                {renderAvatar(reply.avatar, "👤")}
                                               </div>
                                               <div className="flex-1 space-y-0.5 min-w-0">
                                                 <div className="flex justify-between items-center">
                                                   {users.find(u => u.email === reply.authorEmail)?.id ? (
                                                     <Link href={`/profile/${users.find(u => u.email === reply.authorEmail)?.id}`} className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                                                      {reply.author}
+                                                      {getAuthorDisplayName(reply.authorEmail, reply.author)}
                                                     </Link>
                                                   ) : (
-                                                    <span className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200">{reply.author}</span>
+                                                    <span className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200">
+                                                      {getAuthorDisplayName(reply.authorEmail, reply.author)}
+                                                    </span>
                                                   )}
                                                   <div className="flex gap-2 items-center">
                                                     <span className="text-[9px] text-zinc-400">{reply.date}</span>

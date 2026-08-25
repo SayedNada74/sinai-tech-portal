@@ -345,47 +345,85 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     const loadSharedPosts = async () => {
       let initial: CommunityPost[] = [];
       const savedGlobal = localStorage.getItem("su_global_community_posts");
+      const deletedPostsRaw = localStorage.getItem("su_deleted_posts_ids");
+      const deletedSet = new Set<string>(deletedPostsRaw ? JSON.parse(deletedPostsRaw) : []);
+
       if (savedGlobal) {
         try {
           const parsed = JSON.parse(savedGlobal);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            initial = parsed;
+          if (Array.isArray(parsed)) {
+            initial = parsed.filter(p => !deletedSet.has(p.id));
           }
         } catch (e) {}
+      } else {
+        const isInitialized = localStorage.getItem("su_posts_initialized");
+        if (!isInitialized) {
+          initial = INITIAL_POSTS.filter(p => !deletedSet.has(p.id));
+          localStorage.setItem("su_global_community_posts", JSON.stringify(initial));
+          localStorage.setItem("su_posts_initialized", "true");
+        }
       }
 
-      if (initial.length === 0) {
-        initial = INITIAL_POSTS;
-        localStorage.setItem("su_global_community_posts", JSON.stringify(INITIAL_POSTS));
-      }
       setPosts(initial);
 
       // Fetch remote posts from Supabase database
       const remotePosts = await fetchFromSupabase<any>("posts");
       if (remotePosts && remotePosts.length > 0) {
-        const mappedRemote: CommunityPost[] = remotePosts.map((p) => ({
-          id: p.id,
-          title: p.title,
-          content: p.content,
-          category: p.category || "General Discussion",
-          date: p.date,
-          author: p.author,
-          authorEmail: p.author_email || p.authorEmail || "student@sinai.edu.eg",
-          avatar: p.avatar || "🎓",
-          likes: Array.isArray(p.likes) ? p.likes : [],
-          comments: Array.isArray(p.comments) ? p.comments : [],
-          attachmentName: p.attachment_name,
-          attachmentUrl: p.attachment_url,
-          reported: Boolean(p.reported)
-        }));
+        const mappedRemote: CommunityPost[] = remotePosts
+          .filter((p) => !deletedSet.has(p.id))
+          .map((p) => ({
+            id: p.id,
+            title: p.title,
+            content: p.content,
+            category: p.category || "General Discussion",
+            date: p.date,
+            author: p.author,
+            authorEmail: p.author_email || p.authorEmail || "student@sinai.edu.eg",
+            avatar: p.avatar || "🎓",
+            likes: Array.isArray(p.likes) ? p.likes : [],
+            comments: Array.isArray(p.comments) ? p.comments : [],
+            attachmentName: p.attachment_name,
+            attachmentUrl: p.attachment_url,
+            reported: Boolean(p.reported)
+          }));
 
         const mergedMap = new Map<string, CommunityPost>();
-        initial.forEach(p => mergedMap.set(p.id, p));
-        mappedRemote.forEach(p => mergedMap.set(p.id, p));
-        const merged = Array.from(mergedMap.values());
+        initial.forEach(p => {
+          if (!deletedSet.has(p.id)) mergedMap.set(p.id, p);
+        });
 
-        setPosts(Array.from(mergedMap.values()));
-        localStorage.setItem("su_global_community_posts", JSON.stringify(Array.from(mergedMap.values())));
+        mappedRemote.forEach(remote => {
+          if (deletedSet.has(remote.id)) return;
+          const local = mergedMap.get(remote.id);
+          if (local) {
+            // Merge comments intelligently so neither local nor remote comments are lost
+            const commentMap = new Map<string, PostComment>();
+            (local.comments || []).forEach(c => commentMap.set(c.id, c));
+            (remote.comments || []).forEach(c => {
+              const existing = commentMap.get(c.id);
+              if (existing) {
+                const replyMap = new Map<string, PostReply>();
+                (existing.replies || []).forEach(r => replyMap.set(r.id, r));
+                (c.replies || []).forEach(r => replyMap.set(r.id, r));
+                commentMap.set(c.id, { ...existing, ...c, replies: Array.from(replyMap.values()) });
+              } else {
+                commentMap.set(c.id, c);
+              }
+            });
+            mergedMap.set(remote.id, {
+              ...remote,
+              ...local,
+              comments: Array.from(commentMap.values()),
+              likes: Array.from(new Set([...(local.likes || []), ...(remote.likes || [])]))
+            });
+          } else {
+            mergedMap.set(remote.id, remote);
+          }
+        });
+
+        const merged = Array.from(mergedMap.values());
+        setPosts(merged);
+        localStorage.setItem("su_global_community_posts", JSON.stringify(merged));
       }
     };
 
@@ -798,6 +836,15 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     if (inFlightPostsRef.current.has(lockKey)) return false;
     inFlightPostsRef.current.add(lockKey);
 
+    // 1. Mark as deleted in persistent blacklist
+    try {
+      const deletedPostsRaw = localStorage.getItem("su_deleted_posts_ids");
+      const deletedSet = new Set<string>(deletedPostsRaw ? JSON.parse(deletedPostsRaw) : []);
+      deletedSet.add(id);
+      localStorage.setItem("su_deleted_posts_ids", JSON.stringify(Array.from(deletedSet)));
+    } catch (e) {}
+
+    // 2. Remove from local list
     const updated = posts.filter(p => p.id !== id);
     saveGlobalPosts(updated);
 
@@ -854,6 +901,8 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       replies: []
     };
 
+    let targetPostComments: PostComment[] = [];
+
     const updated = posts.map(p => {
       if (p.id === postId) {
         if (p.authorEmail && user.email && p.authorEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
@@ -863,13 +912,21 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
             type: "reply"
           });
         }
-        return { ...p, comments: [...p.comments, newComment] };
+        targetPostComments = [...p.comments, newComment];
+        return { ...p, comments: targetPostComments };
       }
       return p;
     });
 
     saveGlobalPosts(updated);
     awardPoints(10, "إضافة تعليق");
+
+    // Persist comments to Supabase cloud
+    if (targetPostComments.length > 0) {
+      updateInSupabase("posts", postId, { comments: targetPostComments }).catch(err => {
+        console.warn("[Social Sync] Comment cloud sync warning:", err);
+      });
+    }
 
     setTimeout(() => {
       inFlightCommentsRef.current.delete(lockKey);
@@ -895,6 +952,8 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       date: new Date().toISOString().split("T")[0]
     };
 
+    let targetPostComments: PostComment[] = [];
+
     const updated = posts.map(p => {
       if (p.id === postId) {
         const commentIndex = p.comments.findIndex(c => c.id === commentId);
@@ -912,6 +971,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
             ...targetComment,
             replies: [...targetComment.replies, newReply]
           };
+          targetPostComments = updatedComments;
           return { ...p, comments: updatedComments };
         }
       }
@@ -921,6 +981,13 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     saveGlobalPosts(updated);
     awardPoints(5, "الرد على تعليق");
 
+    // Persist replies to Supabase cloud
+    if (targetPostComments.length > 0) {
+      updateInSupabase("posts", postId, { comments: targetPostComments }).catch(err => {
+        console.warn("[Social Sync] Reply cloud sync warning:", err);
+      });
+    }
+
     setTimeout(() => {
       inFlightRepliesRef.current.delete(lockKey);
     }, 1000);
@@ -928,16 +995,22 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteComment = (postId: string, commentId: string) => {
+    let targetPostComments: PostComment[] = [];
     const updated = posts.map(p => {
       if (p.id === postId) {
-        return { ...p, comments: p.comments.filter(c => c.id !== commentId) };
+        targetPostComments = p.comments.filter(c => c.id !== commentId);
+        return { ...p, comments: targetPostComments };
       }
       return p;
     });
     saveGlobalPosts(updated);
+    updateInSupabase("posts", postId, { comments: targetPostComments }).catch(err => {
+      console.warn("[Social Sync] Delete comment cloud sync warning:", err);
+    });
   };
 
   const deleteReply = (postId: string, commentId: string, replyId: string) => {
+    let targetPostComments: PostComment[] = [];
     const updated = posts.map(p => {
       if (p.id === postId) {
         const commentIndex = p.comments.findIndex(c => c.id === commentId);
@@ -946,12 +1019,16 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
           const updatedReplies = targetComment.replies.filter(r => r.id !== replyId);
           const updatedComments = [...p.comments];
           updatedComments[commentIndex] = { ...targetComment, replies: updatedReplies };
+          targetPostComments = updatedComments;
           return { ...p, comments: updatedComments };
         }
       }
       return p;
     });
     saveGlobalPosts(updated);
+    updateInSupabase("posts", postId, { comments: targetPostComments }).catch(err => {
+      console.warn("[Social Sync] Delete reply cloud sync warning:", err);
+    });
   };
 
   // Careers bookmarks
