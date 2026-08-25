@@ -103,6 +103,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             {/* Theme Toggle */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              suppressHydrationWarning
               className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
             >
               {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}
@@ -301,6 +302,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                   </button>
                   <button
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    suppressHydrationWarning
                     className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   >
                     {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}

@@ -119,12 +119,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, lang, theme]);
 
-  // Apply visual settings (theme class and direction) on state load/change
-  React.useEffect(() => {
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    applyThemeToDOM(theme);
-  }, [lang, theme, applyThemeToDOM]);
-
   // 3. Load settings from Firebase on Login (overrides localStorage)
   React.useEffect(() => {
     if (user) {

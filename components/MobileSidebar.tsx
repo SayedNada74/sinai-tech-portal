@@ -162,6 +162,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
                 <button
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  suppressHydrationWarning
                   className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-all cursor-pointer shadow-2xs"
                 >
                   {theme === "dark" ? (

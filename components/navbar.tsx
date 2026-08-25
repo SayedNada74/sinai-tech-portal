@@ -88,6 +88,7 @@ export function Navbar() {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
+              suppressHydrationWarning
               className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
               aria-label="Toggle theme"
               title={t("تبديل مظهر الموقع", "Toggle Theme")}
@@ -209,6 +210,7 @@ export function Navbar() {
             </button>
             <button
               onClick={toggleTheme}
+              suppressHydrationWarning
               className="p-2 rounded-lg border border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400 cursor-pointer"
             >
               {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-zinc-700" />}
