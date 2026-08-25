@@ -48,7 +48,9 @@ export default function PlannerPage() {
     isCompleted,
     isPlanned,
     markCompleted,
+    unmarkCompleted,
     markPlanned,
+    unmarkPlanned,
     removeCourse
   } = useAcademic();
 
@@ -306,7 +308,7 @@ export default function PlannerPage() {
 
                                   <div className="flex gap-2 shrink-0 self-end sm:self-center">
                                     <button
-                                      onClick={() => completed ? removeCourse(course.code) : markCompleted(course.code, "A")}
+                                      onClick={() => completed ? unmarkCompleted(course.code) : markCompleted(course.code, "A")}
                                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
                                         completed
                                           ? "bg-green-600 border-green-600 text-white hover:bg-green-700"
@@ -316,7 +318,7 @@ export default function PlannerPage() {
                                       {completed ? t("منجزة ✓", "Done ✓") : t("تحديد كمنجزة", "Mark Done")}
                                     </button>
                                     <button
-                                      onClick={() => planned ? removeCourse(course.code) : markPlanned(course.code)}
+                                      onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
                                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
                                         planned
                                           ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-750"

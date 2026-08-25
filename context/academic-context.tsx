@@ -50,7 +50,9 @@ interface AcademicContextType {
   cumulativeGpa: number;
   totalCreditsInCatalog: number;
   markCompleted: (code: string, grade: string) => void;
+  unmarkCompleted: (code: string) => void;
   markPlanned: (code: string) => void;
+  unmarkPlanned: (code: string) => void;
   removeCourse: (code: string) => void;
   resetAll: () => void;
   setTargetGpa: (gpa: number) => void;
@@ -281,7 +283,6 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
   }, [flushSyncToCloud]);
 
   const markCompleted = (code: string, grade: string) => {
-    const newPlanned = plannedCourses.filter((c) => c !== code);
     const newCompleted = [...completedCourses];
     const index = newCompleted.findIndex((c) => c.code === code);
     if (index !== -1) {
@@ -290,21 +291,30 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
       newCompleted.push({ code, grade });
     }
 
-    setPlannedCourses(newPlanned);
     setCompletedCourses(newCompleted);
-    queueAcademicUpdate(newCompleted, newPlanned, targetGpa);
+    queueAcademicUpdate(newCompleted, plannedCourses, targetGpa);
+  };
+
+  const unmarkCompleted = (code: string) => {
+    const newCompleted = completedCourses.filter((c) => c.code !== code);
+    setCompletedCourses(newCompleted);
+    queueAcademicUpdate(newCompleted, plannedCourses, targetGpa);
   };
 
   const markPlanned = (code: string) => {
-    const newCompleted = completedCourses.filter((c) => c.code !== code);
     const newPlanned = [...plannedCourses];
     if (!newPlanned.includes(code)) {
       newPlanned.push(code);
     }
 
-    setCompletedCourses(newCompleted);
     setPlannedCourses(newPlanned);
-    queueAcademicUpdate(newCompleted, newPlanned, targetGpa);
+    queueAcademicUpdate(completedCourses, newPlanned, targetGpa);
+  };
+
+  const unmarkPlanned = (code: string) => {
+    const newPlanned = plannedCourses.filter((c) => c !== code);
+    setPlannedCourses(newPlanned);
+    queueAcademicUpdate(completedCourses, newPlanned, targetGpa);
   };
 
   const removeCourse = (code: string) => {
@@ -383,7 +393,9 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
         cumulativeGpa,
         totalCreditsInCatalog,
         markCompleted,
+        unmarkCompleted,
         markPlanned,
+        unmarkPlanned,
         removeCourse,
         resetAll,
         setTargetGpa: updateTargetGpa,

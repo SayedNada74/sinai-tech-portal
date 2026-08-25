@@ -25,7 +25,9 @@ export default function CurriculumProgressChecklist() {
     graduationPercentage,
     cumulativeGpa,
     markCompleted,
+    unmarkCompleted,
     markPlanned,
+    unmarkPlanned,
     removeCourse,
     isCompleted,
     isPlanned,
@@ -51,7 +53,7 @@ export default function CurriculumProgressChecklist() {
     if (checked) {
       markCompleted(code, ""); // Start with empty grade
     } else {
-      removeCourse(code);
+      unmarkCompleted(code);
     }
   };
 
@@ -280,11 +282,10 @@ export default function CurriculumProgressChecklist() {
 
                               {/* Planned bookmark toggle */}
                               <button
-                                onClick={() => planned ? removeCourse(c.code) : markPlanned(c.code)}
-                                disabled={completed}
-                                className={`p-1.5 rounded-lg border transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${
+                                onClick={() => planned ? unmarkPlanned(c.code) : markPlanned(c.code)}
+                                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                                   planned
-                                    ? "bg-cyan-600 border-cyan-600 text-white"
+                                    ? "bg-violet-600 border-violet-600 text-white"
                                     : "border-zinc-250 text-zinc-400 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
                                 }`}
                                 title={planned ? t("إلغاء المخطط", "Cancel planned") : t("إضافة للمخطط", "Bookmark as planned")}

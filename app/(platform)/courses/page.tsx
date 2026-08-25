@@ -33,7 +33,9 @@ export default function CoursesPage() {
     isCompleted,
     isPlanned,
     markCompleted,
+    unmarkCompleted,
     markPlanned,
+    unmarkPlanned,
     removeCourse
   } = useAcademic();
 
@@ -366,7 +368,7 @@ export default function CoursesPage() {
 
                   <button
                     type="button"
-                    onClick={() => completed ? removeCourse(course.code) : markCompleted(course.code, "A")}
+                    onClick={() => completed ? unmarkCompleted(course.code) : markCompleted(course.code, "A")}
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       completed
                         ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
@@ -379,7 +381,7 @@ export default function CoursesPage() {
 
                   <button
                     type="button"
-                    onClick={() => planned ? removeCourse(course.code) : markPlanned(course.code)}
+                    onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       planned
                         ? "bg-violet-600 border-violet-600 text-white shadow-md"
