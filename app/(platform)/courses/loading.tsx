@@ -1,3 +1,5 @@
+"use client";
+
 import { CoursesGridSkeleton } from "@/components/ui/skeleton";
 
 export default function CoursesLoading() {

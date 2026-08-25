@@ -1,3 +1,5 @@
+"use client";
+
 import { DepartmentsSkeleton } from "@/components/ui/skeleton";
 
 export default function DepartmentsLoading() {
