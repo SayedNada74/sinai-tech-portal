@@ -119,24 +119,49 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, lang, theme]);
 
-  // 3. Load settings from Firebase on Login (overrides localStorage)
+  // 3. Sync settings with Cloud upon Login (preserves user active local choice)
   React.useEffect(() => {
     if (user) {
-      const loadFirebaseSettings = async () => {
+      const syncUserSettings = async () => {
+        const localLang = localStorage.getItem("app_lang") as "ar" | "en" | null;
+        const localTheme = (localStorage.getItem("app_theme") || localStorage.getItem("theme")) as "dark" | "light" | null;
+        const localLPM = localStorage.getItem("app_lpm");
+
         const fbSettings = await firebaseDb.loadSettings(user.id);
-        if (fbSettings) {
+
+        if (localLang || localTheme) {
+          // User already chose a preference on this device: preserve it and sync to cloud
+          const activeLang = localLang || fbSettings?.lang || "ar";
+          const activeTheme = localTheme || fbSettings?.theme || "dark";
+          const activeLPM = localLPM !== null ? localLPM === "true" : (fbSettings?.lowPowerMode ?? false);
+
+          setLangState(activeLang);
+          setThemeState(activeTheme);
+          setLowPowerModeState(activeLPM);
+          applyThemeToDOM(activeTheme);
+          document.documentElement.dir = activeLang === "ar" ? "rtl" : "ltr";
+
+          localStorage.setItem("app_lang", activeLang);
+          localStorage.setItem("app_theme", activeTheme);
+          localStorage.setItem("theme", activeTheme);
+
+          // Update cloud with the active user selection
+          firebaseDb.syncSettings(user.id, { lang: activeLang, theme: activeTheme, lowPowerMode: activeLPM });
+        } else if (fbSettings) {
+          // First time on device: adopt cloud settings
           setLangState(fbSettings.lang);
           setThemeState(fbSettings.theme);
           setLowPowerModeState(fbSettings.lowPowerMode);
           applyThemeToDOM(fbSettings.theme);
-          
+          document.documentElement.dir = fbSettings.lang === "ar" ? "rtl" : "ltr";
+
           localStorage.setItem("app_lang", fbSettings.lang);
           localStorage.setItem("app_theme", fbSettings.theme);
           localStorage.setItem("theme", fbSettings.theme);
           localStorage.setItem("app_lpm", String(fbSettings.lowPowerMode));
         }
       };
-      loadFirebaseSettings();
+      syncUserSettings();
     }
   }, [user, applyThemeToDOM]);
 
