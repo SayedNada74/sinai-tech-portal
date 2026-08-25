@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case "admin":
         return { label: t("مسؤول النظام ⚙️", "System Admin ⚙️"), color: "bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-950/20 dark:border-violet-900 dark:text-violet-400" };
       case "moderator":
-        return { label: t("منسق محتوى 👩‍🏫", "Content Moderator 👩‍🏫"), color: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400" };
+        return { label: t("منسق محتوى 📚", "Content Moderator 📚"), color: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400" };
       default:
         return { label: t("طالب 🎓", "Student 🎓"), color: "bg-zinc-100 border-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300" };
     }
@@ -144,9 +144,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 ${dir === "rtl" ? "right-0 border-l" : "left-0 border-r"} w-68 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 flex flex-col justify-between z-40 transition-transform duration-300 transform md:translate-x-0 md:static md:h-screen ${
-            sidebarOpen ? "translate-x-0" : dir === "rtl" ? "translate-x-full" : "-translate-x-full"
-          }`}
+          className={`fixed inset-y-0 ${dir === "rtl" ? "right-0 border-l" : "left-0 border-r"} w-68 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 flex flex-col justify-between z-40 transition-transform duration-300 transform md:translate-x-0 md:static md:h-screen ${sidebarOpen ? "translate-x-0" : dir === "rtl" ? "translate-x-full" : "-translate-x-full"
+            }`}
         >
           <div className="flex flex-col flex-1 overflow-y-auto">
             {/* Logo Header with Quick Actions */}
@@ -176,11 +175,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     key={item.path}
                     href={item.path}
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                      active
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${active
                         ? "bg-violet-50 text-violet-600 dark:bg-violet-950/20 dark:text-violet-400"
                         : "text-zinc-650 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-950 dark:hover:text-zinc-100"
-                    }`}
+                      }`}
                   >
                     <Icon className={`h-4.5 w-4.5 ${active ? "text-violet-600 dark:text-violet-400" : "text-zinc-400"}`} />
                     <span>{t(item.nameAr, item.nameEn)}</span>

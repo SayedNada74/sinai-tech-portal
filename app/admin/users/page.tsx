@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useAdmin } from "@/context/admin-context";
 import { useAuth, UserProfile } from "@/context/auth-context";
@@ -22,7 +23,8 @@ import {
   Square,
   AlertTriangle,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  ExternalLink
 } from "lucide-react";
 
 import { useToast } from "@/components/ui/toast";
@@ -102,18 +104,43 @@ export default function UserManagementPage() {
   const [editLevel, setEditLevel] = React.useState("");
   const [editStudentId, setEditStudentId] = React.useState("");
 
-  const getUserDisplayAvatar = React.useCallback((u: Partial<UserProfile>) => {
-    if (u.role === "super-admin") return "👑";
-    if (u.role === "admin") return "⚙️";
-    if (u.role === "moderator") return "👩‍🏫";
-    if (u.role === "student") {
+  const getUserDisplayAvatar = React.useCallback((u: Partial<UserProfile> | any) => {
+    const avatar = u.avatar;
+    if (avatar && (avatar.startsWith("data:image/") || avatar.startsWith("http"))) {
+      return (
+        <div className="h-9 w-9 rounded-xl overflow-hidden shadow-inner border border-zinc-200/50 dark:border-zinc-700/50 shrink-0">
+          <img src={avatar} alt="" className="h-full w-full object-cover" />
+        </div>
+      );
+    }
+    let emoji = "🧑‍🎓";
+    if (u.role === "super-admin") emoji = "👑";
+    else if (u.role === "admin") emoji = "⚙️";
+    else if (u.role === "moderator") emoji = "📚";
+    else if (u.role === "student") {
       const lvl = u.level || "";
       const isSenior = lvl.includes("الرابعة") || lvl.includes("الرابعه") || lvl.includes("4") || lvl.includes("Fourth") || lvl.includes("Senior");
-      if (isSenior) return "🎓"; // Graduation Cap for Senior Year!
-      return "🧑‍🎓"; // Student Icon for Years 1, 2, 3!
+      if (isSenior) emoji = "🎓";
+      else emoji = "🧑‍🎓";
+    } else if (avatar) {
+      emoji = avatar;
     }
-    return u.avatar || "🧑‍🎓";
+    return (
+      <div className="h-9 w-9 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner shrink-0">
+        <span>{emoji}</span>
+      </div>
+    );
   }, []);
+
+  const getUserLocalizedName = React.useCallback((u: Partial<UserProfile> | any) => {
+    if (!u) return "";
+    const profile = users.find(user => user.email?.toLowerCase().trim() === u.email?.toLowerCase().trim() || user.id === u.userId || user.id === u.id) || u;
+    if (lang === "ar") {
+      return profile.nameAr || profile.name || profile.nameEn || "مستخدم";
+    } else {
+      return profile.nameEn || profile.name || profile.nameAr || "User";
+    }
+  }, [users, lang]);
 
   // Filtering
   const filteredUsers = React.useMemo(() => {
@@ -123,6 +150,8 @@ export default function UserManagementPage() {
       const matchQuery =
         !query ||
         u.name.toLowerCase().includes(query) ||
+        (u.nameAr && u.nameAr.toLowerCase().includes(query)) ||
+        (u.nameEn && u.nameEn.toLowerCase().includes(query)) ||
         u.email.toLowerCase().includes(query) ||
         u.studentId.includes(query);
 
@@ -263,26 +292,40 @@ export default function UserManagementPage() {
         <CardContent className="pt-4">
           {onlineSessions.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {onlineSessions.map((s) => (
-                <div key={s.userId} className="p-3 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-emerald-500/20 flex items-center gap-3 text-xs">
-                  <div className="relative shrink-0">
-                    <span className="text-xl">{s.avatar || "👤"}</span>
-                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <h5 className="font-bold text-zinc-900 dark:text-zinc-100 truncate">{s.name}</h5>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold shrink-0">
-                        {s.role === "admin" || s.role === "super-admin" ? "⚙️ Admin" : "🎓 Student"}
+              {onlineSessions.map((s) => {
+                const isImg = s.avatar && (s.avatar.startsWith("data:image/") || s.avatar.startsWith("http"));
+                const targetId = users.find(u => u.email?.toLowerCase().trim() === s.email?.toLowerCase().trim())?.id || s.userId || s.id;
+                return (
+                  <Link
+                    key={s.userId || s.email}
+                    href={targetId ? `/profile/${targetId}` : "#"}
+                    className="p-3 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-emerald-500/20 hover:border-emerald-500/50 hover:shadow-md flex items-center gap-3 text-xs transition-all cursor-pointer group"
+                  >
+                    <div className="relative shrink-0 h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center overflow-hidden border border-emerald-500/20 group-hover:scale-105 transition-transform">
+                      {isImg ? (
+                        <img src={s.avatar} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-xl">{s.avatar || "👤"}</span>
+                      )}
+                      <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <h5 className="font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                          {getUserLocalizedName(s)}
+                        </h5>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold shrink-0">
+                          {s.role === "admin" || s.role === "super-admin" ? "⚙️ Admin" : "🎓 Student"}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-zinc-500 truncate font-mono">{s.email}</p>
+                      <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 block mt-0.5">
+                        🟢 {t("نشط الآن عبر الجلسة الحية", "Active Live Session")}
                       </span>
                     </div>
-                    <p className="text-[10px] text-zinc-500 truncate">{s.email}</p>
-                    <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400 block mt-0.5">
-                      🟢 {t("نشط الآن عبر الجلسة الحية", "Active Live Session")}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <p className="text-xs text-zinc-500 text-center py-2">
@@ -316,7 +359,7 @@ export default function UserManagementPage() {
             >
               <option value="ALL">{t("جميع الصلاحيات 🛡️", "All Roles 🛡️")}</option>
               <option value="student">{t("طلاب 🎓", "Students 🎓")}</option>
-              <option value="moderator">{t("منسقون محتوى 👩‍🏫", "Moderators 👩‍🏫")}</option>
+              <option value="moderator">{t("منسقون محتوى 📚", "Moderators 📚")}</option>
               <option value="admin">{t("مسؤولون ⚙️", "Admins ⚙️")}</option>
               <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
             </select>
@@ -417,9 +460,8 @@ export default function UserManagementPage() {
                   return (
                     <tr
                       key={u.id}
-                      className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-950/40 transition-colors ${
-                        isSelected ? "bg-violet-50/40 dark:bg-violet-950/10" : ""
-                      }`}
+                      className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-950/40 transition-colors ${isSelected ? "bg-violet-50/40 dark:bg-violet-950/10" : ""
+                        }`}
                     >
                       <td className="p-4 text-center">
                         <button onClick={() => toggleSelect(u.id)} className="cursor-pointer">
@@ -433,23 +475,32 @@ export default function UserManagementPage() {
 
                       {/* User Info */}
                       <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{getUserDisplayAvatar(u)}</span>
-                          <div>
-                            <h4 className="font-bold text-zinc-900 dark:text-zinc-50">{u.name}</h4>
-                            <p className="text-[10px] text-zinc-400">{u.email}</p>
+                        <Link
+                          href={`/profile/${u.id}`}
+                          className="flex items-center gap-3 group cursor-pointer"
+                        >
+                          <div className="group-hover:scale-105 transition-transform shrink-0">
+                            {getUserDisplayAvatar(u)}
                           </div>
-                        </div>
+                          <div>
+                            <h4 className="font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                              {getUserLocalizedName(u)}
+                            </h4>
+                            <p className="text-[10px] text-zinc-400 font-mono">{u.email}</p>
+                          </div>
+                        </Link>
                       </td>
 
                       <td className="p-4 font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                        {u.role === "student" ? (
-                          u.studentId || "N/A"
-                        ) : (
-                          <span className="text-[10px] font-mono px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-200/80 dark:border-zinc-700/80 inline-flex items-center gap-1">
-                            💳 {u.studentId || (u.role === "super-admin" ? "SUP-001" : u.role === "admin" ? "ADM-001" : "MOD-001")}
-                          </span>
-                        )}
+                        <Link href={`/profile/${u.id}`} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer inline-block">
+                          {u.role === "student" ? (
+                            u.studentId || "N/A"
+                          ) : (
+                            <span className="text-[10px] font-mono px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold border border-zinc-200/80 dark:border-zinc-700/80 inline-flex items-center gap-1">
+                              💳 {u.studentId || (u.role === "super-admin" ? "SUP-001" : u.role === "admin" ? "ADM-001" : "MOD-001")}
+                            </span>
+                          )}
+                        </Link>
                       </td>
 
                       <td className="p-4 text-zinc-600 dark:text-zinc-400 text-xs">
@@ -476,7 +527,7 @@ export default function UserManagementPage() {
                           className="h-8 px-2 rounded-lg border border-zinc-200 bg-white text-[10px] font-bold text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
                         >
                           <option value="student">{t("طالب 🎓", "Student 🎓")}</option>
-                          <option value="moderator">{t("منسق محتوى 👩‍🏫", "Moderator 👩‍🏫")}</option>
+                          <option value="moderator">{t("منسق محتوى 📚", "Moderator 📚")}</option>
                           <option value="admin">{t("مسؤول ⚙️", "Admin ⚙️")}</option>
                           <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
                         </select>
@@ -498,6 +549,15 @@ export default function UserManagementPage() {
                       {/* Actions */}
                       <td className="p-4">
                         <div className="flex items-center justify-center gap-1.5">
+                          {/* View Profile */}
+                          <Link
+                            href={`/profile/${u.id}`}
+                            className="p-1.5 rounded-lg text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-colors cursor-pointer"
+                            title={t("عرض الملف الشخصي", "View Profile")}
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Link>
+
                           {/* Edit info */}
                           <button
                             onClick={() => openEditModal(u)}
@@ -529,11 +589,10 @@ export default function UserManagementPage() {
                                 toast(t(`⚡ تم إعادة تنشيط حساب (${u.name}) بنجاح!`, `⚡ Account for (${u.name}) reactivated!`), "success");
                               }
                             }}
-                            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                              isSuspended
-                                ? "text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/50"
-                                : "text-amber-600 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/50"
-                            }`}
+                            className={`p-1.5 rounded-lg transition-all cursor-pointer ${isSuspended
+                              ? "text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/50"
+                              : "text-amber-600 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/50"
+                              }`}
                             title={isSuspended ? t("إعادة تنشيط الحساب ⚡", "Reactivate Account ⚡") : t("تجميد / إيقاف الحساب مؤقتاً 🚫", "Suspend Account 🚫")}
                           >
                             {isSuspended ? <UserCheck className="h-3.5 w-3.5" /> : <UserMinus className="h-3.5 w-3.5" />}
@@ -659,7 +718,7 @@ export default function UserManagementPage() {
                   className="w-full h-10 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
                 >
                   <option value="student">{t("طالب 🎓", "Student 🎓")}</option>
-                  <option value="moderator">{t("منسق محتوى 👩‍🏫", "Content Moderator 👩‍🏫")}</option>
+                  <option value="moderator">{t("منسق محتوى 📚", "Content Moderator 📚")}</option>
                   <option value="admin">{t("مسؤول نظام ⚙️", "System Admin ⚙️")}</option>
                   <option value="super-admin">{t("مشرف أعلى 👑", "Super Admin 👑")}</option>
                 </select>

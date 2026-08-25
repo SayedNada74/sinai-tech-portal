@@ -250,6 +250,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         sessions.push({
           userId: user.id,
           name: user.name,
+          nameAr: user.nameAr,
+          nameEn: user.nameEn,
           email: user.email,
           avatar: user.avatar || "👤",
           role: user.role,

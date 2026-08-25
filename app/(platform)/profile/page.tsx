@@ -108,7 +108,7 @@ export default function ProfilePage() {
         setAvatar(user.avatar || "🎓");
         setCvUrl(user.cvUrl || "");
         setProjects(user.projects || []);
-        
+
         if (user.privacySettings) {
           setPublicSkills(user.privacySettings.publicSkills ?? true);
           setPublicProjects(user.privacySettings.publicProjects ?? true);
@@ -393,8 +393,8 @@ export default function ProfilePage() {
       user?.role === "super-admin"
         ? t("👑 المشرف الأعلى للمنصة (Super Admin)", "👑 Platform Super Admin")
         : user?.role === "admin"
-        ? t("⚙️ مسؤول النظام الإداري (System Admin)", "⚙️ System Admin")
-        : t("👩‍🏫 منسق المحتوى والمنتدى (Content Moderator)", "👩‍🏫 Content Moderator");
+          ? t("⚙️ مسؤول النظام الإداري (System Admin)", "⚙️ System Admin")
+          : t("📚 منسق المحتوى والمنتدى (Content Moderator)", "📚 Content Moderator");
 
     const adminCode =
       user?.role === "super-admin" ? "SUP-001" : user?.role === "admin" ? "ADM-001" : "MOD-001";
@@ -403,8 +403,8 @@ export default function ProfilePage() {
       user?.role === "super-admin"
         ? t("الإدارة العليا للجامعة", "University Management")
         : user?.role === "admin"
-        ? t("الكادر الإداري والفني", "Administrative Staff")
-        : t("كادر التنسيق والرقابة", "Coordination Staff");
+          ? t("الكادر الإداري والفني", "Administrative Staff")
+          : t("كادر التنسيق والرقابة", "Coordination Staff");
 
     return (
       <div className="max-w-4xl mx-auto space-y-8 animate-fade-in" dir={dir}>
@@ -429,11 +429,10 @@ export default function ProfilePage() {
         </div>
 
         {message.text && (
-          <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${
-            message.type === "success"
+          <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${message.type === "success"
               ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
               : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
-          }`}>
+            }`}>
             {message.type === "success" ? <Check className="h-5 w-5 shrink-0" /> : <ShieldAlert className="h-5 w-5 shrink-0" />}
             <span>{message.text}</span>
           </div>
@@ -607,11 +606,10 @@ export default function ProfilePage() {
       </div>
 
       {message.text && (
-        <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${
-          message.type === "success"
+        <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${message.type === "success"
             ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
             : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
-        }`}>
+          }`}>
           {message.type === "success" ? <Check className="h-5 w-5 shrink-0" /> : <ShieldAlert className="h-5 w-5 shrink-0" />}
           <span>{message.text}</span>
         </div>
@@ -619,458 +617,457 @@ export default function ProfilePage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Avatar Sidebar & Profile Picture Upload */}
-        <div className="space-y-6 lg:col-span-1">
-          <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
-            <CardContent className="pt-8">
-              {/* Profile Avatar Display & Upload Overlay */}
-              <div className="relative mx-auto h-28 w-28 rounded-3xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/40 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
-                {isValidImageAvatar(avatar) ? (
-                  <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
-                ) : (
-                  <span className={cn(
-                    "font-black text-violet-700 dark:text-violet-300",
-                    getAvatarFallback(avatar, user?.name).length > 2 ? "text-3xl" : "text-5xl"
-                  )}>{getAvatarFallback(avatar, user?.name)}</span>
-                )}
+          {/* Avatar Sidebar & Profile Picture Upload */}
+          <div className="space-y-6 lg:col-span-1">
+            <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
+              <CardContent className="pt-8">
+                {/* Profile Avatar Display & Upload Overlay */}
+                <div className="relative mx-auto h-28 w-28 rounded-3xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/40 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
+                  {isValidImageAvatar(avatar) ? (
+                    <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
+                  ) : (
+                    <span className={cn(
+                      "font-black text-violet-700 dark:text-violet-300",
+                      getAvatarFallback(avatar, user?.name).length > 2 ? "text-3xl" : "text-5xl"
+                    )}>{getAvatarFallback(avatar, user?.name)}</span>
+                  )}
 
-                {/* Upload Trigger Hover Overlay */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-xs font-bold gap-1"
-                >
-                  <Camera className="h-5 w-5" />
-                  <span>{t("تغيير الصورة", "Upload Photo")}</span>
-                </button>
-              </div>
+                  {/* Upload Trigger Hover Overlay */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-xs font-bold gap-1"
+                  >
+                    <Camera className="h-5 w-5" />
+                    <span>{t("تغيير الصورة", "Upload Photo")}</span>
+                  </button>
+                </div>
 
-              {/* Hidden File Input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
+                {/* Hidden File Input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
 
-              <div className="flex justify-center gap-2 mb-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1"
-                >
-                  <Upload className="h-3.5 w-3.5" />
-                  <span>{t("رفع صورة من الجهاز", "Upload Custom Picture")}</span>
-                </Button>
-                {avatar.length > 10 && (
+                <div className="flex justify-center gap-2 mb-4">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setAvatar("🎓")}
-                    className="text-xs h-8 font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/50 dark:hover:bg-red-900/20"
-                    title={t("حذف الصورة", "Remove Picture")}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>{t("رفع صورة من الجهاز", "Upload Custom Picture")}</span>
                   </Button>
-                )}
-              </div>
-
-              <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
-                {(isRtl ? nameAr : nameEn) || t("طالب مستجد", "Freshman Student")}
-              </h3>
-              <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1">
-                {getLevelLabel(level)} {user?.department ? ` · ${getDeptLabel(user.department)}` : ""}
-              </p>
-
-              {/* Bio summary display (Smart Conditional) */}
-              {bio && bio.trim().length > 0 && (
-                <div className={`mt-4 p-3 bg-zinc-50 dark:bg-zinc-950/50 rounded-xl border border-zinc-200/60 dark:border-zinc-850 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed ${isRtl ? "text-right" : "text-left"}`}>
-                  <span className="font-bold text-[10px] uppercase text-zinc-400 block mb-1">{t("النبذة التعريفية", "Bio")}</span>
-                  <p>{getFormattedBio(bio)}</p>
-                </div>
-              )}
-
-              {/* Avatar Selector */}
-              <div className="mt-6">
-                <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-450 block mb-3.5">
-                  {t("أو اختر رمزاً تعبيرياً (Emoji)", "Or pick an Emoji avatar")}
-                </span>
-                <div className="grid grid-cols-5 gap-2 justify-center max-w-xs mx-auto">
-                  {avatarOptions.map((av) => (
-                    <button
-                      key={av}
+                  {avatar.length > 10 && (
+                    <Button
                       type="button"
-                      onClick={() => setAvatar(av)}
-                      className={`h-9 w-9 rounded-lg border text-sm flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-850 transition-colors cursor-pointer ${
-                        avatar === av
-                          ? "border-violet-650 bg-violet-50 text-violet-650 dark:border-violet-500 dark:bg-violet-950/45"
-                          : "border-zinc-200 dark:border-zinc-800 bg-transparent"
-                      }`}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setAvatar("🎓")}
+                      className="text-xs h-8 font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/50 dark:hover:bg-red-900/20"
+                      title={t("حذف الصورة", "Remove Picture")}
                     >
-                      {av}
-                    </button>
-                  ))}
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Smart Links & CV Showcase Widget */}
-          {(cvUrl || portfolioUrl || linkedin || github) && (
+                <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
+                  {(isRtl ? nameAr : nameEn) || t("طالب مستجد", "Freshman Student")}
+                </h3>
+                <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1">
+                  {getLevelLabel(level)} {user?.department ? ` · ${getDeptLabel(user.department)}` : ""}
+                </p>
+
+                {/* Bio summary display (Smart Conditional) */}
+                {bio && bio.trim().length > 0 && (
+                  <div className={`mt-4 p-3 bg-zinc-50 dark:bg-zinc-950/50 rounded-xl border border-zinc-200/60 dark:border-zinc-850 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed ${isRtl ? "text-right" : "text-left"}`}>
+                    <span className="font-bold text-[10px] uppercase text-zinc-400 block mb-1">{t("النبذة التعريفية", "Bio")}</span>
+                    <p>{getFormattedBio(bio)}</p>
+                  </div>
+                )}
+
+                {/* Avatar Selector */}
+                <div className="mt-6">
+                  <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-450 block mb-3.5">
+                    {t("أو اختر رمزاً تعبيرياً (Emoji)", "Or pick an Emoji avatar")}
+                  </span>
+                  <div className="grid grid-cols-5 gap-2 justify-center max-w-xs mx-auto">
+                    {avatarOptions.map((av) => (
+                      <button
+                        key={av}
+                        type="button"
+                        onClick={() => setAvatar(av)}
+                        className={`h-9 w-9 rounded-lg border text-sm flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-850 transition-colors cursor-pointer ${avatar === av
+                            ? "border-violet-650 bg-violet-50 text-violet-650 dark:border-violet-500 dark:bg-violet-950/45"
+                            : "border-zinc-200 dark:border-zinc-800 bg-transparent"
+                          }`}
+                      >
+                        {av}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Smart Links & CV Showcase Widget */}
+            {(cvUrl || portfolioUrl || linkedin || github) && (
+              <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
+                <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                  <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1.5">
+                    <Globe className="h-4 w-4 text-cyan-500" />
+                    <span>{t("الروابط المهنية للملف", "Professional Links")}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-2.5">
+                  {cvUrl && cvUrl.trim().length > 0 && (
+                    <a
+                      href={cvUrl.startsWith("http") ? cvUrl : `https://${cvUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-all font-bold text-xs"
+                    >
+                      <span className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        {t("تحميل / عرض السيرة الذاتية (CV)", "View CV / Resume")}
+                      </span>
+                      <span>📄</span>
+                    </a>
+                  )}
+
+                  {portfolioUrl && portfolioUrl.trim().length > 0 && (
+                    <a
+                      href={portfolioUrl.startsWith("http") ? portfolioUrl : `https://${portfolioUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/20 transition-all font-bold text-xs"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        {t("موقع البورتفوليو الشخصي", "Portfolio Website")}
+                      </span>
+                      <span>🌐</span>
+                    </a>
+                  )}
+
+                  {linkedin && linkedin.trim().length > 0 && (
+                    <a
+                      href={linkedin.startsWith("http") ? linkedin : `https://${linkedin}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20 transition-all font-bold text-xs"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Link2 className="h-4 w-4" />
+                        {t("حساب LinkedIn", "LinkedIn Profile")}
+                      </span>
+                      <span>💼</span>
+                    </a>
+                  )}
+
+                  {github && github.trim().length > 0 && (
+                    <a
+                      href={github.startsWith("http") ? github : `https://${github}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 transition-all font-bold text-xs"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        {t("حساب GitHub", "GitHub Profile")}
+                      </span>
+                      <span>💻</span>
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Badges / Achievements Showcase widget */}
             <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
               <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
                 <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1.5">
-                  <Globe className="h-4 w-4 text-cyan-500" />
-                  <span>{t("الروابط المهنية للملف", "Professional Links")}</span>
+                  <Award className="h-4.5 w-4.5 text-amber-500" />
+                  <span>{t(`الشارات المفتوحة (${user?.badges?.length || 0})`, `Unlocked Badges (${user?.badges?.length || 0})`)}</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4 space-y-2.5">
-                {cvUrl && cvUrl.trim().length > 0 && (
-                  <a
-                    href={cvUrl.startsWith("http") ? cvUrl : `https://${cvUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-all font-bold text-xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      {t("تحميل / عرض السيرة الذاتية (CV)", "View CV / Resume")}
-                    </span>
-                    <span>📄</span>
-                  </a>
-                )}
-
-                {portfolioUrl && portfolioUrl.trim().length > 0 && (
-                  <a
-                    href={portfolioUrl.startsWith("http") ? portfolioUrl : `https://${portfolioUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-500/20 transition-all font-bold text-xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Globe className="h-4 w-4" />
-                      {t("موقع البورتفوليو الشخصي", "Portfolio Website")}
-                    </span>
-                    <span>🌐</span>
-                  </a>
-                )}
-
-                {linkedin && linkedin.trim().length > 0 && (
-                  <a
-                    href={linkedin.startsWith("http") ? linkedin : `https://${linkedin}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20 transition-all font-bold text-xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Link2 className="h-4 w-4" />
-                      {t("حساب LinkedIn", "LinkedIn Profile")}
-                    </span>
-                    <span>💼</span>
-                  </a>
-                )}
-
-                {github && github.trim().length > 0 && (
-                  <a
-                    href={github.startsWith("http") ? github : `https://${github}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 transition-all font-bold text-xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Globe className="h-4 w-4" />
-                      {t("حساب GitHub", "GitHub Profile")}
-                    </span>
-                    <span>💻</span>
-                  </a>
+              <CardContent className="pt-4 space-y-3">
+                {user?.badges && user.badges.length > 0 ? (
+                  user.badges.map((badge, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/60 dark:border-zinc-850 rounded-xl flex items-center gap-3"
+                    >
+                      <div className="text-2xl">{badgeEmojis[badge] || "🏆"}</div>
+                      <div className="min-w-0">
+                        <span className="text-xs font-extrabold text-zinc-850 dark:text-zinc-100 block">{badge}</span>
+                        <span className="text-[10px] text-zinc-400 block mt-0.5">
+                          {t("مكتسب عبر النشاط الدراسي", "Earned via academic activity")}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-xs text-zinc-400 block text-center py-4">
+                    {t("لا توجد شارات حالية.", "No badges unlocked yet.")}
+                  </span>
                 )}
               </CardContent>
             </Card>
-          )}
+          </div>
 
-          {/* Badges / Achievements Showcase widget */}
-          <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
-            <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1.5">
-                <Award className="h-4.5 w-4.5 text-amber-500" />
-                <span>{t(`الشارات المفتوحة (${user?.badges?.length || 0})`, `Unlocked Badges (${user?.badges?.length || 0})`)}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 space-y-3">
-              {user?.badges && user.badges.length > 0 ? (
-                user.badges.map((badge, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/60 dark:border-zinc-850 rounded-xl flex items-center gap-3"
-                  >
-                    <div className="text-2xl">{badgeEmojis[badge] || "🏆"}</div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-extrabold text-zinc-850 dark:text-zinc-100 block">{badge}</span>
-                      <span className="text-[10px] text-zinc-400 block mt-0.5">
-                        {t("مكتسب عبر النشاط الدراسي", "Earned via academic activity")}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <span className="text-xs text-zinc-400 block text-center py-4">
-                  {t("لا توجد شارات حالية.", "No badges unlocked yet.")}
-                </span>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Form fields */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 mb-6">
-              <CardTitle className="text-base font-bold flex items-center gap-2 text-zinc-950 dark:text-zinc-50">
-                <User className="h-4.5 w-4.5 text-zinc-400" />
-                {t("المعلومات الأساسية", "Basic Information")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:col-span-2">
-                {/* Full name (Arabic) */}
-                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    الاسم الكامل (عربي)
-                  </label>
-                  <div className="relative">
-                    <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                    <Input
-                      type="text"
-                      value={nameAr}
-                      onChange={(e) => setNameAr(e.target.value)}
-                      className={isRtl ? "pr-10" : "pl-10"}
-                      disabled={isLoading}
-                      required
-                      dir="rtl"
-                    />
-                  </div>
-                </div>
-
-                {/* Full name (English) */}
-                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    Full Name (English)
-                  </label>
-                  <div className="relative">
-                    <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                    <Input
-                      type="text"
-                      value={nameEn}
-                      onChange={(e) => setNameEn(e.target.value)}
-                      className={isRtl ? "pr-10" : "pl-10"}
-                      disabled={isLoading}
-                      required
-                      dir="ltr"
-                    />
-                  </div>
-                </div>
-              </div>
-
-                {/* Email */}
-                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("البريد الإلكتروني الجامعي", "University Email")}
-                  </label>
-                  <div className="relative">
-                    <Mail className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                    <Input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={isRtl ? "pr-10" : "pl-10"}
-                      disabled={isLoading}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Academic Level */}
-                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("الفرقة الأكاديمية", "Academic Year Level")}
-                  </label>
-                  <div className="relative">
-                    <GraduationCap className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                    <select
-                      value={level}
-                      onChange={(e) => setLevel(e.target.value)}
-                      disabled={isLoading}
-                      className={`w-full h-11 ${isRtl ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-sm text-zinc-905 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none`}
-                    >
-                      <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)", "Year 1 (Freshman)")}</option>
-                      <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
-                      <option value="الفرقة الثالثة">{t("الفرقة الثالثة (سنة ثالثة)", "Year 3 (Junior)")}</option>
-                      <option value="الفرقة الرابعة">{t("الفرقة الرابعة (سنة رابعة)", "Year 4 (Senior)")}</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Student ID */}
-                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("الرقم الأكاديمي (Student ID)", "Student ID")}
-                  </label>
-                  <div className="relative">
-                    <FileText className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                    <Input
-                      type="text"
-                      placeholder="20230109"
-                      value={studentId}
-                      onChange={(e) => setStudentId(e.target.value)}
-                      className={isRtl ? "pr-10" : "pl-10"}
-                      disabled={isLoading}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  {t("السيرة الذاتية (Bio)", "Personal Bio")}
-                </label>
-                <textarea
-                  rows={4}
-                  value={getFormattedBio(bio)}
-                  onChange={(e) => setBio(e.target.value)}
-                  disabled={isLoading}
-                  placeholder={t("اكتب نبذة قصيرة عن اهتماماتك الأكاديمية والتقنية...", "Write a short bio about your academic & tech interests...")}
-                  className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 transition-all duration-200 resize-none leading-relaxed"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Academic Skills & Social links */}
-          <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
-            <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 mb-6">
-              <CardTitle className="text-base font-bold flex items-center gap-2 text-zinc-950 dark:text-zinc-50">
-                <Award className="h-4.5 w-4.5 text-zinc-400" />
-                {t("المهارات وروابط التواصل", "Skills & Contact Links")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Skills Tags input */}
-              <div className={`space-y-2 ${isRtl ? "text-right" : "text-left"}`}>
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  {t("المهارات الأكاديمية (اضغط Enter للإضافة)", "Academic & Technical Skills (Press Enter to add)")}
-                </label>
-                <Input
-                  type="text"
-                  placeholder={t("أدخل مهارة جديدة (مثال: C++, Python, UI Design)", "Enter a skill (e.g. C++, Python, UI Design)")}
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyDown={handleAddSkill}
-                  disabled={isLoading}
-                />
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {skills.length > 0 ? (
-                    skills.map((skill, idx) => (
-                      <Badge
-                        key={idx}
-                        className="bg-violet-50 hover:bg-red-50 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400 border border-violet-100 dark:border-violet-800/30 pl-2 pr-2.5 py-1 text-xs rounded-lg cursor-pointer flex items-center gap-1.5 group transition-colors hover:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-950/20 hover:border-red-200"
-                        onClick={() => handleRemoveSkill(skill)}
-                      >
-                        <span>{skill}</span>
-                        <span className="text-[10px] opacity-60 group-hover:opacity-100">✕</span>
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                      {t("لم تضف أي مهارات بعد.", "No skills added yet.")}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Social & Professional Links */}
-              <div className="space-y-4">
-                <span className={`text-xs font-bold text-zinc-700 dark:text-zinc-300 block ${isRtl ? "text-right" : "text-left"}`}>
-                  {t("الروابط المهنية ورابط السيرة الذاتية (CV)", "Professional Links & CV URL")}
-                </span>
+          {/* Form fields */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+              <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 mb-6">
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-zinc-950 dark:text-zinc-50">
+                  <User className="h-4.5 w-4.5 text-zinc-400" />
+                  {t("المعلومات الأساسية", "Basic Information")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* GitHub */}
-                  <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">GitHub</label>
-                    <div className="relative">
-                      <Globe className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                      <Input
-                        type="url"
-                        placeholder="https://github.com/username"
-                        value={github}
-                        onChange={(e) => setGithub(e.target.value)}
-                        className={isRtl ? "pr-10" : "pl-10"}
-                        disabled={isLoading}
-                      />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:col-span-2">
+                    {/* Full name (Arabic) */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        الاسم الكامل (عربي)
+                      </label>
+                      <div className="relative">
+                        <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                        <Input
+                          type="text"
+                          value={nameAr}
+                          onChange={(e) => setNameAr(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                          required
+                          dir="rtl"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Full name (English) */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        Full Name (English)
+                      </label>
+                      <div className="relative">
+                        <User className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                        <Input
+                          type="text"
+                          value={nameEn}
+                          onChange={(e) => setNameEn(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                          required
+                          dir="ltr"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* LinkedIn */}
-                  <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
-                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">LinkedIn</label>
-                    <div className="relative">
-                      <Link2 className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
-                      <Input
-                        type="url"
-                        placeholder="https://linkedin.com/in/username"
-                        value={linkedin}
-                        onChange={(e) => setLinkedin(e.target.value)}
-                        className={isRtl ? "pr-10" : "pl-10"}
-                        disabled={isLoading}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Portfolio Website */}
+                  {/* Email */}
                   <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                      {t("موقع البورتفوليو الشخصي (Portfolio)", "Portfolio Website")}
+                      {t("البريد الإلكتروني الجامعي", "University Email")}
                     </label>
                     <div className="relative">
-                      <Globe className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-500`} />
+                      <Mail className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                       <Input
-                        type="url"
-                        placeholder="https://myportfolio.com"
-                        value={portfolioUrl}
-                        onChange={(e) => setPortfolioUrl(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className={isRtl ? "pr-10" : "pl-10"}
                         disabled={isLoading}
+                        required
                       />
                     </div>
                   </div>
 
-                  {/* CV Link */}
+                  {/* Academic Level */}
                   <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                      {t("السيرة الذاتية (CV PDF)", "CV / Resume PDF")}
+                      {t("الفرقة الأكاديمية", "Academic Year Level")}
                     </label>
                     <div className="relative">
-                      <FileText className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500`} />
+                      <GraduationCap className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                      <select
+                        value={level}
+                        onChange={(e) => setLevel(e.target.value)}
+                        disabled={isLoading}
+                        className={`w-full h-11 ${isRtl ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-sm text-zinc-905 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none`}
+                      >
+                        <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)", "Year 1 (Freshman)")}</option>
+                        <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
+                        <option value="الفرقة الثالثة">{t("الفرقة الثالثة (سنة ثالثة)", "Year 3 (Junior)")}</option>
+                        <option value="الفرقة الرابعة">{t("الفرقة الرابعة (سنة رابعة)", "Year 4 (Senior)")}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Student ID */}
+                  <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                      {t("الرقم الأكاديمي (Student ID)", "Student ID")}
+                    </label>
+                    <div className="relative">
+                      <FileText className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                       <Input
-                        type="url"
-                        placeholder="https://drive.google.com/..."
-                        value={cvUrl}
-                        onChange={(e) => setCvUrl(e.target.value)}
+                        type="text"
+                        placeholder="20230109"
+                        value={studentId}
+                        onChange={(e) => setStudentId(e.target.value)}
                         className={isRtl ? "pr-10" : "pl-10"}
                         disabled={isLoading}
                       />
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+
+                {/* Bio */}
+                <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {t("السيرة الذاتية (Bio)", "Personal Bio")}
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={getFormattedBio(bio)}
+                    onChange={(e) => setBio(e.target.value)}
+                    disabled={isLoading}
+                    placeholder={t("اكتب نبذة قصيرة عن اهتماماتك الأكاديمية والتقنية...", "Write a short bio about your academic & tech interests...")}
+                    className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 transition-all duration-200 resize-none leading-relaxed"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Academic Skills & Social links */}
+            <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+              <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 mb-6">
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-zinc-950 dark:text-zinc-50">
+                  <Award className="h-4.5 w-4.5 text-zinc-400" />
+                  {t("المهارات وروابط التواصل", "Skills & Contact Links")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Skills Tags input */}
+                <div className={`space-y-2 ${isRtl ? "text-right" : "text-left"}`}>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    {t("المهارات الأكاديمية (اضغط Enter للإضافة)", "Academic & Technical Skills (Press Enter to add)")}
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder={t("أدخل مهارة جديدة (مثال: C++, Python, UI Design)", "Enter a skill (e.g. C++, Python, UI Design)")}
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    onKeyDown={handleAddSkill}
+                    disabled={isLoading}
+                  />
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {skills.length > 0 ? (
+                      skills.map((skill, idx) => (
+                        <Badge
+                          key={idx}
+                          className="bg-violet-50 hover:bg-red-50 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400 border border-violet-100 dark:border-violet-800/30 pl-2 pr-2.5 py-1 text-xs rounded-lg cursor-pointer flex items-center gap-1.5 group transition-colors hover:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-950/20 hover:border-red-200"
+                          onClick={() => handleRemoveSkill(skill)}
+                        >
+                          <span>{skill}</span>
+                          <span className="text-[10px] opacity-60 group-hover:opacity-100">✕</span>
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                        {t("لم تضف أي مهارات بعد.", "No skills added yet.")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Social & Professional Links */}
+                <div className="space-y-4">
+                  <span className={`text-xs font-bold text-zinc-700 dark:text-zinc-300 block ${isRtl ? "text-right" : "text-left"}`}>
+                    {t("الروابط المهنية ورابط السيرة الذاتية (CV)", "Professional Links & CV URL")}
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* GitHub */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">GitHub</label>
+                      <div className="relative">
+                        <Globe className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                        <Input
+                          type="url"
+                          placeholder="https://github.com/username"
+                          value={github}
+                          onChange={(e) => setGithub(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+
+                    {/* LinkedIn */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">LinkedIn</label>
+                      <div className="relative">
+                        <Link2 className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                        <Input
+                          type="url"
+                          placeholder="https://linkedin.com/in/username"
+                          value={linkedin}
+                          onChange={(e) => setLinkedin(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Portfolio Website */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        {t("موقع البورتفوليو الشخصي (Portfolio)", "Portfolio Website")}
+                      </label>
+                      <div className="relative">
+                        <Globe className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-500`} />
+                        <Input
+                          type="url"
+                          placeholder="https://myportfolio.com"
+                          value={portfolioUrl}
+                          onChange={(e) => setPortfolioUrl(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+
+                    {/* CV Link */}
+                    <div className={`space-y-1.5 ${isRtl ? "text-right" : "text-left"}`}>
+                      <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        {t("السيرة الذاتية (CV PDF)", "CV / Resume PDF")}
+                      </label>
+                      <div className="relative">
+                        <FileText className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500`} />
+                        <Input
+                          type="url"
+                          placeholder="https://drive.google.com/..."
+                          value={cvUrl}
+                          onChange={(e) => setCvUrl(e.target.value)}
+                          className={isRtl ? "pr-10" : "pl-10"}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -1118,7 +1115,7 @@ export default function ProfilePage() {
                           </a>
                         )}
                       </div>
-                      
+
                       <button
                         type="button"
                         onClick={() => handleRemoveProject(idx)}
