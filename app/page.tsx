@@ -381,6 +381,164 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Infinite Features Ribbon / Marquee Ticker */}
+        <section className="py-6 overflow-hidden relative border-y border-zinc-200/70 dark:border-zinc-850/80 bg-zinc-50/50 dark:bg-zinc-950/40 backdrop-blur-md">
+          <div
+            className="marquee-container flex flex-row flex-nowrap w-full overflow-hidden select-none cursor-pointer py-1 gap-4"
+            dir={dir}
+          >
+            {/* Track 1 */}
+            <div className={`flex flex-row flex-nowrap items-center shrink-0 min-w-max gap-4 ${lang === "ar" ? "marquee-group-rtl" : "marquee-group-ltr"}`}>
+              {[
+                {
+                  icon: Calculator,
+                  labelAr: "حاسبة ومحاكي الـ GPA الذكي",
+                  labelEn: "Smart GPA Simulator & Predictor",
+                  color: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20"
+                },
+                {
+                  icon: Calendar,
+                  labelAr: "مزامنة تقويم المودل Moodle الآلية",
+                  labelEn: "Automated Moodle Calendar Sync",
+                  color: "text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
+                },
+                {
+                  icon: Sparkles,
+                  labelAr: "المرشد الأكاديمي الذكي بالـ AI",
+                  labelEn: "24/7 AI Academic Counselor",
+                  color: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
+                },
+                {
+                  icon: GraduationCap,
+                  labelAr: "خطة الـ 144 ساعة المعتمدة",
+                  labelEn: "144 Credit Hours Matrix Plan",
+                  color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                },
+                {
+                  icon: Compass,
+                  labelAr: "مسارات المهارات وسوق العمل",
+                  labelEn: "Career & Tech Roadmaps",
+                  color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
+                },
+                {
+                  icon: Smartphone,
+                  labelAr: "تطبيق الهاتف السريع PWA",
+                  labelEn: "Instant PWA Mobile App",
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
+                },
+                {
+                  icon: BookOpen,
+                  labelAr: "دليل المقررات والمراجع الأكاديمية",
+                  labelEn: "Course Library & Open Resources",
+                  color: "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20"
+                },
+                {
+                  icon: Users,
+                  labelAr: "منتدى مجتمع طلاب الكلية",
+                  labelEn: "Students Community Forum",
+                  color: "text-teal-600 dark:text-teal-400 bg-teal-500/10 border-teal-500/20"
+                },
+                {
+                  icon: Zap,
+                  labelAr: "أداء فائق واستجابة لحظية",
+                  labelEn: "Sub-Second Performance & Speed",
+                  color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
+                }
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={`t1-${idx}`}
+                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-violet-400 dark:hover:border-violet-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
+                  >
+                    <div className={`p-1 rounded-lg border ${item.color} flex items-center justify-center shrink-0`}>
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-extrabold text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
+                      {t(item.labelAr, item.labelEn)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Track 2 (Synchronized Duplicate for zero-gap loop) */}
+            <div className={`flex flex-row flex-nowrap items-center shrink-0 min-w-max gap-4 ${lang === "ar" ? "marquee-group-rtl" : "marquee-group-ltr"}`} aria-hidden="true">
+              {[
+                {
+                  icon: Calculator,
+                  labelAr: "حاسبة ومحاكي الـ GPA الذكي",
+                  labelEn: "Smart GPA Simulator & Predictor",
+                  color: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20"
+                },
+                {
+                  icon: Calendar,
+                  labelAr: "مزامنة تقويم المودل Moodle الآلية",
+                  labelEn: "Automated Moodle Calendar Sync",
+                  color: "text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20"
+                },
+                {
+                  icon: Sparkles,
+                  labelAr: "المرشد الأكاديمي الذكي بالـ AI",
+                  labelEn: "24/7 AI Academic Counselor",
+                  color: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
+                },
+                {
+                  icon: GraduationCap,
+                  labelAr: "خطة الـ 144 ساعة المعتمدة",
+                  labelEn: "144 Credit Hours Matrix Plan",
+                  color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                },
+                {
+                  icon: Compass,
+                  labelAr: "مسارات المهارات وسوق العمل",
+                  labelEn: "Career & Tech Roadmaps",
+                  color: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
+                },
+                {
+                  icon: Smartphone,
+                  labelAr: "تطبيق الهاتف السريع PWA",
+                  labelEn: "Instant PWA Mobile App",
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
+                },
+                {
+                  icon: BookOpen,
+                  labelAr: "دليل المقررات والمراجع الأكاديمية",
+                  labelEn: "Course Library & Open Resources",
+                  color: "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20"
+                },
+                {
+                  icon: Users,
+                  labelAr: "منتدى مجتمع طلاب الكلية",
+                  labelEn: "Students Community Forum",
+                  color: "text-teal-600 dark:text-teal-400 bg-teal-500/10 border-teal-500/20"
+                },
+                {
+                  icon: Zap,
+                  labelAr: "أداء فائق واستجابة لحظية",
+                  labelEn: "Sub-Second Performance & Speed",
+                  color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
+                }
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={`t2-${idx}`}
+                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-violet-400 dark:hover:border-violet-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
+                  >
+                    <div className={`p-1 rounded-lg border ${item.color} flex items-center justify-center shrink-0`}>
+                      <Icon className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-extrabold text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
+                      {t(item.labelAr, item.labelEn)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Statistics Banner Section */}
         <section id="stats" className="py-16 px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/20 backdrop-blur-md">
           <div className="max-w-6xl mx-auto">

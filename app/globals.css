@@ -141,6 +141,69 @@ html[dir="ltr"] textarea,
   /* accent cyan on hover */
 }
 
+/* ─── Infinite Seamless 2-Track Marquee Ribbon ──────────────────────────── */
+@keyframes marquee-ltr {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee-rtl {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.marquee-container {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  user-select: none;
+}
+
+.marquee-group-ltr {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  flex-shrink: 0 !important;
+  width: max-content !important;
+  min-width: max-content !important;
+  animation: marquee-ltr 32s linear infinite !important;
+  will-change: transform;
+}
+
+.marquee-group-rtl {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  flex-shrink: 0 !important;
+  width: max-content !important;
+  min-width: max-content !important;
+  animation: marquee-rtl 32s linear infinite !important;
+  will-change: transform;
+}
+
+.marquee-paused .marquee-group-ltr,
+.marquee-paused .marquee-group-rtl,
+.marquee-container:hover .marquee-group-ltr,
+.marquee-container:hover .marquee-group-rtl,
+.marquee-container:active .marquee-group-ltr,
+.marquee-container:active .marquee-group-rtl {
+  animation-play-state: paused !important;
+}
+
 /* Hide scrollbar utility */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
