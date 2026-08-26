@@ -367,15 +367,15 @@ export default function AiAssistantPage() {
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6 flex flex-col h-[calc(100dvh-175px)] md:h-[calc(100vh-100px)]" dir={dir}>
+    <div className="space-y-2 sm:space-y-4 flex flex-col h-[calc(100dvh-175px)] sm:h-[calc(100dvh-160px)] md:h-[calc(100vh-100px)]" dir={dir}>
       {/* Page Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 shrink-0">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-violet-500 fill-violet-500/10" />
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500 fill-violet-500/10" />
             {t("المرشد الأكاديمي والتقني الذكي", "Smart Academic & Tech AI Guide")}
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="hidden sm:block text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             {t(
               "مساعدك الشخصي المرتبط ببيانات حسابك المباشرة وبكل مواد وتخصصات الكلية والتكنولوجيا.",
               "Your AI assistant connected live to your student data, faculty curricula, and tech roadmaps."
@@ -383,8 +383,8 @@ export default function AiAssistantPage() {
           </p>
         </div>
         
-        {/* New Chat Button */}
-        <Button onClick={startNewChatScreen} size="sm" className="w-full sm:w-auto gap-1.5 text-xs font-bold shadow-sm cursor-pointer justify-center">
+        {/* New Chat Button (Desktop only here, mobile has it in the session strip) */}
+        <Button onClick={startNewChatScreen} size="sm" className="hidden sm:inline-flex w-auto gap-1.5 text-xs font-bold shadow-sm cursor-pointer justify-center">
           <Plus className="h-4 w-4" />
           <span>{t("محادثة جديدة", "New Chat")}</span>
         </Button>
@@ -458,12 +458,12 @@ export default function AiAssistantPage() {
         {/* Main Panel View */}
         <div className="lg:col-span-3 flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 rounded-3xl overflow-hidden shadow-sm">
           {/* Mobile Sessions Switcher Strip */}
-          <div className="lg:hidden p-3 bg-zinc-50 dark:bg-zinc-950/40 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-2 overflow-x-auto">
+          <div className="lg:hidden p-2 sm:p-3 bg-zinc-50 dark:bg-zinc-950/40 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-1.5 sm:gap-2 overflow-x-auto">
             <button
               onClick={startNewChatScreen}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 ${
                 activeSessionId === ""
-                  ? "bg-violet-600 text-white"
+                  ? "bg-violet-600 text-white shadow-xs"
                   : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200"
               }`}
             >
@@ -474,9 +474,9 @@ export default function AiAssistantPage() {
               <button
                 key={s.id}
                 onClick={() => setActiveSessionId(s.id)}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-semibold shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl border text-xs font-semibold shrink-0 max-w-[130px] truncate ${
                   s.id === activeSessionId
-                    ? "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-violet-300"
+                    ? "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-violet-300 font-bold"
                     : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400"
                 }`}
               >
@@ -487,19 +487,19 @@ export default function AiAssistantPage() {
 
           {/* SCREEN 1: NEW CHAT WELCOME LANDING HERO (When activeSessionId === "") */}
           {activeSessionId === "" ? (
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col justify-start sm:justify-center items-center text-center space-y-6 my-auto">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center space-y-3 sm:space-y-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-2.5 max-w-xl shrink-0"
+                className="space-y-1.5 sm:space-y-2.5 max-w-xl shrink-0"
               >
-                <div className="h-14 w-14 sm:h-16 sm:w-16 mx-auto rounded-3xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-violet-500/20">
-                  <Sparkles className="h-7 w-7 sm:h-8 sm:w-8" />
+                <div className="h-10 w-10 sm:h-16 sm:w-16 mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white flex items-center justify-center shadow-md sm:shadow-lg shadow-violet-500/20">
+                  <Sparkles className="h-5 w-5 sm:h-8 sm:w-8" />
                 </div>
-                <h2 className="text-xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+                <h2 className="text-base sm:text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
                   {t(`أهلاً بك، ${displayName} 👋`, `Welcome, ${displayName} 👋`)}
                 </h2>
-                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">
+                <p className="text-[11px] sm:text-sm text-zinc-500 dark:text-zinc-400 leading-tight sm:leading-relaxed font-semibold max-w-xs sm:max-w-xl">
                   {t(
                     "ما الذي تريد استكشافه أو التخطيط له اليوم في مسيرتك الأكاديمية والمهنية؟",
                     "What would you like to explore or plan today in your academic and tech career?"
@@ -507,8 +507,8 @@ export default function AiAssistantPage() {
                 </p>
               </motion.div>
 
-              {/* Quick capabilities grid cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full max-w-2xl text-right shrink-0">
+              {/* Quick capabilities grid cards - Compact 2x2 on mobile */}
+              <div className="grid grid-cols-2 gap-2 sm:gap-3.5 w-full max-w-2xl text-right shrink-0">
                 {quickCapabilities.map((item, idx) => {
                   const Icon = item.icon;
                   return (
@@ -518,21 +518,34 @@ export default function AiAssistantPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.05 }}
                       onClick={() => handleSendMessage(item.prompt)}
-                      className={`p-3.5 sm:p-4 rounded-2xl border text-right transition-all cursor-pointer hover:scale-[1.01] hover:shadow-md flex flex-col justify-between space-y-2.5 ${item.bgLight}`}
+                      className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border text-right transition-all cursor-pointer hover:scale-[1.01] hover:shadow-md ${item.bgLight}`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="p-2 rounded-xl bg-white/80 dark:bg-zinc-950/80 shadow-xs">
-                          <Icon className="h-4.5 w-4.5" />
+                      {/* Mobile Compact Horizontal Row */}
+                      <div className="flex sm:hidden items-center gap-2 w-full">
+                        <div className="p-1.5 rounded-lg bg-white/80 dark:bg-zinc-950/80 shadow-xs shrink-0">
+                          <Icon className="h-3.5 w-3.5" />
                         </div>
-                        <ArrowUpRight className="h-4 w-4 opacity-60" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-100 mb-0.5">
+                        <h4 className="text-[11px] font-black text-zinc-900 dark:text-zinc-100 truncate flex-1 text-right">
                           {t(item.titleAr, item.titleEn)}
                         </h4>
-                        <p className="text-[10px] sm:text-[11px] text-zinc-650 dark:text-zinc-400 leading-snug font-medium line-clamp-2">
-                          {t(item.descAr, item.descEn)}
-                        </p>
+                      </div>
+
+                      {/* Desktop / Tablet Rich Vertical Layout */}
+                      <div className="hidden sm:flex flex-col justify-between space-y-2.5 h-full">
+                        <div className="flex items-center justify-between">
+                          <div className="p-2 rounded-xl bg-white/80 dark:bg-zinc-950/80 shadow-xs">
+                            <Icon className="h-4.5 w-4.5" />
+                          </div>
+                          <ArrowUpRight className="h-4 w-4 opacity-60" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-100 mb-0.5">
+                            {t(item.titleAr, item.titleEn)}
+                          </h4>
+                          <p className="text-[10px] sm:text-[11px] text-zinc-650 dark:text-zinc-400 leading-snug font-medium line-clamp-2">
+                            {t(item.descAr, item.descEn)}
+                          </p>
+                        </div>
                       </div>
                     </motion.button>
                   );
@@ -541,7 +554,7 @@ export default function AiAssistantPage() {
             </div>
           ) : (
             /* SCREEN 2: ACTIVE CHAT MESSAGES STREAM */
-            <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3.5 sm:space-y-5">
               <AnimatePresence initial={false}>
                 {messages.map((msg, index) => {
                   const isAssistant = msg.role === "assistant";
@@ -550,23 +563,23 @@ export default function AiAssistantPage() {
                       key={index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`flex gap-3.5 max-w-[88%] ${
+                      className={`flex gap-2.5 sm:gap-3.5 max-w-[92%] sm:max-w-[88%] ${
                         isAssistant
                           ? (isRtl ? "mr-0 ml-auto" : "ml-0 mr-auto")
                           : (isRtl ? "mr-auto ml-0 flex-row-reverse" : "ml-auto mr-0 flex-row-reverse")
                       }`}
                     >
                       {/* Avatar Icon */}
-                      <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 ${
+                      <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center shrink-0 ${
                         isAssistant
                           ? "bg-violet-100 text-violet-650 dark:bg-violet-950/60 dark:text-violet-400"
                           : "bg-zinc-100 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-350"
                       }`}>
-                        {isAssistant ? <Bot className="h-4.5 w-4.5" /> : <User className="h-4.5 w-4.5" />}
+                        {isAssistant ? <Bot className="h-4 w-4 sm:h-4.5 sm:w-4.5" /> : <User className="h-4 w-4 sm:h-4.5 sm:w-4.5" />}
                       </div>
 
                       {/* Chat Bubble */}
-                      <div className={`p-4.5 rounded-2xl text-xs leading-relaxed ${
+                      <div className={`p-3 sm:p-4.5 rounded-2xl text-xs leading-relaxed break-words overflow-hidden ${
                         isAssistant
                           ? "bg-zinc-100 dark:bg-zinc-800/90 text-zinc-900 dark:text-zinc-100 border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm"
                           : "bg-violet-600 text-white dark:bg-violet-600 shadow-md font-medium"
@@ -652,13 +665,13 @@ export default function AiAssistantPage() {
           )}
 
           {/* INPUT PANEL AT BOTTOM */}
-          <div className="p-4 bg-zinc-50 dark:bg-zinc-950/30 border-t border-zinc-100 dark:border-zinc-850 shrink-0">
+          <div className="p-2 sm:p-3.5 bg-zinc-50/90 dark:bg-zinc-950/50 backdrop-blur-md border-t border-zinc-100 dark:border-zinc-850 shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSendMessage(inputVal);
               }}
-              className="flex gap-2.5"
+              className="flex gap-2"
             >
               <Input
                 type="text"
@@ -669,10 +682,10 @@ export default function AiAssistantPage() {
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 disabled={isLoading}
-                className={`flex-1 rounded-2xl h-12 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border-zinc-200 dark:border-zinc-850 ${isRtl ? "pr-4" : "pl-4"}`}
+                className={`flex-1 rounded-xl sm:rounded-2xl h-10 sm:h-12 bg-white dark:bg-zinc-900 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 border-zinc-200 dark:border-zinc-850 ${isRtl ? "pr-3.5 sm:pr-4" : "pl-3.5 sm:pl-4"}`}
               />
-              <Button type="submit" disabled={isLoading || !inputVal.trim()} className="rounded-2xl h-12 px-4 sm:px-6 shrink-0 gap-1.5 font-bold cursor-pointer">
-                <Send className={`h-4.5 w-4.5 ${isRtl ? "rotate-180" : ""}`} />
+              <Button type="submit" disabled={isLoading || !inputVal.trim()} className="rounded-xl sm:rounded-2xl h-10 sm:h-12 px-3.5 sm:px-6 shrink-0 gap-1.5 font-bold cursor-pointer text-xs sm:text-sm">
+                <Send className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
                 <span>{t("إرسال", "Send")}</span>
               </Button>
             </form>
