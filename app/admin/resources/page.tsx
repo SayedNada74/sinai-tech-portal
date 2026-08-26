@@ -166,7 +166,7 @@ export default function ResourceManagementPage() {
   return (
     <div className="space-y-6 animate-fade-in" dir={dir}>
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
             {t("إدارة الملفات والمصادر الأكاديمية", "Academic Resources & Files Management")}
@@ -179,7 +179,7 @@ export default function ResourceManagementPage() {
           </p>
         </div>
 
-        <Button onClick={openAddModal} className="gap-2 text-xs font-bold shrink-0">
+        <Button onClick={openAddModal} className="gap-2 text-xs font-bold w-full sm:w-auto justify-center shrink-0">
           <Upload className="h-4 w-4" />
           {t("رفع ملف / مصدر جديد", "Upload New Resource")}
         </Button>
@@ -187,7 +187,7 @@ export default function ResourceManagementPage() {
 
       {/* Controls */}
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3">
+        <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
             <Input
@@ -199,11 +199,11 @@ export default function ResourceManagementPage() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full md:w-auto">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full"
             >
               <option value="ALL">{t("جميع أنواع الملفات 📂", "All File Types 📂")}</option>
               <option value="book">{t("كتب وملخصات 📚", "Books & Summaries 📚")}</option>
@@ -215,7 +215,7 @@ export default function ResourceManagementPage() {
             <select
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full"
             >
               <option value="ALL">{t("جميع المواد 🎯", "All Courses 🎯")}</option>
               {courses.map((c) => (
@@ -334,8 +334,8 @@ export default function ResourceManagementPage() {
       </div>
 
       {modalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-          <Card className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <Card className="w-full max-w-lg max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold">
                 {editingId ? t("تعديل بيانات المصدر الأكاديمي", "Edit Academic Resource") : t("رفع ملف ومصدر دراسي جديد", "Upload New Academic Resource")}

@@ -101,13 +101,13 @@ export default function CurriculumProgressChecklist() {
         {/* GPA Box */}
         <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center">
           <CardContent className="pt-6">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("المعدل التراكمي الحالي (GPA)", "Current Cumulative GPA")}
             </span>
-            <div className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent mt-2.5">
+            <div className="text-4xl font-black text-zinc-950 dark:text-white mt-2.5">
               {cumulativeGpa > 0 ? cumulativeGpa.toFixed(2) : "0.00"}
             </div>
-            <Badge variant="outline" className="mt-2.5 border-cyan-400/20 text-cyan-400 bg-cyan-500/5 text-[9px] font-bold py-0.5 px-2">
+            <Badge variant="outline" className="mt-2.5 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/80 dark:bg-zinc-800/40 text-[9px] font-bold py-0.5 px-2">
               {cumulativeGpa >= 3.6 
                 ? t("امتياز مرتفع 🚀", "Excellent (High) 🚀") 
                 : cumulativeGpa >= 3.0 
@@ -122,13 +122,13 @@ export default function CurriculumProgressChecklist() {
         {/* Credits Hours Completed */}
         <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center">
           <CardContent className="pt-6">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("الساعات المنجزة بنجاح", "Completed Credit Hours")}
             </span>
-            <div className="text-4xl font-black text-zinc-800 dark:text-zinc-100 mt-2.5">
-              {completedCredits} <span className="text-xs text-zinc-550 dark:text-zinc-500">/ 144</span>
+            <div className="text-4xl font-black text-zinc-950 dark:text-white mt-2.5">
+              {completedCredits} <span className="text-xs text-zinc-600 dark:text-zinc-300">/ 144</span>
             </div>
-            <span className="text-[10px] text-zinc-500 mt-2.5 block">
+            <span className="text-[10px] text-zinc-700 dark:text-zinc-200 mt-2.5 block font-bold">
               {t(`متبقي للتخرج: ${remainingCredits} ساعة معتمدة`, `${remainingCredits} credits remaining for graduation`)}
             </span>
           </CardContent>
@@ -137,11 +137,11 @@ export default function CurriculumProgressChecklist() {
         {/* Graduation Percent Tracker */}
         <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm flex flex-col justify-center px-6 py-4">
           <div className="flex justify-between items-center mb-2.5 text-xs font-bold">
-            <span className="text-zinc-400">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
-            <span className="text-cyan-400">{graduationPercentage}%</span>
+            <span className="text-zinc-900 dark:text-white font-bold">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
+            <span className="text-violet-600 dark:text-cyan-400 font-black">{graduationPercentage}%</span>
           </div>
           <Progress value={graduationPercentage} className="h-2 bg-zinc-150 dark:bg-zinc-800" />
-          <span className="text-[9px] text-zinc-500 mt-2 leading-tight">
+          <span className="text-[9px] text-zinc-700 dark:text-zinc-300 mt-2 leading-tight font-medium">
             {t("النسبة المحسوبة بناءً على الساعات المسجلة في الخطة المنجزة.", "Percentage calculated from completed credit hours.")}
           </span>
         </Card>
@@ -150,7 +150,7 @@ export default function CurriculumProgressChecklist() {
       {/* Course Code Prefix Reference Legend Box */}
       <Card className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/60 shadow-sm">
         <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-850">
-          <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-500 flex items-center gap-2">
+          <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
             <Info className="h-4 w-4 text-violet-500" />
             <span>{t("دليل رموز وأكواد المقررات الأكاديمية", "Academic Course Code Reference Legend")}</span>
           </CardTitle>
@@ -263,8 +263,8 @@ export default function CurriculumProgressChecklist() {
                             </div>
 
                             {/* Actions (Credits, Grade Selector, Planned toggle) */}
-                            <div className={`flex items-center gap-3 shrink-0 ${
-                              isRtl ? "sm:mr-auto justify-end" : "sm:ml-auto justify-start"
+                            <div className={`flex items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto pt-2.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-850/60 justify-between ${
+                              isRtl ? "sm:mr-auto sm:justify-end" : "sm:ml-auto sm:justify-start"
                             }`}>
                               <span className="text-[10px] font-bold text-zinc-450 bg-zinc-100 dark:bg-zinc-850 px-2 py-1 rounded-xl">
                                 {c.credits} {t("ساعة", "Hours")}

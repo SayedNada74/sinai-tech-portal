@@ -107,9 +107,9 @@ export default function AdminDashboardOverview() {
   return (
     <div className="space-y-8" dir={dir}>
       {/* Upper Header Panel */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">
             {t("لوحة الإشراف العامة والتحليلات", "Admin Overview & Analytics")}
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
@@ -120,12 +120,12 @@ export default function AdminDashboardOverview() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={handleRefresh}
-            className={`gap-1.5 text-[10px] font-bold h-9.5 cursor-pointer ${refreshing ? "opacity-60" : ""}`}
+            className={`gap-1.5 text-[10px] font-bold h-9 sm:h-9.5 cursor-pointer w-full sm:w-auto justify-center ${refreshing ? "opacity-60" : ""}`}
             disabled={refreshing}
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
@@ -133,7 +133,7 @@ export default function AdminDashboardOverview() {
           </Button>
 
           {settings.maintenanceMode && (
-            <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-950/20 py-1 px-3">
+            <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-950/20 py-1 px-3 w-full sm:w-auto justify-center">
                {t("وضع الصيانة نشط 🛠️", "Maintenance Mode Active 🛠️")}
             </Badge>
           )}
@@ -141,163 +141,163 @@ export default function AdminDashboardOverview() {
       </div>
 
       {/* Grid of Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
         {/* Total Students */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("إجمالي الطلاب", "Total Students")}</span>
-              <div className="p-1.5 rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950/20">
-                <Users className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("إجمالي الطلاب", "Total Students")}</span>
+              <div className="p-1.5 rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950/20 shrink-0">
+                <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalStudents}</span>
-              <span className="text-[9px] text-emerald-600 font-bold block mt-0.5">{t("طالب مسجل بالنظام", "registered students")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalStudents}</span>
+              <span className="text-[9px] text-emerald-600 font-bold block mt-0.5 truncate">{t("طالب مسجل بالنظام", "registered students")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Staff / Admins */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("المشرفون والمسؤولون", "Staff & Admins")}</span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20">
-                <Activity className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("المشرفون والمسؤولون", "Staff & Admins")}</span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 shrink-0">
+                <Activity className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalStaff}</span>
-              <span className="text-[9px] text-zinc-500 block mt-0.5">{t("مشرف ومنسق نظام", "system moderators")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalStaff}</span>
+              <span className="text-[9px] text-zinc-500 block mt-0.5 truncate">{t("مشرف ومنسق نظام", "system moderators")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Courses */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("المقررات والمواد", "Courses & Subjects")}</span>
-              <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20">
-                <BookOpen className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("المقررات والمواد", "Courses & Subjects")}</span>
+              <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20 shrink-0">
+                <BookOpen className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalCourses}</span>
-              <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold block mt-0.5">{t("مقرر دراسي بالخطة", "curriculum courses")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalCourses}</span>
+              <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold block mt-0.5 truncate">{t("مقرر دراسي بالخطة", "curriculum courses")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Resources */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("المصادر والملفات", "Files & Resources")}</span>
-              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/20">
-                <FileSpreadsheet className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("المصادر والملفات", "Files & Resources")}</span>
+              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/20 shrink-0">
+                <FileSpreadsheet className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalResources}</span>
-              <span className="text-[9px] text-amber-600 font-bold block mt-0.5">{t("ملخص وملاحظات مضافة", "study resources")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalResources}</span>
+              <span className="text-[9px] text-amber-600 font-bold block mt-0.5 truncate">{t("ملخص وملاحظات مضافة", "study resources")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Reviews */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("تقييمات المواد", "Course Reviews")}</span>
-              <div className="p-1.5 rounded-lg bg-pink-50 text-pink-600 dark:bg-pink-950/20">
-                <MessageSquare className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("تقييمات المواد", "Course Reviews")}</span>
+              <div className="p-1.5 rounded-lg bg-pink-50 text-pink-600 dark:bg-pink-950/20 shrink-0">
+                <MessageSquare className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalReviews}</span>
-              <span className="text-[9px] text-pink-600 dark:text-pink-400 font-bold block mt-0.5">{t("مراجعة طلابية حقيقية", "student reviews")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalReviews}</span>
+              <span className="text-[9px] text-pink-600 dark:text-pink-400 font-bold block mt-0.5 truncate">{t("مراجعة طلابية حقيقية", "student reviews")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Community Posts */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("منشورات المنتدى", "Forum Posts")}</span>
-              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/20">
-                <FileText className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("منشورات المنتدى", "Forum Posts")}</span>
+              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/20 shrink-0">
+                <FileText className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalPosts}</span>
-              <span className="text-[9px] text-sky-600 font-bold block mt-0.5">{t("منشور ونقاش طلابي", "student discussions")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalPosts}</span>
+              <span className="text-[9px] text-sky-600 font-bold block mt-0.5 truncate">{t("منشور ونقاش طلابي", "student discussions")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Careers */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("الفرص والتدريبات", "Career Opportunities")}</span>
-              <div className="p-1.5 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-950/20">
-                <Briefcase className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("الفرص والتدريبات", "Career Opportunities")}</span>
+              <div className="p-1.5 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-950/20 shrink-0">
+                <Briefcase className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalCareers}</span>
-              <span className="text-[9px] text-teal-600 font-bold block mt-0.5">{t("فرصة توظيف وتدريب", "jobs & internships")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalCareers}</span>
+              <span className="text-[9px] text-teal-600 font-bold block mt-0.5 truncate">{t("فرصة توظيف وتدريب", "jobs & internships")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Total Roadmaps */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("مسارات التعلم", "Learning Roadmaps")}</span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20">
-                <Compass className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("مسارات التعلم", "Learning Roadmaps")}</span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 shrink-0">
+                <Compass className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalRoadmaps}</span>
-              <span className="text-[9px] text-emerald-600 font-bold block mt-0.5">{t("خريطة تعلم مهنية", "career roadmaps")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalRoadmaps}</span>
+              <span className="text-[9px] text-emerald-600 font-bold block mt-0.5 truncate">{t("خريطة تعلم مهنية", "career roadmaps")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Announcements */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("الإعلانات والأخبار", "Announcements")}</span>
-              <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/20">
-                <Megaphone className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("الإعلانات والأخبار", "Announcements")}</span>
+              <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/20 shrink-0">
+                <Megaphone className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{announcements.length}</span>
-              <span className="text-[9px] text-rose-600 font-bold block mt-0.5">{t("إعلان أكاديمي رسمي", "official announcements")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{announcements.length}</span>
+              <span className="text-[9px] text-rose-600 font-bold block mt-0.5 truncate">{t("إعلان أكاديمي رسمي", "official announcements")}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Audit Logs Count */}
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm bg-white dark:bg-zinc-900">
-          <CardContent className="p-4.5 flex flex-col justify-between h-full">
+          <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{t("سجلات الإدارة", "Audit Logs")}</span>
-              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/20">
-                <History className="h-4 w-4" />
+              <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("سجلات الإدارة", "Audit Logs")}</span>
+              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/20 shrink-0">
+                <History className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
-            <div className="mt-4">
-              <span className="text-xl font-black">{totalAuditLogsCount}</span>
-              <span className="text-[9px] text-blue-600 font-bold block mt-0.5">{t("عملية إشراف موثقة", "logged actions")}</span>
+            <div className="mt-3 sm:mt-4">
+              <span className="text-lg sm:text-xl font-black">{totalAuditLogsCount}</span>
+              <span className="text-[9px] text-blue-600 font-bold block mt-0.5 truncate">{t("عملية إشراف موثقة", "logged actions")}</span>
             </div>
           </CardContent>
         </Card>

@@ -337,7 +337,7 @@ export default function UserManagementPage() {
 
       {/* Controls: Search and Filters */}
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3">
+        <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row gap-3">
           {/* Search bar */}
           <div className="relative flex-1">
             <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
@@ -350,12 +350,12 @@ export default function UserManagementPage() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto">
             {/* Role Filter */}
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full sm:w-auto flex-1"
             >
               <option value="ALL">{t("جميع الصلاحيات 🛡️", "All Roles 🛡️")}</option>
               <option value="student">{t("طلاب 🧑‍🎓", "Students 🧑‍🎓")}</option>
@@ -368,7 +368,7 @@ export default function UserManagementPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full sm:w-auto flex-1"
             >
               <option value="ALL">{t("جميع الحالات 🚦", "All Statuses 🚦")}</option>
               <option value="active">{t("نشط", "Active")}</option>
@@ -378,7 +378,7 @@ export default function UserManagementPage() {
             {/* Add User Button */}
             <Button
               onClick={() => setIsAddModalOpen(true)}
-              className="bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs px-4 h-10 rounded-xl cursor-pointer shrink-0 flex items-center gap-1.5 shadow-md"
+              className="bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs px-4 h-10 rounded-xl cursor-pointer w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 shadow-md"
             >
               <UserCheck className="h-4 w-4" />
               <span>{t("إضافة حساب جديد ➕", "Add New Account ➕")}</span>
@@ -389,37 +389,37 @@ export default function UserManagementPage() {
 
       {/* Bulk Actions Panel */}
       {selectedIds.length > 0 && (
-        <div className="p-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200/50 dark:border-violet-850 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="p-3 sm:p-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200/50 dark:border-violet-850 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span className="text-xs font-bold text-violet-700 dark:text-violet-400">
             {t(`تم اختيار ${selectedIds.length} مستخدمين لتطبيق إجراء جماعي:`, `Selected ${selectedIds.length} users for bulk action:`)}
           </span>
 
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("student")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800"
+              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كطالب", "Set Student")}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("moderator")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800"
+              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كمنسق", "Set Moderator")}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("admin")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800"
+              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كمسؤول", "Set Admin")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleBulkDelete}
-              className="text-[9px] h-8 font-bold gap-1.5"
+              className="text-[9px] h-8 font-bold gap-1.5 w-full sm:w-auto"
             >
               <Trash2 className="h-3.5 w-3.5" />
               {t("حذف الحسابات نهائياً", "Delete Permanently")}
@@ -430,8 +430,12 @@ export default function UserManagementPage() {
 
       {/* Users Table Card */}
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
-        <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-right text-xs">
+        {/* Mobile Swipe Hint */}
+        <div className="block sm:hidden text-[10px] text-zinc-400 p-2 text-center bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800">
+          ⟷ {t("اسحب الجدول يميناً ويساراً لعرض كافة الأعمدة والتفاصيل", "Swipe table horizontally to view all columns")}
+        </div>
+        <CardContent className="p-0 overflow-x-auto touch-pan-x">
+          <table className="w-full text-right text-xs min-w-[700px]">
             <thead className="bg-zinc-50 dark:bg-zinc-950/60 border-b border-zinc-200/60 dark:border-zinc-800 font-bold text-zinc-500 dark:text-zinc-400">
               <tr>
                 <th className="p-4 w-10 text-center">
@@ -630,8 +634,8 @@ export default function UserManagementPage() {
 
       {/* Edit User Modal */}
       {editingUser && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-          <Card className="w-full max-w-md max-h-[85vh] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <Card className="w-full max-w-md max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold">{t("تعديل بيانات الحساب الأكاديمي", "Edit Academic User Account")}</CardTitle>
             </CardHeader>
@@ -677,8 +681,8 @@ export default function UserManagementPage() {
 
       {/* Add New User Modal */}
       {isAddModalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-          <Card className="w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <Card className="w-full max-w-md max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <UserCheck className="h-5 w-5 text-violet-600" />
@@ -689,7 +693,7 @@ export default function UserManagementPage() {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="pt-4 space-y-4">
+            <CardContent className="pt-4 space-y-4 overflow-y-auto flex-1">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الاسم الكامل", "Full Name")}</label>
                 <Input

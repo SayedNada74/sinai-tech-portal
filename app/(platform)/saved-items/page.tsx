@@ -116,7 +116,7 @@ export default function SavedItemsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 px-4 text-xs font-extrabold border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`pb-3 px-4 text-xs font-extrabold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
                 active
                   ? "border-violet-650 text-violet-650 dark:border-violet-450 dark:text-violet-400"
                   : "border-transparent text-zinc-450 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"

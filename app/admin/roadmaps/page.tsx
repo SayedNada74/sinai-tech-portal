@@ -135,7 +135,7 @@ export default function AdminRoadmapsPage() {
   return (
     <div className="space-y-6 animate-fade-in" dir={dir}>
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
             {t("إدارة وخريطة مسارات التعلّم", "Career Roadmaps Management")}
@@ -148,14 +148,14 @@ export default function AdminRoadmapsPage() {
           </p>
         </div>
 
-        <Button onClick={openCreateModal} className="gap-2 text-xs font-bold shrink-0">
+        <Button onClick={openCreateModal} className="gap-2 text-xs font-bold w-full sm:w-auto justify-center shrink-0">
           <Plus className="h-4 w-4" />
           {t("إنشاء مسار تعلم جديد", "Create New Roadmap")}
         </Button>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {roadmaps.map((r) => (
           <Card key={r.id} className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm flex flex-col justify-between">
             <CardHeader className="pb-3">
@@ -215,8 +215,8 @@ export default function AdminRoadmapsPage() {
       </div>
 
       {modalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-          <Card className="w-full max-w-xl max-h-[85vh] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <Card className="w-full max-w-xl max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold">
                 {editingId ? t("تعديل مسار التعلم الأكاديمي", "Edit Learning Roadmap") : t("تصميم مسار تعلم جديد", "Design New Learning Roadmap")}
@@ -224,7 +224,7 @@ export default function AdminRoadmapsPage() {
             </CardHeader>
             <CardContent className="pt-4 overflow-y-auto flex-1 space-y-4">
               <form id="roadmap-form" onSubmit={handleSave} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("عنوان المسار", "Roadmap Title")}</label>
                     <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Web Development Roadmap" className="text-xs" />
@@ -264,13 +264,13 @@ export default function AdminRoadmapsPage() {
 
                   {/* Add node inline */}
                   <div className="p-3 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl space-y-2 bg-zinc-50/50 dark:bg-zinc-950/20">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <Input value={nodeLabel} onChange={(e) => setNodeLabel(e.target.value)} placeholder={t("اسم المرحلة (مثال: تعلم React)", "Stage Label (e.g. Learn React)")} className="text-xs" />
                       <Input value={nodeDuration} onChange={(e) => setNodeDuration(e.target.value)} placeholder={t("المدة (مثال: أسبوعان)", "Duration (e.g. 2 weeks)")} className="text-xs" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Input value={nodeDesc} onChange={(e) => setNodeDesc(e.target.value)} placeholder={t("وصف مهارات المرحلة...", "Stage skills description...")} className="text-xs flex-1" />
-                      <Button type="button" size="sm" onClick={addNodeToForm} className="text-xs font-bold shrink-0">
+                      <Button type="button" size="sm" onClick={addNodeToForm} className="text-xs font-bold w-full sm:w-auto justify-center shrink-0">
                         + {t("إضافة مرحلة", "Add Stage")}
                       </Button>
                     </div>

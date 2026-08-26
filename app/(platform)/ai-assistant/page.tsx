@@ -367,9 +367,9 @@ export default function AiAssistantPage() {
   ];
 
   return (
-    <div className="space-y-6 flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-100px)]" dir={dir}>
+    <div className="space-y-4 sm:space-y-6 flex flex-col h-[calc(100dvh-175px)] md:h-[calc(100vh-100px)]" dir={dir}>
       {/* Page Title */}
-      <div className="flex justify-between items-center shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-violet-500 fill-violet-500/10" />
@@ -384,7 +384,7 @@ export default function AiAssistantPage() {
         </div>
         
         {/* New Chat Button */}
-        <Button onClick={startNewChatScreen} size="sm" className="gap-1.5 text-xs font-bold shadow-sm cursor-pointer">
+        <Button onClick={startNewChatScreen} size="sm" className="w-full sm:w-auto gap-1.5 text-xs font-bold shadow-sm cursor-pointer justify-center">
           <Plus className="h-4 w-4" />
           <span>{t("محادثة جديدة", "New Chat")}</span>
         </Button>
@@ -407,16 +407,16 @@ export default function AiAssistantPage() {
           </button>
 
           <div className="flex justify-between items-center pt-2 pb-1 border-b border-zinc-100 dark:border-zinc-800">
-            <h3 className="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
+            <h3 className="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-zinc-900 dark:text-white" />
               <span>{t("سجل المحادثات", "Chat History")}</span>
             </h3>
-            <span className="text-[10px] font-bold text-zinc-400">({sessions.length})</span>
+            <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-200">({sessions.length})</span>
           </div>
 
           <div className="space-y-1.5 flex-1 overflow-y-auto">
             {sessions.length === 0 ? (
-              <div className="text-center py-8 text-zinc-400 text-xs font-semibold">
+              <div className="text-center py-8 text-zinc-500 dark:text-zinc-300 text-xs font-semibold">
                 {t("لا توجد محادثات سابقة بعد", "No previous chats yet")}
               </div>
             ) : (
@@ -429,21 +429,21 @@ export default function AiAssistantPage() {
                     className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group ${
                       isActive
                         ? "border-violet-500/50 bg-violet-50/80 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-extrabold shadow-xs"
-                        : "border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-850/50 text-zinc-650 dark:text-zinc-400"
+                        : "border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-850/50 text-zinc-900 dark:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? "text-violet-600 dark:text-violet-400" : "text-zinc-400"}`} />
+                      <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? "text-violet-600 dark:text-violet-400" : "text-zinc-700 dark:text-zinc-200"}`} />
                       <div className="min-w-0">
-                        <span className="text-xs truncate block">{s.title}</span>
-                        <span className="text-[9px] opacity-60 block mt-0.5">{s.createdAt}</span>
+                        <span className="text-xs font-bold text-zinc-900 dark:text-white truncate block">{s.title}</span>
+                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-300 block mt-0.5">{s.createdAt}</span>
                       </div>
                     </div>
 
                     <button
                       type="button"
                       onClick={(e) => deleteSession(s.id, e)}
-                      className="p-1 text-zinc-400 hover:text-red-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      className="p-1 text-zinc-400 hover:text-red-500 dark:text-zinc-300 dark:hover:text-red-400 rounded-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                       title={t("حذف المحادثة", "Delete Chat")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -671,9 +671,9 @@ export default function AiAssistantPage() {
                 disabled={isLoading}
                 className={`flex-1 rounded-2xl h-12 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border-zinc-200 dark:border-zinc-850 ${isRtl ? "pr-4" : "pl-4"}`}
               />
-              <Button type="submit" disabled={isLoading || !inputVal.trim()} className="rounded-2xl h-12 px-6 shrink-0 gap-1.5 font-bold cursor-pointer">
+              <Button type="submit" disabled={isLoading || !inputVal.trim()} className="rounded-2xl h-12 px-4 sm:px-6 shrink-0 gap-1.5 font-bold cursor-pointer">
                 <Send className={`h-4.5 w-4.5 ${isRtl ? "rotate-180" : ""}`} />
-                {t("إرسال", "Send")}
+                <span>{t("إرسال", "Send")}</span>
               </Button>
             </form>
           </div>

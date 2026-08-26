@@ -248,10 +248,10 @@ export default function GpaPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-6">
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-3 sm:gap-6 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab("calculator")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+          className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === "calculator"
               ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
               : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
@@ -264,7 +264,7 @@ export default function GpaPage() {
         </button>
         <button
           onClick={() => setActiveTab("predictor")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+          className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === "predictor"
               ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
               : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
@@ -291,14 +291,14 @@ export default function GpaPage() {
             <div className="lg:col-span-2 space-y-6">
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
                 <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-800/60 mb-6">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <CardTitle className="text-base font-bold">{t("مواد الفصل الدراسي", "Semester Courses")}</CardTitle>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={resetCalculator} className="gap-1 text-xs h-9">
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Button variant="outline" size="sm" onClick={resetCalculator} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
                         <RefreshCw className="h-3.5 w-3.5" />
                         {t("إعادة تعيين", "Reset")}
                       </Button>
-                      <Button size="sm" onClick={addCalcRow} className="gap-1 text-xs h-9">
+                      <Button size="sm" onClick={addCalcRow} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
                         <Plus className="h-3.5 w-3.5" />
                         {t("إضافة مادة", "Add Course")}
                       </Button>
@@ -417,13 +417,13 @@ export default function GpaPage() {
             <div>
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
                 <CardContent className="pt-8 pb-6">
-                  <h3 className="text-zinc-500 dark:text-zinc-400 font-bold text-sm">
+                  <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
                     {t("المعدل الفصلي المتوقع", "Expected Semester GPA")}
                   </h3>
-                  <div className="text-5xl font-black text-violet-600 dark:text-violet-400 mt-4.5">
+                  <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
                     <AnimatedNumber value={semesterGpa} decimals={2} />
                   </div>
-                  <Badge className="mt-3 bg-violet-50 text-violet-600 border-transparent text-xs py-1 px-3 dark:bg-violet-950/40 dark:text-violet-400">
+                  <Badge className="mt-3 bg-zinc-100 text-zinc-900 border-zinc-300 text-xs py-1 px-3 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700">
                     {semesterGpa >= 3.4
                       ? t("جيد جداً مرتفع 🚀", "High Distinction 🚀")
                       : semesterGpa >= 2.8
@@ -433,12 +433,12 @@ export default function GpaPage() {
 
                   <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"}`}>
                     <div>
-                      <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500 block">{t("إجمالي الساعات", "Total Credits")}</span>
-                      <span className="text-base font-bold text-zinc-800 dark:text-zinc-200">{totalSemesterCredits} {t("ساعة", "Hours")}</span>
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات", "Total Credits")}</span>
+                      <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة", "Hours")}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500 block">{t("النقاط المقدرة", "Quality Points")}</span>
-                      <span className="text-base font-bold text-zinc-800 dark:text-zinc-200">
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة", "Quality Points")}</span>
+                      <span className="text-base font-bold text-zinc-950 dark:text-white">
                         {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
                       </span>
                     </div>
@@ -544,24 +544,24 @@ export default function GpaPage() {
             <div>
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
                 <CardContent className="pt-8 pb-6">
-                  <h3 className="text-zinc-550 dark:text-zinc-400 font-bold text-sm">
+                  <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
                     {t("المعدل المطلوب في الساعات المتبقية", "Required GPA in Remaining Hours")}
                   </h3>
-                  <div className="text-5xl font-black text-violet-600 dark:text-violet-400 mt-4.5">
+                  <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
                     {requiredGpa <= 0 ? "0.00" : requiredGpa > 4.0 ? "A+" : requiredGpa.toFixed(2)}
                   </div>
-                  <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-2.5">
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 mt-2.5">
                     ({t(`مستند إلى معدلك الحالي ${cumulativeGpa.toFixed(2)} وإتمامك ${completedCredits} ساعة`, `Based on current GPA ${cumulativeGpa.toFixed(2)} & ${completedCredits} credits`)})
                   </p>
 
                   <div className={`mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"} space-y-4`}>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-450 dark:text-zinc-500">{t("الساعات المنجزة:", "Completed Credits:")}</span>
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200">{completedCredits} / 144</span>
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المنجزة:", "Completed Credits:")}</span>
+                      <span className="font-bold text-zinc-950 dark:text-white">{completedCredits} / 144</span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-450 dark:text-zinc-500">{t("الساعات المتبقية للتخرج:", "Remaining Credits:")}</span>
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200">{remainingCredits} {t("ساعة", "Hours")}</span>
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المتبقية للتخرج:", "Remaining Credits:")}</span>
+                      <span className="font-bold text-zinc-950 dark:text-white">{remainingCredits} {t("ساعة", "Hours")}</span>
                     </div>
                   </div>
                 </CardContent>

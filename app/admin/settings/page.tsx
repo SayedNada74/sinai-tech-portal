@@ -182,7 +182,7 @@ export default function PlatformSettingsPage() {
       </div>
 
       <div className="flex justify-end pt-2">
-        <Button onClick={handleSaveSettings} className="gap-2 text-xs font-bold">
+        <Button onClick={handleSaveSettings} className="gap-2 text-xs font-bold w-full sm:w-auto justify-center">
           <Save className="h-4 w-4" />
           {t("حفظ جميع الإعدادات", "Save All Settings")}
         </Button>

@@ -48,7 +48,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   return (
     <ProtectedRoute>
       <div
-        className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans"
+        className="min-h-screen w-full max-w-full min-w-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans"
         dir={dir}
       >
         {/* Global Search Dialog Triggered by Ctrl+K */}
@@ -143,7 +143,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         </header>
 
         {/* Main Content Pane */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
 
           {/* Top Header Bar for Desktop */}
           <header className="hidden sm:flex h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/50 dark:border-zinc-800/40 px-8 items-center justify-between shrink-0">
@@ -323,7 +323,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </header>
 
           {/* Main workspace container */}
-          <main className="flex-1 min-w-0 p-4 sm:p-8 pb-24 sm:pb-8 overflow-y-auto bg-zinc-50 dark:bg-zinc-950">
+          <main className="flex-1 w-full max-w-full min-w-0 p-3.5 sm:p-6 md:p-8 pb-24 sm:pb-8 bg-zinc-50 dark:bg-zinc-950">
             {/* Mobile Quick Search Pill Bar */}
             <div className="sm:hidden mb-4">
               <button

@@ -145,11 +145,11 @@ export default function ReviewModerationPage() {
   return (
     <div className="space-y-6 animate-fade-in" dir={dir}>
       {/* Title & Stats */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2.5">
-            <Shield className="h-6 w-6 text-cyan-500" />
-            {t("إدارة ورقابة المنتدى والتقييمات", "Community Forum & Reviews Moderation")}
+            <Shield className="h-6 w-6 text-cyan-500 shrink-0" />
+            <span>{t("إدارة ورقابة المنتدى والتقييمات", "Community Forum & Reviews Moderation")}</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             {t(
@@ -160,7 +160,7 @@ export default function ReviewModerationPage() {
         </div>
 
         {/* Quick Stats Badges */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline" className="text-xs font-bold py-1.5 px-3 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 gap-1.5">
             <MessageSquare className="h-3.5 w-3.5 text-cyan-500" />
             <span>{posts.length} {t("منشور طلابي", "Posts")}</span>
@@ -176,14 +176,13 @@ export default function ReviewModerationPage() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+      <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2 overflow-x-auto scrollbar-none flex-nowrap sm:flex-wrap">
         <button
           onClick={() => { setActiveTab("posts"); setSearchTerm(""); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-            activeTab === "posts"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab === "posts"
               ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
               : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-          }`}
+            }`}
         >
           <MessageCircle className="h-4 w-4" />
           <span>{t("منشورات المنتدى الطلابي", "Student Forum Posts")}</span>
@@ -192,11 +191,10 @@ export default function ReviewModerationPage() {
 
         <button
           onClick={() => { setActiveTab("reviews"); setSearchTerm(""); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-            activeTab === "reviews"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab === "reviews"
               ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
               : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-          }`}
+            }`}
         >
           <Star className="h-4 w-4" />
           <span>{t("مراجعات وتقييمات المواد", "Course Reviews")}</span>
@@ -206,7 +204,7 @@ export default function ReviewModerationPage() {
 
       {/* Filter & Search Bar */}
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3">
+        <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
             <Input
@@ -223,11 +221,11 @@ export default function ReviewModerationPage() {
           </div>
 
           {activeTab === "posts" ? (
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+                className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full sm:w-auto flex-1"
               >
                 <option value="ALL">{t("جميع الاقسام 💬", "All Categories 💬")}</option>
                 <option value="General Discussion">General Discussion</option>
@@ -243,7 +241,7 @@ export default function ReviewModerationPage() {
                 variant={reportedOnly ? "destructive" : "outline"}
                 size="sm"
                 onClick={() => setReportedOnly(!reportedOnly)}
-                className="h-10 text-xs font-bold gap-1.5 cursor-pointer"
+                className="h-10 text-xs font-bold gap-1.5 cursor-pointer w-full sm:w-auto justify-center"
               >
                 <AlertTriangle className="h-3.5 w-3.5" />
                 {t("المبلغ عنها فقط", "Reported Only")}
@@ -253,8 +251,9 @@ export default function ReviewModerationPage() {
             <select
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
-              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+              className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full md:w-auto"
             >
+
               <option value="ALL">{t("جميع المقررات 📚", "All Courses 📚")}</option>
               {courses.map((c) => (
                 <option key={c.code} value={c.code}>{c.code} - {t(c.arabic, c.english)}</option>

@@ -67,7 +67,7 @@ export function Navbar() {
       <header
         className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-xl border-b border-zinc-200/80 dark:border-zinc-850/80 shadow-xs py-3.5"
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" dir={dir}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between" dir={dir}>
           {/* Logo */}
           <Logo size="md" href="/" />
 
@@ -138,48 +138,44 @@ export function Navbar() {
                     >
                       {/* User metadata */}
                       <div className="px-4.5 py-3 border-b border-zinc-100 dark:border-zinc-850">
-                        <p className="font-bold text-sm text-zinc-900 dark:text-zinc-50 truncate">{user?.name}</p>
-                        <p className="text-[10px] text-zinc-400 mt-0.5 truncate">{user?.email}</p>
+                        <p className="text-xs font-bold text-zinc-900 dark:text-zinc-50 truncate">{userName}</p>
+                        <p className="text-[10px] text-zinc-400 truncate mt-0.5">{user?.email}</p>
                       </div>
 
-                      <div className="p-1 space-y-0.5">
-                        <Link
-                          href="/dashboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-850 rounded-xl transition-colors"
-                        >
-                          <LayoutDashboard className="h-4 w-4 text-zinc-450" />
-                          {t("لوحة التحكم", "Dashboard")}
+                      <div className="p-1.5 space-y-1">
+                        <Link href="/dashboard" onClick={() => setDropdownOpen(false)}>
+                          <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
+                            <LayoutDashboard className="h-4 w-4" />
+                            <span>{t("لوحة التحكم", "Dashboard")}</span>
+                          </div>
                         </Link>
-                        <Link
-                          href="/profile"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-850 rounded-xl transition-colors"
-                        >
-                          <User className="h-4 w-4 text-zinc-450" />
-                          {t("الملف الشخصي", "Student Profile")}
-                        </Link>
-                        <Link
-                          href="/settings"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-850 rounded-xl transition-colors"
-                        >
-                          <Settings className="h-4 w-4 text-zinc-450" />
-                          {t("إعدادات المنصة", "Settings")}
-                        </Link>
-                      </div>
 
-                      <div className="border-t border-zinc-100 dark:border-zinc-850 p-1 mt-1">
-                        <button
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            logout();
-                          }}
-                          className="flex w-full items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors cursor-pointer"
-                        >
-                          <LogOut className="h-4 w-4" />
-                          {t("تسجيل الخروج", "Logout")}
-                        </button>
+                        <Link href="/profile" onClick={() => setDropdownOpen(false)}>
+                          <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
+                            <User className="h-4 w-4" />
+                            <span>{t("الملف الشخصي", "Profile")}</span>
+                          </div>
+                        </Link>
+
+                        <Link href="/settings" onClick={() => setDropdownOpen(false)}>
+                          <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
+                            <Settings className="h-4 w-4" />
+                            <span>{t("الإعدادات", "Settings")}</span>
+                          </div>
+                        </Link>
+
+                        <div className="pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              logout();
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors cursor-pointer"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            <span>{t("تسجيل الخروج", "Logout")}</span>
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -187,17 +183,17 @@ export function Navbar() {
               </div>
             ) : (
               /* Guest Actions */
-              <>
+              <div className="flex items-center gap-2">
                 <Link href="/auth/login">
-                  <Button variant="outline" size="sm">{t("تسجيل الدخول", "Sign In")}</Button>
+                  <Button variant="outline" size="sm" className="rounded-xl font-bold border-zinc-200 dark:border-zinc-800 text-xs px-3.5 h-9">{t("تسجيل الدخول", "Sign In")}</Button>
                 </Link>
                 <Link href="/auth/login">
-                  <Button size="sm" className="gap-1.5 font-bold">
+                  <Button size="sm" className="gap-1.5 font-bold rounded-xl text-xs px-3.5 h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md shadow-violet-600/20">
                     <Sparkles className="h-4 w-4" />
                     {t("ابدأ التخطيط", "Get Started")}
                   </Button>
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
@@ -249,7 +245,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="fixed inset-x-0 top-[65px] z-40 md:hidden bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 shadow-2xl py-6 px-6 max-h-[calc(100vh-75px)] overflow-y-auto"
+              className="fixed inset-x-0 top-[65px] z-40 md:hidden bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 shadow-2xl py-5 px-4 sm:py-6 sm:px-6 max-h-[calc(100vh-75px)] overflow-y-auto"
               dir={dir}
             >
             <nav className="flex flex-col gap-4.5 mb-6">

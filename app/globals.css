@@ -71,9 +71,50 @@
   opacity: 0.85 !important;
 }
 
-.light-mode input::placeholder,
-.light-mode textarea::placeholder {
-  color: #52525b !important;
+/* ─── Dark Mode Pure Solid White Typography (Zero Dim Gray Everywhere) ───── */
+.dark .text-zinc-300,
+.dark .text-zinc-400,
+.dark .text-zinc-450,
+.dark .text-zinc-500,
+.dark .text-zinc-550,
+.dark .text-zinc-600,
+.dark .text-zinc-650,
+.dark .text-zinc-700,
+.dark .text-gray-300,
+.dark .text-gray-400,
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-neutral-300,
+.dark .text-neutral-400,
+.dark .text-neutral-500,
+.dark .text-neutral-600,
+.dark .text-slate-300,
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-slate-600,
+.dark .text-muted-foreground,
+.dark .card-description,
+.dark [class*="CardDescription"],
+.dark [class*="text-zinc-300"],
+.dark [class*="text-zinc-400"],
+.dark [class*="text-zinc-450"],
+.dark [class*="text-zinc-500"],
+.dark [class*="text-zinc-550"],
+.dark [class*="text-zinc-600"],
+.dark [class*="text-zinc-650"],
+.dark [class*="dark:text-zinc-300"],
+.dark [class*="dark:text-zinc-400"],
+.dark [class*="dark:text-zinc-450"],
+.dark [class*="dark:text-zinc-500"],
+.dark [class*="dark:text-zinc-550"],
+.dark [class*="dark:text-zinc-600"] {
+  color: #fafafa !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #71717a !important;
   opacity: 0.8 !important;
 }
 
@@ -574,4 +615,65 @@ html {
 
 .animate-pulse-glow {
   animation: pulseGlow 8s ease-in-out infinite;
+}
+
+/* ─── Global Dark Mode Maximum Contrast Pure Solid White Typography ─────── */
+html.dark [class*="text-zinc-3"],
+html.dark [class*="text-zinc-4"],
+html.dark [class*="text-zinc-5"],
+html.dark [class*="text-zinc-6"],
+html.dark [class*="text-zinc-7"],
+html.dark [class*="text-gray-3"],
+html.dark [class*="text-gray-4"],
+html.dark [class*="text-gray-5"],
+html.dark [class*="text-gray-6"],
+html.dark [class*="text-gray-7"],
+html.dark [class*="text-neutral-3"],
+html.dark [class*="text-neutral-4"],
+html.dark [class*="text-neutral-5"],
+html.dark [class*="text-neutral-6"],
+html.dark [class*="text-slate-3"],
+html.dark [class*="text-slate-4"],
+html.dark [class*="text-slate-5"],
+html.dark [class*="text-slate-6"],
+html.dark [class*="text-muted"],
+html.dark [class*="CardTitle"],
+html.dark [class*="CardDescription"],
+.dark [class*="text-zinc-3"],
+.dark [class*="text-zinc-4"],
+.dark [class*="text-zinc-5"],
+.dark [class*="text-zinc-6"],
+.dark [class*="text-zinc-7"],
+.dark [class*="text-gray-3"],
+.dark [class*="text-gray-4"],
+.dark [class*="text-gray-5"],
+.dark [class*="text-gray-6"],
+.dark [class*="text-gray-7"],
+.dark [class*="text-neutral-3"],
+.dark [class*="text-neutral-4"],
+.dark [class*="text-neutral-5"],
+.dark [class*="text-neutral-6"],
+.dark [class*="text-slate-3"],
+.dark [class*="text-slate-4"],
+.dark [class*="text-slate-5"],
+.dark [class*="text-slate-6"],
+.dark [class*="text-muted"],
+.dark [class*="CardTitle"],
+.dark [class*="CardDescription"] {
+  color: #fafafa !important;
+}
+
+/* Maintain proper placeholder visibility */
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #a1a1aa !important;
+  opacity: 0.75 !important;
+}
+
+/* Ensure secondary timestamps and subtitle spans stay clear and readable */
+html.dark .opacity-60,
+.dark .opacity-60 {
+  opacity: 0.85 !important;
 }

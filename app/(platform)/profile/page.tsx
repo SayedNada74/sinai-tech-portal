@@ -573,12 +573,12 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8" dir={dir}>
       {/* Header and completion indicator */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50">
             {t("الملف الشخصي ومحفظة الأعمال", "Student Profile & Portfolio")}
           </h1>
-          <p className="text-sm text-zinc-550 dark:text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-550 dark:text-zinc-400 mt-1">
             {t(
               "قم بإعداد بوابتك المهنية، رفع صورتك الشخصية، واستعراض شاراتك الأكاديمية.",
               "Setup your professional portal, upload your profile picture, and view academic badges."
@@ -587,10 +587,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Completion Progress Bar */}
-        <div className="w-full md:w-72 bg-white dark:bg-zinc-900 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm">
-          <div className="flex justify-between items-center text-xs font-bold text-zinc-700 dark:text-zinc-355 mb-2">
+        <div className="w-full sm:w-72 bg-white dark:bg-zinc-900 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+          <div className="flex justify-between items-center text-xs font-bold text-zinc-700 dark:text-zinc-50 mb-2">
             <span>{t("نسبة اكتمال البورتفوليو", "Portfolio Completion")}</span>
-            <span className="text-violet-650 dark:text-violet-400">
+            <span className="text-violet-650 dark:text-zinc-50">
               <AnimatedNumber value={completionPercentage} suffix="%" />
             </span>
           </div>
@@ -658,10 +658,10 @@ export default function ProfilePage() {
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1"
+                    className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1 min-w-0"
                   >
-                    <Upload className="h-3.5 w-3.5" />
-                    <span>{t("رفع صورة من الجهاز", "Upload Custom Picture")}</span>
+                    <Upload className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{t("رفع صورة من الجهاز", "Upload Custom Picture")}</span>
                   </Button>
                   {avatar.length > 10 && (
                     <Button
@@ -694,7 +694,7 @@ export default function ProfilePage() {
 
                 {/* Avatar Selector */}
                 <div className="mt-6">
-                  <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-450 block mb-3.5">
+                  <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-50 block mb-3.5">
                     {t("أو اختر رمزاً تعبيرياً (Emoji)", "Or pick an Emoji avatar")}
                   </span>
                   <div className="grid grid-cols-5 gap-2 justify-center max-w-xs mx-auto">
@@ -720,7 +720,7 @@ export default function ProfilePage() {
             {(cvUrl || portfolioUrl || linkedin || github) && (
               <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
                 <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                  <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1.5">
+                  <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-50 flex items-center gap-1.5">
                     <Globe className="h-4 w-4 text-cyan-500" />
                     <span>{t("الروابط المهنية للملف", "Professional Links")}</span>
                   </CardTitle>
@@ -792,7 +792,7 @@ export default function ProfilePage() {
             {/* Badges / Achievements Showcase widget */}
             <Card className={`border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm ${isRtl ? "text-right" : "text-left"}`}>
               <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1.5">
+                <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-50 flex items-center gap-1.5">
                   <Award className="h-4.5 w-4.5 text-amber-500" />
                   <span>{t(`الشارات المفتوحة (${user?.badges?.length || 0})`, `Unlocked Badges (${user?.badges?.length || 0})`)}</span>
                 </CardTitle>
@@ -983,7 +983,7 @@ export default function ProfilePage() {
                         </Badge>
                       ))
                     ) : (
-                      <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                      <span className="text-xs text-zinc-400 dark:text-zinc-50">
                         {t("لم تضف أي مهارات بعد.", "No skills added yet.")}
                       </span>
                     )}

@@ -227,14 +227,14 @@ export default function DashboardPage() {
                   )}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2.5 shrink-0">
-            <Link href="/profile">
-              <Button size="sm" variant="secondary" className="bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-extrabold border-transparent shadow-md text-xs cursor-pointer">
+          <div className="flex flex-wrap sm:flex-nowrap gap-2.5 shrink-0 w-full sm:w-auto">
+            <Link href="/profile" className="flex-1 sm:flex-initial">
+              <Button size="sm" variant="secondary" className="w-full sm:w-auto bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-extrabold border-transparent shadow-md text-xs cursor-pointer">
                 {t("تعديل الملف الشخصي", "Edit Profile")}
               </Button>
             </Link>
-            <Link href="/settings">
-              <Button size="sm" variant="outline" className="border-white/40 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold text-xs cursor-pointer">
+            <Link href="/settings" className="flex-1 sm:flex-initial">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold text-xs cursor-pointer">
                 {t("الإعدادات", "Settings")}
               </Button>
             </Link>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
       )}
 
       {/* Academic Highlights & Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -268,20 +268,20 @@ export default function DashboardPage() {
                   <div className="p-3 bg-zinc-100 dark:bg-zinc-950/60 rounded-xl">
                     <Icon className={`h-5.5 w-5.5 ${stat.color}`} />
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-bold py-0.5 px-2 rounded-lg border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-400 bg-zinc-100/80 dark:bg-transparent">
+                  <Badge variant="outline" className="text-[10px] font-bold py-0.5 px-2 rounded-lg border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white bg-zinc-100/80 dark:bg-zinc-800/40">
                     {t("محدث", "Updated")}
                   </Badge>
                 </div>
-                <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-400">{stat.label}</h3>
+                <h3 className="text-xs font-bold text-zinc-900 dark:text-white">{stat.label}</h3>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-50">
+                  <span className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">
                     {idx === 0 && cumulativeGpa > 0 ? (
                       <AnimatedNumber value={cumulativeGpa} decimals={2} />
                     ) : (
                       stat.value
                     )}
                   </span>
-                  <span className="text-[10px] font-bold text-zinc-900 dark:text-zinc-400">{stat.description}</span>
+                  <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-200">{stat.description}</span>
                 </div>
               </CardContent>
             </Card>
@@ -290,44 +290,44 @@ export default function DashboardPage() {
       </div>
 
       {/* Two Column Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
         {/* Main/Right Side Columns */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
 
           {/* Quick Actions */}
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400">
+              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                 {t("إجراءات سريعة", "Quick Actions")}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {isAdmin ? (
                   <>
                     <Link href="/admin/users">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <Shield className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("إدارة الاعضاء", "Manage Users")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة الاعضاء", "Manage Users")}</span>
                       </div>
                     </Link>
                     <Link href="/admin/courses">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <BookOpen className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("إدارة المقررات", "Manage Courses")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة المقررات", "Manage Courses")}</span>
                       </div>
                     </Link>
                     <Link href="/admin/audit">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <History className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("سجلات الأمان", "Audit Trail")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("سجلات الأمان", "Audit Trail")}</span>
                       </div>
                     </Link>
                     <Link href="/profile">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <User className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الملف الإداري", "Admin Profile")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الإداري", "Admin Profile")}</span>
                       </div>
                     </Link>
                   </>
@@ -336,25 +336,25 @@ export default function DashboardPage() {
                     <Link href="/profile">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <User className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الملف الشخصي", "Profile")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الشخصي", "Profile")}</span>
                       </div>
                     </Link>
                     <Link href="/settings">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <Settings className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الإعدادات", "Settings")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الإعدادات", "Settings")}</span>
                       </div>
                     </Link>
                     <Link href="/gpa">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <Calculator className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("حاسبة المعدل", "GPA Calc")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("حاسبة المعدل", "GPA Calc")}</span>
                       </div>
                     </Link>
                     <a href="https://kmoodle.su.edu.eg/" target="_blank" rel="noopener noreferrer">
                       <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
                         <ExternalLink className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("مودل سيناء", "SU Moodle")}</span>
+                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("مودل سيناء", "SU Moodle")}</span>
                       </div>
                     </a>
                   </>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
           {/* Active Roadmaps progress tracking */}
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                 <Compass className="h-5 w-5 text-indigo-500" />
                 {t("متابعة تقدم خارطة الطريق المهنية", "Career Roadmap Progress Tracking")}
               </CardTitle>
@@ -404,7 +404,7 @@ export default function DashboardPage() {
                 return (
                   <div key={map.id} className="space-y-2">
                     <div className="flex justify-between items-center text-xs font-semibold">
-                      <span className="text-zinc-700 dark:text-zinc-300">{map.title}</span>
+                      <span className="text-zinc-900 dark:text-white font-bold">{map.title}</span>
                       <span className="text-cyan-500">{percent}%</span>
                     </div>
                     <Progress value={percent} className="h-1.5 bg-zinc-100 dark:bg-zinc-800" />
@@ -418,8 +418,8 @@ export default function DashboardPage() {
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <History className="h-4.5 w-4.5 text-zinc-400" />
-                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400">
+                <History className="h-4.5 w-4.5 text-zinc-900 dark:text-white" />
+                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                   {t("المشاهدة والمراجعة الأخيرة", "Recently Reviewed")}
                 </CardTitle>
               </div>
@@ -430,15 +430,15 @@ export default function DashboardPage() {
                   <Link href={item.path} key={item.id} className="block p-3 rounded-xl bg-zinc-50 hover:bg-zinc-100/50 dark:bg-zinc-900/40 border border-zinc-150/10 dark:border-zinc-850/30 transition-colors">
                     <div className="flex justify-between items-center text-xs font-semibold">
                       <div className="flex items-center gap-2.5">
-                        <Badge variant="outline" className="text-[8px] py-0 px-1 border-zinc-200/10 text-zinc-400">{item.type.toUpperCase()}</Badge>
-                        <span className="text-zinc-700 dark:text-zinc-200">{item.title}</span>
+                        <Badge variant="outline" className="text-[8px] py-0 px-1 border-zinc-200/10 text-zinc-900 dark:text-white">{item.type.toUpperCase()}</Badge>
+                        <span className="text-zinc-900 dark:text-white font-bold">{item.title}</span>
                       </div>
-                      <span className="text-zinc-400">→</span>
+                      <span className="text-zinc-400 dark:text-zinc-200">→</span>
                     </div>
                   </Link>
                 ))
               ) : (
-                <div className="text-center py-6 text-xs text-zinc-450">
+                <div className="text-center py-6 text-xs text-zinc-600 dark:text-zinc-200 font-medium">
                   {t("لا توجد مقررات أو ملفات تمت مراجعتها مؤخراً.", "No recently reviewed courses or resources.")}
                 </div>
               )}
@@ -452,8 +452,8 @@ export default function DashboardPage() {
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm" id="deadlines">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4.5 w-4.5 text-zinc-400" />
-                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400">
+                <Calendar className="h-4.5 w-4.5 text-zinc-900 dark:text-white" />
+                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                   {t("مواعيد تسليم قادمة", "Upcoming Deadlines")}
                 </CardTitle>
               </div>
@@ -469,7 +469,7 @@ export default function DashboardPage() {
                     className="block p-3 rounded-xl bg-zinc-50 hover:bg-zinc-100/50 dark:bg-zinc-900/40 border border-zinc-150/10 dark:border-zinc-850/30 transition-colors"
                   >
                     <div className="flex justify-between items-start gap-2 mb-1.5 text-xs font-semibold">
-                      <span className="text-zinc-800 dark:text-zinc-200 line-clamp-1">{dl.title}</span>
+                      <span className="text-zinc-900 dark:text-white font-bold line-clamp-1">{dl.title}</span>
                       {dl.type === "assignment" ? (
                         <Badge className="bg-amber-500/10 text-amber-500 border-transparent text-[8px] font-bold px-1.5 py-0 shrink-0">
                           {t("واجب", "Task")}
@@ -480,11 +480,11 @@ export default function DashboardPage() {
                         </Badge>
                       )}
                     </div>
-                    <span className="text-[10px] text-zinc-450 dark:text-zinc-500">{dl.date}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-300">{dl.date}</span>
                   </a>
                 ))
               ) : (
-                <div className="text-center py-6 text-xs text-zinc-450">
+                <div className="text-center py-6 text-xs text-zinc-600 dark:text-zinc-200 font-medium">
                   {t("لا توجد مواعيد تسليم قادمة.", "No upcoming deadlines.")}
                 </div>
               )}
@@ -495,15 +495,15 @@ export default function DashboardPage() {
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <BookOpen className="h-4.5 w-4.5 text-zinc-400" />
-                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400">
+                <BookOpen className="h-4.5 w-4.5 text-zinc-900 dark:text-white" />
+                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                   {t("متابعة الدراسة", "Continue Learning")}
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <div className="p-4 rounded-xl border border-dashed border-zinc-350 dark:border-zinc-800 text-center">
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-3.5">
+                <p className="text-xs text-zinc-700 dark:text-zinc-200 leading-relaxed mb-3.5">
                   {t(
                     "تصفح مستكشف المواد الأكاديمية لإكمال أو إضافة مقررات دراسية لخطتك.",
                     "Explore the courses directory to plan or complete academic subjects."
@@ -522,8 +522,8 @@ export default function DashboardPage() {
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <FolderHeart className="h-4.5 w-4.5 text-zinc-400" />
-                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400">
+                <FolderHeart className="h-4.5 w-4.5 text-zinc-900 dark:text-white" />
+                <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                   {t("المحفوظات الشخصية", "Personal Bookmarks")}
                 </CardTitle>
               </div>
@@ -531,7 +531,7 @@ export default function DashboardPage() {
             <CardContent>
               {bookmarks.length > 0 ? (
                 <div className="space-y-2">
-                  <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-350">
+                  <div className="text-xs font-semibold text-zinc-900 dark:text-white">
                     {t(
                       `لديك ${bookmarks.length} عناصر محفوظة في المنصة.`,
                       `You have ${bookmarks.length} bookmarked items in portal.`
@@ -545,7 +545,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="text-center py-4">
-                  <span className="text-xs text-zinc-450 dark:text-zinc-500">
+                  <span className="text-xs text-zinc-600 dark:text-zinc-200 font-medium">
                     {t("لا يوجد مصادر محفوظة حالياً.", "No current bookmarked items.")}
                   </span>
                 </div>

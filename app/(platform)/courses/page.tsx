@@ -201,24 +201,24 @@ export default function CoursesPage() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className={`gap-2 text-xs font-bold cursor-pointer h-11 ${
+              className={`flex-1 sm:flex-initial gap-2 text-xs font-bold cursor-pointer h-11 ${
                 showFilters ? "border-violet-500 text-violet-600 bg-violet-50 dark:bg-violet-950/20" : ""
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" />
-              {t("تصفية المتقدمة", "Advanced Filters")}
+              <span>{t("تصفية", "Filters")}</span>
             </Button>
 
             {/* Sort Dropdown */}
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-initial">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="h-11 pl-8 pr-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none"
+                className="w-full sm:w-auto h-11 pl-8 pr-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none"
               >
                 <option value="ACADEMIC_ASC">{t("الترتيب أكاديمياً", "Academic Order")}</option>
                 <option value="CODE_ASC">{t("الترتيب برمز المقرر", "Sort by Code")}</option>

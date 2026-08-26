@@ -253,7 +253,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               )}
             </div>
 
-            <div className={`flex gap-4 ${isRtl ? "sm:border-r sm:pr-8" : "sm:border-l sm:pl-8"} border-zinc-100 dark:border-zinc-800 shrink-0 ${isRtl ? "text-right" : "text-left"}`}>
+            <div className={`flex items-center justify-between sm:justify-start gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 ${isRtl ? "sm:border-r sm:pr-8" : "sm:border-l sm:pl-8"} border-zinc-100 dark:border-zinc-800 shrink-0 ${isRtl ? "text-right" : "text-left"}`}>
               <div>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 block">
                   {t("الساعات المعتمدة", "Credit Hours")}

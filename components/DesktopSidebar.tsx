@@ -82,7 +82,7 @@ export function DesktopSidebar() {
   return (
     <aside
       style={{ width: "230px" }}
-      className={`hidden sm:flex flex-col justify-between shrink-0 h-screen sticky top-0 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md z-30 select-none ${
+      className={`hidden sm:flex flex-col justify-between shrink-0 h-screen sticky top-0 self-start bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md z-30 select-none ${
         isRtl ? "border-l border-zinc-200/80 dark:border-zinc-800/60" : "border-r border-zinc-200/80 dark:border-zinc-800/60"
       }`}
       dir={dir}

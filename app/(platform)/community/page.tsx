@@ -200,7 +200,7 @@ export default function CommunityPage() {
           <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50">
             {t("المنتدى ومجتمع الطلاب", "Student Forum & Community")}
           </h1>
-          <p className="text-sm text-zinc-550 dark:text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-550 dark:text-zinc-400 mt-1">
             {t(
               "تواصل مع زملائك، اطرح أسئلتك، وشارك المعرفة الأكاديمية.",
               "Connect with peers, ask questions, and share academic knowledge."
@@ -209,15 +209,15 @@ export default function CommunityPage() {
         </div>
         <Button
           onClick={() => setIsCreateOpen(true)}
-          className={`flex items-center gap-2 ${isRtl ? "self-start sm:self-auto" : "self-end sm:self-auto"} shadow-md`}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 shadow-md cursor-pointer"
         >
           <Plus className="h-4.5 w-4.5" />
-          {t("إضافة منشور جديد", "Add New Post")}
+          <span>{t("إضافة منشور جديد", "Add New Post")}</span>
         </Button>
       </div>
 
       {/* Category Pills Slider */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2.5 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => (
           <button
             key={cat}

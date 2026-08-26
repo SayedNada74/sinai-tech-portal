@@ -19,6 +19,7 @@ import {
   Briefcase,
   Compass,
   ArrowRight,
+  ArrowUpRight,
   CheckCircle,
   HelpCircle,
   TrendingUp,
@@ -119,43 +120,45 @@ export default function LandingPage() {
       <Navbar />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative pt-24 pb-20 md:pt-36 md:pb-32 px-6 overflow-hidden">
+        {/* Hero Section - Perfectly framed to fill viewport ending right at the guest tools cards */}
+        <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center items-center py-6 sm:py-8 px-4 sm:px-6 overflow-hidden">
           {/* Glowing Background Orbs */}
-          <div className="absolute -top-40 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-violet-600/20 via-indigo-600/15 to-transparent rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
-          <div className="absolute top-1/3 left-10 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/20 to-teal-500/10 rounded-full blur-[100px] pointer-events-none animate-pulse-glow" />
+          <div className="absolute -top-40 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-violet-600/10 via-indigo-600/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/3 left-10 w-[400px] h-[400px] bg-gradient-to-tr from-indigo-500/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="max-w-6xl mx-auto text-center relative z-10 space-y-8">
+          <div className="w-full max-w-5xl mx-auto text-center relative z-10 space-y-3 sm:space-y-4 my-auto">
             {/* Top Floating Badge */}
             <motion.div
-              initial={{ opacity: 0, y: -15 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/30 bg-violet-500/10 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 text-xs sm:text-sm font-bold backdrop-blur-md shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-violet-500/25 dark:border-violet-500/30 bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white text-xs sm:text-sm font-semibold shadow-xs backdrop-blur-md transition-colors"
             >
-              <GraduationCap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
               <span>{t("المنصة التعليمية الشاملة لطلاب جامعة سيناء", "The comprehensive educational platform for Sinai University students.")}</span>
+              <GraduationCap className="h-4 w-4 text-violet-500 dark:text-violet-400 shrink-0" />
             </motion.div>
 
-            {/* Hero Main Headline */}
+            {/* Hero Main Headline - Matches screenshot 1 exact calm lavender styling */}
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.15] max-w-4xl mx-auto"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.25] max-w-4xl mx-auto"
             >
-              {t("دليلك الأكاديمي والمهني لرحلة تخرج", "Your Academic & Career Guide for a")} {" "}
-              <span className="bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-500 bg-clip-text text-transparent">
-                {t("ذكية وبدون عوائق", "Seamless Graduation Journey")}
+              <span className="block text-zinc-950 dark:text-white">
+                {t("دليلك الأكاديمي والمهني لرحلة", "Your Academic & Career Guide for a")}
+              </span>
+              <span className="block mt-1 sm:mt-2 text-violet-400 dark:text-violet-300">
+                {t("تخرج ذكية وبدون عوائق", "Smart Graduation Without Hurdles")}
               </span>
             </motion.h1>
 
             {/* Hero Subtitle */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-base sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-medium"
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="text-xs sm:text-sm md:text-[15px] text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed font-normal"
             >
               {t(
                 "تتبع خطتك الدراسية، احسب معدلك التراكمي، واكتشف متطلبات المواد والمسارات المهنية بخطوات انسيابية فائقة السرعة.",
@@ -165,216 +168,274 @@ export default function LandingPage() {
 
             {/* Hero Action Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1 sm:pt-2"
             >
               <Link href={portalHref} className="w-full sm:w-auto">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Button size="lg" className="w-full sm:w-auto px-9 py-6 text-base font-extrabold shadow-xl shadow-violet-600/20 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-2xl gap-2 cursor-pointer">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button size="lg" className="w-full sm:w-auto px-7 py-2.5 text-sm font-bold shadow-md shadow-violet-600/20 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl gap-2 cursor-pointer">
                     <span>{t("دخول منصة الطالب", "Open Student Portal")}</span>
-                    <ArrowRight className={`h-5 w-5 ${lang === "ar" ? "rotate-180" : ""}`} />
+                    <ArrowRight className={`h-4 w-4 ${lang === "ar" ? "rotate-180" : ""}`} />
                   </Button>
                 </motion.div>
               </Link>
 
               <Link href="#features" className="w-full sm:w-auto">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-base font-bold rounded-2xl border-zinc-300 dark:border-zinc-800 backdrop-blur-sm cursor-pointer">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto px-7 py-2.5 text-sm font-bold rounded-2xl border-zinc-300 dark:border-zinc-800 bg-white/90 dark:bg-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 backdrop-blur-sm cursor-pointer">
                     <span>{t("استكشاف المميزات", "Explore Features")}</span>
                   </Button>
                 </motion.div>
               </Link>
             </motion.div>
 
-            {/* Quick Guest Access Strip */}
+            {/* Quick Guest Access Strip - Distinctive, eye-catching, ultra-chic and interactive */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="pt-6 max-w-4xl mx-auto"
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="pt-3 sm:pt-4 max-w-4xl mx-auto w-full"
             >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold mb-4">
-                <Flame className="h-3.5 w-3.5" />
-                <span>{t("أدوات مفتوحة للتجربة السريعة بدون تسجيل ⚡", "Instant Free Exploration Tools (No Login Required) ⚡")}</span>
+              {/* Eye-catching Chic Badge with Live Pulse Dot */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-violet-500/30 dark:border-violet-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-sm shadow-violet-500/5 backdrop-blur-md transition-all">
+                {/* Live glowing radar pulse dot */}
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+                </span>
+                <span>{t("أدوات مفتوحة للتجربة السريعة بدون تسجيل", "Instant Free Exploration Tools (No Login Required)")}</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-violet-500/10 dark:bg-violet-400/15 text-violet-600 dark:text-violet-300 text-[9px] font-bold">
+                  {t("متاح للجميع ⚡", "Open to All ⚡")}
+                </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-right" dir={dir}>
-                <Link href="/gpa" className="group">
-                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-violet-500/50 hover:bg-violet-50/50 dark:hover:bg-violet-950/20 transition-all cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <Calculator className="h-4.5 w-4.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("حاسبة الـ GPA", "GPA Calculator")}</h4>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("حساب فوري وسيناريوهات التخرج", "Instant GPA & What-If Simulation")}</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+              {/* Ambient Glow Wrapper & 3 Interactive Cards */}
+              <div className="relative group/grid max-w-3xl mx-auto">
+                {/* Subtle ambient blur glow behind cards */}
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-600/10 rounded-3xl blur-xl opacity-50 group-hover/grid:opacity-80 transition-opacity pointer-events-none -z-10" />
 
-                <Link href="/courses" className="group">
-                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-cyan-500/50 hover:bg-cyan-50/50 dark:hover:bg-cyan-950/20 transition-all cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <BookOpen className="h-4.5 w-4.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("دليل المقررات", "Course Explorer")}</h4>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("شجرة المواد والمتطلبات السابقة", "Course Hierarchy & Prerequisites")}</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-right" dir={dir}>
+                  {/* Card 1: GPA Calculator */}
+                  <Link href="/gpa" className="group block">
+                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                            <Calculator className="h-4.5 w-4.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("حاسبة الـ GPA", "GPA Calculator")}</h4>
+                              <span className="text-[9px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/60 px-1.5 py-0.5 rounded border border-violet-200/40 dark:border-violet-800/40 shrink-0">
+                                {t("فوري", "Instant")}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("حساب فوري وسيناريوهات التخرج", "Instant GPA & What-If Simulation")}</p>
+                          </div>
+                        </div>
 
-                <Link href="/roadmaps" className="group">
-                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-emerald-500/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20 transition-all cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <Compass className="h-4.5 w-4.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-black text-zinc-900 dark:text-zinc-50 truncate">{t("مسارات التعلّم", "Career Roadmaps")}</h4>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{t("خارطة طريق Frontend, AI, Backend", "Frontend, AI & Backend tracks")}</p>
+                        {/* Chic Action Indicator */}
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                          <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+
+                  {/* Card 2: Course Explorer */}
+                  <Link href="/courses" className="group block">
+                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                            <BookOpen className="h-4.5 w-4.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("دليل المقررات", "Course Explorer")}</h4>
+                              <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded border border-indigo-200/40 dark:border-indigo-800/40 shrink-0">
+                                {t("الشجرة", "Tree")}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("شجرة المواد والمتطلبات السابقة", "Course Hierarchy & Prerequisites")}</p>
+                          </div>
+                        </div>
+
+                        {/* Chic Action Indicator */}
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                          <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Card 3: Career Roadmaps */}
+                  <Link href="/roadmaps" className="group block">
+                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                            <Compass className="h-4.5 w-4.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("مسارات التعلّم", "Career Roadmaps")}</h4>
+                              <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-200/40 dark:border-purple-800/40 shrink-0">
+                                {t("2026", "2026")}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("خارطة طريق Frontend, AI, Backend", "Frontend, AI & Backend tracks")}</p>
+                          </div>
+                        </div>
+
+                        {/* Chic Action Indicator */}
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                          <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               </div>
             </motion.div>
+          </div>
+        </section>
 
-            {/* Interactive Showcase Tabs */}
+        {/* Interactive Showcase Tabs Section - Perfectly responsive on Mobile and Desktop */}
+        <section id="features" className="py-12 sm:py-16 px-4 sm:px-6">
+          <div className="max-w-5xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="pt-12 max-w-5xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="p-3.5 sm:p-5 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl shadow-2xl space-y-4 sm:space-y-5"
             >
-              <div className="p-3 sm:p-4 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl shadow-2xl space-y-6">
-                {/* Tab Switches */}
-                <div className="flex flex-wrap justify-center gap-2 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-3">
-                  {[
-                    { id: "gpa", label: t("حاسبة المعدل التراكمي", "GPA Predictor"), icon: <Calculator className="h-4 w-4" /> },
-                    { id: "courses", label: t("شجرة المواد والمقررات", "Course Hierarchy"), icon: <BookOpen className="h-4 w-4" /> },
-                    { id: "ai", label: t("المساعد الذكي AI", "AI Assistant"), icon: <Sparkles className="h-4 w-4" /> },
-                    { id: "careers", label: t("المسارات والفرص", "Career Roadmaps"), icon: <Compass className="h-4 w-4" /> }
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${activeTab === tab.id
-                        ? "bg-violet-600 text-white shadow-md shadow-violet-600/20"
-                        : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-                        }`}
-                    >
-                      {tab.icon}
-                      <span>{tab.label}</span>
-                    </button>
-                  ))}
-                </div>
+              {/* Tab Switches - 2x2 grid on mobile, horizontal flex on desktop */}
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-3">
+                {[
+                  { id: "gpa", label: t("حاسبة المعدل التراكمي", "GPA Predictor"), icon: <Calculator className="h-4 w-4 shrink-0" /> },
+                  { id: "courses", label: t("شجرة المواد والمقررات", "Course Hierarchy"), icon: <BookOpen className="h-4 w-4 shrink-0" /> },
+                  { id: "ai", label: t("المساعد الذكي AI", "AI Assistant"), icon: <Sparkles className="h-4 w-4 shrink-0" /> },
+                  { id: "careers", label: t("المسارات والفرص", "Career Roadmaps"), icon: <Compass className="h-4 w-4 shrink-0" /> }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`px-3 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none ${
+                      activeTab === tab.id
+                        ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
+                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-zinc-100/80 dark:bg-zinc-800/50 hover:bg-zinc-200/80 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    {tab.icon}
+                    <span className="truncate">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
 
-                {/* Tab Preview Display */}
-                <div className={`p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200/60 dark:border-zinc-800/60 ${dir === "rtl" ? "text-right" : "text-left"} space-y-4 min-h-[220px] flex flex-col justify-between`} dir={dir}>
-                  {activeTab === "gpa" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-none font-bold">
-                          {t("توقع فوري محاذى للوائح الكلية", "Sinai Regulations Compliant")}
-                        </Badge>
-                        <span className="text-xs text-zinc-400 font-semibold">{t("144 ساعة معتمدة", "144 Credit Hours")}</span>
-                      </div>
-                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-50">
-                        {t("حساب المعدل الفصلي وتحديد الدرجات المطلوبة للتخرج", "Semester GPA & Target Graduation Grades")}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        {t(
-                          "أدخل درجات موادك الحالية أو استعمل محاكي (What-If) لمعرفة التقدير المتوقع المطلوب تحقيقه مستقبلاً للوصول لمعدل امتياز أو جيد جداً.",
-                          "Enter your course grades or use What-If simulation to calculate target grades needed for Excellent or Very Good GPA."
-                        )}
-                      </p>
+              {/* Tab Preview Display */}
+              <div className={`p-4 sm:p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200/60 dark:border-zinc-800/60 ${dir === "rtl" ? "text-right" : "text-left"} space-y-3 sm:space-y-4 min-h-[220px] flex flex-col justify-between`} dir={dir}>
+                {activeTab === "gpa" && (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-none font-bold">
+                        {t("توقع فوري محاذى للوائح الكلية", "Sinai Regulations Compliant")}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 font-semibold">{t("144 ساعة معتمدة", "144 Credit Hours")}</span>
                     </div>
-                  )}
-
-                  {activeTab === "courses" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Badge className="bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300 border-none font-bold">
-                          {t("ترتيب تسلسلي أكاديمي", "Academic Prerequisites Chain")}
-                        </Badge>
-                        <span className="text-xs text-zinc-400 font-semibold">{t("تأكد من المتطلبات المسبقة", "Check Prerequisites")}</span>
-                      </div>
-                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-50">
-                        {t("دليل المواد الشامل من المستوى الأول إلى الرابع", "Complete Course Directory (Year 1 to Year 4)")}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        {t(
-                          "تصفح خطة مقررات تكنولوجيا المعلومات، الحاسبات، ونظم المعلومات باللغتين العربية والإنجليزية مع تنزيل المراجع وتجارب الطلاب.",
-                          "Browse IT, CS, and IS course plans in Arabic & English with downloadable references and student reviews."
-                        )}
-                      </p>
-                    </div>
-                  )}
-
-                  {activeTab === "ai" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
-                          {t("ذكاء اصطناعي مخصص", "Custom AI Model")}
-                        </Badge>
-                        <span className="text-xs text-zinc-400 font-semibold">{t("استجابة لغوية فائقة", "Instant AI Response")}</span>
-                      </div>
-                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-50">
-                        {t("المرشد الذكي لجامعة سيناء (SU IT Advisor)", "Sinai University Smart AI Counselor")}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        {t(
-                          "اسأل عن طريقة التسجيل، شروط فتح المواد المغلقة، النصائح الدراسية للمواد الصعبة، واحصل على إجابة موثوقة في ثوانٍ.",
-                          "Ask about registration rules, prerequisite unlocks, study tips, and get instant reliable academic answers."
-                        )}
-                      </p>
-                    </div>
-                  )}
-
-                  {activeTab === "careers" && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-none font-bold">
-                          {t("ربط الكلية بسوق العمل", "Bridge Academia to Industry")}
-                        </Badge>
-                        <span className="text-xs text-zinc-400 font-semibold">{t("فرص وتدريبات مهنية", "Internships & Careers")}</span>
-                      </div>
-                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-50">
-                        {t("خراط طريق مهنية وفرص تدريب توظيفية", "Career Roadmaps & Internship Opportunities")}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        {t(
-                          "ربط المواد الجامعية بمتطلبات العمل الواقعية في تطوير الويب، الذكاء الاصطناعي، شبكات الحواسيب، والتدريبات الصيفية.",
-                          "Connect university curricula to real-world job roles in Web Development, AI, Networking, and Summer Internships."
-                        )}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className={`pt-2 flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
-                    <Link
-                      href={
-                        activeTab === "gpa"
-                          ? "/gpa"
-                          : activeTab === "courses"
-                            ? "/courses"
-                            : activeTab === "careers"
-                              ? "/roadmaps"
-                              : portalHref
-                      }
-                    >
-                      <Button size="sm" className="gap-2 font-bold text-xs cursor-pointer shadow-md bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl">
-                        <span>{t("تجربة الخدمة مباشرة 🚀", "Try Feature Now 🚀")}</span>
-                        <ChevronLeft className={`h-4 w-4 ${lang === "en" ? "rotate-180" : ""}`} />
-                      </Button>
-                    </Link>
+                    <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                      {t("حساب المعدل الفصلي وتحديد الدرجات المطلوبة للتخرج", "Semester GPA & Target Graduation Grades")}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {t(
+                        "أدخل درجات موادك الحالية أو استعمل محاكي (What-If) لمعرفة التقدير المتوقع المطلوب تحقيقه مستقبلاً للوصول لمعدل امتياز أو جيد جداً.",
+                        "Enter your course grades or use What-If simulation to calculate target grades needed for Excellent or Very Good GPA."
+                      )}
+                    </p>
                   </div>
+                )}
+
+                {activeTab === "courses" && (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Badge className="bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300 border-none font-bold">
+                        {t("ترتيب تسلسلي أكاديمي", "Academic Prerequisites Chain")}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 font-semibold">{t("تأكد من المتطلبات المسبقة", "Check Prerequisites")}</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                      {t("دليل المواد الشامل من المستوى الأول إلى الرابع", "Complete Course Directory (Year 1 to Year 4)")}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {t(
+                        "تصفح خطة مقررات تكنولوجيا المعلومات، الحاسبات، ونظم المعلومات باللغتين العربية والإنجليزية مع تنزيل المراجع وتجارب الطلاب.",
+                        "Browse IT, CS, and IS course plans in Arabic & English with downloadable references and student reviews."
+                      )}
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === "ai" && (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
+                        {t("ذكاء اصطناعي مخصص", "Custom AI Model")}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 font-semibold">{t("استجابة لغوية فائقة", "Instant AI Response")}</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                      {t("المرشد الذكي لجامعة سيناء (SU IT Advisor)", "Sinai University Smart AI Counselor")}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {t(
+                        "اسأل عن طريقة التسجيل، شروط فتح المواد المغلقة، النصائح الدراسية للمواد الصعبة، واحصل على إجابة موثوقة في ثوانٍ.",
+                        "Ask about registration rules, prerequisite unlocks, study tips, and get instant reliable academic answers."
+                      )}
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === "careers" && (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-none font-bold">
+                        {t("ربط الكلية بسوق العمل", "Bridge Academia to Industry")}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 font-semibold">{t("فرص وتدريبات مهنية", "Internships & Careers")}</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                      {t("خراط طريق مهنية وفرص تدريب توظيفية", "Career Roadmaps & Internship Opportunities")}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {t(
+                        "ربط المواد الجامعية بمتطلبات العمل الواقعية في تطوير الويب، الذكاء الاصطناعي، شبكات الحواسيب، والتدريبات الصيفية.",
+                        "Connect university curricula to real-world job roles in Web Development, AI, Networking, and Summer Internships."
+                      )}
+                    </p>
+                  </div>
+                )}
+
+                <div className={`pt-2 flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
+                  <Link
+                    href={
+                      activeTab === "gpa"
+                        ? "/gpa"
+                        : activeTab === "courses"
+                          ? "/courses"
+                          : activeTab === "careers"
+                            ? "/roadmaps"
+                            : portalHref
+                    }
+                    className="w-full sm:w-auto"
+                  >
+                    <Button size="sm" className="w-full sm:w-auto gap-2 font-bold text-xs cursor-pointer shadow-md bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl">
+                      <span>{t("تجربة الخدمة مباشرة 🚀", "Try Feature Now 🚀")}</span>
+                      <ChevronLeft className={`h-4 w-4 ${lang === "en" ? "rotate-180" : ""}`} />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -540,16 +601,16 @@ export default function LandingPage() {
         </section>
 
         {/* Statistics Banner Section */}
-        <section id="stats" className="py-16 px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/20 backdrop-blur-md">
+        <section id="stats" className="py-10 sm:py-12 px-4 sm:px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/20 backdrop-blur-md">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
               {stats.map((stat, idx) => (
                 <motion.div
                   key={idx}
                   whileHover={{ y: -4 }}
-                  className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm"
+                  className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm"
                 >
-                  <span className="block text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-500 mb-2">
+                  <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-500 mb-1">
                     {stat.value}
                   </span>
                   <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
@@ -562,16 +623,16 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works (3 Steps) Section */}
-        <section className="py-20 px-6 bg-zinc-100/40 dark:bg-zinc-900/10">
-          <div className="max-w-6xl mx-auto space-y-14">
-            <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-zinc-100/40 dark:bg-zinc-900/10">
+          <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
+            <div className="text-center space-y-2.5 max-w-2xl mx-auto">
               <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
                 {t("سهولة فائقة في الاستخدام", "Simple & Intuitive")}
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
                 {t("كيف تبدأ رحلتك الأكاديمية في 3 خطوات بسيطة؟", "How to Get Started in 3 Simple Steps")}
               </h2>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm md:text-base leading-relaxed">
                 {t(
                   "صُممت المنصة لتوفير الوقت والجهد على طلاب الكلية من اليوم الأول حتى يوم التخرج.",
                   "Engineered to save time and effort for students from Freshman year until graduation day."
@@ -579,7 +640,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative" dir={dir}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 relative" dir={dir}>
               {[
                 {
                   step: "01",
@@ -619,26 +680,26 @@ export default function LandingPage() {
                 return (
                   <motion.div
                     key={idx}
-                    whileHover={{ y: -6 }}
-                    className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg shadow-zinc-900/5 dark:shadow-black/40 relative overflow-hidden flex flex-col justify-between transition-all"
+                    whileHover={{ y: -4 }}
+                    className="p-5 sm:p-7 rounded-3xl bg-white dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg shadow-zinc-900/5 dark:shadow-black/40 relative overflow-hidden flex flex-col justify-between transition-all"
                   >
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       {/* Top Header Row with Icon and Step Number Badge */}
                       <div className="flex items-center justify-between w-full">
-                        <div className={`h-13 w-13 rounded-2xl flex items-center justify-center ${item.iconClasses}`}>
-                          <IconComponent className="h-6 w-6" />
+                        <div className={`h-11 w-11 rounded-2xl flex items-center justify-center ${item.iconClasses}`}>
+                          <IconComponent className="h-5 w-5" />
                         </div>
-                        <span className={`text-xs sm:text-sm font-black px-3 py-1.5 rounded-xl tracking-wider ${item.badgeClasses}`}>
+                        <span className={`text-xs font-black px-2.5 py-1 rounded-xl tracking-wider ${item.badgeClasses}`}>
                           STEP {item.step}
                         </span>
                       </div>
 
                       {/* Content */}
-                      <div className="space-y-2.5">
-                        <h3 className="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
+                      <div className="space-y-1.5">
+                        <h3 className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-zinc-50 leading-snug">
                           {item.title}
                         </h3>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
+                        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
                           {item.desc}
                         </p>
                       </div>
@@ -651,16 +712,16 @@ export default function LandingPage() {
         </section>
 
         {/* Core Features Grid Section */}
-        <section id="features" className="py-24 px-6 relative">
-          <div className="max-w-6xl mx-auto space-y-16">
-            <div className="text-center space-y-4 max-w-2xl mx-auto">
+        <section id="features" className="py-12 sm:py-16 px-4 sm:px-6 relative">
+          <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
+            <div className="text-center space-y-2.5 max-w-2xl mx-auto">
               <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-none font-bold">
                 {t("مميزات حصرية", "Exclusive Features")}
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
                 {t("كل ما يحتاجه طالب تكنولوجيا المعلومات في مكان واحد", "Everything an IT Student Needs in One Place")}
               </h2>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm md:text-base leading-relaxed">
                 {t(
                   "تم تطوير المنصة بدقة لتلبي الاحتياجات الأكاديمية والعملية الفعليه لطلاب الجامعة.",
                   "Engineered specifically to fulfill real academic and practical needs for Sinai University students."
@@ -673,19 +734,19 @@ export default function LandingPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
             >
               {features.map((feature, idx) => (
-                <motion.div key={idx} variants={itemVariants} whileHover={{ y: -6, scale: 1.02 }}>
+                <motion.div key={idx} variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }}>
                   <Card className="h-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 backdrop-blur-sm shadow-md hover:shadow-xl hover:border-violet-500/50 transition-all rounded-3xl">
-                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                      <div className="p-3 bg-zinc-100 dark:bg-zinc-800/60 rounded-2xl shrink-0">
+                    <CardHeader className="flex flex-row items-center gap-3.5 pb-2">
+                      <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800/60 rounded-2xl shrink-0">
                         {feature.icon}
                       </div>
-                      <CardTitle className="text-lg font-bold">{feature.title}</CardTitle>
+                      <CardTitle className="text-base sm:text-lg font-bold">{feature.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
+                      <CardDescription className="text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
                         {feature.description}
                       </CardDescription>
                     </CardContent>
@@ -697,32 +758,32 @@ export default function LandingPage() {
         </section>
 
         {/* PWA Mobile App Install Section */}
-        <section className="py-20 px-6 bg-gradient-to-b from-zinc-50 to-violet-50/40 dark:from-zinc-950 dark:to-violet-950/20">
+        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-to-b from-zinc-50 to-violet-50/40 dark:from-zinc-950 dark:to-violet-950/20 overflow-hidden">
           <div className="max-w-6xl mx-auto">
-            <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-violet-50/90 via-indigo-50/80 to-purple-50/70 dark:from-violet-950/80 dark:via-indigo-950/70 dark:to-zinc-950 shadow-2xl border border-violet-200/80 dark:border-violet-800/40 relative overflow-hidden transition-all">
+            <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-violet-50/90 via-indigo-50/80 to-purple-50/70 dark:from-violet-950/80 dark:via-indigo-950/70 dark:to-zinc-950 shadow-2xl border border-violet-200/80 dark:border-violet-800/40 relative overflow-hidden transition-all">
               {/* Background Ambient Glows */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/15 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-400/15 dark:bg-violet-600/30 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-                <div className={`lg:col-span-8 space-y-6 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center relative z-10">
+                <div className={`lg:col-span-8 space-y-4 sm:space-y-5 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 dark:bg-white/10 backdrop-blur-md border border-violet-200 dark:border-white/20 text-xs font-bold text-violet-700 dark:text-violet-200">
                     <Smartphone className="h-4 w-4 text-violet-600 dark:text-cyan-300" />
                     <span>{t("تطبيق الهاتف المحمول PWA", "Mobile App Experience (PWA)")}</span>
                   </div>
 
-                  <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-zinc-900 dark:text-white">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight text-zinc-900 dark:text-white">
                     {t("منصتك الأكاديمية معك في جيبك أينما كنت 📲", "Your Academic Platform in Your Pocket Everywhere 📲")}
                   </h2>
 
-                  <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 max-w-2xl leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm md:text-base text-zinc-700 dark:text-zinc-300 max-w-2xl leading-relaxed font-medium">
                     {t(
                       "ثبّت المنصة كتطبيق فوري على هاتفك (Android أو iPhone) أو جهاز الكمبيوتر بضغطة زر واحدة. استمتع بسرعة فائقة، إمكانية التصفح، وتجربة سلسة بدون الحاجة للتحميل من المتاجر.",
                       "Install the portal as an instant app on your phone (Android/iOS) or PC with one click. Enjoy fast loading, offline capability, and smooth experience with zero app store hassle."
                     )}
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/80 dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 shadow-xs">
                       <Zap className="h-4.5 w-4.5 text-amber-500 shrink-0" />
                       <span className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{t("سرعة تشغيل فائقة", "Instant Launch Speed")}</span>
@@ -739,9 +800,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="p-6 rounded-3xl bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-violet-200/90 dark:border-white/20 shadow-xl w-full max-w-xs space-y-4">
-                    <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg">
-                      <Download className="h-8 w-8 text-white" />
+                  <div className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-violet-200/90 dark:border-white/20 shadow-xl w-full max-w-xs space-y-3.5">
+                    <div className="h-14 w-14 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg">
+                      <Download className="h-7 w-7 text-white" />
                     </div>
                     <div>
                       <h4 className="text-sm font-black text-zinc-900 dark:text-white">{t("تثبيت التطبيق على جهازك", "Install App on Device")}</h4>
@@ -751,7 +812,7 @@ export default function LandingPage() {
                       onClick={() => {
                         window.dispatchEvent(new Event("trigger-pwa-install"));
                       }}
-                      className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-extrabold text-xs h-11 rounded-xl shadow-lg shadow-violet-500/25 cursor-pointer gap-2"
+                      className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-extrabold text-xs h-10 rounded-xl shadow-lg shadow-violet-500/25 cursor-pointer gap-2"
                     >
                       <Download className="h-4 w-4 text-white" />
                       <span>{t("تثبيت التطبيق الآن 🚀", "Install App Now 🚀")}</span>
@@ -764,7 +825,7 @@ export default function LandingPage() {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-24 px-6">
+        <section id="faq" className="py-12 sm:py-16 px-4 sm:px-6">
           <div className="max-w-4xl mx-auto space-y-12">
             <div className="text-center space-y-4">
               <div className="inline-flex p-3 bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 rounded-2xl">

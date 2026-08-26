@@ -125,7 +125,7 @@ export default function AnnouncementCMSPage() {
   return (
     <div className="space-y-6 animate-fade-in" dir={dir}>
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
             {t("مركز إدارة ونشر الإعلانات والأخبار", "Announcements & CMS Management")}
@@ -138,7 +138,7 @@ export default function AnnouncementCMSPage() {
           </p>
         </div>
 
-        <Button onClick={openCreateModal} className="gap-2 text-xs font-bold shrink-0">
+        <Button onClick={openCreateModal} className="gap-2 text-xs font-bold w-full sm:w-auto justify-center shrink-0">
           <Megaphone className="h-4 w-4" />
           {t("نشر إعلان جديد", "Post New Announcement")}
         </Button>
@@ -146,7 +146,7 @@ export default function AnnouncementCMSPage() {
 
       {/* Controls */}
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3">
+        <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
             <Input
@@ -161,7 +161,7 @@ export default function AnnouncementCMSPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer"
+            className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full md:w-auto"
           >
             <option value="ALL">{t("جميع التصنيفات 📢", "All Categories 📢")}</option>
             <option value="news">{t("أخبار عامة 📰", "General News 📰")}</option>
@@ -230,8 +230,8 @@ export default function AnnouncementCMSPage() {
       </div>
 
       {modalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-          <Card className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <Card className="w-full max-w-lg max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold">
                 {editingId ? t("تعديل الإعلان المنشور", "Edit Published Announcement") : t("نشر إعلان أكاديمي جديد", "Post New Academic Announcement")}

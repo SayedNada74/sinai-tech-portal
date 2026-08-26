@@ -31,8 +31,8 @@ export function MobileTaskbar() {
   ];
 
   return (
-    <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-100/95 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-250 dark:border-zinc-850/80 p-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_-4px_15px_rgba(0,0,0,0.4)]">
-      <nav className="flex justify-around items-center w-full px-2">
+    <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-100/95 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-250 dark:border-zinc-850/80 px-1 pt-1.5 pb-2.5 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_-4px_15px_rgba(0,0,0,0.4)]">
+      <nav className="flex justify-around items-center w-full px-1">
         {items.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
@@ -41,7 +41,7 @@ export function MobileTaskbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1.5 relative px-2.5 py-1.5 min-w-[55px] select-none cursor-pointer rounded-2xl transition-colors ${
+              className={`flex flex-col items-center gap-1 relative px-2 py-1 min-w-[48px] select-none cursor-pointer rounded-2xl transition-colors ${
                 active ? "bg-cyan-500/10 dark:bg-cyan-500/15" : "hover:bg-zinc-200/50 dark:hover:bg-zinc-850/40"
               }`}
             >

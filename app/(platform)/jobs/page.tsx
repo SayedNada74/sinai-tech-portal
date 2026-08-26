@@ -166,7 +166,7 @@ const JOBS_DATA: Job[] = [
 
 export default function JobsPage() {
   return (
-    <div className="container py-8 max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="container px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-l from-primary to-blue-600">
@@ -237,9 +237,9 @@ export default function JobsPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="bg-zinc-50/50 dark:bg-zinc-900/20 pt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-                <CalendarDays className="h-4 w-4" />
+            <CardFooter className="bg-zinc-50/50 dark:bg-zinc-900/20 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-red-600 dark:text-red-400">
+                <CalendarDays className="h-4 w-4 shrink-0" />
                 <span>ينتهي التقديم في: {job.deadline}</span>
               </div>
               <Button className="w-full sm:hidden">

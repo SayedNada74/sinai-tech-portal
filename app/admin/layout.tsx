@@ -85,13 +85,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <AdminProtectedRoute>
-      <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 flex flex-col md:flex-row" dir={dir}>
+      <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 flex flex-col md:flex-row w-full max-w-full overflow-x-hidden" dir={dir}>
         {/* Mobile Header */}
-        <header className="flex md:hidden items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm z-50">
+        <header className="sticky top-0 flex md:hidden items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-xs z-50">
           <Link
             href="/admin"
             onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity"
+            className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity min-w-0"
             title={t("العودة للرئيسية الإدارية", "Go to Admin Dashboard")}
           >
             <div className="h-8 w-8 rounded-lg bg-violet-600 flex items-center justify-center text-white shrink-0 shadow-xs">
@@ -102,11 +102,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </span>
           </Link>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0">
             {/* Quick Language Toggle Mobile */}
             <button
               onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-              className="px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title={t("تغيير اللغة", "Change Language")}
             >
               {lang === "ar" ? "EN" : "عربي"}
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               suppressHydrationWarning
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title={t("تبديل المظهر", "Toggle Theme")}
               aria-label="Toggle theme"
             >
@@ -126,7 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               aria-label="Toggle sidebar menu"
             >
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -201,7 +201,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <span>{lang === "ar" ? "English" : "العربية"}</span>
               </button>
 
-              <button
+            <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 suppressHydrationWarning
                 className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-850 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs"
@@ -239,7 +239,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
 
         {/* Page Content area */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-20 md:pb-8 overflow-y-auto max-h-screen">
+        <main className="flex-1 w-full min-w-0 max-w-full p-3.5 sm:p-6 md:p-8 pb-20 md:pb-8 overflow-y-auto overflow-x-hidden max-h-screen">
           <PageTransitionWrapper>{children}</PageTransitionWrapper>
         </main>
       </div>

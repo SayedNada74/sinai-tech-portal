@@ -243,16 +243,18 @@ export default function PlannerPage() {
                       >
                         <div className="p-4 space-y-3.5">
                           {/* Workload feedback */}
-                          <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800/60 rounded-xl text-xs">
-                            <Info className="h-4 w-4 text-zinc-400 shrink-0" />
-                            <span className="font-semibold text-zinc-500">
-                              {t("مجموع الساعات المخططة للترم:", "Planned semester credit hours:")}
-                            </span>
-                            <span className="font-bold text-zinc-800 dark:text-zinc-200">
-                              {expandedPeriodLoad} {t("ساعة", "hours")}
-                            </span>
-                            <span className="mx-1.5 text-zinc-300">|</span>
-                            <span className={workloadFeedback.color}>{workloadFeedback.text}</span>
+                          <div className="flex flex-wrap items-center gap-2 px-3 py-2.5 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-150 dark:border-zinc-800/60 rounded-xl text-xs">
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <Info className="h-4 w-4 text-zinc-400 shrink-0" />
+                              <span className="font-semibold text-zinc-500">
+                                {t("مجموع الساعات المخططة للترم:", "Planned semester credit hours:")}
+                              </span>
+                              <span className="font-bold text-zinc-800 dark:text-zinc-200">
+                                {expandedPeriodLoad} {t("ساعة", "hours")}
+                              </span>
+                            </div>
+                            <span className="hidden sm:inline mx-1 text-zinc-300">|</span>
+                            <span className={`text-[11px] font-bold ${workloadFeedback.color}`}>{workloadFeedback.text}</span>
                           </div>
 
                           {/* Courses table */}
@@ -306,10 +308,10 @@ export default function PlannerPage() {
                                     )}
                                   </div>
 
-                                  <div className="flex gap-2 shrink-0 self-end sm:self-center">
+                                  <div className="flex gap-2 shrink-0 self-stretch sm:self-center w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-150/60 dark:border-zinc-850/60">
                                     <button
                                       onClick={() => completed ? unmarkCompleted(course.code) : markCompleted(course.code, "A")}
-                                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
+                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center ${
                                         completed
                                           ? "bg-green-600 border-green-600 text-white hover:bg-green-700"
                                           : "bg-transparent border-zinc-200 text-zinc-650 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
@@ -319,7 +321,7 @@ export default function PlannerPage() {
                                     </button>
                                     <button
                                       onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
-                                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
+                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center ${
                                         planned
                                           ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-750"
                                           : "bg-transparent border-zinc-200 text-zinc-650 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"

@@ -135,7 +135,7 @@ export default function FaqAndAiSettingsPage() {
   return (
     <div className="space-y-6 animate-fade-in" dir={dir}>
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
             {t("قاعدة المعرفة والذكاء الاصطناعي", "Knowledge Base & AI Prompting")}
@@ -149,12 +149,12 @@ export default function FaqAndAiSettingsPage() {
         </div>
 
         {/* Tab selector buttons */}
-        <div className="flex gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl">
+        <div className="flex gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl w-full sm:w-auto">
           <Button
             variant={activeTab === "faq" ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab("faq")}
-            className="text-xs font-bold gap-1.5 h-8 cursor-pointer"
+            className="text-xs font-bold gap-1.5 h-8 cursor-pointer flex-1 sm:flex-initial justify-center"
           >
             <HelpCircle className="h-3.5 w-3.5" />
             {t("الأسئلة الشائعة (FAQ)", "FAQ Center")}
@@ -164,7 +164,7 @@ export default function FaqAndAiSettingsPage() {
             variant={activeTab === "ai" ? "default" : "ghost"}
             size="sm"
             onClick={() => setActiveTab("ai")}
-            className="text-xs font-bold gap-1.5 h-8 cursor-pointer"
+            className="text-xs font-bold gap-1.5 h-8 cursor-pointer flex-1 sm:flex-initial justify-center"
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-400" />
             {t("ملقن الذكاء الاصطناعي", "AI System Prompt")}
@@ -176,7 +176,7 @@ export default function FaqAndAiSettingsPage() {
         <div className="space-y-4">
           {/* Controls */}
           <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
-            <CardContent className="p-4 flex flex-col md:flex-row justify-between gap-3">
+            <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row justify-between gap-3">
               <div className="relative flex-1">
                 <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                 <Input
@@ -188,7 +188,7 @@ export default function FaqAndAiSettingsPage() {
                 />
               </div>
 
-              <Button onClick={openAddFaqModal} className="gap-2 text-xs font-bold shrink-0">
+              <Button onClick={openAddFaqModal} className="gap-2 text-xs font-bold w-full sm:w-auto justify-center shrink-0">
                 <Plus className="h-4 w-4" />
                 {t("إضافة سؤال شائع جديد", "Add New FAQ")}
               </Button>
@@ -250,8 +250,8 @@ export default function FaqAndAiSettingsPage() {
           </div>
 
           {faqModalOpen && mounted && createPortal(
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-hidden">
-              <Card className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+              <Card className="w-full max-w-lg max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
                   <CardTitle className="text-base font-bold">
                     {editingFaqId ? t("تعديل السؤال الشائع", "Edit FAQ Item") : t("إضافة سؤال شائع جديد", "Add New FAQ Item")}
