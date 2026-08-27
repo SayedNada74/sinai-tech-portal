@@ -617,7 +617,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: provider,
           options: {
-            redirectTo: callbackUrl
+            redirectTo: callbackUrl,
+            queryParams: {
+              prompt: 'select_account'
+            }
           }
         });
         if (!error && data?.url) {
