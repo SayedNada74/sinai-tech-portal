@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { CountUp } from "@/components/ui/count-up";
 import {
   User,
   Mail,
@@ -586,12 +588,12 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        {/* Completion Progress Bar */}
-        <div className="w-full sm:w-72 bg-white dark:bg-zinc-900 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+        {/* Completion Progress Bar with ReactBits SpotlightCard & CountUp */}
+        <SpotlightCard className="w-full sm:w-72 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm" spotlightColor="rgba(139, 92, 246, 0.15)">
           <div className="flex justify-between items-center text-xs font-bold text-zinc-700 dark:text-zinc-50 mb-2">
             <span>{t("نسبة اكتمال البورتفوليو", "Portfolio Completion")}</span>
-            <span className="text-violet-650 dark:text-zinc-50">
-              <AnimatedNumber value={completionPercentage} suffix="%" />
+            <span className="text-violet-650 dark:text-zinc-50 font-black">
+              <CountUp to={completionPercentage} suffix="%" duration={1.2} />
             </span>
           </div>
           <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
@@ -602,7 +604,7 @@ export default function ProfilePage() {
               className="h-full bg-gradient-to-r from-violet-600 to-indigo-650"
             />
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {message.text && (
@@ -800,18 +802,21 @@ export default function ProfilePage() {
               <CardContent className="pt-4 space-y-3">
                 {user?.badges && user.badges.length > 0 ? (
                   user.badges.map((badge, idx) => (
-                    <div
+                    <SpotlightCard
                       key={idx}
-                      className="p-3 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/60 dark:border-zinc-850 rounded-xl flex items-center gap-3"
+                      className="p-3 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/60 dark:border-zinc-850 rounded-xl"
+                      spotlightColor="rgba(245, 158, 11, 0.15)"
                     >
-                      <div className="text-2xl">{badgeEmojis[badge] || "🏆"}</div>
-                      <div className="min-w-0">
-                        <span className="text-xs font-extrabold text-zinc-850 dark:text-zinc-100 block">{badge}</span>
-                        <span className="text-[10px] text-zinc-400 block mt-0.5">
-                          {t("مكتسب عبر النشاط الدراسي", "Earned via academic activity")}
-                        </span>
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">{badgeEmojis[badge] || "🏆"}</div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-extrabold text-zinc-850 dark:text-zinc-100 block">{badge}</span>
+                          <span className="text-[10px] text-zinc-400 block mt-0.5">
+                            {t("مكتسب عبر النشاط الدراسي", "Earned via academic activity")}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </SpotlightCard>
                   ))
                 ) : (
                   <span className="text-xs text-zinc-400 block text-center py-4">

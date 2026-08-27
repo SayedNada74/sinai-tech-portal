@@ -13,6 +13,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { CountUp } from "@/components/ui/count-up";
+import { ShinyText } from "@/components/ui/shiny-text";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -257,15 +260,24 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Academic Highlights & Stats */}
+      {/* Academic Highlights & Stats with ReactBits SpotlightCard & CountUp */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
+          const spotlightColors = [
+            "rgba(6, 182, 212, 0.35)",  // Cyan for GPA
+            "rgba(99, 102, 241, 0.35)", // Indigo for Credits
+            "rgba(20, 184, 166, 0.35)"  // Teal for Remaining Courses
+          ];
           return (
-            <Card key={idx} className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
-              <CardContent className="pt-6">
+            <SpotlightCard
+              key={idx}
+              className="border border-zinc-200/70 dark:border-zinc-800/80 shadow-sm hover:border-violet-500/50 dark:hover:border-violet-400/50 hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 transition-all duration-300 cursor-default"
+              spotlightColor={spotlightColors[idx % spotlightColors.length]}
+            >
+              <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-zinc-100 dark:bg-zinc-950/60 rounded-xl">
+                  <div className="p-3 bg-zinc-100 dark:bg-zinc-800/60 rounded-xl">
                     <Icon className={`h-5.5 w-5.5 ${stat.color}`} />
                   </div>
                   <Badge variant="outline" className="text-[10px] font-bold py-0.5 px-2 rounded-lg border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white bg-zinc-100/80 dark:bg-zinc-800/40">
@@ -275,16 +287,25 @@ export default function DashboardPage() {
                 <h3 className="text-xs font-bold text-zinc-900 dark:text-white">{stat.label}</h3>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">
-                    {idx === 0 && cumulativeGpa > 0 ? (
-                      <AnimatedNumber value={cumulativeGpa} decimals={2} />
+                    {idx === 0 ? (
+                      cumulativeGpa > 0 ? (
+                        <CountUp to={cumulativeGpa} decimals={2} duration={1.5} />
+                      ) : (
+                        "0.00"
+                      )
+                    ) : idx === 1 ? (
+                      <>
+                        <CountUp to={completedCredits} duration={1.5} />
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold"> / 144</span>
+                      </>
                     ) : (
-                      stat.value
+                      <CountUp to={courses.length - completedCourses.length} duration={1.5} />
                     )}
                   </span>
                   <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-200">{stat.description}</span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
           );
         })}
       </div>
@@ -306,56 +327,56 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {isAdmin ? (
                   <>
-                    <Link href="/admin/users">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/admin/users" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-cyan-500 dark:hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(6, 182, 212, 0.35)">
                         <Shield className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة الاعضاء", "Manage Users")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <Link href="/admin/courses">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/admin/courses" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(99, 102, 241, 0.35)">
                         <BookOpen className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة المقررات", "Manage Courses")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <Link href="/admin/audit">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/admin/audit" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-teal-500 dark:hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(20, 184, 166, 0.35)">
                         <History className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("سجلات الأمان", "Audit Trail")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <Link href="/profile">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/profile" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(245, 158, 11, 0.35)">
                         <User className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الإداري", "Admin Profile")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
                   </>
                 ) : (
                   <>
-                    <Link href="/profile">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/profile" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-cyan-500 dark:hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(6, 182, 212, 0.35)">
                         <User className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الشخصي", "Profile")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <Link href="/settings">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/settings" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(99, 102, 241, 0.35)">
                         <Settings className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الإعدادات", "Settings")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <Link href="/gpa">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <Link href="/gpa" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-teal-500 dark:hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(20, 184, 166, 0.35)">
                         <Calculator className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("حاسبة المعدل", "GPA Calc")}</span>
-                      </div>
+                      </SpotlightCard>
                     </Link>
-                    <a href="https://kmoodle.su.edu.eg/" target="_blank" rel="noopener noreferrer">
-                      <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/40 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-all cursor-pointer group">
+                    <a href="https://kmoodle.su.edu.eg/" target="_blank" rel="noopener noreferrer" className="block">
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(245, 158, 11, 0.35)">
                         <ExternalLink className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("مودل سيناء", "SU Moodle")}</span>
-                      </div>
+                      </SpotlightCard>
                     </a>
                   </>
                 )}

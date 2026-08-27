@@ -9,6 +9,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { GradeSelect } from "@/components/ui/grade-select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { CountUp } from "@/components/ui/count-up";
 import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
@@ -96,16 +98,20 @@ export default function CurriculumProgressChecklist() {
         </p>
       </div>
 
-      {/* Dynamic Summary Cards (Credits & GPA Tracker) */}
+      {/* Dynamic Summary Cards with ReactBits SpotlightCard & CountUp */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* GPA Box */}
-        <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center">
-          <CardContent className="pt-6">
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(139, 92, 246, 0.15)">
+          <div className="p-6">
             <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("المعدل التراكمي الحالي (GPA)", "Current Cumulative GPA")}
             </span>
             <div className="text-4xl font-black text-zinc-950 dark:text-white mt-2.5">
-              {cumulativeGpa > 0 ? cumulativeGpa.toFixed(2) : "0.00"}
+              {cumulativeGpa > 0 ? (
+                <CountUp to={cumulativeGpa} decimals={2} duration={1.2} />
+              ) : (
+                "0.00"
+              )}
             </div>
             <Badge variant="outline" className="mt-2.5 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/80 dark:bg-zinc-800/40 text-[9px] font-bold py-0.5 px-2">
               {cumulativeGpa >= 3.6 
@@ -116,35 +122,39 @@ export default function CurriculumProgressChecklist() {
                 ? t("مقبول ⭐️", "Good ⭐️")
                 : t("جديد / لم يبدأ بعد", "New / Not Started")}
             </Badge>
-          </CardContent>
-        </Card>
+          </div>
+        </SpotlightCard>
 
         {/* Credits Hours Completed */}
-        <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center">
-          <CardContent className="pt-6">
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(99, 102, 241, 0.15)">
+          <div className="p-6">
             <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("الساعات المنجزة بنجاح", "Completed Credit Hours")}
             </span>
             <div className="text-4xl font-black text-zinc-950 dark:text-white mt-2.5">
-              {completedCredits} <span className="text-xs text-zinc-600 dark:text-zinc-300">/ 144</span>
+              <CountUp to={completedCredits} duration={1.4} /> <span className="text-xs text-zinc-600 dark:text-zinc-300">/ 144</span>
             </div>
             <span className="text-[10px] text-zinc-700 dark:text-zinc-200 mt-2.5 block font-bold">
               {t(`متبقي للتخرج: ${remainingCredits} ساعة معتمدة`, `${remainingCredits} credits remaining for graduation`)}
             </span>
-          </CardContent>
-        </Card>
+          </div>
+        </SpotlightCard>
 
         {/* Graduation Percent Tracker */}
-        <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm flex flex-col justify-center px-6 py-4">
-          <div className="flex justify-between items-center mb-2.5 text-xs font-bold">
-            <span className="text-zinc-900 dark:text-white font-bold">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
-            <span className="text-violet-600 dark:text-cyan-400 font-black">{graduationPercentage}%</span>
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm flex flex-col justify-center" spotlightColor="rgba(16, 185, 129, 0.15)">
+          <div className="px-6 py-6 flex flex-col justify-center h-full">
+            <div className="flex justify-between items-center mb-2.5 text-xs font-bold">
+              <span className="text-zinc-900 dark:text-white font-bold">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
+              <span className="text-violet-600 dark:text-cyan-400 font-black">
+                <CountUp to={graduationPercentage} suffix="%" duration={1.4} />
+              </span>
+            </div>
+            <Progress value={graduationPercentage} className="h-2 bg-zinc-150 dark:bg-zinc-800" />
+            <span className="text-[9px] text-zinc-700 dark:text-zinc-300 mt-2 leading-tight font-medium">
+              {t("النسبة المحسوبة بناءً على الساعات المسجلة في الخطة المنجزة.", "Percentage calculated from completed credit hours.")}
+            </span>
           </div>
-          <Progress value={graduationPercentage} className="h-2 bg-zinc-150 dark:bg-zinc-800" />
-          <span className="text-[9px] text-zinc-700 dark:text-zinc-300 mt-2 leading-tight font-medium">
-            {t("النسبة المحسوبة بناءً على الساعات المسجلة في الخطة المنجزة.", "Percentage calculated from completed credit hours.")}
-          </span>
-        </Card>
+        </SpotlightCard>
       </div>
 
       {/* Course Code Prefix Reference Legend Box */}

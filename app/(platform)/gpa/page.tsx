@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
@@ -413,10 +414,10 @@ export default function GpaPage() {
               )}
             </div>
 
-            {/* Results Sidebar */}
+            {/* Results Sidebar with ReactBits SpotlightCard */}
             <div>
-              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
-                <CardContent className="pt-8 pb-6">
+              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(139, 92, 246, 0.15)">
+                <div className="pt-8 pb-6 px-6">
                   <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
                     {t("المعدل الفصلي المتوقع", "Expected Semester GPA")}
                   </h3>
@@ -443,8 +444,8 @@ export default function GpaPage() {
                       </span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </SpotlightCard>
             </div>
           </motion.div>
         ) : (
@@ -540,10 +541,10 @@ export default function GpaPage() {
               </Card>
             </div>
 
-            {/* Simulation Results Summary */}
+            {/* Simulation Results Summary with ReactBits SpotlightCard */}
             <div>
-              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
-                <CardContent className="pt-8 pb-6">
+              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(6, 182, 212, 0.15)">
+                <div className="pt-8 pb-6 px-6">
                   <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
                     {t("المعدل المطلوب في الساعات المتبقية", "Required GPA in Remaining Hours")}
                   </h3>
@@ -564,8 +565,8 @@ export default function GpaPage() {
                       <span className="font-bold text-zinc-950 dark:text-white">{remainingCredits} {t("ساعة", "Hours")}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </SpotlightCard>
             </div>
           </motion.div>
         )}

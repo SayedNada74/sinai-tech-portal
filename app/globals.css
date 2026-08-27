@@ -245,6 +245,20 @@ html[dir="ltr"] textarea,
   animation-play-state: paused !important;
 }
 
+/* ─── Shine Animation (ReactBits) ────────────────────────────────────────── */
+@keyframes shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shine {
+  animation: shine 4s linear infinite;
+}
+
 /* Hide scrollbar utility */
 .scrollbar-none::-webkit-scrollbar {
   display: none;

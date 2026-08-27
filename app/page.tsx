@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionItem } from "@/components/ui/accordion";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { CountUp } from "@/components/ui/count-up";
+import { ShinyText } from "@/components/ui/shiny-text";
 import {
   GraduationCap,
   Calculator,
@@ -109,10 +112,10 @@ export default function LandingPage() {
   ];
 
   const stats = [
-    { value: "144", label: t("ساعة معتمدة مصممة بالكامل", "Total Credit Hours Managed") },
-    { value: "4", label: t("أقسام أكاديمية تخصصية (IT/CS/IS/Basic)", "Specialized Academic Tracks") },
-    { value: "100%", label: t("مزامنة أوتوماتيكية مع تقويم Moodle", "Auto Synchronization with Moodle") },
-    { value: "24/7", label: t("إرشاد وتوقع أكاديمي ذكي", "24/7 Smart AI Guidance") }
+    { num: 144, suffix: "", label: t("ساعة معتمدة مصممة بالكامل", "Total Credit Hours Managed") },
+    { num: 4, suffix: "", label: t("أقسام أكاديمية تخصصية (IT/CS/IS/Basic)", "Specialized Academic Tracks") },
+    { num: 100, suffix: "%", label: t("مزامنة أوتوماتيكية مع تقويم Moodle", "Auto Synchronization with Moodle") },
+    { num: 24, suffix: "/7", label: t("إرشاد وتوقع أكاديمي ذكي", "24/7 Smart AI Guidance") }
   ];
 
   return (
@@ -198,14 +201,14 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="pt-3 sm:pt-4 max-w-4xl mx-auto w-full"
             >
-              {/* Eye-catching Chic Badge with Live Pulse Dot */}
+              {/* Eye-catching Chic Badge with Live Pulse Dot & ShinyText */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-violet-500/30 dark:border-violet-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-sm shadow-violet-500/5 backdrop-blur-md transition-all">
                 {/* Live glowing radar pulse dot */}
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
                 </span>
-                <span>{t("أدوات مفتوحة للتجربة السريعة بدون تسجيل", "Instant Free Exploration Tools (No Login Required)")}</span>
+                <ShinyText text={t("أدوات مفتوحة للتجربة السريعة بدون تسجيل", "Instant Free Exploration Tools (No Login Required)")} className="font-bold text-zinc-850 dark:text-zinc-100" />
                 <span className="px-1.5 py-0.5 rounded-md bg-violet-500/10 dark:bg-violet-400/15 text-violet-600 dark:text-violet-300 text-[9px] font-bold">
                   {t("متاح للجميع ⚡", "Open to All ⚡")}
                 </span>
@@ -217,9 +220,9 @@ export default function LandingPage() {
                 <div className="absolute -inset-1.5 bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-600/10 rounded-3xl blur-xl opacity-50 group-hover/grid:opacity-80 transition-opacity pointer-events-none -z-10" />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-right" dir={dir}>
-                  {/* Card 1: GPA Calculator */}
-                  <Link href="/gpa" className="group block">
-                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                  {/* Card 1: GPA Calculator with ReactBits SpotlightCard */}
+                  <Link href="/gpa" className="group block h-full">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(139, 92, 246, 0.18)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
@@ -241,12 +244,12 @@ export default function LandingPage() {
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
-                    </div>
+                    </SpotlightCard>
                   </Link>
 
-                  {/* Card 2: Course Explorer */}
-                  <Link href="/courses" className="group block">
-                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                  {/* Card 2: Course Explorer with ReactBits SpotlightCard */}
+                  <Link href="/courses" className="group block h-full">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(99, 102, 241, 0.18)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
@@ -268,12 +271,12 @@ export default function LandingPage() {
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
-                    </div>
+                    </SpotlightCard>
                   </Link>
 
-                  {/* Card 3: Career Roadmaps */}
-                  <Link href="/roadmaps" className="group block">
-                    <div className="h-full p-3.5 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+                  {/* Card 3: Career Roadmaps with ReactBits SpotlightCard */}
+                  <Link href="/roadmaps" className="group block h-full">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/50 dark:hover:border-purple-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(168, 85, 247, 0.18)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
@@ -295,7 +298,7 @@ export default function LandingPage() {
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
-                    </div>
+                    </SpotlightCard>
                   </Link>
                 </div>
               </div>
@@ -600,7 +603,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Statistics Banner Section */}
+        {/* Statistics Banner Section with ReactBits CountUp & SpotlightCard */}
         <section id="stats" className="py-10 sm:py-12 px-4 sm:px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/20 backdrop-blur-md">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
@@ -608,14 +611,15 @@ export default function LandingPage() {
                 <motion.div
                   key={idx}
                   whileHover={{ y: -4 }}
-                  className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-sm"
                 >
-                  <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-500 mb-1">
-                    {stat.value}
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
-                    {stat.label}
-                  </span>
+                  <SpotlightCard className="p-4 sm:p-5 text-center shadow-sm hover:shadow-md hover:border-violet-500/40 dark:hover:border-violet-500/40" spotlightColor="rgba(139, 92, 246, 0.12)">
+                    <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-500 mb-1">
+                      <CountUp to={stat.num} suffix={stat.suffix} duration={1.6} />
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
+                      {stat.label}
+                    </span>
+                  </SpotlightCard>
                 </motion.div>
               ))}
             </div>
