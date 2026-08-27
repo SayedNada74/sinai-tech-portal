@@ -381,29 +381,38 @@ export function AcademicProvider({ children }: { children: React.ReactNode }) {
     return Math.round((totalPoints / totalCreditsForGpa) * 100) / 100;
   }, [completedCourses, courses]);
 
+  const contextValue = React.useMemo<AcademicContextType>(() => ({
+    completedCourses,
+    plannedCourses,
+    targetGpa,
+    completedCredits,
+    remainingCredits,
+    graduationPercentage,
+    cumulativeGpa,
+    totalCreditsInCatalog,
+    markCompleted,
+    unmarkCompleted,
+    markPlanned,
+    unmarkPlanned,
+    removeCourse,
+    resetAll,
+    setTargetGpa: updateTargetGpa,
+    isCompleted,
+    isPlanned,
+    getCourseGrade
+  }), [
+    completedCourses,
+    plannedCourses,
+    targetGpa,
+    completedCredits,
+    remainingCredits,
+    graduationPercentage,
+    cumulativeGpa,
+    totalCreditsInCatalog
+  ]);
+
   return (
-    <AcademicContext.Provider
-      value={{
-        completedCourses,
-        plannedCourses,
-        targetGpa,
-        completedCredits,
-        remainingCredits,
-        graduationPercentage,
-        cumulativeGpa,
-        totalCreditsInCatalog,
-        markCompleted,
-        unmarkCompleted,
-        markPlanned,
-        unmarkPlanned,
-        removeCourse,
-        resetAll,
-        setTargetGpa: updateTargetGpa,
-        isCompleted,
-        isPlanned,
-        getCourseGrade
-      }}
-    >
+    <AcademicContext.Provider value={contextValue}>
       {children}
     </AcademicContext.Provider>
   );

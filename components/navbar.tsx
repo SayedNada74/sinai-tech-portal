@@ -118,7 +118,7 @@ export function Navbar() {
                   className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-800/30 flex items-center justify-center text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer overflow-hidden"
                 >
                   {isImageAvatar ? (
-                    <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
+                    <img src={userAvatar} alt="Profile" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   ) : (
                     <User className="h-5 w-5 text-sky-700 dark:text-sky-300" />
                   )}
@@ -264,7 +264,7 @@ export function Navbar() {
                   <div className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/40 rounded-xl mb-1">
                     <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/30 flex items-center justify-center text-xl overflow-hidden shrink-0">
                       {isImageAvatar ? (
-                        <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
+                        <img src={userAvatar} alt="Profile" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                       ) : (
                         <User className="h-5 w-5 text-sky-700 dark:text-sky-300" />
                       )}

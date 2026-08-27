@@ -89,6 +89,7 @@ export default function RootLayout({
         <link rel="icon" type="image/jpeg" href="/uni-logo.jpeg" />
         <link rel="shortcut icon" type="image/jpeg" href="/uni-logo.jpeg" />
         <link rel="apple-touch-icon" href="/uni-logo.jpeg" />
+        <link rel="preload" as="image" type="image/jpeg" href="/uni-logo.jpeg" fetchPriority="high" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">

@@ -13,7 +13,7 @@ interface LogoProps {
   onClick?: (e: React.MouseEvent) => void;
 }
 
-export function Logo({
+export const Logo = React.memo(function Logo({
   size = "md",
   showText = true,
   href = "/",
@@ -24,24 +24,28 @@ export function Logo({
   const sizeMap = {
     sm: {
       box: "h-11 w-11 rounded-xl p-1.5",
+      dim: 44,
       title: "text-[16px] font-black tracking-tight leading-none",
       sub: "text-[10px] font-bold tracking-[0.2em] leading-none mt-1",
       gap: "gap-3"
     },
     md: {
       box: "h-14 w-14 rounded-2xl p-2",
+      dim: 56,
       title: "text-[20px] font-black tracking-tight leading-none",
       sub: "text-[12px] font-bold tracking-[0.2em] leading-none mt-1",
       gap: "gap-3.5"
     },
     lg: {
       box: "h-16 w-16 rounded-2xl p-2.5",
+      dim: 64,
       title: "text-[24px] font-black tracking-tight leading-none",
       sub: "text-[14px] font-bold tracking-[0.2em] leading-none mt-1",
       gap: "gap-4"
     },
     xl: {
       box: "h-24 w-24 rounded-3xl p-3.5 shadow-xl shadow-sky-500/10",
+      dim: 96,
       title: "text-3xl font-black tracking-tight mt-2 leading-none",
       sub: "text-[13px] font-bold tracking-[0.3em] leading-none mt-2",
       gap: "gap-1 flex-col items-center text-center"
@@ -74,13 +78,19 @@ export function Logo({
       {/* High-contrast logo container badge that guarantees 100% visibility in both Light and Dark mode */}
       <div
         className={cn(
-          "bg-white dark:bg-white border border-zinc-200 dark:border-zinc-300 shadow-md shadow-sky-500/10 overflow-hidden flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
+          "bg-white dark:bg-white border border-zinc-200 dark:border-zinc-300 shadow-md shadow-sky-500/10 overflow-hidden flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 relative",
           currentSize.box
         )}
       >
         <img
           src="/uni-logo.jpeg"
           alt="Sinai University Logo"
+          width={currentSize.dim}
+          height={currentSize.dim}
+          loading="eager"
+          decoding="async"
+          // @ts-ignore
+          fetchPriority="high"
           className="h-full w-full object-contain filter drop-shadow-sm select-none pointer-events-none"
         />
       </div>
@@ -111,4 +121,5 @@ export function Logo({
       {logoContent}
     </div>
   );
-}
+});
+

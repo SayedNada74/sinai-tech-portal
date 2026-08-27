@@ -457,33 +457,41 @@ export function LearningProvider({ children }: { children: React.ReactNode }) {
     saveState({ recentlyViewed: newViewed });
   };
 
+  const contextValue = React.useMemo<LearningContextType>(() => ({
+    bookmarks,
+    reviews,
+    likedResources,
+    ratedResources,
+    downloadedResources,
+    roadmapProgress,
+    recentlyViewed,
+    toggleBookmark,
+    isBookmarked,
+    addReview,
+    deleteReview,
+    toggleHelpfulReview,
+    toggleLikeResource,
+    isResourceLiked,
+    rateResource,
+    getResourceRating,
+    incrementDownload,
+    getResourceDownloads,
+    toggleRoadmapNode,
+    isRoadmapNodeCompleted,
+    getRoadmapProgressPercentage,
+    addRecentlyViewed
+  }), [
+    bookmarks,
+    reviews,
+    likedResources,
+    ratedResources,
+    downloadedResources,
+    roadmapProgress,
+    recentlyViewed
+  ]);
+
   return (
-    <LearningContext.Provider
-      value={{
-        bookmarks,
-        reviews,
-        likedResources,
-        ratedResources,
-        downloadedResources,
-        roadmapProgress,
-        recentlyViewed,
-        toggleBookmark,
-        isBookmarked,
-        addReview,
-        deleteReview,
-        toggleHelpfulReview,
-        toggleLikeResource,
-        isResourceLiked,
-        rateResource,
-        getResourceRating,
-        incrementDownload,
-        getResourceDownloads,
-        toggleRoadmapNode,
-        isRoadmapNodeCompleted,
-        getRoadmapProgressPercentage,
-        addRecentlyViewed
-      }}
-    >
+    <LearningContext.Provider value={contextValue}>
       {children}
     </LearningContext.Provider>
   );

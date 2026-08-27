@@ -184,7 +184,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 <Link href="/profile" onClick={() => onClose()} className="flex items-center gap-2.5 flex-1 min-w-0 group hover:opacity-80 transition-opacity">
                   <div className="h-9 w-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-base overflow-hidden shrink-0">
                     {isImageAvatar ? (
-                      <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
+                      <img src={userAvatar} alt="Profile" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                     ) : (
                       userAvatar
                     )}

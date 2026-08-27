@@ -1267,47 +1267,57 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     saveSocialState({ reminders: updated, moodleUrl: "" });
   };
 
+  const contextValue = React.useMemo<SocialContextType>(() => ({
+    posts,
+    careers,
+    events,
+    reminders,
+    notifications,
+    savedJobs,
+    savedEvents,
+    savedPosts,
+    moodleUrl,
+    createPost,
+    editPost,
+    deletePost,
+    likePost,
+    reportPost,
+    addComment,
+    addReply,
+    deleteComment,
+    deleteReply,
+    toggleSaveJob,
+    isJobSaved,
+    addCareer,
+    editCareer,
+    deleteCareer,
+    toggleSaveEvent,
+    isEventSaved,
+    addEvent,
+    deleteEvent,
+    addReminder,
+    deleteReminder,
+    markAsRead,
+    markAllAsRead,
+    clearNotifications,
+    sendNotificationToUser,
+    syncMoodle,
+    clearMoodle,
+    awardPoints
+  }), [
+    posts,
+    careers,
+    events,
+    reminders,
+    notifications,
+    savedJobs,
+    savedEvents,
+    savedPosts,
+    moodleUrl
+  ]);
+
   return (
-    <SocialContext.Provider
-      value={{
-        posts,
-        careers,
-        events,
-        reminders,
-        notifications,
-        savedJobs,
-        savedEvents,
-        savedPosts,
-        moodleUrl,
-        createPost,
-        editPost,
-        deletePost,
-        likePost,
-        reportPost,
-        addComment,
-        addReply,
-        deleteComment,
-        deleteReply,
-        toggleSaveJob,
-        isJobSaved,
-        addCareer,
-        editCareer,
-        deleteCareer,
-        toggleSaveEvent,
-        isEventSaved,
-        addEvent,
-        deleteEvent,
-        addReminder,
-        deleteReminder,
-        markAsRead,
-        markAllAsRead,
-        clearNotifications,
-        sendNotificationToUser,
-        syncMoodle,
-        clearMoodle,
-        awardPoints
-      }}
-    >
+    <SocialContext.Provider value={contextValue}>
       {children}
     </SocialContext.Provider>
   );

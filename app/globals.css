@@ -1,8 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap');
-
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInPage 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
 
 @theme {
   --color-zinc-150: #f0f1f4;

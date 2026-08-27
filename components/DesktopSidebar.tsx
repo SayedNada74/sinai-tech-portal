@@ -169,7 +169,7 @@ export function DesktopSidebar() {
           <Link href="/profile" className="flex items-center gap-2.5 flex-1 min-w-0 group hover:opacity-80 transition-opacity">
             <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-base overflow-hidden shrink-0">
               {isImageAvatar ? (
-                <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
+                <img src={userAvatar} alt="Profile" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               ) : (
                 <User className="h-4 w-4 text-zinc-400" />
               )}
