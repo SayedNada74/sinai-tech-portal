@@ -459,7 +459,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Validate Official University Email Domain (@su.edu.eg or @sinai.edu.eg)
     const lowerEmail = email.toLowerCase().trim();
-    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
+    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@su.edu.eg")) {
       setIsLoading(false);
       throw new Error("️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
     }
@@ -584,7 +584,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         student_id: generatedStudentId,
         avatar: "🎓"
       });
-    } catch (err) { }
+    } catch (err: any) {
+      if (err?.code === "23505" || err?.message?.includes("duplicate key")) {
+        // PostgreSQL unique constraint violation (Race Condition caught!)
+        setIsLoading(false);
+        if (err?.message?.includes("student_id")) {
+          throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر. (تطابق أثناء المعالجة)");
+        } else {
+          throw new Error("هذا البريد الإلكتروني أو الرقم الأكاديمي مسجل بالفعل في منصة الجامعة.");
+        }
+      }
+      // If it's another error, we might log it but continue local state registration for demo purposes
+      console.warn("Error inserting to profiles:", err);
+    }
 
     // Save to local storage list
     savedUsers.push(newUser);
@@ -766,18 +778,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const { error } = await supabase.from("profiles").upsert(fullPayload, { onConflict: "id" }).select();
 
           if (error) {
+            if (error.code === "23505" || error.message?.includes("duplicate key")) {
+               throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
+            }
             console.warn("Supabase upsert by ID failed, attempting by email fallback:", error);
             // If ID conflict fails (e.g., ID changed but email same), try updating by email
             const { data: existingUser } = await supabase.from("profiles").select("id").eq("email", user.email.toLowerCase().trim()).maybeSingle();
             if (existingUser) {
-              await supabase.from("profiles").update(updatePayload).eq("id", existingUser.id);
+              const { error: updateErr } = await supabase.from("profiles").update(updatePayload).eq("id", existingUser.id);
+              if (updateErr && (updateErr.code === "23505" || updateErr.message?.includes("duplicate key"))) {
+                 throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
+              }
             } else {
               // Force insert if totally missing
-              await supabase.from("profiles").insert([fullPayload]);
+              const { error: insertErr } = await supabase.from("profiles").insert([fullPayload]);
+              if (insertErr && (insertErr.code === "23505" || insertErr.message?.includes("duplicate key"))) {
+                 throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
+              }
             }
           }
-        } catch (err) {
+        } catch (err: any) {
           console.warn("Cloud sync error during updateProfile:", err);
+          if (err.message && err.message.includes("مسجل بالفعل")) {
+            setIsLoading(false);
+            throw err;
+          }
         }
       }
 

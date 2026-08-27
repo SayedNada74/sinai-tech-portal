@@ -181,7 +181,7 @@ function CallbackHandler() {
       // Do NOT upsert on every login to prevent overwriting saved user data!
       if (!existingProfile && isSupabaseConfigured && supabase) {
         try {
-          await supabase.from("profiles").insert({
+          const { error: insertErr } = await supabase.from("profiles").insert({
             id: sessionUser.id,
             email: userEmail,
             name: userName,
@@ -192,6 +192,13 @@ function CallbackHandler() {
             avatar: sessionUser.avatar,
             is_profile_completed: false
           });
+          if (insertErr) {
+             if (insertErr.code === "23505" || insertErr.message?.includes("duplicate key")) {
+                 // Profile was inserted concurrently, perfectly fine! Ignore.
+             } else {
+                 throw insertErr;
+             }
+          }
         } catch (e) {
           console.warn("Profile database insert warning:", e);
         }

@@ -47,7 +47,10 @@ export default function LoginPage() {
         toast(` ${errMsg}`,"error");
       }
     } catch (err: any) {
-      const errMsg = err?.message || t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.","An error occurred during sign in.");
+      let errMsg = err?.message || t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.","An error occurred during sign in.");
+      if (errMsg.toLowerCase().includes("fetch") || errMsg.toLowerCase().includes("network") || errMsg.toLowerCase().includes("timeout")) {
+         errMsg = t("الخادم يواجه ضغطاً عالياً حالياً أو يوجد مشكلة في الاتصال. يرجى المحاولة بعد قليل.", "Server is experiencing high traffic or network issues. Please try again in a moment.");
+      }
       setError(errMsg);
       toast(errMsg,"error");
     }
