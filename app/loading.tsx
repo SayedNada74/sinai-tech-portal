@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { GraduationCap } from "lucide-react";
+import * as React from"react";
+import { GraduationCap } from"lucide-react";
 
 export default function Loading() {
   const [lang, setLang] = React.useState("ar");
@@ -29,7 +29,7 @@ export default function Loading() {
       
       {/* Loading message */}
       <span className="text-xs font-black tracking-wider text-zinc-500 dark:text-zinc-400 mt-2">
-        {lang === "ar" ? "جاري تحميل المنصة..." : "Loading SU IT Guide..."}
+        {lang ==="ar" ?"جاري تحميل المنصة..." :"Loading SU IT Guide..."}
       </span>
     </div>
   );

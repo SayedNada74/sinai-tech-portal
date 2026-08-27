@@ -1,13 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { useApp } from "@/context/app-context";
-import { useAdmin } from "@/context/admin-context";
-import { useAuth } from "@/context/auth-context";
-import { performSearch, SearchResultItem } from "@/lib/search";
-import { useAnimationProps } from "@/lib/motion";
-import { motion, AnimatePresence } from "framer-motion";
+import * as React from"react";
+import { useRouter } from"next/navigation";
+import { useApp } from"@/context/app-context";
+import { useAdmin } from"@/context/admin-context";
+import { useAuth } from"@/context/auth-context";
+import { performSearch, SearchResultItem } from"@/lib/search";
+import { useAnimationProps } from"@/lib/motion";
+import { motion, AnimatePresence } from"framer-motion";
 import {
   Search,
   FileText,
@@ -16,7 +16,7 @@ import {
   Bookmark,
   X,
   CornerDownLeft
-} from "lucide-react";
+} from"lucide-react";
 
 export function GlobalSearchBar() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export function GlobalSearchBar() {
   // 1. Bind Ctrl+K / Cmd+K globally
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key ==="k") {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }
@@ -46,7 +46,7 @@ export function GlobalSearchBar() {
 
   // 2. Perform search on query change
   React.useEffect(() => {
-    if (query.trim() === "") {
+    if (query.trim() ==="") {
       setResults([]);
       setSelectedIndex(0);
       return;
@@ -66,16 +66,16 @@ export function GlobalSearchBar() {
 
   // 3. Handle Keyboard Navigation inside search
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
+    if (e.key ==="Escape") {
       e.preventDefault();
       setIsOpen(false);
-    } else if (e.key === "ArrowDown") {
+    } else if (e.key ==="ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prev) => (results.length > 0 ? (prev + 1) % results.length : 0));
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key ==="ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) => (results.length > 0 ? (prev - 1 + results.length) % results.length : 0));
-    } else if (e.key === "Enter") {
+    } else if (e.key ==="Enter") {
       e.preventDefault();
       if (results.length > 0) {
         handleSelectItem(results[selectedIndex].item);
@@ -88,21 +88,21 @@ export function GlobalSearchBar() {
     setIsOpen(false);
 
     // If it's an action, run the action
-    if (item.type === "action" && item.actionKey) {
+    if (item.type ==="action" && item.actionKey) {
       switch (item.actionKey) {
-        case "theme-light":
+        case"theme-light":
           setTheme("light");
           break;
-        case "theme-dark":
+        case"theme-dark":
           setTheme("dark");
           break;
-        case "lang-ar":
+        case"lang-ar":
           setLang("ar");
           break;
-        case "lang-en":
+        case"lang-en":
           setLang("en");
           break;
-        case "logout":
+        case"logout":
           logout();
           break;
         default:
@@ -117,31 +117,31 @@ export function GlobalSearchBar() {
 
   const getIcon = (type: SearchResultItem["type"]) => {
     switch (type) {
-      case "page":
-        return <FileText className="h-4.5 w-4.5 text-blue-500" />;
-      case "action":
+      case"page":
+        return <FileText className="h-4.5 w-4.5 text-foreground" />;
+      case"action":
         return <Command className="h-4.5 w-4.5 text-amber-500" />;
-      case "item":
-        return <GraduationCap className="h-4.5 w-4.5 text-emerald-500" />;
-      case "section":
-        return <Bookmark className="h-4.5 w-4.5 text-sky-500" />;
+      case"item":
+        return <GraduationCap className="h-4.5 w-4.5 text-foreground" />;
+      case"section":
+        return <Bookmark className="h-4.5 w-4.5 text-foreground" />;
     }
   };
 
   const getTypeLabel = (type: SearchResultItem["type"]) => {
-    if (lang === "ar") {
+    if (lang ==="ar") {
       switch (type) {
-        case "page": return "صفحة";
-        case "action": return "إجراء";
-        case "item": return "مقرر";
-        case "section": return "قسم";
+        case"page": return"صفحة";
+        case"action": return"إجراء";
+        case"item": return"مقرر";
+        case"section": return"قسم";
       }
     } else {
       switch (type) {
-        case "page": return "Page";
-        case "action": return "Action";
-        case "item": return "Course";
-        case "section": return "Section";
+        case"page": return"Page";
+        case"action": return"Action";
+        case"item": return"Course";
+        case"section": return"Section";
       }
     }
   };
@@ -160,19 +160,17 @@ export function GlobalSearchBar() {
           <motion.div
             {...scaleSpring}
             className="w-full max-w-lg card card-glow overflow-hidden border border-zinc-200 dark:border-zinc-800/40 bg-white dark:bg-zinc-950 shadow-2xl relative z-10 text-right font-sans"
-            dir={lang === "ar" ? "rtl" : "ltr"}
+            dir={lang ==="ar" ?"rtl" :"ltr"}
             onKeyDown={handleKeyDown}
           >
             {/* Input Wrapper */}
             <div className="p-4 border-b border-zinc-100 dark:border-zinc-850 flex items-center gap-3">
-              <Search className="h-5 w-5 text-zinc-400 shrink-0" />
+              <Search className="h-5 w-5 text-foreground shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 className="w-full bg-transparent text-sm text-zinc-800 dark:text-zinc-100 outline-none placeholder-zinc-500 border-none"
-                placeholder={t(
-                  "اكتب للبحث (مثال: حاسبة، برمجة، لغة)...",
-                  "Search pages, courses, actions (Ctrl+K)..."
+                placeholder={t("اكتب للبحث (مثال: حاسبة، برمجة، لغة)...","Search pages, courses, actions (Ctrl+K)..."
                 )}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -197,8 +195,8 @@ export function GlobalSearchBar() {
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`p-3 rounded-xl flex items-center justify-between gap-4 cursor-pointer transition-all duration-150 ${
                         isSelected
-                          ? "bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/50 shadow-sm"
-                          : "border border-transparent"
+                          ?"bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/50 shadow-sm"
+                          :"border border-transparent"
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -220,33 +218,33 @@ export function GlobalSearchBar() {
                           {getTypeLabel(res.item.type)}
                         </span>
                         {isSelected && (
-                          <CornerDownLeft className="h-3 w-3 text-zinc-500" />
+                          <CornerDownLeft className="h-3 w-3 text-foreground" />
                         )}
                       </div>
                     </div>
                   );
                 })
-              ) : query.trim() !== "" ? (
+              ) : query.trim() !=="" ? (
                 <div className="text-center py-10 text-xs text-zinc-500">
-                  {t("لا توجد نتائج مطابقة لبحثك.", "No results match your search query.")}
+                  {t("لا توجد نتائج مطابقة لبحثك.","No results match your search query.")}
                 </div>
               ) : (
-                <div className="p-6 text-right" dir={lang === "ar" ? "rtl" : "ltr"}>
+                <div className="p-6 text-right" dir={lang ==="ar" ?"rtl" :"ltr"}>
                   <h5 className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-3">
-                    {t("روابط سريعة مقترحة", "Suggested Pages")}
+                    {t("روابط سريعة مقترحة","Suggested Pages")}
                   </h5>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <button
                       onClick={() => { setIsOpen(false); router.push("/departments"); }}
                       className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/40 hover:border-zinc-300 dark:hover:border-zinc-700/50 bg-zinc-50 dark:bg-zinc-900/40 text-right text-zinc-700 dark:text-zinc-300 hover:text-cyan-600 dark:hover:text-cyan-400 font-bold transition-all cursor-pointer"
                     >
-                      📖 {t("الخطة والتقدم", "Curriculum Progress")}
+                       {t("الخطة والتقدم","Curriculum Progress")}
                     </button>
                     <button
                       onClick={() => { setIsOpen(false); router.push("/gpa"); }}
                       className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800/40 hover:border-zinc-300 dark:hover:border-zinc-700/50 bg-zinc-50 dark:bg-zinc-900/40 text-right text-zinc-700 dark:text-zinc-300 hover:text-cyan-600 dark:hover:text-cyan-400 font-bold transition-all cursor-pointer"
                     >
-                      📊 {t("حاسبة المعدل", "GPA Calculator")}
+                       {t("حاسبة المعدل","GPA Calculator")}
                     </button>
                   </div>
                 </div>
@@ -255,11 +253,11 @@ export function GlobalSearchBar() {
             
             {/* Footer hints */}
             <div className="px-4 py-2 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-950/80 flex justify-between text-[9px] font-medium text-zinc-500">
-              <span>{t("اضغط Enter للاختيار", "Press Enter to select")}</span>
+              <span>{t("اضغط Enter للاختيار","Press Enter to select")}</span>
               <span className="flex items-center gap-1.5">
-                <span>{t("التنقل بـ", "Navigate with")}</span>
+                <span>{t("التنقل بـ","Navigate with")}</span>
                 <kbd className="px-1.5 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded">↑↓</kbd>
-                <span>{t("والإغلاق بـ Esc", "and Close with Esc")}</span>
+                <span>{t("والإغلاق بـ Esc","and Close with Esc")}</span>
               </span>
             </div>
           </motion.div>

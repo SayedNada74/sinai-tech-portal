@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useLearning, CourseReview } from "@/context/learning-context";
-import { useSocial, CommunityPost } from "@/context/social-context";
-import { useAdmin } from "@/context/admin-context";
-import { useApp } from "@/context/app-context";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import * as React from"react";
+import Link from"next/link";
+import { useLearning, CourseReview } from"@/context/learning-context";
+import { useSocial, CommunityPost } from"@/context/social-context";
+import { useAdmin } from"@/context/admin-context";
+import { useApp } from"@/context/app-context";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
+import { Badge } from"@/components/ui/badge";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
 import {
   MessageSquare,
   Search,
@@ -32,7 +32,7 @@ import {
   ChevronUp,
   CornerDownLeft,
   Users as UsersIcon
-} from "lucide-react";
+} from"lucide-react";
 
 export default function ReviewModerationPage() {
   const { t, dir, lang } = useApp();
@@ -40,7 +40,7 @@ export default function ReviewModerationPage() {
   const { posts, deletePost, reportPost, deleteComment, deleteReply } = useSocial();
   const { logAction, courses, users } = useAdmin();
 
-  const [activeTab, setActiveTab] = React.useState<"posts" | "reviews">("posts");
+  const [activeTab, setActiveTab] = React.useState<"posts" |"reviews">("posts");
   const [searchTerm, setSearchTerm] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("ALL");
   const [courseFilter, setCourseFilter] = React.useState("ALL");
@@ -60,18 +60,18 @@ export default function ReviewModerationPage() {
 
   const getAuthorDisplayName = (authorEmail?: string, fallbackAuthor?: string) => {
     const target = users.find(u => u.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim());
-    let raw = fallbackAuthor || "";
+    let raw = fallbackAuthor ||"";
     if (target) {
-      raw = lang === "ar" ? (target.nameAr || target.name || fallbackAuthor || "") : (target.nameEn || target.name || fallbackAuthor || "");
+      raw = lang ==="ar" ? (target.nameAr || target.name || fallbackAuthor ||"") : (target.nameEn || target.name || fallbackAuthor ||"");
     }
     const parts = raw.trim().split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return `${parts[0]} ${parts[1]}`;
     }
-    return raw || fallbackAuthor || (lang === "ar" ? "طالب" : "Student");
+    return raw || fallbackAuthor || (lang ==="ar" ?"طالب" :"Student");
   };
 
-  const renderAvatar = (avatar: string | undefined, fallback: string = "👤") => {
+  const renderAvatar = (avatar: string | undefined, fallback: string ="") => {
     const isImg = avatar && (avatar.startsWith("data:image/") || avatar.startsWith("http"));
     if (isImg) {
       return <img src={avatar} alt="" className="h-full w-full object-cover rounded-lg" />;
@@ -90,7 +90,7 @@ export default function ReviewModerationPage() {
         p.author.toLowerCase().includes(q) ||
         p.authorEmail.toLowerCase().includes(q);
 
-      const matchCategory = categoryFilter === "ALL" || p.category === categoryFilter;
+      const matchCategory = categoryFilter ==="ALL" || p.category === categoryFilter;
       const matchReported = !reportedOnly || p.reported;
 
       return matchQ && matchCategory && matchReported;
@@ -107,36 +107,36 @@ export default function ReviewModerationPage() {
         r.author.toLowerCase().includes(q) ||
         r.comment.toLowerCase().includes(q);
 
-      const matchCourse = courseFilter === "ALL" || r.courseCode === courseFilter;
+      const matchCourse = courseFilter ==="ALL" || r.courseCode === courseFilter;
       return matchQ && matchCourse;
     });
   }, [reviews, searchTerm, courseFilter]);
 
   const handleDeletePost = (id: string, title: string, author: string) => {
-    if (confirm(t(`هل أنت متأكد من حذف منشور الطالب "${author}" بعنوان [${title}] نهائياً؟`, `Permanently delete post "${title}" by ${author}?`))) {
+    if (confirm(t(`هل أنت متأكد من حذف منشور الطالب"${author}" بعنوان [${title}] نهائياً؟`, `Permanently delete post"${title}" by ${author}?`))) {
       deletePost(id);
-      logAction("حذف منشور بالمنتدى", `تم حذف منشور الطالب ${author} لعدم ملاءمته.`, "review");
+      logAction("حذف منشور بالمنتدى", `تم حذف منشور الطالب ${author} لعدم ملاءمته.`,"review");
     }
   };
 
   const handleDeleteComment = (postId: string, commentId: string, author: string) => {
-    if (confirm(t(`هل تريد بالتأكيد حذف تعليق الطالب "${author}"؟`, `Delete comment by "${author}"?`))) {
+    if (confirm(t(`هل تريد بالتأكيد حذف تعليق الطالب"${author}"؟`, `Delete comment by"${author}"?`))) {
       deleteComment(postId, commentId);
-      logAction("حذف تعليق بالمنتدى", `تم حذف تعليق الطالب ${author} من المنشور.`, "review");
+      logAction("حذف تعليق بالمنتدى", `تم حذف تعليق الطالب ${author} من المنشور.`,"review");
     }
   };
 
   const handleDeleteReply = (postId: string, commentId: string, replyId: string, author: string) => {
-    if (confirm(t(`هل تريد بالتأكيد حذف رد الطالب "${author}"؟`, `Delete reply by "${author}"?`))) {
+    if (confirm(t(`هل تريد بالتأكيد حذف رد الطالب"${author}"؟`, `Delete reply by"${author}"?`))) {
       deleteReply(postId, commentId, replyId);
-      logAction("حذف رد بالمنتدى", `تم حذف رد الطالب ${author} من التعليق.`, "review");
+      logAction("حذف رد بالمنتدى", `تم حذف رد الطالب ${author} من التعليق.`,"review");
     }
   };
 
   const handleDeleteReview = async (id: string, author: string) => {
-    if (confirm(t(`هل أنت متأكد من إزالة مراجعة الطالب "${author}" نهائياً؟`, `Permanently delete review by "${author}"?`))) {
+    if (confirm(t(`هل أنت متأكد من إزالة مراجعة الطالب"${author}" نهائياً؟`, `Permanently delete review by"${author}"?`))) {
       await deleteReview(id);
-      logAction("حذف مراجعة مقرر", `تم حذف مراجعة الطالب ${author} لعدم ملاءمتها.`, "review");
+      logAction("حذف مراجعة مقرر", `تم حذف مراجعة الطالب ${author} لعدم ملاءمتها.`,"review");
     }
   };
 
@@ -148,13 +148,11 @@ export default function ReviewModerationPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2.5">
-            <Shield className="h-6 w-6 text-cyan-500 shrink-0" />
-            <span>{t("إدارة ورقابة المنتدى والتقييمات", "Community Forum & Reviews Moderation")}</span>
+            <Shield className="h-6 w-6 text-primary shrink-0" />
+            <span>{t("إدارة ورقابة المنتدى والتقييمات","Community Forum & Reviews Moderation")}</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            {t(
-              "لوحة التحكم الإدارية لمتابعة تدوينات الطلاب، فحص التفاعلات، ومراجعة وحذف التعليقات غير الملائمة.",
-              "Administrative control panel to monitor posts, inspect reactions, and moderate or delete comments and replies."
+            {t("لوحة التحكم الإدارية لمتابعة تدوينات الطلاب، فحص التفاعلات، ومراجعة وحذف التعليقات غير الملائمة.","Administrative control panel to monitor posts, inspect reactions, and moderate or delete comments and replies."
             )}
           </p>
         </div>
@@ -162,14 +160,14 @@ export default function ReviewModerationPage() {
         {/* Quick Stats Badges */}
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline" className="text-xs font-bold py-1.5 px-3 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 gap-1.5">
-            <MessageSquare className="h-3.5 w-3.5 text-cyan-500" />
-            <span>{posts.length} {t("منشور طلابي", "Posts")}</span>
+            <MessageSquare className="h-3.5 w-3.5 text-primary" />
+            <span>{posts.length} {t("منشور طلابي","Posts")}</span>
           </Badge>
 
           {reportedPostsCount > 0 && (
             <Badge className="text-xs font-bold py-1.5 px-3 bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30 gap-1.5 animate-pulse">
               <AlertTriangle className="h-3.5 w-3.5" />
-              <span>{reportedPostsCount} {t("مبلغ عنها 🚨", "Reported 🚨")}</span>
+              <span>{reportedPostsCount} {t("مبلغ عنها","Reported")}</span>
             </Badge>
           )}
         </div>
@@ -179,25 +177,25 @@ export default function ReviewModerationPage() {
       <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2 overflow-x-auto scrollbar-none flex-nowrap sm:flex-wrap">
         <button
           onClick={() => { setActiveTab("posts"); setSearchTerm(""); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab === "posts"
-              ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab ==="posts"
+              ?"bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
+              :"text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
             }`}
         >
           <MessageCircle className="h-4 w-4" />
-          <span>{t("منشورات المنتدى الطلابي", "Student Forum Posts")}</span>
+          <span>{t("منشورات المنتدى الطلابي","Student Forum Posts")}</span>
           <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-white/20">{posts.length}</span>
         </button>
 
         <button
           onClick={() => { setActiveTab("reviews"); setSearchTerm(""); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab === "reviews"
-              ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${activeTab ==="reviews"
+              ?"bg-cyan-500 text-white shadow-md shadow-cyan-500/20"
+              :"text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
             }`}
         >
           <Star className="h-4 w-4" />
-          <span>{t("مراجعات وتقييمات المواد", "Course Reviews")}</span>
+          <span>{t("مراجعات وتقييمات المواد","Course Reviews")}</span>
           <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-white/20">{reviews.length}</span>
         </button>
       </div>
@@ -206,28 +204,28 @@ export default function ReviewModerationPage() {
       <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm">
         <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+            <Search className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
             <Input
               type="text"
               placeholder={
-                activeTab === "posts"
-                  ? t("ابحث بنص المنشور، اسم الكاتب، أو الإيميل...", "Search post text, author name, or email...")
-                  : t("ابحث بكود المادة، اسم الطالب، أو نص التعليق...", "Search by course code, student name, or comment...")
+                activeTab ==="posts"
+                  ? t("ابحث بنص المنشور، اسم الكاتب، أو الإيميل...","Search post text, author name, or email...")
+                  : t("ابحث بكود المادة، اسم الطالب، أو نص التعليق...","Search by course code, student name, or comment...")
               }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={lang === "ar" ? "pr-10" : "pl-10"}
+              className={lang ==="ar" ?"pr-10" :"pl-10"}
             />
           </div>
 
-          {activeTab === "posts" ? (
+          {activeTab ==="posts" ? (
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full sm:w-auto flex-1"
               >
-                <option value="ALL">{t("جميع الاقسام 💬", "All Categories 💬")}</option>
+                <option value="ALL">{t("جميع الاقسام","All Categories")}</option>
                 <option value="General Discussion">General Discussion</option>
                 <option value="Study Help">Study Help</option>
                 <option value="Programming">Programming</option>
@@ -238,13 +236,13 @@ export default function ReviewModerationPage() {
               </select>
 
               <Button
-                variant={reportedOnly ? "destructive" : "outline"}
+                variant={reportedOnly ?"destructive" :"outline"}
                 size="sm"
                 onClick={() => setReportedOnly(!reportedOnly)}
                 className="h-10 text-xs font-bold gap-1.5 cursor-pointer w-full sm:w-auto justify-center"
               >
                 <AlertTriangle className="h-3.5 w-3.5" />
-                {t("المبلغ عنها فقط", "Reported Only")}
+                {t("المبلغ عنها فقط","Reported Only")}
               </Button>
             </div>
           ) : (
@@ -254,7 +252,7 @@ export default function ReviewModerationPage() {
               className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full md:w-auto"
             >
 
-              <option value="ALL">{t("جميع المقررات 📚", "All Courses 📚")}</option>
+              <option value="ALL">{t("جميع المقررات","All Courses")}</option>
               {courses.map((c) => (
                 <option key={c.code} value={c.code}>{c.code} - {t(c.arabic, c.english)}</option>
               ))}
@@ -264,17 +262,17 @@ export default function ReviewModerationPage() {
       </Card>
 
       {/* Tab 1: Community Posts List */}
-      {activeTab === "posts" && (
+      {activeTab ==="posts" && (
         <div className="space-y-4">
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => {
               const authorUser = users.find(u => u.email?.toLowerCase().trim() === post.authorEmail?.toLowerCase().trim());
               return (
-                <Card key={post.id} className={`border bg-white dark:bg-zinc-900 shadow-sm p-5 space-y-4 transition-all ${post.reported ? "border-red-500/40 bg-red-500/[0.02]" : "border-zinc-200/60 dark:border-zinc-800/60"}`}>
+                <Card key={post.id} className={`border bg-white dark:bg-zinc-900 shadow-sm p-5 space-y-4 transition-all ${post.reported ?"border-red-500/40 bg-red-500/[0.02]" :"border-zinc-200/60 dark:border-zinc-800/60"}`}>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-black text-sm overflow-hidden shrink-0">
-                        {renderAvatar(post.avatar, "🧑‍🎓")}
+                        {renderAvatar(post.avatar,"‍🎓")}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
@@ -304,7 +302,7 @@ export default function ReviewModerationPage() {
                       {post.reported && (
                         <Badge className="bg-red-500 text-white text-[10px] font-bold gap-1 animate-pulse">
                           <AlertTriangle className="h-3 w-3" />
-                          {t("بلاغ مخالفة 🚨", "Reported 🚨")}
+                          {t("بلاغ مخالفة","Reported")}
                         </Badge>
                       )}
 
@@ -315,7 +313,7 @@ export default function ReviewModerationPage() {
                         className="text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 h-8 px-2.5 cursor-pointer gap-1"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        {t("حذف المنشور", "Delete Post")}
+                        {t("حذف المنشور","Delete Post")}
                       </Button>
                     </div>
                   </div>
@@ -336,10 +334,10 @@ export default function ReviewModerationPage() {
                       <button
                         onClick={() => toggleLikes(post.id)}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/60 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer border border-zinc-200/50 dark:border-zinc-750"
-                        title={t("عرض تفاصيل المعجبين", "View reactions")}
+                        title={t("عرض تفاصيل المعجبين","View reactions")}
                       >
-                        <ThumbsUp className="h-3.5 w-3.5 text-cyan-500" />
-                        <span>{post.likes.length} {t("إعجاب", "Likes")}</span>
+                        <ThumbsUp className="h-3.5 w-3.5 text-primary" />
+                        <span>{post.likes.length} {t("إعجاب","Likes")}</span>
                         {expandedLikes[post.id] ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                       </button>
 
@@ -348,8 +346,8 @@ export default function ReviewModerationPage() {
                         onClick={() => toggleComments(post.id)}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 transition-colors cursor-pointer border border-cyan-500/20 font-bold"
                       >
-                        <MessageCircle className="h-3.5 w-3.5 text-cyan-500" />
-                        <span>{t("التعليقات والردود", "Comments & Replies")} ({post.comments.length})</span>
+                        <MessageCircle className="h-3.5 w-3.5 text-primary" />
+                        <span>{t("التعليقات والردود","Comments & Replies")} ({post.comments.length})</span>
                         {expandedComments[post.id] ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                       </button>
                     </div>
@@ -366,8 +364,8 @@ export default function ReviewModerationPage() {
                   {expandedLikes[post.id] && (
                     <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/70 dark:border-zinc-800 space-y-2 animate-fade-in text-xs">
                       <h5 className="font-bold text-[11px] text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                        <ThumbsUp className="h-3.5 w-3.5 text-cyan-500" />
-                        <span>{t("قائمة المعجبين بالمنشور (اضغط لزيارة الملف الشخصي):", "Students who liked this post (click to view profile):")}</span>
+                        <ThumbsUp className="h-3.5 w-3.5 text-primary" />
+                        <span>{t("قائمة المعجبين بالمنشور (اضغط لزيارة الملف الشخصي):","Students who liked this post (click to view profile):")}</span>
                       </h5>
                       {post.likes.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5 pt-1">
@@ -397,7 +395,7 @@ export default function ReviewModerationPage() {
                           })}
                         </div>
                       ) : (
-                        <p className="text-[11px] text-zinc-400">{t("لا توجد تفاعلات على هذا المنشور حتى الآن.", "No likes on this post yet.")}</p>
+                        <p className="text-[11px] text-zinc-400">{t("لا توجد تفاعلات على هذا المنشور حتى الآن.","No likes on this post yet.")}</p>
                       )}
                     </div>
                   )}
@@ -407,10 +405,10 @@ export default function ReviewModerationPage() {
                     <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/70 dark:border-zinc-800 space-y-3 animate-fade-in">
                       <div className="flex items-center justify-between pb-2 border-b border-zinc-200/50 dark:border-zinc-800">
                         <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                          <MessageSquare className="h-3.5 w-3.5 text-cyan-500" />
-                          <span>{t("إدارة تعليقات وردود الطلاب", "Moderate Comments & Replies")} ({post.comments.length})</span>
+                          <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                          <span>{t("إدارة تعليقات وردود الطلاب","Moderate Comments & Replies")} ({post.comments.length})</span>
                         </h5>
-                        <span className="text-[10px] text-zinc-400 font-medium">{t("يمكنك حذف أي تعليق أو رد مخالف فوراً", "Delete any inappropriate comment directly")}</span>
+                        <span className="text-[10px] text-zinc-400 font-medium">{t("يمكنك حذف أي تعليق أو رد مخالف فوراً","Delete any inappropriate comment directly")}</span>
                       </div>
 
                       {post.comments.length > 0 ? (
@@ -424,7 +422,7 @@ export default function ReviewModerationPage() {
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                       <div className="h-7 w-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs overflow-hidden shrink-0">
-                                        {renderAvatar(comment.avatar, "👤")}
+                                        {renderAvatar(comment.avatar,"")}
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -451,10 +449,10 @@ export default function ReviewModerationPage() {
                                       size="sm"
                                       onClick={() => handleDeleteComment(post.id, comment.id, comment.author)}
                                       className="h-7 px-2 text-[10px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer gap-1"
-                                      title={t("حذف هذا التعليق", "Delete this comment")}
+                                      title={t("حذف هذا التعليق","Delete this comment")}
                                     >
                                       <Trash2 className="h-3 w-3" />
-                                      <span>{t("حذف التعليق", "Delete")}</span>
+                                      <span>{t("حذف التعليق","Delete")}</span>
                                     </Button>
                                   </div>
 
@@ -465,7 +463,7 @@ export default function ReviewModerationPage() {
 
                                 {/* Nested Replies List */}
                                 {comment.replies && comment.replies.length > 0 && (
-                                  <div className={`space-y-1.5 ${lang === "ar" ? "mr-6 border-r-2 pr-3" : "ml-6 border-l-2 pl-3"} border-cyan-500/30`}>
+                                  <div className={`space-y-1.5 ${lang ==="ar" ?"mr-6 border-r-2 pr-3" :"ml-6 border-l-2 pl-3"} border-cyan-500/30`}>
                                     {comment.replies.map((reply) => {
                                       const replyUser = users.find(u => u.email?.toLowerCase().trim() === reply.authorEmail?.toLowerCase().trim());
                                       return (
@@ -473,7 +471,7 @@ export default function ReviewModerationPage() {
                                           <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-1.5 flex-wrap">
                                               <div className="h-5 w-5 rounded bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] overflow-hidden shrink-0">
-                                                {renderAvatar(reply.avatar, "👤")}
+                                                {renderAvatar(reply.avatar,"")}
                                               </div>
                                               {replyUser?.id ? (
                                                 <Link
@@ -494,10 +492,10 @@ export default function ReviewModerationPage() {
                                             <button
                                               onClick={() => handleDeleteReply(post.id, comment.id, reply.id, reply.author)}
                                               className="text-[10px] font-black text-red-500 hover:text-red-700 hover:underline cursor-pointer flex items-center gap-0.5"
-                                              title={t("حذف هذا الرد", "Delete this reply")}
+                                              title={t("حذف هذا الرد","Delete this reply")}
                                             >
                                               <Trash2 className="h-2.5 w-2.5" />
-                                              <span>{t("حذف", "Delete")}</span>
+                                              <span>{t("حذف","Delete")}</span>
                                             </button>
                                           </div>
                                           <p className="text-[11px] text-zinc-650 dark:text-zinc-355 whitespace-pre-wrap leading-relaxed pr-1 pl-1">
@@ -513,7 +511,7 @@ export default function ReviewModerationPage() {
                           })}
                         </div>
                       ) : (
-                        <p className="text-xs text-zinc-400 py-3 text-center">{t("لا توجد أي تعليقات على هذا المنشور حتى الآن.", "No comments on this post yet.")}</p>
+                        <p className="text-xs text-zinc-400 py-3 text-center">{t("لا توجد أي تعليقات على هذا المنشور حتى الآن.","No comments on this post yet.")}</p>
                       )}
                     </div>
                   )}
@@ -522,15 +520,15 @@ export default function ReviewModerationPage() {
             })
           ) : (
             <div className="py-12 text-center text-xs text-zinc-400 space-y-2">
-              <HelpCircle className="h-8 w-8 mx-auto text-zinc-300 dark:text-zinc-700" />
-              <p>{t("لا توجد منشورات بالمنتدى مطابقة لخيارات التصفية", "No forum posts match search filter")}</p>
+              <HelpCircle className="h-8 w-8 mx-auto text-primary dark:text-zinc-700" />
+              <p>{t("لا توجد منشورات بالمنتدى مطابقة لخيارات التصفية","No forum posts match search filter")}</p>
             </div>
           )}
         </div>
       )}
 
       {/* Tab 2: Course Reviews List */}
-      {activeTab === "reviews" && (
+      {activeTab ==="reviews" && (
         <div className="space-y-4">
           {filteredReviews.length > 0 ? (
             filteredReviews.map((rev) => (
@@ -542,14 +540,14 @@ export default function ReviewModerationPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-xs text-zinc-900 dark:text-zinc-50">{rev.author}</h4>
-                      <span className="text-[10px] text-zinc-400 block">{rev.date} · {t("المادة:", "Course:")} <strong className="text-zinc-700 dark:text-zinc-300 font-mono">{rev.courseCode}</strong></span>
+                      <span className="text-[10px] text-zinc-400 block">{rev.date} · {t("المادة:","Course:")} <strong className="text-zinc-700 dark:text-zinc-300 font-mono">{rev.courseCode}</strong></span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <div className="flex gap-0.5">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className={`h-3.5 w-3.5 ${star <= rev.rating ? "fill-amber-400 text-amber-400" : "text-zinc-200 dark:text-zinc-800"}`} />
+                        <Star key={star} className={`h-3.5 w-3.5 ${star <= rev.rating ?"fill-amber-400 text-amber-400" :"text-zinc-200 dark:text-zinc-800"}`} />
                       ))}
                     </div>
 
@@ -560,7 +558,7 @@ export default function ReviewModerationPage() {
                       className="text-[10px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 h-8 px-2 cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                      {t("حذف التقييم", "Delete Review")}
+                      {t("حذف التقييم","Delete Review")}
                     </Button>
                   </div>
                 </div>
@@ -570,7 +568,7 @@ export default function ReviewModerationPage() {
                     {rev.comment}
                   </p>
                   <p className="p-3 bg-sky-500/[0.04] border border-sky-500/10 rounded-xl text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    <span className="text-sky-600 dark:text-sky-400 font-bold block mb-0.5">💡 {t("النصيحة الأكاديمية للمذاكرة:", "Study Tip:")}</span>
+                    <span className="text-sky-600 dark:text-sky-400 font-bold block mb-0.5"> {t("النصيحة الأكاديمية للمذاكرة:","Study Tip:")}</span>
                     {rev.tips}
                   </p>
                 </div>
@@ -578,8 +576,8 @@ export default function ReviewModerationPage() {
             ))
           ) : (
             <div className="py-12 text-center text-xs text-zinc-400 space-y-2">
-              <HelpCircle className="h-8 w-8 mx-auto text-zinc-300 dark:text-zinc-700" />
-              <p>{t("لا توجد تقييمات مطابقة لخيارات التصفية", "No student reviews match search filter")}</p>
+              <HelpCircle className="h-8 w-8 mx-auto text-primary dark:text-zinc-700" />
+              <p>{t("لا توجد تقييمات مطابقة لخيارات التصفية","No student reviews match search filter")}</p>
             </div>
           )}
         </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from"react";
+import { motion, AnimatePresence } from"framer-motion";
+import { ChevronDown } from"lucide-react";
+import { cn } from"@/lib/utils";
 
 interface AccordionItemProps {
   title: string;
@@ -32,9 +32,9 @@ export function AccordionItem({ title, children }: AccordionItemProps) {
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            animate={{ height:"auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease:"easeInOut" }}
             className="overflow-hidden"
           >
             <div className="pt-2 pb-4 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">

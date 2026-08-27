@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { Logo } from "@/components/ui/logo";
-import Link from "next/link";
-import { useAuth } from "@/context/auth-context";
-import { useApp } from "@/context/app-context";
-import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn, getAvatarFallback, isValidImageAvatar } from "@/lib/utils";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { DeveloperCredit } from "@/components/ui/developer-credit";
+import * as React from"react";
+import { Logo } from"@/components/ui/logo";
+import Link from"next/link";
+import { useAuth } from"@/context/auth-context";
+import { useApp } from"@/context/app-context";
+import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from"lucide-react";
+import { Button } from"@/components/ui/button";
+import { cn, getAvatarFallback, isValidImageAvatar } from"@/lib/utils";
+import { motion, AnimatePresence, useScroll, useSpring } from"framer-motion";
+import { DeveloperCredit } from"@/components/ui/developer-credit";
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -17,7 +17,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-  const isDark = theme === "dark";
+  const isDark = theme ==="dark";
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Smooth scroll progress indicator
@@ -42,25 +42,25 @@ export function Navbar() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(theme ==="dark" ?"light" :"dark");
   };
 
   const navLinks = [
-    { label: t("الرئيسية", "Home"), href: "/#hero" },
-    { label: t("الميزات", "Features"), href: "/#features" },
-    { label: t("المميزات الإحصائية", "Statistics"), href: "/#stats" },
-    { label: t("الأسئلة الشائعة", "FAQ"), href: "/#faq" }
+    { label: t("الرئيسية","Home"), href:"/#hero" },
+    { label: t("الميزات","Features"), href:"/#features" },
+    { label: t("المميزات الإحصائية","Statistics"), href:"/#stats" },
+    { label: t("الأسئلة الشائعة","FAQ"), href:"/#faq" }
   ];
 
-  const userAvatar = user?.avatar || "🎓";
-  const userName = user?.name || "";
+  const userAvatar = user?.avatar ||"🎓";
+  const userName = user?.name ||"";
   const isImageAvatar = isValidImageAvatar(userAvatar);
 
   return (
     <>
       {/* Dynamic Scroll Progress Bar */}
       <motion.div
-        style={{ scaleX, transformOrigin: dir === "rtl" ? "right" : "left" }}
+        style={{ scaleX, transformOrigin: dir ==="rtl" ?"right" :"left" }}
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-600 via-cyan-500 to-sky-400 z-[70] shadow-[0_0_12px_rgba(2,132,199,0.7)]"
       />
 
@@ -92,19 +92,19 @@ export function Navbar() {
               suppressHydrationWarning
               className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
               aria-label="Toggle theme"
-              title={t("تبديل مظهر الموقع", "Toggle Theme")}
+              title={t("تبديل مظهر الموقع","Toggle Theme")}
             >
-              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-zinc-700" />}
+              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-foreground" />}
             </button>
 
             {/* Language Switcher */}
             <button
-              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
               className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer text-xs font-bold flex items-center gap-1.5"
-              title={t("تغيير لغة المنصة", "Change Language")}
+              title={t("تغيير لغة المنصة","Change Language")}
             >
-              <Globe className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-              <span>{lang === "ar" ? "English" : "العربية"}</span>
+              <Globe className="h-4 w-4 text-foreground dark:text-sky-400" />
+              <span>{lang ==="ar" ?"English" :"العربية"}</span>
             </button>
 
             {/* Developer Credit */}
@@ -120,9 +120,8 @@ export function Navbar() {
                   {isImageAvatar ? (
                     <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
-                    <span className={cn(
-                      "font-black text-sky-700 dark:text-sky-300",
-                      getAvatarFallback(userAvatar, userName).length > 2 ? "text-xs" : "text-lg"
+                    <span className={cn("font-black text-sky-700 dark:text-sky-300",
+                      getAvatarFallback(userAvatar, userName).length > 2 ?"text-xs" :"text-lg"
                     )}>{getAvatarFallback(userAvatar, userName)}</span>
                   )}
                 </button>
@@ -134,7 +133,7 @@ export function Navbar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute ${lang === "ar" ? "left-0" : "right-0"} mt-3.5 w-56 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-xl py-2 z-50`}
+                      className={`absolute ${lang ==="ar" ?"left-0" :"right-0"} mt-3.5 w-56 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 shadow-xl py-2 z-50`}
                     >
                       {/* User metadata */}
                       <div className="px-4.5 py-3 border-b border-zinc-100 dark:border-zinc-850">
@@ -146,21 +145,21 @@ export function Navbar() {
                         <Link href="/dashboard" onClick={() => setDropdownOpen(false)}>
                           <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
                             <LayoutDashboard className="h-4 w-4" />
-                            <span>{t("لوحة التحكم", "Dashboard")}</span>
+                            <span>{t("لوحة التحكم","Dashboard")}</span>
                           </div>
                         </Link>
 
                         <Link href="/profile" onClick={() => setDropdownOpen(false)}>
                           <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
                             <User className="h-4 w-4" />
-                            <span>{t("الملف الشخصي", "Profile")}</span>
+                            <span>{t("الملف الشخصي","Profile")}</span>
                           </div>
                         </Link>
 
                         <Link href="/settings" onClick={() => setDropdownOpen(false)}>
                           <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
                             <Settings className="h-4 w-4" />
-                            <span>{t("الإعدادات", "Settings")}</span>
+                            <span>{t("الإعدادات","Settings")}</span>
                           </div>
                         </Link>
 
@@ -173,7 +172,7 @@ export function Navbar() {
                             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors cursor-pointer"
                           >
                             <LogOut className="h-4 w-4" />
-                            <span>{t("تسجيل الخروج", "Logout")}</span>
+                            <span>{t("تسجيل الخروج","Logout")}</span>
                           </button>
                         </div>
                       </div>
@@ -185,12 +184,12 @@ export function Navbar() {
               /* Guest Actions */
               <div className="flex items-center gap-2">
                 <Link href="/auth/login">
-                  <Button variant="outline" size="sm" className="rounded-xl font-bold border-zinc-200 dark:border-zinc-800 text-xs px-3.5 h-9">{t("تسجيل الدخول", "Sign In")}</Button>
+                  <Button variant="outline" size="sm" className="rounded-xl font-bold border-zinc-200 dark:border-zinc-800 text-xs px-3.5 h-9">{t("تسجيل الدخول","Sign In")}</Button>
                 </Link>
                 <Link href="/auth/login">
                   <Button size="sm" className="gap-1.5 font-bold rounded-xl text-xs px-3.5 h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md shadow-sky-600/20">
                     <Sparkles className="h-4 w-4" />
-                    {t("ابدأ التخطيط", "Get Started")}
+                    {t("ابدأ التخطيط","Get Started")}
                   </Button>
                 </Link>
               </div>
@@ -200,10 +199,10 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <div className="flex md:hidden items-center gap-2">
             <button
-              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
               className="px-2.5 py-1.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 text-xs font-bold shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
             >
-              {lang === "ar" ? "EN" : "عربي"}
+              {lang ==="ar" ?"EN" :"عربي"}
             </button>
             <button
               onClick={toggleTheme}
@@ -211,7 +210,7 @@ export function Navbar() {
               className="p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-zinc-700" />}
+              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-foreground" />}
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -244,7 +243,7 @@ export function Navbar() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              transition={{ duration: 0.18, ease:"easeOut" }}
               className="fixed inset-x-0 top-[65px] z-40 md:hidden bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 shadow-2xl py-5 px-4 sm:py-6 sm:px-6 max-h-[calc(100vh-75px)] overflow-y-auto"
               dir={dir}
             >
@@ -269,9 +268,8 @@ export function Navbar() {
                       {isImageAvatar ? (
                         <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                       ) : (
-                        <span className={cn(
-                          "font-black text-sky-700 dark:text-sky-300",
-                          getAvatarFallback(userAvatar, userName).length > 2 ? "text-sm" : "text-xl"
+                        <span className={cn("font-black text-sky-700 dark:text-sky-300",
+                          getAvatarFallback(userAvatar, userName).length > 2 ?"text-sm" :"text-xl"
                         )}>{getAvatarFallback(userAvatar, userName)}</span>
                       )}
                     </div>
@@ -283,19 +281,19 @@ export function Navbar() {
                   <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full justify-start gap-2.5">
                       <LayoutDashboard className="h-4.5 w-4.5" />
-                      {t("لوحة التحكم", "Dashboard")}
+                      {t("لوحة التحكم","Dashboard")}
                     </Button>
                   </Link>
                   <Link href="/profile" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full justify-start gap-2.5">
                       <User className="h-4.5 w-4.5" />
-                      {t("الملف الشخصي", "Student Profile")}
+                      {t("الملف الشخصي","Student Profile")}
                     </Button>
                   </Link>
                   <Link href="/settings" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full justify-start gap-2.5">
                       <Settings className="h-4.5 w-4.5" />
-                      {t("إعدادات المنصة", "Portal Settings")}
+                      {t("إعدادات المنصة","Portal Settings")}
                     </Button>
                   </Link>
                   <Button
@@ -306,18 +304,18 @@ export function Navbar() {
                     className="w-full gap-2.5 bg-red-600 hover:bg-red-500 text-white cursor-pointer"
                   >
                     <LogOut className="h-4.5 w-4.5" />
-                    {t("تسجيل الخروج", "Logout")}
+                    {t("تسجيل الخروج","Logout")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Link href="/auth/login" onClick={() => setIsOpen(false)}>
-                    <Button variant="outline" className="w-full">{t("تسجيل الدخول", "Sign In")}</Button>
+                    <Button variant="outline" className="w-full">{t("تسجيل الدخول","Sign In")}</Button>
                   </Link>
                   <Link href="/auth/login" onClick={() => setIsOpen(false)}>
                     <Button className="w-full gap-1.5">
                       <Sparkles className="h-4 w-4" />
-                      {t("ابدأ التخطيط", "Get Started")}
+                      {t("ابدأ التخطيط","Get Started")}
                     </Button>
                   </Link>
                 </>

@@ -1,16 +1,16 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Lock, ArrowLeft, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Logo } from"@/components/ui/logo";
+import * as React from"react";
+import Link from"next/link";
+import { useRouter } from"next/navigation";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardContent, CardFooter } from"@/components/ui/card";
+import { GraduationCap, Lock, ArrowLeft, CheckCircle } from"lucide-react";
+import { motion } from"framer-motion";
 
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from"@/lib/supabase";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = React.useState("");
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">كلمة المرور الجديدة</label>
                     <div className="relative">
-                      <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                      <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
                       <Input
                         type="password"
                         placeholder="••••••••"
@@ -110,7 +110,7 @@ export default function ResetPasswordPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">تأكيد كلمة المرور</label>
                     <div className="relative">
-                      <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                      <Lock className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
                       <Input
                         type="password"
                         placeholder="••••••••"

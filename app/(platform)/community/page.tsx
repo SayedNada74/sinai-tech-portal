@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { useApp } from "@/context/app-context";
-import { useAuth } from "@/context/auth-context";
-import { useAdmin } from "@/context/admin-context";
-import { useSocial, CommunityPost, PostComment } from "@/context/social-context";
-import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import * as React from"react";
+import { useApp } from"@/context/app-context";
+import { useAuth } from"@/context/auth-context";
+import { useAdmin } from"@/context/admin-context";
+import { useSocial, CommunityPost, PostComment } from"@/context/social-context";
+import Link from"next/link";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Badge } from"@/components/ui/badge";
 import {
   MessageSquare,
   ThumbsUp,
@@ -24,9 +24,9 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+} from"lucide-react";
+import { motion, AnimatePresence } from"framer-motion";
+import { useLocalStorage } from"@/lib/hooks/use-local-storage";
 
 export default function CommunityPage() {
   const { t, lang, dir } = useApp();
@@ -45,12 +45,12 @@ export default function CommunityPage() {
     deleteReply
   } = useSocial();
 
-  const [selectedCategory, setSelectedCategory] = useLocalStorage<string>("su_community_selected_category", "الكل");
+  const [selectedCategory, setSelectedCategory] = useLocalStorage<string>("su_community_selected_category","الكل");
   const [isCreateOpen, setIsCreateOpen] = useLocalStorage("su_community_is_create_open", false);
-  const [newTitle, setNewTitle] = useLocalStorage("su_community_draft_title", "");
-  const [newContent, setNewContent] = useLocalStorage("su_community_draft_content", "");
-  const [newCategory, setNewCategory] = useLocalStorage<CommunityPost["category"]>("su_community_draft_category", "General Discussion");
-  const [newFile, setNewFile] = useLocalStorage("su_community_draft_file", "");
+  const [newTitle, setNewTitle] = useLocalStorage("su_community_draft_title","");
+  const [newContent, setNewContent] = useLocalStorage("su_community_draft_content","");
+  const [newCategory, setNewCategory] = useLocalStorage<CommunityPost["category"]>("su_community_draft_category","General Discussion");
+  const [newFile, setNewFile] = useLocalStorage("su_community_draft_file","");
 
   // Edit Post states
   const [editingPostId, setEditingPostId] = React.useState<string | null>(null);
@@ -65,28 +65,10 @@ export default function CommunityPage() {
   // Expanded comments accordion state
   const [expandedComments, setExpandedComments] = React.useState<Record<string, boolean>>({});
 
-  const categories = [
-    "الكل",
-    "General Discussion",
-    "Study Help",
-    "Programming",
-    "AI",
-    "Web Development",
-    "Mobile Development",
-    "Career Advice",
-    "University News"
+  const categories = ["الكل","General Discussion","Study Help","Programming","AI","Web Development","Mobile Development","Career Advice","University News"
   ];
 
-  const categoryArabic: Record<string, { ar: string; en: string }> = {
-    "الكل": { ar: "الكل", en: "All" },
-    "General Discussion": { ar: "مناقشات عامة", en: "General Discussion" },
-    "Study Help": { ar: "مساعدة دراسية", en: "Study Help" },
-    "Programming": { ar: "برمجة", en: "Programming" },
-    "AI": { ar: "ذكاء اصطناعي", en: "Artificial Intelligence" },
-    "Web Development": { ar: "تطوير الويب", en: "Web Development" },
-    "Mobile Development": { ar: "تطوير الهواتف", en: "Mobile Development" },
-    "Career Advice": { ar: "نصائح مهنية", en: "Career Advice" },
-    "University News": { ar: "أخبار الجامعة", en: "University News" }
+  const categoryArabic: Record<string, { ar: string; en: string }> = {"الكل": { ar:"الكل", en:"All" },"General Discussion": { ar:"مناقشات عامة", en:"General Discussion" },"Study Help": { ar:"مساعدة دراسية", en:"Study Help" },"Programming": { ar:"برمجة", en:"Programming" },"AI": { ar:"ذكاء اصطناعي", en:"Artificial Intelligence" },"Web Development": { ar:"تطوير الويب", en:"Web Development" },"Mobile Development": { ar:"تطوير الهواتف", en:"Mobile Development" },"Career Advice": { ar:"نصائح مهنية", en:"Career Advice" },"University News": { ar:"أخبار الجامعة", en:"University News" }
   };
 
   const [isSubmittingPost, setIsSubmittingPost] = React.useState(false);
@@ -96,19 +78,19 @@ export default function CommunityPage() {
   // Helper to resolve short localized author name (First 2 names in active website language)
   const getAuthorDisplayName = (authorEmail?: string, fallbackAuthor?: string) => {
     const target = users.find(u => u.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim()) || (user?.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim() ? user : null);
-    let raw = fallbackAuthor || "";
+    let raw = fallbackAuthor ||"";
     if (target) {
-      raw = lang === "ar" ? (target.nameAr || target.name || fallbackAuthor || "") : (target.nameEn || target.name || fallbackAuthor || "");
+      raw = lang ==="ar" ? (target.nameAr || target.name || fallbackAuthor ||"") : (target.nameEn || target.name || fallbackAuthor ||"");
     }
     const parts = raw.trim().split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return `${parts[0]} ${parts[1]}`;
     }
-    return raw || fallbackAuthor || (lang === "ar" ? "طالب" : "Student");
+    return raw || fallbackAuthor || (lang ==="ar" ?"طالب" :"Student");
   };
 
   // Helper to safely render avatar (handles base64 image strings, image URLs, or unicode emojis)
-  const renderAvatar = (avatar: string | undefined, fallback: string = "🧑‍🎓") => {
+  const renderAvatar = (avatar: string | undefined, fallback: string ="‍🎓") => {
     const isImg = avatar && (avatar.startsWith("data:image/") || avatar.startsWith("http"));
     if (isImg) {
       return <img src={avatar} alt="" className="h-full w-full object-cover rounded-lg" />;
@@ -117,7 +99,7 @@ export default function CommunityPage() {
   };
 
   const filteredPosts = posts.filter(
-    (p) => selectedCategory === "الكل" || p.category === selectedCategory
+    (p) => selectedCategory ==="الكل" || p.category === selectedCategory
   );
 
   const handleCreatePost = async (e: React.FormEvent) => {
@@ -132,7 +114,7 @@ export default function CommunityPage() {
         newContent.trim(),
         newCategory,
         newFile ? newFile : undefined,
-        newFile ? "#/downloads/" + newFile : undefined
+        newFile ?"#/downloads/" + newFile : undefined
       );
 
       setNewTitle("");
@@ -160,13 +142,13 @@ export default function CommunityPage() {
   };
 
   const handleAddComment = async (postId: string) => {
-    const text = commentInputs[postId] || "";
+    const text = commentInputs[postId] ||"";
     if (!text.trim() || submittingCommentPostId === postId) return;
 
     setSubmittingCommentPostId(postId);
     try {
       await addComment(postId, text.trim());
-      setCommentInputs({ ...commentInputs, [postId]: "" });
+      setCommentInputs({ ...commentInputs, [postId]:"" });
       setExpandedComments({ ...expandedComments, [postId]: true });
     } finally {
       setSubmittingCommentPostId(null);
@@ -174,13 +156,13 @@ export default function CommunityPage() {
   };
 
   const handleAddReply = async (postId: string, commentId: string) => {
-    const text = replyInputs[commentId] || "";
+    const text = replyInputs[commentId] ||"";
     if (!text.trim() || submittingReplyCommentId === commentId) return;
 
     setSubmittingReplyCommentId(commentId);
     try {
       await addReply(postId, commentId, text.trim());
-      setReplyInputs({ ...replyInputs, [commentId]: "" });
+      setReplyInputs({ ...replyInputs, [commentId]:"" });
     } finally {
       setSubmittingReplyCommentId(null);
     }
@@ -190,20 +172,19 @@ export default function CommunityPage() {
     setExpandedComments({ ...expandedComments, [postId]: !expandedComments[postId] });
   };
 
-  const isRtl = dir === "rtl";
+  const isRtl = dir ==="rtl";
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto" dir={dir}>
+    <div className="space-y-8 max-w-5xl mx-auto min-h-[calc(100vh+30px)] pb-12" dir={dir}>
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50">
-            {t("المنتدى ومجتمع الطلاب", "Student Forum & Community")}
+          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 flex items-center gap-2.5">
+            <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+            {t("المنتدى ومجتمع الطلاب","Student Forum & Community")}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-550 dark:text-zinc-400 mt-1">
-            {t(
-              "تواصل مع زملائك، اطرح أسئلتك، وشارك المعرفة الأكاديمية.",
-              "Connect with peers, ask questions, and share academic knowledge."
+            {t("تواصل مع زملائك، اطرح أسئلتك، وشارك المعرفة الأكاديمية.","Connect with peers, ask questions, and share academic knowledge."
             )}
           </p>
         </div>
@@ -212,7 +193,7 @@ export default function CommunityPage() {
           className="w-full sm:w-auto flex items-center justify-center gap-2 shadow-md cursor-pointer"
         >
           <Plus className="h-4.5 w-4.5" />
-          <span>{t("إضافة منشور جديد", "Add New Post")}</span>
+          <span>{t("إضافة منشور جديد","Add New Post")}</span>
         </Button>
       </div>
 
@@ -224,8 +205,8 @@ export default function CommunityPage() {
             onClick={() => setSelectedCategory(cat)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
               selectedCategory === cat
-                ? "bg-sky-600 text-white shadow-md shadow-sky-500/10"
-                : "bg-white border border-zinc-200/60 text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-850"
+                ?"bg-sky-600 text-white shadow-md shadow-sky-500/10"
+                :"bg-white border border-zinc-200/60 text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-850"
             }`}
           >
             {categoryArabic[cat] ? t(categoryArabic[cat].ar, categoryArabic[cat].en) : cat}
@@ -239,7 +220,7 @@ export default function CommunityPage() {
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => {
               const isOwn = post.authorEmail === user?.email;
-              const hasLiked = post.likes.includes(user?.email || "");
+              const hasLiked = post.likes.includes(user?.email ||"");
               const isEditing = editingPostId === post.id;
 
               return (
@@ -250,13 +231,13 @@ export default function CommunityPage() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className={`border border-zinc-200/50 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm ${post.reported ? "border-amber-500/30 bg-amber-50/5 dark:bg-amber-950/5" : ""}`}>
+                  <Card className={`border border-zinc-200/50 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm ${post.reported ?"border-amber-500/30 bg-amber-50/5 dark:bg-amber-950/5" :""}`}>
                     
                     {/* Post Top Meta */}
                     <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
-                          {renderAvatar(post.avatar, "🧑‍🎓")}
+                          {renderAvatar(post.avatar,"‍🎓")}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
@@ -275,7 +256,7 @@ export default function CommunityPage() {
                             {post.reported && (
                               <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-[9px] flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" />
-                                {t("قيد المراجعة", "Under Review")}
+                                {t("قيد المراجعة","Under Review")}
                               </Badge>
                             )}
                           </div>
@@ -291,18 +272,18 @@ export default function CommunityPage() {
                               <button
                                 onClick={() => handleStartEdit(post)}
                                 className="p-2 text-zinc-400 hover:text-sky-600 hover:bg-zinc-50 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
-                                title={t("تعديل المنشور", "Edit Post")}
+                                title={t("تعديل المنشور","Edit Post")}
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button
                                 onClick={() => {
-                                  if (confirm(t("هل تريد بالتأكيد حذف هذا المنشور؟", "Are you sure you want to delete this post?"))) {
+                                  if (confirm(t("هل تريد بالتأكيد حذف هذا المنشور؟","Are you sure you want to delete this post?"))) {
                                     deletePost(post.id);
                                   }
                                 }}
                                 className="p-2 text-zinc-400 hover:text-red-500 hover:bg-zinc-50 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
-                                title={t("حذف المنشور", "Delete Post")}
+                                title={t("حذف المنشور","Delete Post")}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -312,7 +293,7 @@ export default function CommunityPage() {
                             <button
                               onClick={() => reportPost(post.id)}
                               className="p-2 text-zinc-400 hover:text-amber-500 hover:bg-zinc-50 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
-                              title={t("إبلاغ عن محتوى غير لائق", "Report inappropriate content")}
+                              title={t("إبلاغ عن محتوى غير لائق","Report inappropriate content")}
                             >
                               <Flag className="h-4 w-4" />
                             </button>
@@ -329,7 +310,7 @@ export default function CommunityPage() {
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
                             className="text-sm font-bold"
-                            placeholder={t("عنوان التعديل", "Edit Title")}
+                            placeholder={t("عنوان التعديل","Edit Title")}
                             required
                           />
                           <textarea
@@ -337,15 +318,15 @@ export default function CommunityPage() {
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                             className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
-                            placeholder={t("محتوى المنشور المعدل", "Edit Content")}
+                            placeholder={t("محتوى المنشور المعدل","Edit Content")}
                             required
                           />
                           <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" size="sm" onClick={() => setEditingPostId(null)}>
-                              {t("إلغاء", "Cancel")}
+                              {t("إلغاء","Cancel")}
                             </Button>
                             <Button type="submit" size="sm">
-                              {t("حفظ التغييرات", "Save Changes")}
+                              {t("حفظ التغييرات","Save Changes")}
                             </Button>
                           </div>
                         </form>
@@ -357,11 +338,11 @@ export default function CommunityPage() {
                           {/* File Attachment */}
                           {post.attachmentName && (
                             <div className="flex items-center gap-2.5 p-3.5 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-250/20 dark:border-zinc-800/40 rounded-xl max-w-sm">
-                              <FileText className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                              <FileText className="h-5 w-5 text-primary dark:text-sky-400" />
                               <div className="min-w-0 flex-1">
                                 <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200 block truncate">{post.attachmentName}</span>
                                 <span className="text-[10px] text-zinc-400 block mt-0.5">
-                                  {t("ملف مرفق للتحميل", "Attached file for download")}
+                                  {t("ملف مرفق للتحميل","Attached file for download")}
                                 </span>
                               </div>
                               <a
@@ -369,7 +350,7 @@ export default function CommunityPage() {
                                 className="text-xs font-black text-sky-600 dark:text-sky-400 hover:underline shrink-0"
                                 download
                               >
-                                {t("تحميل", "Download")}
+                                {t("تحميل","Download")}
                               </a>
                             </div>
                           )}
@@ -380,12 +361,12 @@ export default function CommunityPage() {
                               onClick={() => likePost(post.id)}
                               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                                 hasLiked
-                                  ? "text-sky-600 bg-sky-50/50 dark:text-sky-400 dark:bg-sky-950/20 font-black"
-                                  : "text-zinc-500 hover:text-sky-600 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850"
+                                  ?"text-sky-600 bg-sky-50/50 dark:text-sky-400 dark:bg-sky-950/20 font-black"
+                                  :"text-zinc-500 hover:text-sky-600 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850"
                               }`}
                             >
-                              <ThumbsUp className={`h-4 w-4 ${hasLiked ? "fill-sky-600 dark:fill-sky-500" : ""}`} />
-                              <span>{post.likes.length} {t("إعجاب", "Likes")}</span>
+                              <ThumbsUp className={`h-4 w-4 ${hasLiked ?"fill-sky-600 dark:fill-sky-500" :""}`} />
+                              <span>{post.likes.length} {t("إعجاب","Likes")}</span>
                             </button>
 
                             <button
@@ -393,7 +374,7 @@ export default function CommunityPage() {
                               className="flex items-center gap-1.5 px-3 py-1.5 text-zinc-500 hover:text-sky-600 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
                             >
                               <MessageSquare className="h-4 w-4" />
-                              <span>{post.comments.length} {t("تعليقات", "Comments")}</span>
+                              <span>{post.comments.length} {t("تعليقات","Comments")}</span>
                               {expandedComments[post.id] ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                             </button>
                           </div>
@@ -408,10 +389,10 @@ export default function CommunityPage() {
                                   post.comments.map((comment) => {
                                     const isCommentOwn = comment.authorEmail === user?.email;
                                     return (
-                                      <div key={comment.id} className={`space-y-2 ${isRtl ? "text-right" : "text-left"}`}>
+                                      <div key={comment.id} className={`space-y-2 ${isRtl ?"text-right" :"text-left"}`}>
                                         <div className="flex gap-2.5 items-start bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-850 p-3 rounded-xl">
                                           <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center text-sm shadow-inner overflow-hidden shrink-0">
-                                            {renderAvatar(comment.avatar, "👤")}
+                                            {renderAvatar(comment.avatar,"")}
                                           </div>
                                           <div className="flex-1 space-y-1 min-w-0">
                                             <div className="flex justify-between items-center">
@@ -431,7 +412,7 @@ export default function CommunityPage() {
                                                     onClick={() => deleteComment(post.id, comment.id)}
                                                     className="text-[9px] font-black text-red-500 hover:underline cursor-pointer"
                                                   >
-                                                    {t("حذف", "Delete")}
+                                                    {t("حذف","Delete")}
                                                   </button>
                                                 )}
                                               </div>
@@ -441,11 +422,11 @@ export default function CommunityPage() {
                                         </div>
 
                                         {/* Nested Replies List */}
-                                        <div className={`${isRtl ? "mr-8 border-r-2 pr-3" : "ml-8 border-l-2 pl-3"} space-y-2 border-zinc-200 dark:border-zinc-800`}>
+                                        <div className={`${isRtl ?"mr-8 border-r-2 pr-3" :"ml-8 border-l-2 pl-3"} space-y-2 border-zinc-200 dark:border-zinc-800`}>
                                           {comment.replies.map((reply) => (
                                             <div key={reply.id} className="flex gap-2 items-start bg-zinc-100/50 dark:bg-zinc-900/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-850">
                                               <div className="h-7 w-7 rounded-lg bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-xs overflow-hidden shrink-0">
-                                                {renderAvatar(reply.avatar, "👤")}
+                                                {renderAvatar(reply.avatar,"")}
                                               </div>
                                               <div className="flex-1 space-y-0.5 min-w-0">
                                                 <div className="flex justify-between items-center">
@@ -465,7 +446,7 @@ export default function CommunityPage() {
                                                         onClick={() => deleteReply(post.id, comment.id, reply.id)}
                                                         className="text-[9px] font-black text-red-500 hover:underline cursor-pointer"
                                                       >
-                                                        {t("حذف", "Delete")}
+                                                        {t("حذف","Delete")}
                                                       </button>
                                                     )}
                                                   </div>
@@ -477,14 +458,14 @@ export default function CommunityPage() {
 
                                           {/* Reply Input Form */}
                                           <div className="flex gap-2 pt-1.5 items-center">
-                                            <CornerDownLeft className={`h-4.5 w-4.5 text-zinc-400 transform ${isRtl ? "scale-x-[-1]" : ""}`} />
+                                            <CornerDownLeft className={`h-4.5 w-4.5 text-zinc-400 transform ${isRtl ?"scale-x-[-1]" :""}`} />
                                             <Input
-                                              placeholder={t("اكتب رداً على هذا التعليق...", "Write a reply to this comment...")}
-                                              value={replyInputs[comment.id] || ""}
+                                              placeholder={t("اكتب رداً على هذا التعليق...","Write a reply to this comment...")}
+                                              value={replyInputs[comment.id] ||""}
                                               onChange={(e) => setReplyInputs({ ...replyInputs, [comment.id]: e.target.value })}
                                               className="h-8 text-xs border border-zinc-200 bg-white dark:bg-zinc-950 dark:border-zinc-800"
                                               onKeyDown={(e) => {
-                                                if (e.key === "Enter") handleAddReply(post.id, comment.id);
+                                                if (e.key ==="Enter") handleAddReply(post.id, comment.id);
                                               }}
                                             />
                                             <Button
@@ -494,7 +475,7 @@ export default function CommunityPage() {
                                               isLoading={submittingReplyCommentId === comment.id}
                                               disabled={submittingReplyCommentId === comment.id}
                                             >
-                                              {t("رد", "Reply")}
+                                              {t("رد","Reply")}
                                             </Button>
                                           </div>
                                         </div>
@@ -503,7 +484,7 @@ export default function CommunityPage() {
                                   })
                                 ) : (
                                   <p className="text-xs text-zinc-400 text-center py-2.5">
-                                    {t("لا توجد تعليقات بعد، كن أول من يعلق!", "No comments yet. Be the first to comment!")}
+                                    {t("لا توجد تعليقات بعد، كن أول من يعلق!","No comments yet. Be the first to comment!")}
                                   </p>
                                 )}
                               </div>
@@ -511,12 +492,12 @@ export default function CommunityPage() {
                               {/* Comment Input */}
                               <div className="flex gap-2.5 pt-2 items-center">
                                 <Input
-                                  placeholder={t("شارك رأيك أو استفسارك هنا...", "Share your thoughts or questions here...")}
-                                  value={commentInputs[post.id] || ""}
+                                  placeholder={t("شارك رأيك أو استفسارك هنا...","Share your thoughts or questions here...")}
+                                  value={commentInputs[post.id] ||""}
                                   onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
                                   className="h-10 text-xs border border-zinc-200 bg-white dark:bg-zinc-950 dark:border-zinc-800"
                                   onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleAddComment(post.id);
+                                    if (e.key ==="Enter") handleAddComment(post.id);
                                   }}
                                 />
                                 <Button
@@ -526,7 +507,7 @@ export default function CommunityPage() {
                                   isLoading={submittingCommentPostId === post.id}
                                   disabled={submittingCommentPostId === post.id}
                                 >
-                                  {t("تعليق", "Comment")}
+                                  {t("تعليق","Comment")}
                                 </Button>
                               </div>
 
@@ -542,17 +523,17 @@ export default function CommunityPage() {
             })
           ) : (
             <div className="text-center py-16 bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/60 rounded-3xl space-y-4">
-              <MessageSquare className="h-12 w-12 mx-auto text-zinc-300" />
+              <MessageSquare className="h-12 w-12 mx-auto text-primary" />
               <div className="space-y-1">
                 <h3 className="text-base font-extrabold text-zinc-950 dark:text-zinc-50">
-                  {t("لا توجد منشورات في هذا القسم", "No posts in this category")}
+                  {t("لا توجد منشورات في هذا القسم","No posts in this category")}
                 </h3>
                 <p className="text-xs text-zinc-450 dark:text-zinc-500">
-                  {t("كن أول من يشارك منشوره لزملائه الآن!", "Be the first to share a post with your peers!")}
+                  {t("كن أول من يشارك منشوره لزملائه الآن!","Be the first to share a post with your peers!")}
                 </p>
               </div>
               <Button onClick={() => setIsCreateOpen(true)} size="sm" className="px-6">
-                {t("إضافة منشور", "Add Post")}
+                {t("إضافة منشور","Add Post")}
               </Button>
             </div>
           )}
@@ -567,10 +548,10 @@ export default function CommunityPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden ${isRtl ? "text-right" : "text-left"}`}
+              className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-3xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl overflow-hidden ${isRtl ? "text-right" : "text-left"}`}
               dir={dir}
             >
-              <div className="p-6 border-b border-zinc-100 dark:border-zinc-850 flex justify-between items-center">
+              <div className="p-5 sm:p-6 border-b border-zinc-100 dark:border-zinc-850 flex justify-between items-center shrink-0">
                 <h3 className="font-extrabold text-base text-zinc-950 dark:text-zinc-50">
                   {t("إنشاء منشور جديد", "Create New Post")}
                 </h3>
@@ -582,14 +563,14 @@ export default function CommunityPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreatePost} className="p-6 space-y-4">
+              <form onSubmit={handleCreatePost} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
                 {/* Title */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("عنوان المنشور", "Post Title")}
+                    {t("عنوان المنشور","Post Title")}
                   </label>
                   <Input
-                    placeholder={t("مثال: كيف أستعد لاختبار برمجة 1؟", "Example: How do I prepare for Programming 1 exam?")}
+                    placeholder={t("مثال: كيف أستعد لاختبار برمجة 1؟","Example: How do I prepare for Programming 1 exam?")}
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     required
@@ -599,14 +580,14 @@ export default function CommunityPage() {
                 {/* Category select */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("القسم / التصنيف", "Category / Section")}
+                    {t("القسم / التصنيف","Category / Section")}
                   </label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as CommunityPost["category"])}
                     className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
                   >
-                    {categories.filter(c => c !== "الكل").map((cat) => (
+                    {categories.filter(c => c !=="الكل").map((cat) => (
                       <option key={cat} value={cat}>
                         {categoryArabic[cat] ? t(categoryArabic[cat].ar, categoryArabic[cat].en) : cat}
                       </option>
@@ -617,11 +598,11 @@ export default function CommunityPage() {
                 {/* Content */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    {t("محتوى المنشور", "Post Content")}
+                    {t("محتوى المنشور","Post Content")}
                   </label>
                   <textarea
                     rows={5}
-                    placeholder={t("اكتب استفسارك أو تفاصيل مشاركتك هنا...", "Write your question or post details here...")}
+                    placeholder={t("اكتب استفسارك أو تفاصيل مشاركتك هنا...","Write your question or post details here...")}
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
                     required
@@ -632,11 +613,11 @@ export default function CommunityPage() {
                 {/* File Upload Attachment Input Simulation */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                    <Paperclip className="h-4 w-4 text-zinc-400" />
-                    <span>{t("إرفاق ملف ملخص/كود (اختياري)", "Attach File/Code (Optional)")}</span>
+                    <Paperclip className="h-4 w-4 text-primary" />
+                    <span>{t("إرفاق ملف ملخص/كود (اختياري)","Attach File/Code (Optional)")}</span>
                   </label>
                   <Input
-                    placeholder={t("اسم الملف مثلاً: lecture_notes.pdf أو lab_code.zip", "Filename e.g. lecture_notes.pdf or lab_code.zip")}
+                    placeholder={t("اسم الملف مثلاً: lecture_notes.pdf أو lab_code.zip","Filename e.g. lecture_notes.pdf or lab_code.zip")}
                     value={newFile}
                     onChange={(e) => setNewFile(e.target.value)}
                   />
@@ -644,10 +625,10 @@ export default function CommunityPage() {
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-850">
                   <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
-                    {t("إلغاء", "Cancel")}
+                    {t("إلغاء","Cancel")}
                   </Button>
                   <Button type="submit" className="px-6" isLoading={isSubmittingPost} disabled={isSubmittingPost}>
-                    {t("نشر الآن", "Publish Now")}
+                    {t("نشر الآن","Publish Now")}
                   </Button>
                 </div>
               </form>

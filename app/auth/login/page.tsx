@@ -1,18 +1,18 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import { useApp } from "@/context/app-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Mail, Lock, ShieldAlert, Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { Logo } from"@/components/ui/logo";
+import * as React from"react";
+import Link from"next/link";
+import { useRouter } from"next/navigation";
+import { useAuth } from"@/context/auth-context";
+import { useApp } from"@/context/app-context";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from"@/components/ui/card";
+import { GraduationCap, Mail, Lock, ShieldAlert, Eye, EyeOff, ArrowRight, ArrowLeft } from"lucide-react";
+import { motion } from"framer-motion";
 
-import { useToast } from "@/components/ui/toast";
+import { useToast } from"@/components/ui/toast";
 
 export default function LoginPage() {
   const { t, dir, lang } = useApp();
@@ -30,30 +30,30 @@ export default function LoginPage() {
     setError("");
 
     if (!email.trim() || !password.trim()) {
-      const errMsg = t("الرجاء إدخال البريد الإلكتروني وكلمة المرور.", "Please enter your email and password.");
+      const errMsg = t("الرجاء إدخال البريد الإلكتروني وكلمة المرور.","Please enter your email and password.");
       setError(errMsg);
-      toast(`⚠️ ${errMsg}`, "error");
+      toast(`️ ${errMsg}`,"error");
       return;
     }
 
     try {
       const success = await login(email.trim(), password.trim(), rememberMe);
       if (success) {
-        toast(t("🎉 تم تسجيل الدخول بنجاح! مرحباً بك مجدداً.", "🎉 Login successful! Welcome back."), "success");
+        toast(t(" تم تسجيل الدخول بنجاح! مرحباً بك مجدداً."," Login successful! Welcome back."),"success");
         router.push("/dashboard");
       } else {
-        const errMsg = t("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات.", "Invalid email or password. Access denied.");
+        const errMsg = t("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات.","Invalid email or password. Access denied.");
         setError(errMsg);
-        toast(`🚫 ${errMsg}`, "error");
+        toast(` ${errMsg}`,"error");
       }
     } catch (err: any) {
-      const errMsg = err?.message || t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.", "An error occurred during sign in.");
+      const errMsg = err?.message || t("حدث خطأ أثناء الاتصال. حاول مرة أخرى.","An error occurred during sign in.");
       setError(errMsg);
-      toast(errMsg, "error");
+      toast(errMsg,"error");
     }
   };
 
-  const handleProviderLogin = async (provider: "google" | "github") => {
+  const handleProviderLogin = async (provider:"google" |"github") => {
     setError("");
     try {
       const success = await loginWithProvider(provider);
@@ -61,7 +61,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (err) {
-      setError(t("حدث خطأ أثناء تسجيل الدخول بالوسيط.", "OAuth provider login failed."));
+      setError(t("حدث خطأ أثناء تسجيل الدخول بالوسيط.","OAuth provider login failed."));
     }
   };
 
@@ -79,8 +79,8 @@ export default function LoginPage() {
         {/* Logo and Header */}
         <div className="flex flex-col items-center mb-6 text-center">
           <Logo size="xl" href="/" className="mb-3" />
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{t("مرحباً بك مجدداً", "Welcome Back")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-normal">{t("سجل دخولك لمتابعة خطتك الأكاديمية", "Sign in to access your academic dashboard")}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{t("مرحباً بك مجدداً","Welcome Back")}</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-normal">{t("سجل دخولك لمتابعة خطتك الأكاديمية","Sign in to access your academic dashboard")}</p>
         </div>
 
         <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60">
@@ -95,15 +95,15 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني", "Email Address")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني","Email Address")}</label>
                 <div className="relative">
-                  <Mail className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Mail className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                   <Input
                     type="email"
                     placeholder="username@su.edu.eg"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={lang === "ar" ? "pr-10" : "pl-10"}
+                    className={lang ==="ar" ?"pr-10" :"pl-10"}
                     disabled={isLoading}
                   />
                 </div>
@@ -112,28 +112,28 @@ export default function LoginPage() {
               {/* Password */}
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور", "Password")}</label>
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور","Password")}</label>
                   <Link href="/auth/forgot-password" className="text-xs font-semibold text-sky-600 hover:underline dark:text-sky-400">
-                    {t("نسيت كلمة المرور؟", "Forgot password?")}
+                    {t("نسيت كلمة المرور؟","Forgot password?")}
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Lock className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
                   <Input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ?"text" :"password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={lang === "ar" ? "pr-10 pl-10" : "pl-10 pr-10"}
+                    className={lang ==="ar" ?"pr-10 pl-10" :"pl-10 pr-10"}
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
-                    title={showPassword ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")}
+                    className={`absolute ${lang ==="ar" ?"left-3.5" :"right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
+                    title={showPassword ? t("إخفاء كلمة المرور","Hide password") : t("إظهار كلمة المرور","Show password")}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-sky-600" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4 text-primary" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -148,12 +148,12 @@ export default function LoginPage() {
                   className="h-4 w-4 rounded border-zinc-300 text-sky-600 focus:ring-sky-500 accent-sky-600 cursor-pointer"
                 />
                 <label htmlFor="rememberMe" className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 select-none cursor-pointer">
-                  {t("تذكرني على هذا الجهاز", "Remember me on this device")}
+                  {t("تذكرني على هذا الجهاز","Remember me on this device")}
                 </label>
               </div>
 
               <Button type="submit" className="w-full mt-2 cursor-pointer font-bold" isLoading={isLoading} disabled={isLoading}>
-                {t("تسجيل الدخول", "Sign In")}
+                {t("تسجيل الدخول","Sign In")}
               </Button>
             </form>
 
@@ -164,7 +164,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white px-2.5 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-                  {t("أو سجل عبر", "Or continue with")}
+                  {t("أو سجل عبر","Or continue with")}
                 </span>
               </div>
             </div>
@@ -201,9 +201,9 @@ export default function LoginPage() {
 
           <CardFooter className="justify-center border-t border-zinc-100/50 py-4 dark:border-zinc-800/30">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {t("ليس لديك حساب؟", "Don't have an account?")}{" "}
+              {t("ليس لديك حساب؟","Don't have an account?")}{""}
               <Link href="/auth/register" className="font-bold text-sky-600 hover:underline dark:text-sky-400">
-                {t("إنشاء حساب جديد", "Sign up")}
+                {t("إنشاء حساب جديد","Sign up")}
               </Link>
             </p>
           </CardFooter>

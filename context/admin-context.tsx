@@ -199,9 +199,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       // Ensure we have some default roles for demo
       const defaultAccounts: UserProfile[] = [
-        { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "⚙️", role: "admin", is_profile_completed: true },
-        { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "👑", role: "super-admin", is_profile_completed: true },
-        { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "📚", role: "moderator", is_profile_completed: true }
+        { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "️", role: "admin", is_profile_completed: true },
+        { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "super-admin", is_profile_completed: true },
+        { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "moderator", is_profile_completed: true }
       ];
 
       defaultAccounts.forEach(da => {
@@ -474,7 +474,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       bio: newUser.bio || "حساب جديد في المنصة",
       skills: [],
       socialLinks: { github: "", linkedin: "" },
-      avatar: newUser.avatar || (newUser.role === "super-admin" ? "👑" : newUser.role === "admin" ? "⚙️" : newUser.role === "moderator" ? "📚" : "🧑‍🎓"),
+      avatar: newUser.avatar || (newUser.role === "super-admin" ? "" : newUser.role === "admin" ? "️" : newUser.role === "moderator" ? "" : "‍🎓"),
       role: newUser.role,
       is_profile_completed: false
     };

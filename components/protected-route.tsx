@@ -29,7 +29,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, isLoading, router, pathname, isPublicRoute]);
 
-  if (isLoading) {
+  if (isLoading && !isAuthenticated) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <div className="flex flex-col items-center gap-4">

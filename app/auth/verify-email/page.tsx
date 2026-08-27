@@ -1,17 +1,17 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import * as React from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, MailCheck, ArrowLeft, RefreshCw } from "lucide-react";
-import { motion } from "framer-motion";
+import { Logo } from"@/components/ui/logo";
+import * as React from"react";
+import Link from"next/link";
+import { useRouter, useSearchParams } from"next/navigation";
+import { Button } from"@/components/ui/button";
+import { Card, CardContent, CardFooter } from"@/components/ui/card";
+import { GraduationCap, MailCheck, ArrowLeft, RefreshCw } from"lucide-react";
+import { motion } from"framer-motion";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "your-email@sinai.edu.eg";
+  const email = searchParams.get("email") ||"your-email@sinai.edu.eg";
   const [isVerifying, setIsVerifying] = React.useState(false);
   const router = useRouter();
 
@@ -37,7 +37,7 @@ function VerifyEmailContent() {
 
         <div className="space-y-3">
           <Button className="w-full gap-2 font-bold shadow-md" onClick={handleSimulateVerification} isLoading={isVerifying}>
-            {isVerifying ? "جاري تفعيل الحساب وتوثيقه..." : "تفعيل الحساب والدخول للمنصة 🚀"}
+            {isVerifying ?"جاري تفعيل الحساب وتوثيقه..." :"تفعيل الحساب والدخول للمنصة"}
           </Button>
           <Button variant="outline" className="w-full gap-2" disabled={isVerifying}>
             <RefreshCw className="h-4 w-4" />

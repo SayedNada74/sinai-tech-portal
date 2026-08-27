@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useApp } from "@/context/app-context";
-import { useAnimationProps } from "@/lib/motion";
-import { motion } from "framer-motion";
+import * as React from"react";
+import Link from"next/link";
+import { usePathname } from"next/navigation";
+import { useApp } from"@/context/app-context";
+import { useAnimationProps } from"@/lib/motion";
+import { motion } from"framer-motion";
 import {
   LayoutDashboard,
   CheckCircle,
   Compass,
   Calculator,
   User
-} from "lucide-react";
+} from"lucide-react";
 
 export function MobileTaskbar() {
   const pathname = usePathname();
@@ -20,14 +20,14 @@ export function MobileTaskbar() {
   const { shouldAnimate } = useAnimationProps();
 
   // Hide mobile taskbar if not logged in or on landing/login pages
-  if (!isLoggedIn || pathname === "/" || pathname === "/login") return null;
+  if (!isLoggedIn || pathname ==="/" || pathname ==="/login") return null;
 
   const items = [
-    { labelAr: "الرئيسية", labelEn: "Home", href: "/dashboard", icon: LayoutDashboard },
-    { labelAr: "الخطة", labelEn: "Plan", href: "/departments", icon: CheckCircle },
-    { labelAr: "المسار", labelEn: "Path", href: "/planner", icon: Compass },
-    { labelAr: "المعدل", labelEn: "GPA", href: "/gpa", icon: Calculator },
-    { labelAr: "الملف", labelEn: "Profile", href: "/profile", icon: User }
+    { labelAr:"الرئيسية", labelEn:"Home", href:"/dashboard", icon: LayoutDashboard },
+    { labelAr:"الخطة", labelEn:"Plan", href:"/departments", icon: CheckCircle },
+    { labelAr:"المسار", labelEn:"Path", href:"/planner", icon: Compass },
+    { labelAr:"المعدل", labelEn:"GPA", href:"/gpa", icon: Calculator },
+    { labelAr:"الملف", labelEn:"Profile", href:"/profile", icon: User }
   ];
 
   return (
@@ -42,21 +42,21 @@ export function MobileTaskbar() {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-1 relative px-2 py-1 min-w-[48px] select-none cursor-pointer rounded-2xl transition-colors ${
-                active ? "bg-cyan-500/10 dark:bg-cyan-500/15" : "hover:bg-zinc-200/50 dark:hover:bg-zinc-850/40"
+                active ?"bg-cyan-500/10 dark:bg-cyan-500/15" :"hover:bg-zinc-200/50 dark:hover:bg-zinc-850/40"
               }`}
             >
               {/* Icon with active scaling logic */}
               <motion.div
                 animate={shouldAnimate ? { scale: active ? 1.15 : 1 } : {}}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className={`${active ? "text-cyan-600 dark:text-cyan-400 font-bold" : "text-zinc-600 dark:text-zinc-400"}`}
+                transition={{ type:"spring", stiffness: 400, damping: 17 }}
+                className={`${active ?"text-cyan-600 dark:text-cyan-400 font-bold" :"text-zinc-600 dark:text-zinc-400"}`}
               >
                 <Icon className="h-5.5 w-5.5" />
               </motion.div>
 
               {/* Text label */}
               <span className={`text-[10px] font-bold tracking-tight transition-colors duration-200 ${
-                active ? "text-cyan-600 dark:text-cyan-400 font-extrabold" : "text-zinc-700 dark:text-zinc-400"
+                active ?"text-cyan-600 dark:text-cyan-400 font-extrabold" :"text-zinc-700 dark:text-zinc-400"
               }`}>
                 {t(item.labelAr, item.labelEn)}
               </span>
@@ -64,9 +64,9 @@ export function MobileTaskbar() {
               {/* Animated Glow Active Indicator */}
               {active && (
                 <motion.span
-                  layoutId={shouldAnimate ? "active-pill-indicator" : undefined}
+                  layoutId={shouldAnimate ?"active-pill-indicator" : undefined}
                   className="absolute -bottom-1 left-2.5 right-2.5 h-1.5 rounded-full bg-cyan-600 dark:bg-cyan-400 shadow-[0_0_12px_rgba(8,145,178,0.6)] dark:shadow-[0_0_12px_rgba(6,182,212,0.8)]"
-                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                  transition={{ type:"spring", stiffness: 350, damping: 28 }}
                 />
               )}
             </Link>

@@ -1,13 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/context/auth-context";
-import { useApp } from "@/context/app-context";
-import { useSocial } from "@/context/social-context";
+import * as React from"react";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
+import { Badge } from"@/components/ui/badge";
+import { useAuth } from"@/context/auth-context";
+import { useApp } from"@/context/app-context";
+import { useSocial } from"@/context/social-context";
 import {
   Lock,
   Globe,
@@ -18,12 +18,13 @@ import {
   AlertCircle,
   Sun,
   Moon,
-  Zap
-} from "lucide-react";
+  Zap,
+  Settings
+} from"lucide-react";
 
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getPasswordResetCallbackURL } from "@/lib/auth-helpers";
+import { useLocalStorage } from"@/lib/hooks/use-local-storage";
+import { supabase, isSupabaseConfigured } from"@/lib/supabase";
+import { getPasswordResetCallbackURL } from"@/lib/auth-helpers";
 
 export default function SettingsPage() {
   const { lang, setLang, theme, setTheme, t, dir, lowPowerMode, setLowPowerMode } = useApp();
@@ -31,7 +32,7 @@ export default function SettingsPage() {
   const { user, loginWithProvider, updateProfile } = useAuth();
 
   const [connectedProviders, setConnectedProviders] = React.useState<string[]>(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !=="undefined") {
       const saved = localStorage.getItem("su_connected_providers");
       if (saved) {
         try {
@@ -42,12 +43,12 @@ export default function SettingsPage() {
     return ["google"];
   });
 
-  const [moodleInput, setMoodleInput] = useLocalStorage("su_settings_moodle_input", moodleUrl || "");
+  const [moodleInput, setMoodleInput] = useLocalStorage("su_settings_moodle_input", moodleUrl ||"");
   const [isSyncing, setIsSyncing] = React.useState(false);
   const [showInstructions, setShowInstructions] = React.useState(false);
   const [moodleError, setMoodleError] = React.useState("");
 
-  const [message, setMessage] = React.useState({ type: "", text: "" });
+  const [message, setMessage] = React.useState({ type:"", text:"" });
   const [isSaving, setIsSaving] = React.useState(false);
 
   // Password Management State
@@ -56,7 +57,7 @@ export default function SettingsPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isChangingPassword, setIsChangingPassword] = React.useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = React.useState(false);
-  const [passwordFeedback, setPasswordFeedback] = React.useState({ type: "", text: "" });
+  const [passwordFeedback, setPasswordFeedback] = React.useState({ type:"", text:"" });
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,30 +65,30 @@ export default function SettingsPage() {
 
     if (!newPassword || !confirmPassword) {
       setPasswordFeedback({
-        type: "error",
-        text: t("يرجى إدخال كلمة المرور وتأكيدها.", "Please enter and confirm your new password.")
+        type:"error",
+        text: t("يرجى إدخال كلمة المرور وتأكيدها.","Please enter and confirm your new password.")
       });
       return;
     }
 
     if (newPassword.length < 6) {
       setPasswordFeedback({
-        type: "error",
-        text: t("يجب أن تكون كلمة المرور 6 أحرف أو أكثر.", "Password must be at least 6 characters.")
+        type:"error",
+        text: t("يجب أن تكون كلمة المرور 6 أحرف أو أكثر.","Password must be at least 6 characters.")
       });
       return;
     }
 
     if (newPassword !== confirmPassword) {
       setPasswordFeedback({
-        type: "error",
-        text: t("كلمتا المرور غير متطابقتين.", "Passwords do not match.")
+        type:"error",
+        text: t("كلمتا المرور غير متطابقتين.","Passwords do not match.")
       });
       return;
     }
 
     setIsChangingPassword(true);
-    setPasswordFeedback({ type: "", text: "" });
+    setPasswordFeedback({ type:"", text:"" });
 
     try {
       if (isSupabaseConfigured && supabase) {
@@ -98,13 +99,13 @@ export default function SettingsPage() {
       setNewPassword("");
       setConfirmPassword("");
       setPasswordFeedback({
-        type: "success",
-        text: t("✨ تم تحديث كلمة المرور بنجاح!", "✨ Password updated successfully!")
+        type:"success",
+        text: t(" تم تحديث كلمة المرور بنجاح!"," Password updated successfully!")
       });
     } catch (err: any) {
       setPasswordFeedback({
-        type: "error",
-        text: err?.message || t("حدث خطأ أثناء تحديث كلمة المرور.", "Failed to update password.")
+        type:"error",
+        text: err?.message || t("حدث خطأ أثناء تحديث كلمة المرور.","Failed to update password.")
       });
     } finally {
       setIsChangingPassword(false);
@@ -115,7 +116,7 @@ export default function SettingsPage() {
     if (!user?.email || isSendingResetEmail) return;
 
     setIsSendingResetEmail(true);
-    setPasswordFeedback({ type: "", text: "" });
+    setPasswordFeedback({ type:"", text:"" });
 
     try {
       if (isSupabaseConfigured && supabase) {
@@ -125,13 +126,13 @@ export default function SettingsPage() {
         if (error) throw error;
       }
       setPasswordFeedback({
-        type: "success",
-        text: t(`📧 تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك: ${user.email}`, `📧 Password reset link sent to your email: ${user.email}`)
+        type:"success",
+        text: t(` تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك: ${user.email}`, ` Password reset link sent to your email: ${user.email}`)
       });
     } catch (err: any) {
       setPasswordFeedback({
-        type: "error",
-        text: err?.message || t("حدث خطأ أثناء إرسال الرابط.", "Failed to send reset link.")
+        type:"error",
+        text: err?.message || t("حدث خطأ أثناء إرسال الرابط.","Failed to send reset link.")
       });
     } finally {
       setIsSendingResetEmail(false);
@@ -144,29 +145,29 @@ export default function SettingsPage() {
     }
   }, [moodleUrl, setMoodleInput]);
 
-  const handleToggleProvider = async (provider: "google" | "github") => {
+  const handleToggleProvider = async (provider:"google" |"github") => {
     const isConnected = connectedProviders.includes(provider);
 
     if (isConnected) {
       const updated = connectedProviders.filter((p) => p !== provider);
       setConnectedProviders(updated);
-      if (typeof window !== "undefined") {
+      if (typeof window !=="undefined") {
         localStorage.setItem("su_connected_providers", JSON.stringify(updated));
       }
       setMessage({
-        type: "success",
-        text: t(`تم إلغاء ربط حساب ${provider === "google" ? "Google" : "GitHub"} بنجاح!`, `Unlinked ${provider} account successfully!`)
+        type:"success",
+        text: t(`تم إلغاء ربط حساب ${provider ==="google" ?"Google" :"GitHub"} بنجاح!`, `Unlinked ${provider} account successfully!`)
       });
     } else {
       setIsSaving(true);
       const updated = [...connectedProviders, provider];
       setConnectedProviders(updated);
-      if (typeof window !== "undefined") {
+      if (typeof window !=="undefined") {
         localStorage.setItem("su_connected_providers", JSON.stringify(updated));
       }
       setMessage({
-        type: "success",
-        text: t(`جاري توجيهك لصفحة تفعيل ربط ${provider === "google" ? "Google" : "GitHub"}...`, `Redirecting to link ${provider} account...`)
+        type:"success",
+        text: t(`جاري توجيهك لصفحة تفعيل ربط ${provider ==="google" ?"Google" :"GitHub"}...`, `Redirecting to link ${provider} account...`)
       });
       await loginWithProvider(provider);
       setIsSaving(false);
@@ -174,26 +175,27 @@ export default function SettingsPage() {
   };
 
 
-  const isDark = theme === "dark";
+  const isDark = theme ==="dark";
 
   return (
     <div className="max-w-4xl mx-auto space-y-8" dir={dir}>
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">
-          {t("إعدادات المنصة", "Portal Settings")}
+        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2.5">
+          <Settings className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+          {t("إعدادات المنصة","Portal Settings")}
         </h1>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          {t("تخصيص الخيارات الشخصية وتفضيلات النظام والأمان", "Customize personal preferences, system aesthetics, and security.")}
+          {t("تخصيص الخيارات الشخصية وتفضيلات النظام والأمان","Customize personal preferences, system aesthetics, and security.")}
         </p>
       </div>
 
       {message.text && (
         <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${
-          message.type === "success"
-            ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
-            : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+          message.type ==="success"
+            ?"bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+            :"bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
         }`}>
-          {message.type === "success" ? <CheckCircle className="h-5 w-5 shrink-0" /> : <AlertCircle className="h-5 w-5 shrink-0" />}
+          {message.type ==="success" ? <CheckCircle className="h-5 w-5 shrink-0" /> : <AlertCircle className="h-5 w-5 shrink-0" />}
           <span>{message.text}</span>
         </div>
       )}
@@ -203,7 +205,7 @@ export default function SettingsPage() {
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400">
-                {t("مظهر النظام", "System Theme")}
+                {t("مظهر النظام","System Theme")}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3 pt-2">
@@ -212,24 +214,24 @@ export default function SettingsPage() {
                 onClick={() => setTheme("light")}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all cursor-pointer ${
                   !isDark
-                    ? "border-cyan-500 bg-cyan-500/5 text-cyan-500 dark:text-cyan-400 font-bold"
-                    : "border-zinc-200 dark:border-zinc-800/40 text-zinc-550"
+                    ?"border-cyan-500 bg-cyan-500/5 text-cyan-500 dark:text-cyan-400 font-bold"
+                    :"border-zinc-200 dark:border-zinc-800/40 text-zinc-550"
                 }`}
               >
                 <Sun className="h-5 w-5" />
-                <span className="text-xs font-bold">{t("مضيء", "Light")}</span>
+                <span className="text-xs font-bold">{t("مضيء","Light")}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setTheme("dark")}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all cursor-pointer ${
                   isDark
-                    ? "border-cyan-500 bg-cyan-500/5 text-cyan-400 font-bold"
-                    : "border-zinc-200 dark:border-zinc-800/40 text-zinc-550"
+                    ?"border-cyan-500 bg-cyan-500/5 text-cyan-400 font-bold"
+                    :"border-zinc-200 dark:border-zinc-800/40 text-zinc-550"
                 }`}
               >
                 <Moon className="h-5 w-5" />
-                <span className="text-xs font-bold">{t("داكن", "Dark")}</span>
+                <span className="text-xs font-bold">{t("داكن","Dark")}</span>
               </button>
             </CardContent>
           </Card>
@@ -238,16 +240,16 @@ export default function SettingsPage() {
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-6">
               <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Globe className="h-4.5 w-4.5 text-zinc-400" />
-                {t("تفضيلات اللغة", "Language Preferences")}
+                <Globe className="h-4.5 w-4.5 text-primary" />
+                {t("تفضيلات اللغة","Language Preferences")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                <label className="block mb-1">{t("لغة المنصة الافتراضية", "Default Portal Language")}</label>
+                <label className="block mb-1">{t("لغة المنصة الافتراضية","Default Portal Language")}</label>
                 <select
                   value={lang}
-                  onChange={(e) => setLang(e.target.value as "ar" | "en")}
+                  onChange={(e) => setLang(e.target.value as"ar" |"en")}
                   className="w-full h-11 pr-4 pl-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-cyan-500 transition-all duration-200 cursor-pointer"
                 >
                   <option value="ar">العربية (Arabic)</option>
@@ -262,14 +264,14 @@ export default function SettingsPage() {
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
                 <span className="font-extrabold text-cyan-500 dark:text-cyan-455">Moodle</span>
-                <span>{t("مزامنة التقويم الدراسي", "Moodle Calendar Sync")}</span>
+                <span>{t("مزامنة التقويم الدراسي","Moodle Calendar Sync")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-2 text-xs">
               {moodleUrl ? (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center bg-green-500/10 p-2.5 rounded-xl text-green-600 dark:text-green-400 border border-green-500/20 font-bold">
-                    <span>{t("مرتبط ومزامن بنجاح 🎉", "Connected & Synced 🎉")}</span>
+                    <span>{t("مرتبط ومزامن بنجاح","Connected & Synced")}</span>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-900 font-mono text-[9px] truncate text-zinc-500">
                     {moodleUrl}
@@ -282,14 +284,14 @@ export default function SettingsPage() {
                     }}
                     className="w-full bg-red-600 hover:bg-red-750 text-white font-bold h-9 text-xs rounded-xl"
                   >
-                    {t("إلغاء الربط ومسح البيانات", "Unlink & Clear Data")}
+                    {t("إلغاء الربط ومسح البيانات","Unlink & Clear Data")}
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-3.5">
                   <div className="space-y-1.5">
                     <label className="font-bold text-zinc-700 dark:text-zinc-300 block">
-                      {t("رابط تقويم Moodle الخاص بك", "Your Moodle Calendar Link")}
+                      {t("رابط تقويم Moodle الخاص بك","Your Moodle Calendar Link")}
                     </label>
                     <input
                       type="url"
@@ -310,7 +312,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={async () => {
                       if (!moodleInput.trim()) {
-                        setMoodleError(t("الرجاء إدخال رابط التقويم أولاً", "Please input the calendar link first"));
+                        setMoodleError(t("الرجاء إدخال رابط التقويم أولاً","Please input the calendar link first"));
                         return;
                       }
                       setMoodleError("");
@@ -318,11 +320,11 @@ export default function SettingsPage() {
                       try {
                         await syncMoodle(moodleInput);
                         setMessage({
-                          type: "success",
-                          text: t("تم مزامنة تقويم Moodle بنجاح وتنزيل المهام!", "Moodle calendar synced and tasks imported successfully!")
+                          type:"success",
+                          text: t("تم مزامنة تقويم Moodle بنجاح وتنزيل المهام!","Moodle calendar synced and tasks imported successfully!")
                         });
                       } catch (e: any) {
-                        setMoodleError(t("الرابط غير صحيح أو حدث خطأ أثناء المزامنة", "Invalid link or an error occurred during sync"));
+                        setMoodleError(t("الرابط غير صحيح أو حدث خطأ أثناء المزامنة","Invalid link or an error occurred during sync"));
                       } finally {
                         setIsSyncing(false);
                       }
@@ -330,7 +332,7 @@ export default function SettingsPage() {
                     disabled={isSyncing}
                     className="w-full btn-primary font-bold h-10 text-xs rounded-xl"
                   >
-                    {isSyncing ? t("جاري المزامنة...", "Syncing...") : t("ربط ومزامنة المهام", "Link & Sync Tasks")}
+                    {isSyncing ? t("جاري المزامنة...","Syncing...") : t("ربط ومزامنة المهام","Link & Sync Tasks")}
                   </Button>
 
                   <button
@@ -338,23 +340,23 @@ export default function SettingsPage() {
                     onClick={() => setShowInstructions(!showInstructions)}
                     className="text-[10px] font-bold text-cyan-500 hover:underline block mx-auto transition-all cursor-pointer"
                   >
-                    {t("كيف أحصل على رابط Moodle؟", "How do I get Moodle calendar link?")}
+                    {t("كيف أحصل على رابط Moodle؟","How do I get Moodle calendar link?")}
                   </button>
 
                   {showInstructions && (
                     <div className="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-2xl text-[10px] text-zinc-600 dark:text-zinc-400 space-y-2 leading-relaxed text-right" dir="rtl">
-                      <h4 className="font-bold text-zinc-900 dark:text-zinc-200">{t("خطوات الحصول على الرابط:", "Steps to get link:")}</h4>
+                      <h4 className="font-bold text-zinc-900 dark:text-zinc-200">{t("خطوات الحصول على الرابط:","Steps to get link:")}</h4>
                       <ol className="list-decimal pr-4 space-y-1.5">
                         <li>
-                          {t("سجل دخولك في مودل جامعة سيناء: ", "Log in to Sinai University Moodle: ")}
+                          {t("سجل دخولك في مودل جامعة سيناء:","Log in to Sinai University Moodle:")}
                           <a href="https://kmoodle.su.edu.eg/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">
                             kmoodle.su.edu.eg
                           </a>
                         </li>
-                        <li>{t("اذهب لصفحة التقويم (Calendar).", "Go to Calendar page.")}</li>
-                        <li>{t("اضغط على زر 'تصدير التقويم' (Export Calendar) في الأسفل.", "Click 'Export Calendar' at the bottom.")}</li>
-                        <li>{t("اختر 'كل الأحداث' (All events) وفترة 'رابط مخصص' (Custom link).", "Select 'All events' and 'Recent and upcoming' time.")}</li>
-                        <li>{t("اضغط على 'احصل على رابط التقويم' وانسخه وضعه في المربع أعلاه.", "Click 'Get calendar URL', copy it and paste it above.")}</li>
+                        <li>{t("اذهب لصفحة التقويم (Calendar).","Go to Calendar page.")}</li>
+                        <li>{t("اضغط على زر'تصدير التقويم' (Export Calendar) في الأسفل.","Click'Export Calendar' at the bottom.")}</li>
+                        <li>{t("اختر'كل الأحداث' (All events) وفترة'رابط مخصص' (Custom link).","Select'All events' and'Recent and upcoming' time.")}</li>
+                        <li>{t("اضغط على'احصل على رابط التقويم' وانسخه وضعه في المربع أعلاه.","Click'Get calendar URL', copy it and paste it above.")}</li>
                       </ol>
                     </div>
                   )}
@@ -367,8 +369,8 @@ export default function SettingsPage() {
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Link2 className="h-4 w-4 text-zinc-400" />
-                {t("الحسابات المرتبطة", "Connected Accounts")}
+                <Link2 className="h-4 w-4 text-primary" />
+                {t("الحسابات المرتبطة","Connected Accounts")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-2">
@@ -385,13 +387,13 @@ export default function SettingsPage() {
                 </div>
                 {connectedProviders.includes("google") ? (
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-transparent font-bold">{t("مرتبط", "Connected")}</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-transparent font-bold">{t("مرتبط","Connected")}</Badge>
                     <button
                       type="button"
                       onClick={() => handleToggleProvider("google")}
                       className="text-[10px] text-red-500 hover:underline font-bold cursor-pointer transition-colors"
                     >
-                      {t("إلغاء", "Unlink")}
+                      {t("إلغاء","Unlink")}
                     </button>
                   </div>
                 ) : (
@@ -402,7 +404,7 @@ export default function SettingsPage() {
                     onClick={() => handleToggleProvider("google")}
                     className="h-7 text-[10px] py-0 px-2.5 cursor-pointer font-bold border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10"
                   >
-                    {t("ربط الحساب", "Link Account")}
+                    {t("ربط الحساب","Link Account")}
                   </Button>
                 )}
               </div>
@@ -417,13 +419,13 @@ export default function SettingsPage() {
                 </div>
                 {connectedProviders.includes("github") ? (
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-transparent font-bold">{t("مرتبط", "Connected")}</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-transparent font-bold">{t("مرتبط","Connected")}</Badge>
                     <button
                       type="button"
                       onClick={() => handleToggleProvider("github")}
                       className="text-[10px] text-red-500 hover:underline font-bold cursor-pointer transition-colors"
                     >
-                      {t("إلغاء", "Unlink")}
+                      {t("إلغاء","Unlink")}
                     </button>
                   </div>
                 ) : (
@@ -434,7 +436,7 @@ export default function SettingsPage() {
                     onClick={() => handleToggleProvider("github")}
                     className="h-7 text-[10px] py-0 px-2.5 cursor-pointer font-bold border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10"
                   >
-                    {t("ربط الحساب", "Link Account")}
+                    {t("ربط الحساب","Link Account")}
                   </Button>
                 )}
               </div>
@@ -445,21 +447,21 @@ export default function SettingsPage() {
           <Card className="card border border-zinc-200 dark:border-zinc-800/40 shadow-sm md:col-span-2">
             <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-850 mb-4">
               <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-cyan-500" />
-                <span>{t("الأمان وكلمة المرور", "Security & Password Management")}</span>
+                <Lock className="h-4 w-4 text-primary" />
+                <span>{t("الأمان وكلمة المرور","Security & Password Management")}</span>
               </CardTitle>
               <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
-                {t("تحديث كلمة المرور لحسابك الأكاديمي أو إرسال رابط استعادة إلى بريدك.", "Update your academic account password or send a reset link to your email.")}
+                {t("تحديث كلمة المرور لحسابك الأكاديمي أو إرسال رابط استعادة إلى بريدك.","Update your academic account password or send a reset link to your email.")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-2">
               {passwordFeedback.text && (
                 <div className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center gap-2.5 ${
-                  passwordFeedback.type === "success"
-                    ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
-                    : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+                  passwordFeedback.type ==="success"
+                    ?"bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+                    :"bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
                 }`}>
-                  {passwordFeedback.type === "success" ? <CheckCircle className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
+                  {passwordFeedback.type ==="success" ? <CheckCircle className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
                   <span>{passwordFeedback.text}</span>
                 </div>
               )}
@@ -468,11 +470,11 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                      {t("كلمة المرور الجديدة", "New Password")}
+                      {t("كلمة المرور الجديدة","New Password")}
                     </label>
                     <div className="relative">
                       <Input
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ?"text" :"password"}
                         placeholder="••••••••"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
@@ -491,10 +493,10 @@ export default function SettingsPage() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                      {t("تأكيد كلمة المرور الجديدة", "Confirm New Password")}
+                      {t("تأكيد كلمة المرور الجديدة","Confirm New Password")}
                     </label>
                     <Input
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword ?"text" :"password"}
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -511,7 +513,7 @@ export default function SettingsPage() {
                     isLoading={isChangingPassword}
                     disabled={isChangingPassword || !newPassword}
                   >
-                    {t("تحديث كلمة المرور", "Update Password")}
+                    {t("تحديث كلمة المرور","Update Password")}
                   </Button>
 
                   <button
@@ -521,8 +523,8 @@ export default function SettingsPage() {
                     className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer transition-colors"
                   >
                     {isSendingResetEmail 
-                      ? t("جاري إرسال الرابط...", "Sending reset link...") 
-                      : t("نسيت كلمة المرور؟ أرسل رابط الاستعادة لبريدي", "Forgot password? Send reset link to my email")}
+                      ? t("جاري إرسال الرابط...","Sending reset link...") 
+                      : t("نسيت كلمة المرور؟ أرسل رابط الاستعادة لبريدي","Forgot password? Send reset link to my email")}
                   </button>
                 </div>
               </form>

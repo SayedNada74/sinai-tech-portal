@@ -375,7 +375,7 @@ export function formatCourseResponse(c: Course, studentContext?: StudentContext)
       }).join(", ")
     : "لا يوجد متطلب مسبق (مادة مفتوحة بالفرقة الأولى/التخصص).";
 
-  const diffEmoji = c.difficulty === "hard" ? "🔴 مادة تخصصية تتطلب ممارسة دؤوبة" : c.difficulty === "medium" ? "🟡 مادة متوسطة الشدة" : "🟢 مادة سلسة ومباشرة";
+  const diffEmoji = c.difficulty === "hard" ? " مادة تخصصية تتطلب ممارسة دؤوبة" : c.difficulty === "medium" ? "🟡 مادة متوسطة الشدة" : "🟢 مادة سلسة ومباشرة";
 
   let studentStatusNotice = "";
   if (studentContext) {
@@ -383,28 +383,28 @@ export function formatCourseResponse(c: Course, studentContext?: StudentContext)
     const isPlanned = studentContext.plannedCourses?.includes(c.code);
 
     if (completedInfo) {
-      studentStatusNotice = `\n\n> 🎯 **حالتك الشخصية في هذه المادة**: لقد اجتزت هذا المقرر بالفعل ومسجل لك بتقدير **(${completedInfo.grade})**!`;
+      studentStatusNotice = `\n\n>  **حالتك الشخصية في هذه المادة**: لقد اجتزت هذا المقرر بالفعل ومسجل لك بتقدير **(${completedInfo.grade})**!`;
     } else if (isPlanned) {
-      studentStatusNotice = `\n\n> 📌 **حالتك الشخصية في هذه المادة**: هذه المادة مضافة في قائمة **المواد المخططة للتسجيل** لديك.`;
+      studentStatusNotice = `\n\n>  **حالتك الشخصية في هذه المادة**: هذه المادة مضافة في قائمة **المواد المخططة للتسجيل** لديك.`;
     } else {
       studentStatusNotice = `\n\n> ℹ️ **حالتك الشخصية في هذه المادة**: لم تقم بتسجيل أو اجتياز هذا المقرر بعد في سجلك الأكاديمي.`;
     }
   }
 
-  return `### 📚 [${c.code}] ${c.arabic} (${c.english})
+  return `###  [${c.code}] ${c.arabic} (${c.english})
 
 - ⏱️ **عدد الساعات المعتمدة**: **${c.credits} ساعات**
-- 📅 **المستوى الأكاديمي**: **${periodLabel}**
-- 🔗 **المتطلبات المسبقة**: ${prereqsText}
-- 📊 **مستوى الصعوبة**: ${diffEmoji}${studentStatusNotice}
+-  **المستوى الأكاديمي**: **${periodLabel}**
+-  **المتطلبات المسبقة**: ${prereqsText}
+-  **مستوى الصعوبة**: ${diffEmoji}${studentStatusNotice}
 
-#### 📖 نبذة عن المقرر والهدف التعليمي:
+####  نبذة عن المقرر والهدف التعليمي:
 ${c.description}
 
-#### 🎯 مخرجات التعلم المكتسبة (Outcomes):
+####  مخرجات التعلم المكتسبة (Outcomes):
 ${c.outcomes.map((o) => `- ${o}`).join("\n")}
 
-#### 💡 استراتيجية التفوق واجتياز المقرر بتقدير ممتاز (A):
+####  استراتيجية التفوق واجتياز المقرر بتقدير ممتاز (A):
 1. **المواظبة العملية**: احرص على تطبيق الأكواد والتمارين العملية في المعامل والمختبرات.
 2. **استغلال المراجع**: زر صفحة [تفاصيل مقرر ${c.code}](/courses/${encodeURIComponent(c.code)}) لتنزيل أوراق الغش والمصادر المعتمدة ونماذج الامتحانات السابقة.
 3. **مزامنة الجدول**: تأكد من عدم وجود تعارض مع المواد المتطلبة الأخرى من خلال **مخطط التسجيل الذكي**.`;
@@ -475,14 +475,14 @@ export function handleSemesterGpaQuery(norm: string, studentContext?: StudentCon
   }
 
   if (gradedCourses.length === 0) {
-    return `### 📊 المعدل الفصلي (Semester GPA) - ${periodTitle}
+    return `###  المعدل الفصلي (Semester GPA) - ${periodTitle}
 
 لم يتم العثور على أي تقديرات مسجلة لمواد **${periodTitle}** في سجلك الأكاديمي حتى الآن.
 
 المقررات المطلوبة لهذا الفصل وفق خطة الكلية هي:
 ${semesterCourses.map((c) => `- **[${c.code}] ${c.arabic}** (${c.credits} ساعات)`).join("\n")}
 
-> 💡 يمكنك التوجه لصفحة **الخطة والتقدم** وتسجيل تقديرات المواد التي اجتزتها ليتم حساب الـ GPA الفصلي والتراكمي فوراً!`;
+>  يمكنك التوجه لصفحة **الخطة والتقدم** وتسجيل تقديرات المواد التي اجتزتها ليتم حساب الـ GPA الفصلي والتراكمي فوراً!`;
   }
 
   // Calculate Semester GPA deterministically: sum(gradePoints * credits) / sum(credits)
@@ -500,30 +500,30 @@ ${semesterCourses.map((c) => `- **[${c.code}] ${c.arabic}** (${c.credits} ساع
 
   const semesterGpa = totalCredits > 0 ? (totalQualityPoints / totalCredits) : 0;
 
-  let gpaBadge = "ممتاز مرتفع 🚀";
-  if (semesterGpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة للتحسين ⚠️";
-  else if (semesterGpa < 2.5) gpaBadge = "مقبول ⭐️";
-  else if (semesterGpa < 3.0) gpaBadge = "جيد 👍";
-  else if (semesterGpa < 3.6) gpaBadge = "جيد جداً 🌟";
+  let gpaBadge = "ممتاز مرتفع ";
+  if (semesterGpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة للتحسين ️";
+  else if (semesterGpa < 2.5) gpaBadge = "مقبول ️";
+  else if (semesterGpa < 3.0) gpaBadge = "جيد ";
+  else if (semesterGpa < 3.6) gpaBadge = "جيد جداً ";
 
   let missingNote = "";
   if (missingGradeCourses.length > 0) {
-    missingNote += `\n\n> ⚠️ **ملاحظة**: توجد مواد مسجلة ولكن بدون رصد تقدير: ${missingGradeCourses.map((c) => c.code).join(", ")}.`;
+    missingNote += `\n\n> ️ **ملاحظة**: توجد مواد مسجلة ولكن بدون رصد تقدير: ${missingGradeCourses.map((c) => c.code).join(", ")}.`;
   }
   if (uncompletedCourses.length > 0) {
     missingNote += `\n\n> ℹ️ **مواد متبقية في هذا الفصل**: ${uncompletedCourses.map((c) => `[${c.code}] ${c.arabic}`).join(", ")}.`;
   }
 
-  return `### 📊 المعدل الفصلي الحسابي الدقيق (Semester GPA)
-#### 📅 **${periodTitle}**
+  return `###  المعدل الفصلي الحسابي الدقيق (Semester GPA)
+####  **${periodTitle}**
 
 لقد قمت بحساب الـ GPA الفصلي الخاص بك بناءً على المقررات المنجزة والمرصودة فعلياً في حسابك:
 
 ${courseBreakdown}
 
-- 🎯 **المعدل الفصلي لهذا الترم (Semester GPA)**: **${semesterGpa.toFixed(2)} / 4.00** (${gpaBadge})
+-  **المعدل الفصلي لهذا الترم (Semester GPA)**: **${semesterGpa.toFixed(2)} / 4.00** (${gpaBadge})
 - ⏱️ **إجمالي الساعات المحسوبة**: **${totalCredits}** ساعة معتمدة.
-- 📐 **طريقة الحساب**: (مجموع النقاط: ${totalQualityPoints.toFixed(1)}) ÷ (إجمالي الساعات: ${totalCredits}) = **${semesterGpa.toFixed(2)}**${missingNote}`;
+-  **طريقة الحساب**: (مجموع النقاط: ${totalQualityPoints.toFixed(1)}) ÷ (إجمالي الساعات: ${totalCredits}) = **${semesterGpa.toFixed(2)}**${missingNote}`;
 }
 
 /**
@@ -549,12 +549,12 @@ export function handleWhatIfQuery(norm: string, studentContext?: StudentContext)
     const requiredSemesterGpa = pointsNeeded / assumedNextSemesterCredits;
 
     if (requiredSemesterGpa > 4.0) {
-      return `### 🎯 محاكاة الوصول للمعدل المستهدف: ${targetGpa.toFixed(2)}
+      return `###  محاكاة الوصول للمعدل المستهدف: ${targetGpa.toFixed(2)}
 
 - معدلك التراكمي الحالي: **${currentGpa.toFixed(2)}** (منجز **${completedCredits}** ساعة).
 - بافتراض تسجيلك لـ **15 ساعة** في الفصل القادم:
-- ⚠️ **النتيجة**: لا يمكن الوصول إلى معدل **${targetGpa.toFixed(2)}** في فصل دراسي واحد فقط، لأنك ستحتاج إلى معدل فصلي قدره **${requiredSemesterGpa.toFixed(2)}** (والحد الأقصى للنظام هو 4.00).
-- 💡 **التوصية**: ستحتاج إلى فصلين دراسيين بمعدلات تتراوح بين **A و A+** للوصول إلى هذا المعدل تدريجياً.`;
+- ️ **النتيجة**: لا يمكن الوصول إلى معدل **${targetGpa.toFixed(2)}** في فصل دراسي واحد فقط، لأنك ستحتاج إلى معدل فصلي قدره **${requiredSemesterGpa.toFixed(2)}** (والحد الأقصى للنظام هو 4.00).
+-  **التوصية**: ستحتاج إلى فصلين دراسيين بمعدلات تتراوح بين **A و A+** للوصول إلى هذا المعدل تدريجياً.`;
     }
 
     let neededGradeDesc = "امتياز مرتفع (A+)";
@@ -564,14 +564,14 @@ export function handleWhatIfQuery(norm: string, studentContext?: StudentContext)
     else if (requiredSemesterGpa <= 3.3) neededGradeDesc = "جيد جداً مرتفع (B+)";
     else if (requiredSemesterGpa <= 3.8) neededGradeDesc = "ممتاز (A)";
 
-    return `### 🎯 محاكاة الوصول للمعدل المستهدف: ${targetGpa.toFixed(2)}
+    return `###  محاكاة الوصول للمعدل المستهدف: ${targetGpa.toFixed(2)}
 
-- 🎯 **معدلك الحالي**: **${currentGpa.toFixed(2)}** (إجمالي **${completedCredits}** ساعة).
+-  **معدلك الحالي**: **${currentGpa.toFixed(2)}** (إجمالي **${completedCredits}** ساعة).
 - ⏱️ **العبء المفترض**: **${assumedNextSemesterCredits} ساعة** (5 مواد تقريباً).
-- 📈 **المعدل الفصلي المطلوب تحقيقه الترم القادم**: **${Math.max(0, requiredSemesterGpa).toFixed(2)} / 4.00**
-- 🌟 **التقدير المستهدف في المواد القادمة**: بمتوسط تقديرات لا تقل عن **${neededGradeDesc}**.
+-  **المعدل الفصلي المطلوب تحقيقه الترم القادم**: **${Math.max(0, requiredSemesterGpa).toFixed(2)} / 4.00**
+-  **التقدير المستهدف في المواد القادمة**: بمتوسط تقديرات لا تقل عن **${neededGradeDesc}**.
 
-> 📐 **معادلة الحساب الحتمية**: ((النقاط الحالية: ${currentTotalPoints.toFixed(1)}) + (${assumedNextSemesterCredits} × ${requiredSemesterGpa.toFixed(2)})) ÷ (${newTotalCredits} ساعة) = **${targetGpa.toFixed(2)}**.`;
+>  **معادلة الحساب الحتمية**: ((النقاط الحالية: ${currentTotalPoints.toFixed(1)}) + (${assumedNextSemesterCredits} × ${requiredSemesterGpa.toFixed(2)})) ÷ (${newTotalCredits} ساعة) = **${targetGpa.toFixed(2)}**.`;
   }
 
   // Case 2: Grade simulation (e.g. "لو جبت A في 3 مواد" or "لو جبت امتياز")
@@ -604,15 +604,15 @@ export function handleWhatIfQuery(norm: string, studentContext?: StudentContext)
   const simulatedGpa = newTotalCredits > 0 ? (newTotalPoints / newTotalCredits) : 0;
   const diff = simulatedGpa - currentGpa;
 
-  return `### 🔮 محاكاة الـ What-If التنبؤية الرياضية
-> 💡 *هذه نتيجة حسابية افتراضية مبنية على أرقام حسابك الحقيقية ولا تُعد تعديلاً لسجلك الفعلي.*
+  return `###  محاكاة الـ What-If التنبؤية الرياضية
+>  *هذه نتيجة حسابية افتراضية مبنية على أرقام حسابك الحقيقية ولا تُعد تعديلاً لسجلك الفعلي.*
 
-- 📊 **معدلك وساعاتك الحالية**: **${currentGpa.toFixed(2)}** (${completedCredits} ساعة منجزة).
-- 🧪 **السيناريو المفترض**: الحصول على تقدير **${simGrade} (${simPoints.toFixed(1)})** في **${simCoursesCount} مواد** (بإجمالي ${simCredits} ساعات معتمدة).
-- 🚀 **المعدل التراكمي المتوقع (Projected GPA)**: **${simulatedGpa.toFixed(2)} / 4.00**
-- 📈 **التغير في المعدل**: ${diff >= 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2)} نقطة.
+-  **معدلك وساعاتك الحالية**: **${currentGpa.toFixed(2)}** (${completedCredits} ساعة منجزة).
+-  **السيناريو المفترض**: الحصول على تقدير **${simGrade} (${simPoints.toFixed(1)})** في **${simCoursesCount} مواد** (بإجمالي ${simCredits} ساعات معتمدة).
+-  **المعدل التراكمي المتوقع (Projected GPA)**: **${simulatedGpa.toFixed(2)} / 4.00**
+-  **التغير في المعدل**: ${diff >= 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2)} نقطة.
 
-> 📐 **تفاصيل المعادلة**: (نقاطك الحالية: ${currentTotalPoints.toFixed(1)} + نقاط المواد المفترضة: ${(simCredits * simPoints).toFixed(1)}) ÷ (إجمالي الساعات الجديدة: ${newTotalCredits}) = **${simulatedGpa.toFixed(2)}**.`;
+>  **تفاصيل المعادلة**: (نقاطك الحالية: ${currentTotalPoints.toFixed(1)} + نقاط المواد المفترضة: ${(simCredits * simPoints).toFixed(1)}) ÷ (إجمالي الساعات الجديدة: ${newTotalCredits}) = **${simulatedGpa.toFixed(2)}**.`;
 }
 
 /**
@@ -640,23 +640,23 @@ export function handleRoadmapQuery(norm: string, studentContext?: StudentContext
 
   let statusText = "";
   if (percentage === 100) {
-    statusText = `🎉 **ما شاء الله! لقد أتممت 100% من مسار ${roadmap.title} بنجاح!**\n\nأنت الآن مؤهل تماماً لبناء مشاريع تخرج ومواقع احترافية متكاملة، وننصحك بالانتقال للمسار التالي (تطوير الأنظمة الخلفية Backend) لتعزيز مهارات الـ Full-Stack.`;
+    statusText = ` **ما شاء الله! لقد أتممت 100% من مسار ${roadmap.title} بنجاح!**\n\nأنت الآن مؤهل تماماً لبناء مشاريع تخرج ومواقع احترافية متكاملة، وننصحك بالانتقال للمسار التالي (تطوير الأنظمة الخلفية Backend) لتعزيز مهارات الـ Full-Stack.`;
   } else if (nextNode) {
     const relatedCoursesText = nextNode.courseCodes && nextNode.courseCodes.length > 0
       ? `\n- 🎓 **المقررات الجامعية المرتبطة بالكلية**: ${nextNode.courseCodes.join(", ")}`
       : "";
 
-    statusText = `- 📊 **نسبة إنجازك الفعلية في المسار**: **${percentage}%** (${completedCount} من أصل ${totalNodesCount} مراحل مكتملة).
-- 🚀 **خطوتك القادمة الموصى بها**: مرحلة **"${nextNode.label}"**
+    statusText = `-  **نسبة إنجازك الفعلية في المسار**: **${percentage}%** (${completedCount} من أصل ${totalNodesCount} مراحل مكتملة).
+-  **خطوتك القادمة الموصى بها**: مرحلة **"${nextNode.label}"**
 - ⏱️ **المدة الزمنية المقترحة**: **${nextNode.duration}**
-- 📖 **الهدف من هذه الخطوة**: ${nextNode.description}${relatedCoursesText}
+-  **الهدف من هذه الخطوة**: ${nextNode.description}${relatedCoursesText}
 
-> 💡 يمكنك التوجه لصفحة **مسارات خارطة الطريق (Roadmaps)** لتحديث تقدمك ومشاهدة مصادر التعلم وروابط الدورات المعتمدة لهذه المرحلة!`;
+>  يمكنك التوجه لصفحة **مسارات خارطة الطريق (Roadmaps)** لتحديث تقدمك ومشاهدة مصادر التعلم وروابط الدورات المعتمدة لهذه المرحلة!`;
   } else {
     statusText = `لديك نسبة تقدم **${percentage}%** في مسار **${roadmap.title}**.`;
   }
 
-  return `### 🗺️ مسار التعلم الأكاديمي والمهني: ${roadmap.title}
+  return `### ️ مسار التعلم الأكاديمي والمهني: ${roadmap.title}
 
 ${statusText}`;
 }
@@ -667,7 +667,7 @@ ${statusText}`;
 export function handleUniversityRegulations(norm: string): string | null {
   // 1. Credit Hours / Academic Load (العبء الدراسي)
   if (matchesWords(norm, ["العبء الدراسي", "عبء", "ساعات التسجيل", "الحد الاقصي للساعات", "الحد الادني للساعات", "كم ساعه اسجل", "كم ساعة اسجل", "اقصي ساعات", "اقل ساعات"])) {
-    return `### 📘 لائحة العبء الدراسي والساعات المعتمدة (وفقاً لدليل الطالب - صفحة 14)
+    return `###  لائحة العبء الدراسي والساعات المعتمدة (وفقاً لدليل الطالب - صفحة 14)
 
 وفقاً للائحة الرسمية لجامعة سيناء:
 - **الحد الأدنى للتسجيل بالفصل الدراسي**: **12 ساعة معتمدة** (ويجوز تخفيضه لـ 9 ساعات لعذر مقبول بموافقة المرشد وعميد الكلية).
@@ -678,7 +678,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 2. Academic Warning & Probation (الإنذار الأكاديمي والفصل)
   if (matchesWords(norm, ["انذار اكاديمي", "الانذار الاكاديمي", "انذار", "بروبيشن", "probation", "فصل من الكلية", "متي افصل", "متى افصل", "شروط الانذار"])) {
-    return `### 📘 ضوابط الإنذار الأكاديمي والفصل (وفقاً لدليل الطالب - صفحة 16 و 17)
+    return `###  ضوابط الإنذار الأكاديمي والفصل (وفقاً لدليل الطالب - صفحة 16 و 17)
 
 حسب المادة الرسمية بلائحة جامعة سيناء:
 1. **شروط الإنذار**: يوضع الطالب تحت الإنذار الأكاديمي إذا انخفض معدله التراكمي (GPA) عن **2.00 / 4.00**.
@@ -688,7 +688,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 3. Add, Drop, and Withdrawal (التسجيل والحذف والإضافة والانسحاب)
   if (matchesWords(norm, ["حذف واضافة", "الحذف والاضافة", "حذف مادة", "اضافة مادة", "انسحاب", "انسحب من مادة", "تقدير w", "drop", "withdraw"])) {
-    return `### 📘 قواعد الحذف والإضافة والانسحاب (وفقاً لدليل الطالب - صفحة 15 و 18)
+    return `###  قواعد الحذف والإضافة والانسحاب (وفقاً لدليل الطالب - صفحة 15 و 18)
 
 تنص لائحة جامعة سيناء على المواعيد التالية:
 - **فترة الإضافة (Add)**: خلال **الأسبوعين الأولين** من بدء الدراسة بتنسيق وموافقة المرشد الأكاديمي.
@@ -699,7 +699,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 4. Attendance & Absence (المواظبة والغياب ونسب الحرمان)
   if (matchesWords(norm, ["غياب", "نسبة الغياب", "حرمان", "اتحرم من الامتحان", "حضور", "غيابي", "المواظبة"])) {
-    return `### 📘 شروط المواظبة والغياب (وفقاً لدليل الطالب - صفحة 15 و 31)
+    return `###  شروط المواظبة والغياب (وفقاً لدليل الطالب - صفحة 15 و 31)
 
 - الدراسة في كلية تكنولوجيا المعلومات وعلوم الحاسب **نظامية ولا يجوز فيها الانتساب**.
 - **الحد الأدنى لنسبة الحضور**: **75%** من المحاضرات والدروس العملية لدخول الاختبار النهائي.
@@ -709,7 +709,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 5. Graduation Requirements (شروط التخرج)
   if (matchesWords(norm, ["شروط التخرج", "اتخرج ازاي", "متطلبات التخرج", "كام ساعه عشان اتخرج", "ساعات التخرج"])) {
-    return `### 📘 شروط ومتطلبات التخرج للبكالوريوس (وفقاً لدليل الطالب - صفحة 14 و 23)
+    return `###  شروط ومتطلبات التخرج للبكالوريوس (وفقاً لدليل الطالب - صفحة 14 و 23)
 
 للحصول على درجة البكالوريوس في تكنولوجيا المعلومات وعلوم الحاسب بجامعة سيناء:
 1. **إتمام 144 ساعة معتمدة بنجاح** موزعة كالتالي:
@@ -724,7 +724,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 6. Graduation Project & Training (مشروع التخرج والتدريب الصيفي)
   if (matchesWords(norm, ["مشروع التخرج", "تسجيل مشروع التخرج", "مشروع 1", "مشروع تخرج", "تدريب ميداني", "تدريب صيفي"])) {
-    return `### 📘 ضوابط مشروع التخرج والتدريب (وفقاً لدليل الطالب - صفحة 20)
+    return `###  ضوابط مشروع التخرج والتدريب (وفقاً لدليل الطالب - صفحة 20)
 
 - **شرط تسجيل مشروع التخرج**: يشترط أن يكون الطالب قد اجتاز بنجاح **95 ساعة معتمدة** على الأقل، ويكون مسجلاً في السنة الدراسية الرابعة.
 - **نظام المشروع**: مشروع التخرج ينقسم لفصلين دراسيين (مشروع 1 في ترم 7، ومشروع 2 في ترم 8).
@@ -734,7 +734,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 7. Honors List & Degrees (قائمة الشرف ومرتبة الشرف)
   if (matchesWords(norm, ["مرتبة الشرف", "قائمة الشرف", "الشرف الاولي", "الشرف الاولى", "شرف"])) {
-    return `### 📘 قواعد قائمة ومرتبة الشرف (وفقاً لدليل الطالب - صفحة 17 و 20)
+    return `###  قواعد قائمة ومرتبة الشرف (وفقاً لدليل الطالب - صفحة 17 و 20)
 
 - **قائمة شرف عميد الكلية (Honor List)**: يوضع فيها اسم الطالب بالفصل الدراسي إذا حقق معدلاً تراكمياً/فصلياً لا يقل عن **3.30 (جيد جداً)** مع تسجيل الحد الأقصى للعبء الدراسي ودون رسوب في أي مقرر.
 - **مرتبة الشرف الأولى عند التخرج**: تمنح للطالب الذي يتخرج بمعدل تراكمي عام لا يقل عن **3.80 / 4.00** بشرط ألا يكون قد رسب في أي مقرر درسه طوال سنوات دراسته.
@@ -743,7 +743,7 @@ export function handleUniversityRegulations(norm: string): string | null {
 
   // 8. Grading System & Scale (سلم التقديرات وحساب الدرجات)
   if (matchesWords(norm, ["سلم التقديرات", "توزيع الدرجات", "نظام التقويم", "درجة النجاح", "اعمال السنة"])) {
-    return `### 📘 نظام التقويم وسلّم الدرجات (وفقاً لدليل الطالب - صفحة 16)
+    return `###  نظام التقويم وسلّم الدرجات (وفقاً لدليل الطالب - صفحة 16)
 
 - **توزيع درجات المقرر**: 40% أعمال فصلية + 60% اختبار نهائي (أو 50% تحريري + 10% عملي).
 - **الحد الأدنى للنجاح**: الحصول على 50% من الدرجة الإجمالية للمقرر.
@@ -804,7 +804,7 @@ export function getAiResponse(
 
   // 1. PRIVACY GUARD (Strict Isolation Check)
   if (isPrivacyViolation(norm)) {
-    return `🔒 **تنبيه الخصوصية وحماية البيانات الأكاديمية**
+    return ` **تنبيه الخصوصية وحماية البيانات الأكاديمية**
 
 عذراً، وفقاً لسياسة الخصوصية وحماية بيانات الطلاب في منصة جامعة سيناء، **لا يمكنني الاستعلام عن أو إظهار درجات أو معدلات أي طالب آخر**. 
 
@@ -818,14 +818,14 @@ export function getAiResponse(
     if (matchesWords(norm, ["جبت كام", "جبت ايه", "تقديري", "درجتي", "جايب كام"])) {
       const comp = studentContext?.completedCourses?.find((c) => c.code === followUpCourse.code);
       if (comp) {
-        return `🎯 **تقديرك في مقرر [${followUpCourse.code}] ${followUpCourse.arabic}**:
+        return ` **تقديرك في مقرر [${followUpCourse.code}] ${followUpCourse.arabic}**:
 لقد أنجزت هذا المقرر بالفعل وحصلت على تقدير **(${comp.grade})** (${GRADE_LABELS[comp.grade] || ""}).`;
       }
       const isPlan = studentContext?.plannedCourses?.includes(followUpCourse.code);
       if (isPlan) {
         return `ℹ️ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** مضاف في خطتك للتسجيل، ولكن **لا يوجد تقدير مسجل له حتى الآن**.`;
       }
-      return `⚠️ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** غير مسجل في خطتك أو سجلك الأكاديمي الحالي.`;
+      return `️ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** غير مسجل في خطتك أو سجلك الأكاديمي الحالي.`;
     }
 
     // Otherwise show details of the follow-up course
@@ -851,22 +851,22 @@ export function getAiResponse(
     const progress = studentContext?.graduationPercentage ?? Math.round((completedCredits / 144) * 100);
     const name = studentContext?.userName ? `يا **${studentContext.userName}**` : "";
 
-    let gpaBadge = "ممتاز مرتفع 🚀";
+    let gpaBadge = "ممتاز مرتفع ";
     if (gpa === 0) gpaBadge = "لم يتم احتساب درجات بعد";
-    else if (gpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة لرفع المعدل ⚠️";
-    else if (gpa < 2.5) gpaBadge = "مقبول ⭐️";
-    else if (gpa < 3.0) gpaBadge = "جيد 👍";
-    else if (gpa < 3.6) gpaBadge = "جيد جداً 🌟";
+    else if (gpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة لرفع المعدل ️";
+    else if (gpa < 2.5) gpaBadge = "مقبول ️";
+    else if (gpa < 3.0) gpaBadge = "جيد ";
+    else if (gpa < 3.6) gpaBadge = "جيد جداً ";
 
-    return `### 📊 المعدل التراكمي الفعلي الخاص بك (Actual Academic GPA)
+    return `###  المعدل التراكمي الفعلي الخاص بك (Actual Academic GPA)
 
 أهلاً بك ${name}! بناءً على السجل الأكاديمي الفعلي لحسابك بالمنصة:
 
-- 🎯 **المعدل التراكمي الحالي (Cumulative GPA)**: **${gpa > 0 ? gpa.toFixed(2) : "0.00"} / 4.00** (${gpaBadge})
+-  **المعدل التراكمي الحالي (Cumulative GPA)**: **${gpa > 0 ? gpa.toFixed(2) : "0.00"} / 4.00** (${gpaBadge})
 - ⏱️ **الساعات المنجزة بنجاح**: **${completedCredits}** من أصل **144** ساعة معتمدة.
 - 🎓 **نسبة الإنجاز للتخرج**: **${progress}%** (يتبقى لك **${remainingCredits}** ساعة معتمدة).
 
-> 💡 يمكنك استخدام ميزة محاكاة الـ What-If لمعرفة كيف سيرتفع معدلك إذا حصلت على تقديرات معينة الفصل القادم!`;
+>  يمكنك استخدام ميزة محاكاة الـ What-If لمعرفة كيف سيرتفع معدلك إذا حصلت على تقديرات معينة الفصل القادم!`;
   }
 
   // 4. SEMESTER GPA ENGINE ("أنا جبت كام في الترم الأول سنة تانية؟")
@@ -897,25 +897,25 @@ export function getAiResponse(
       if (completedRecord) {
         if (completedRecord.grade && completedRecord.grade.trim() !== "") {
           const gradeLabel = GRADE_LABELS[completedRecord.grade] || "";
-          return `### 🎯 النتيجة الرسمية المسجلة لمقرر [${targetCourse.code}]
+          return `###  النتيجة الرسمية المسجلة لمقرر [${targetCourse.code}]
 **${targetCourse.arabic} (${targetCourse.english})**
 
-- 🌟 **التقدير المسجل لك**: **${completedRecord.grade}** (${gradeLabel})
+-  **التقدير المسجل لك**: **${completedRecord.grade}** (${gradeLabel})
 - ⏱️ **عدد الساعات المعتمدة للمقرر**: **${targetCourse.credits} ساعات**
-- 📅 **الفترة الدراسية**: ${PERIODS[targetCourse.period] || targetCourse.period}
+-  **الفترة الدراسية**: ${PERIODS[targetCourse.period] || targetCourse.period}
 
-> ✅ هذا التقدير معتمد ومحتسب ضمن معدلك التراكمي الحالي (${studentContext?.cumulativeGpa?.toFixed(2) || "0.00"}).`;
+>  هذا التقدير معتمد ومحتسب ضمن معدلك التراكمي الحالي (${studentContext?.cumulativeGpa?.toFixed(2) || "0.00"}).`;
         } else {
           return `### ℹ️ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
 
 المادة مسجلة ومدرجة بالفعل في سجلك الأكاديمي، **ولكن لا يوجد تقدير مرصود لها حالياً** في قاعدة البيانات. يرجى مراجعة صفحة الخطة الدراسية لتحديث الدرجة فور إعلانها.`;
         }
       } else if (isPlanned) {
-        return `### 📌 حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
+        return `###  حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
 
 هذا المقرر مضاف حالياً إلى **مخطط التسجيل الخاص بك**، ولم يتم رصد درجات له بعد لأنك لم تجتزه في الفصول السابقة.`;
       } else {
-        return `### ⚠️ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
+        return `### ️ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
 
 وفقاً لسجلك الأكاديمي وقاعدة البيانات المتاحة، **هذا المقرر غير موجود ضمن المواد التي قمت بتسجيلها أو دراستها في حسابك حتى الآن**.`;
       }
@@ -931,7 +931,7 @@ export function getAiResponse(
         return `- **[${c.code}] ${info ? info.arabic : c.code}**: ${gradeText}`;
       }).join("\n");
 
-      return `### 📜 قائمة المقررات الدراسية المنجزة في حسابك
+      return `###  قائمة المقررات الدراسية المنجزة في حسابك
 
 لقد قمت باجتياز **${studentContext.completedCourses.length}** مادة دراسية بنجاح:
 
@@ -939,7 +939,7 @@ ${listText}
 
 > 🎓 إجمالي الساعات المنجزة: **${studentContext.completedCredits} ساعة معتمدة**.`;
     } else {
-      return `### 📜 المقررات المنجزة بنجاح
+      return `###  المقررات المنجزة بنجاح
 
 لم تقم بتسجيل أي مواد منجزة بعد في حسابك. يمكنك الذهاب إلى صفحة **الخطة الدراسية والتقدم** واختيار المقررات التي اجتزتها ورصد تقديراتك لتحديث معدلك فوراً!`;
     }
@@ -953,15 +953,15 @@ ${listText}
         return `- **[${code}] ${info ? info.arabic : code}** (${info ? info.credits : 3} ساعات)`;
       }).join("\n");
 
-      return `### 📌 قائمة المقررات المخططة للتسجيل القادم
+      return `###  قائمة المقررات المخططة للتسجيل القادم
 
 لديك **${studentContext.plannedCourses.length}** مادة في مخطط التسجيل الخاص بك:
 
 ${listText}
 
-> 💡 يمكنك التوجه لصفحة **مخطط التسجيل الذكي** لتعديل جدولك ومعاينة العبء الدراسي المختار.`;
+>  يمكنك التوجه لصفحة **مخطط التسجيل الذكي** لتعديل جدولك ومعاينة العبء الدراسي المختار.`;
     } else {
-      return `### 📌 المقررات المخططة للتسجيل
+      return `###  المقررات المخططة للتسجيل
 
 لا توجد مواد مضافة لمخططك الحالي بعد. انتقل لصفحة **مخطط التسجيل الذكي** لاختيار المقررات التي تنوي تسجيلها الفصل القادم!`;
     }
@@ -972,11 +972,11 @@ ${listText}
     const completedCredits = studentContext?.completedCredits ?? 0;
     const remainingCredits = studentContext?.remainingCredits ?? (144 - completedCredits);
 
-    return `### ⏳ المتبقي لك للتخرج
+    return `###  المتبقي لك للتخرج
 
 أنت الآن أتممت **${completedCredits}** ساعة معتمدة، ويتبقى لك **${remainingCredits}** ساعة للحصول على درجة البكالوريوس (من أصل 144 ساعة معتمدة).
 
-> 🗺️ لمعرفة المواد الدقيقة المتبقية لك في خطتك الأكاديمية والمقررات التي تفتحها، يرجى التوجه لصفحة **"الخطة الدراسية والتقدم"** حيث يتم فرز وعرض المواد المتبقية بشكل تفاعلي.`;
+> ️ لمعرفة المواد الدقيقة المتبقية لك في خطتك الأكاديمية والمقررات التي تفتحها، يرجى التوجه لصفحة **"الخطة الدراسية والتقدم"** حيث يتم فرز وعرض المواد المتبقية بشكل تفاعلي.`;
   }
 
   // 10. ROADMAP INTELLIGENCE ("خلصت Frontend أعمل إيه بعد كده؟", "نسبة إنجازي في الـ Frontend")
@@ -996,7 +996,7 @@ ${listText}
     const courseMatch = findMatchingCourse(query);
     if (courseMatch) {
       if (courseMatch.prerequisites.length === 0) {
-        return `### 🔓 شروط تسجيل [${courseMatch.code}] ${courseMatch.arabic}
+        return `###  شروط تسجيل [${courseMatch.code}] ${courseMatch.arabic}
 
 هذا المقرر **لا يتطلب أي متطلب مسبق** (مادة مفتوحة بالفرقة الأولى/التخصص). يمكنك تسجيله مباشرة متى كان عبئك الدراسي يسمح بذلك.`;
       }
@@ -1005,25 +1005,25 @@ ${listText}
       const missingPrereqs = courseMatch.prerequisites.filter((p) => !completedCodes.includes(p));
 
       if (missingPrereqs.length === 0) {
-        return `### ✅ الأهلية لتسجيل [${courseMatch.code}] ${courseMatch.arabic}
+        return `###  الأهلية لتسجيل [${courseMatch.code}] ${courseMatch.arabic}
 
 أنت **مستوفي لجميع المتطلبات المسبقة** لهذا المقرر:
 - المتطلبات المسبقة: ${courseMatch.prerequisites.map((p) => `[${p}]`).join(", ")} (تم اجتيازها جميعاً بنجاح في حسابك).
 
-> 💡 يمكنك إضافة المقرر إلى **مخطط التسجيل الذكي** لتضمينه في جدول الفصل القادم.`;
+>  يمكنك إضافة المقرر إلى **مخطط التسجيل الذكي** لتضمينه في جدول الفصل القادم.`;
       } else {
         const missingText = missingPrereqs.map((p) => {
           const pre = COURSES.find((item) => item.code === p);
           return `- **[${p}] ${pre ? pre.arabic : p}**`;
         }).join("\n");
 
-        return `### ⛔ المتطلبات المسبقة غير مكتملة لمقرر [${courseMatch.code}] ${courseMatch.arabic}
+        return `###  المتطلبات المسبقة غير مكتملة لمقرر [${courseMatch.code}] ${courseMatch.arabic}
 
 وفقاً للائحة الكلية وسجلك الأكاديمي، **لا يمكنك تسجيل هذه المادة حالياً** لأنك لم تجتز المتطلب(ات) المسبقة التالية:
 
 ${missingText}
 
-> 📘 تنص لائحة الكلية على أنه لا يجوز للطالب تسجيل مقرر ما قبل النجاح في متطلبه السابق (إلا إذا كان تخرجه يتوقف على ذلك وبموافقة القسم وعميد الكلية).`;
+>  تنص لائحة الكلية على أنه لا يجوز للطالب تسجيل مقرر ما قبل النجاح في متطلبه السابق (إلا إذا كان تخرجه يتوقف على ذلك وبموافقة القسم وعميد الكلية).`;
       }
     }
   }
@@ -1042,18 +1042,18 @@ ${missingText}
 
   // 15. INTELLIGENT FACTUAL FALLBACK (Zero Hallucination)
   const userName = studentContext?.userName ? `يا **${studentContext.userName}**` : "";
-  return `### 🤖 أهلاً بك ${userName}! أنا مرشدك الأكاديمي والتقني الموثوق
+  return `###  أهلاً بك ${userName}! أنا مرشدك الأكاديمي والتقني الموثوق
 
 لقد استلمت استفسارك: **"${query}"**.
 
 أنا مرتبط مباشرة ببيانات حسابك المسجلة بالمنصة وبلائحة الكلية الرسمية (**دليل الطالب**)، ويمكنك سؤالي عن:
 
-- 📊 **بياناتك وتقديراتك الفعلية**: *"الـ GPA بتاعي كام؟"* أو *"جبت كام في الداتا ستراكشر؟"*
-- 📅 **حساب الـ GPA الفصلي بدقة**: *"الترم الأول سنة تانية جبت كام؟"*
-- 🔮 **محاكاة الـ What-If التنبؤية**: *"لو جبت A في 3 مواد معدلي هيبقى كام؟"*
-- 🗺️ **مسارات التعلم والخطوات القادمة**: *"خلصت Frontend أعمل إيه بعد كده؟"*
-- 📘 **لوائح الجامعة المعتمدة**: *"ما هي شروط الإنذار الأكاديمي؟"* أو *"الحد الأقصى للساعات للتسجيل؟"*
-- 🔗 **شروط المقررات والأهلية**: *"أقدر أسجل شبكات الحاسب؟"*
+-  **بياناتك وتقديراتك الفعلية**: *"الـ GPA بتاعي كام؟"* أو *"جبت كام في الداتا ستراكشر؟"*
+-  **حساب الـ GPA الفصلي بدقة**: *"الترم الأول سنة تانية جبت كام؟"*
+-  **محاكاة الـ What-If التنبؤية**: *"لو جبت A في 3 مواد معدلي هيبقى كام؟"*
+- ️ **مسارات التعلم والخطوات القادمة**: *"خلصت Frontend أعمل إيه بعد كده؟"*
+-  **لوائح الجامعة المعتمدة**: *"ما هي شروط الإنذار الأكاديمي؟"* أو *"الحد الأقصى للساعات للتسجيل؟"*
+-  **شروط المقررات والأهلية**: *"أقدر أسجل شبكات الحاسب؟"*
 
 يرجى توضيح استفسارك إذا كنت تقصد مادة محددة أو موضوعاً أكاديمياً وسأجيبك بدقة تامة!`;
 }
@@ -1063,43 +1063,43 @@ ${missingText}
  */
 function handleTechQuery(norm: string, rawQuery: string): string | null {
   if (matchesWords(norm, ["frontend", "واجهات", "فرونت"])) {
-    return `### 💻 مجال تطوير واجهات الويب (Frontend Development)
+    return `###  مجال تطوير واجهات الويب (Frontend Development)
 
 تطوير الواجهات هو التخصص المسؤول عن بناء الجزء البصري التفاعلي الذي يشاهده المستخدم في المتصفح.
 
-- 🛠️ **التقنيات الأساسية**: HTML5, CSS3, JavaScript (ES6+), React.js, Next.js, Tailwind CSS.
+- ️ **التقنيات الأساسية**: HTML5, CSS3, JavaScript (ES6+), React.js, Next.js, Tailwind CSS.
 - 🎓 **المواد الأكاديمية المرتبطة بجامعة سيناء**:
   - \`INT 341\` (تكنولوجيا الويب)
   - \`CSW 337\` (برمجة واجهة المستخدم)
   - \`INT 343\` (تصميم وتنفيذ مواقع الويب)
-- 🚀 **نصيحة البدء**: ابدأ بإتقان أساسيات JavaScript وتطبيق مشاريع عملية بسيطة قبل الانتقال لأطر العمل مثل React. يمكنك متابعة مسار الـ Frontend بالمنصة لمعاينة تقدمك خطوة بخطوة!`;
+-  **نصيحة البدء**: ابدأ بإتقان أساسيات JavaScript وتطبيق مشاريع عملية بسيطة قبل الانتقال لأطر العمل مثل React. يمكنك متابعة مسار الـ Frontend بالمنصة لمعاينة تقدمك خطوة بخطوة!`;
   }
 
   if (matchesWords(norm, ["backend", "خوادم", "باك ان", "باكاند"])) {
-    return `### ⚙️ مجال تطوير الأنظمة الخلفية وقواعد البيانات (Backend Development)
+    return `### ️ مجال تطوير الأنظمة الخلفية وقواعد البيانات (Backend Development)
 
 تطوير الخوادم هو التخصص المسؤول عن منطق البرمجة (Business Logic)، أمان البيانات، وبناء الـ RESTful APIs ومعالجة قواعد البيانات.
 
-- 🛠️ **التقنيات الأساسية**: Node.js (Express), Python (Django/FastAPI), Java (Spring Boot), PostgreSQL, MongoDB.
+- ️ **التقنيات الأساسية**: Node.js (Express), Python (Django/FastAPI), Java (Spring Boot), PostgreSQL, MongoDB.
 - 🎓 **المواد الأكاديمية المرتبطة**:
   - \`ISD 242\` (نظم قواعد البيانات)
   - \`CSW 221\` (هياكل البيانات)
   - \`CSW 234\` (برمجة الحاسب 2 - جافا)
-- 🚀 **نصيحة البدء**: افهم جيداً كيفية تصميم الجداول العلاقاتية (Relational Databases) وكتابة استعلامات SQL الفعالة، ثم انتقل لبناء أول API خاص بك.`;
+-  **نصيحة البدء**: افهم جيداً كيفية تصميم الجداول العلاقاتية (Relational Databases) وكتابة استعلامات SQL الفعالة، ثم انتقل لبناء أول API خاص بك.`;
   }
 
   if (matchesWords(norm, ["ذكاء اصطناعي", "ai", "machine learning", "تعلم الالة", "data science"])) {
-    return `### 🤖 مجال الذكاء الاصطناعي وعلم البيانات (AI & Data Science)
+    return `###  مجال الذكاء الاصطناعي وعلم البيانات (AI & Data Science)
 
 يهدف هذا المجال لبناء نماذج برمجية ذكية قادرة على التعلم من البيانات والتنبؤ والتعرف على الأنماط والصور.
 
-- 🛠️ **التقنيات الأساسية**: Python, NumPy, Pandas, Scikit-Learn, PyTorch, TensorFlow.
+- ️ **التقنيات الأساسية**: Python, NumPy, Pandas, Scikit-Learn, PyTorch, TensorFlow.
 - 🎓 **المواد الأكاديمية المرتبطة**:
   - \`Ma 110\` (الجبر الخطي)
   - \`St 120\` (الاحتمالات والإحصاء)
   - \`CSW 351\` (الذكاء الاصطناعي)
   - \`INT 423\` (معالجة الصور الرقمية)
-- 🚀 **نصيحة البدء**: تعمق في الجبر الخطي والاحتمالات، حيث أنها الأساس الرياضي لكل خوارزميات التعلم الآلي.`;
+-  **نصيحة البدء**: تعمق في الجبر الخطي والاحتمالات، حيث أنها الأساس الرياضي لكل خوارزميات التعلم الآلي.`;
   }
 
   return null;

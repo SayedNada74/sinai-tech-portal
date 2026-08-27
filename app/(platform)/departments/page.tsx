@@ -20,7 +20,7 @@ export default function CurriculumProgressChecklist() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
   const { courses } = useAdmin();
-  
+
   const {
     completedCredits,
     remainingCredits,
@@ -87,7 +87,8 @@ export default function CurriculumProgressChecklist() {
 
       {/* Header section */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2.5">
+          <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
           {t("الخطة الدراسية العامة والتقدم الأكاديمي", "General Curriculum Plan & Progress")}
         </h1>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
@@ -114,13 +115,17 @@ export default function CurriculumProgressChecklist() {
               )}
             </div>
             <Badge variant="outline" className="mt-2.5 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/80 dark:bg-zinc-800/40 text-[9px] font-bold py-0.5 px-2">
-              {cumulativeGpa >= 3.6 
-                ? t("امتياز مرتفع 🚀", "Excellent (High) 🚀") 
-                : cumulativeGpa >= 3.0 
-                ? t("جيد جداً 👍", "Very Good 👍")
-                : cumulativeGpa >= 2.0
-                ? t("مقبول ⭐️", "Good ⭐️")
-                : t("جديد / لم يبدأ بعد", "New / Not Started")}
+              {cumulativeGpa === 0
+                ? t("طالب جديد 🌱", "New Student 🌱")
+                : cumulativeGpa >= 3.6
+                  ? t("امتياز 🏆", "Excellent 🏆")
+                  : cumulativeGpa >= 3.0
+                    ? t("جيد جداً 🌟", "Very Good 🌟")
+                    : cumulativeGpa >= 2.4
+                      ? t("جيد 👍", "Good 👍")
+                      : cumulativeGpa >= 2.0
+                        ? t("مقبول ✅", "Satisfactory ✅")
+                        : t("ضعيف ⚠️", "Poor ⚠️")}
             </Badge>
           </div>
         </SpotlightCard>
@@ -220,24 +225,22 @@ export default function CurriculumProgressChecklist() {
                         return (
                           <div
                             key={c.code}
-                            className={`p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-colors duration-200 ${
-                              completed
+                            className={`p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-colors duration-200 ${completed
                                 ? "bg-green-500/[0.02]"
                                 : planned
-                                ? "bg-cyan-500/[0.01]"
-                                : ""
-                            }`}
+                                  ? "bg-cyan-500/[0.01]"
+                                  : ""
+                              }`}
                           >
                             {/* Checkbox and Course description */}
                             <div className="flex items-start gap-3 min-w-0">
                               {/* Styled Custom Checkbox */}
                               <button
                                 onClick={() => handleCheckCourse(c.code, !completed)}
-                                className={`mt-0.5 rounded-md p-0.5 transition-colors cursor-pointer border ${
-                                  completed
+                                className={`mt-0.5 rounded-md p-0.5 transition-colors cursor-pointer border ${completed
                                     ? "bg-green-600 border-green-600 text-white"
                                     : "border-zinc-300 dark:border-zinc-700 text-transparent hover:border-zinc-400"
-                                }`}
+                                  }`}
                               >
                                 {completed ? (
                                   <CheckSquare className="h-4.5 w-4.5 shrink-0" />
@@ -273,9 +276,8 @@ export default function CurriculumProgressChecklist() {
                             </div>
 
                             {/* Actions (Credits, Grade Selector, Planned toggle) */}
-                            <div className={`flex items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto pt-2.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-850/60 justify-between ${
-                              isRtl ? "sm:mr-auto sm:justify-end" : "sm:ml-auto sm:justify-start"
-                            }`}>
+                            <div className={`flex items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto pt-2.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-850/60 justify-between ${isRtl ? "sm:mr-auto sm:justify-end" : "sm:ml-auto sm:justify-start"
+                              }`}>
                               <span className="text-[10px] font-bold text-zinc-450 bg-zinc-100 dark:bg-zinc-850 px-2 py-1 rounded-xl">
                                 {c.credits} {t("ساعة", "Hours")}
                               </span>
@@ -293,11 +295,10 @@ export default function CurriculumProgressChecklist() {
                               {/* Planned bookmark toggle */}
                               <button
                                 onClick={() => planned ? unmarkPlanned(c.code) : markPlanned(c.code)}
-                                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
-                                  planned
+                                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${planned
                                     ? "bg-sky-600 border-sky-600 text-white"
                                     : "border-zinc-250 text-zinc-400 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
-                                }`}
+                                  }`}
                                 title={planned ? t("إلغاء المخطط", "Cancel planned") : t("إضافة للمخطط", "Bookmark as planned")}
                               >
                                 <Bookmark className="h-3.5 w-3.5" />

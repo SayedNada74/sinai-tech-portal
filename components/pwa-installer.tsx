@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { Download, Smartphone, WifiOff, CheckCircle2, X, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useApp } from "@/context/app-context";
-import { Button } from "@/components/ui/button";
+import * as React from"react";
+import { Download, Smartphone, WifiOff, CheckCircle2, X, Sparkles } from"lucide-react";
+import { motion, AnimatePresence } from"framer-motion";
+import { useApp } from"@/context/app-context";
+import { Button } from"@/components/ui/button";
 
 export function PWAInstaller() {
   const { t, dir } = useApp();
@@ -15,10 +15,10 @@ export function PWAInstaller() {
 
   React.useEffect(() => {
     // 1. Register Service Worker (Production mode or non-localhost only)
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+    if (typeof window !=="undefined" &&"serviceWorker" in navigator) {
       const isLocalhost = Boolean(
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "[::1]" ||
+        window.location.hostname ==="localhost" ||
+        window.location.hostname ==="[::1]" ||
         window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
       );
 
@@ -80,7 +80,7 @@ export function PWAInstaller() {
     window.addEventListener("offline", handleOffline);
 
     // Initial check
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
+    if (typeof navigator !=="undefined" && !navigator.onLine) {
       setIsOffline(true);
       setShowOfflineToast(true);
     }
@@ -106,7 +106,7 @@ export function PWAInstaller() {
 
   const handleDismiss = () => {
     setShowInstallBanner(false);
-    sessionStorage.setItem("su_pwa_dismissed", "true");
+    sessionStorage.setItem("su_pwa_dismissed","true");
   };
 
   return (
@@ -121,20 +121,20 @@ export function PWAInstaller() {
             transition={{ duration: 0.3 }}
             className={`fixed top-4 left-1/2 -translate-x-1/2 z-[10000] px-4 py-2.5 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-center gap-3 text-xs sm:text-sm font-bold ${
               isOffline
-                ? "bg-amber-950/95 border-amber-500/60 text-amber-200 shadow-amber-500/20"
-                : "bg-emerald-950/95 border-emerald-500/60 text-emerald-200 shadow-emerald-500/20"
+                ?"bg-amber-950/95 border-amber-500/60 text-amber-200 shadow-amber-500/20"
+                :"bg-emerald-950/95 border-emerald-500/60 text-emerald-200 shadow-emerald-500/20"
             }`}
             dir={dir}
           >
             {isOffline ? (
               <>
                 <WifiOff className="h-4.5 w-4.5 text-amber-400 animate-pulse shrink-0" />
-                <span>{t("أنت تعمل حالياً بدون اتصال بالإنترنت (وضع PWA). بياناتك ومحفوظاتك متوفرة.", "Working Offline (PWA Mode). Your saved data is available.")}</span>
+                <span>{t("أنت تعمل حالياً بدون اتصال بالإنترنت (وضع PWA). بياناتك ومحفوظاتك متوفرة.","Working Offline (PWA Mode). Your saved data is available.")}</span>
               </>
             ) : (
               <>
-                <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0" />
-                <span>{t("تم إعادة الاتصال بالشبكة بنجاح! 🌐", "Reconnected to network successfully! 🌐")}</span>
+                <CheckCircle2 className="h-4.5 w-4.5 text-primary shrink-0" />
+                <span>{t("تم إعادة الاتصال بالشبكة بنجاح!","Reconnected to network successfully!")}</span>
               </>
             )}
           </motion.div>
@@ -148,7 +148,7 @@ export function PWAInstaller() {
             initial={{ opacity: 0, y: 100, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            transition={{ type:"spring", stiffness: 400, damping: 25 }}
             className="fixed bottom-5 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9990] p-4 sm:p-5 rounded-3xl border border-sky-500/40 bg-zinc-950/95 text-zinc-100 shadow-2xl shadow-sky-900/30 backdrop-blur-2xl"
             dir={dir}
           >
@@ -160,14 +160,12 @@ export function PWAInstaller() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-extrabold text-sm sm:text-base text-zinc-50">
-                      {t("تثبيت تطبيق SU IT Guide 📲", "Install SU IT Guide App 📲")}
+                      {t("تثبيت تطبيق SU IT Guide","Install SU IT Guide App")}
                     </h4>
                     <Sparkles className="h-3.5 w-3.5 text-amber-400" />
                   </div>
                   <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 leading-relaxed">
-                    {t(
-                      "ثبّت المنصة كتطبيق مثبت على هاتفك لتصفح سريع بدون إنترنت وسهولة الوصول.",
-                      "Install as a native mobile app for faster browsing, offline access, and 1-tap launch."
+                    {t("ثبّت المنصة كتطبيق مثبت على هاتفك لتصفح سريع بدون إنترنت وسهولة الوصول.","Install as a native mobile app for faster browsing, offline access, and 1-tap launch."
                     )}
                   </p>
                 </div>
@@ -187,14 +185,14 @@ export function PWAInstaller() {
                 className="w-full h-10 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs gap-2 shadow-lg shadow-sky-600/30 transition-all cursor-pointer"
               >
                 <Download className="h-4 w-4" />
-                {t("تثبيت التطبيق على الهاتف الآن", "Install App Now")}
+                {t("تثبيت التطبيق على الهاتف الآن","Install App Now")}
               </Button>
               <Button
                 onClick={handleDismiss}
                 variant="outline"
                 className="h-10 px-4 rounded-xl border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-semibold cursor-pointer"
               >
-                {t("لاحقاً", "Later")}
+                {t("لاحقاً","Later")}
               </Button>
             </div>
           </motion.div>

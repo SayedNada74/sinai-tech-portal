@@ -1,10 +1,10 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import Link from "next/link";
-import { GraduationCap, Globe, Mail } from "lucide-react";
-import { useApp } from "@/context/app-context";
-import { DeveloperCredit } from "@/components/ui/developer-credit";
+import { Logo } from"@/components/ui/logo";
+import Link from"next/link";
+import { GraduationCap, Globe, Mail } from"lucide-react";
+import { useApp } from"@/context/app-context";
+import { DeveloperCredit } from"@/components/ui/developer-credit";
 
 export function Footer() {
   const { t, dir } = useApp();
@@ -16,9 +16,7 @@ export function Footer() {
         <div className="md:col-span-2 flex flex-col space-y-4">
           <Logo size="md" href="/" />
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm leading-relaxed">
-            {t(
-              "المنصة الذكية المتكاملة لطلاب تكنولوجيا المعلومات بجامعة سيناء لتتبع مسارهم الدراسي، وحساب وتوقع المعدل التراكمي بدقة، وتنظيم الجدول والتسجيل الأكاديمي.",
-              "Comprehensive smart academic portal for Sinai University IT students to track curricula, simulate GPA, and plan registration."
+            {t("المنصة الذكية المتكاملة لطلاب تكنولوجيا المعلومات بجامعة سيناء لتتبع مسارهم الدراسي، وحساب وتوقع المعدل التراكمي بدقة، وتنظيم الجدول والتسجيل الأكاديمي.","Comprehensive smart academic portal for Sinai University IT students to track curricula, simulate GPA, and plan registration."
             )}
           </p>
           <div className="flex items-center gap-4 pt-2">
@@ -39,22 +37,22 @@ export function Footer() {
         {/* Links Column */}
         <div>
           <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-4">
-            {t("المنصة", "Platform")}
+            {t("المنصة","Platform")}
           </h4>
           <ul className="space-y-3">
             <li>
               <a href="#features" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
-                {t("الميزات الذكية", "Smart Features")}
+                {t("الميزات الذكية","Smart Features")}
               </a>
             </li>
             <li>
               <a href="#stats" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
-                {t("الإحصائيات", "Statistics")}
+                {t("الإحصائيات","Statistics")}
               </a>
             </li>
             <li>
               <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
-                {t("لوحة التحكم", "Dashboard")}
+                {t("لوحة التحكم","Dashboard")}
               </Link>
             </li>
           </ul>
@@ -63,22 +61,22 @@ export function Footer() {
         {/* Legal Column */}
         <div>
           <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-4">
-            {t("عن المشروع", "About Project")}
+            {t("عن المشروع","About Project")}
           </h4>
           <ul className="space-y-3">
             <li>
               <a href="#faq" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
-                {t("الأسئلة الشائعة", "FAQ")}
+                {t("الأسئلة الشائعة","FAQ")}
               </a>
             </li>
             <li>
               <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                {t("برنامج تكنولوجيا المعلومات - جامعة سيناء", "IT Program - Sinai University")}
+                {t("برنامج تكنولوجيا المعلومات - جامعة سيناء","IT Program - Sinai University")}
               </span>
             </li>
             <li>
               <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                {t("مشروع طلابي مخصص لمساعدة وتوجيه الطلاب", "Academic portal developed for IT student assistance")}
+                {t("مشروع طلابي مخصص لمساعدة وتوجيه الطلاب","Academic portal developed for IT student assistance")}
               </span>
             </li>
           </ul>
@@ -86,7 +84,7 @@ export function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto border-t border-zinc-200/60 dark:border-zinc-900 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-400 dark:text-zinc-500">
-        <p>© {new Date().getFullYear()} SU IT Guide. {t("جميع الحقوق محفوظة.", "All rights reserved.")}</p>
+        <p> {new Date().getFullYear()} SU IT Guide. {t("جميع الحقوق محفوظة.","All rights reserved.")}</p>
         <DeveloperCredit variant="footer" />
         <p dir="ltr">Built with Next.js, Tailwind CSS & Framer Motion</p>
       </div>

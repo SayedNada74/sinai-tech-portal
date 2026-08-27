@@ -118,6 +118,11 @@
   opacity: 0.8 !important;
 }
 
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 body, html {
   background-color: var(--background);
   color: var(--foreground);
@@ -128,6 +133,10 @@ body, html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: calc(100vh + 1px);
 }
 
 /* RTL (Arabic) Typography Rules - Preserved IBM Plex Sans Arabic */

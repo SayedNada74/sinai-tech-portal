@@ -150,7 +150,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     date: "2026-07-25",
     author: "أحمد محمود",
     authorEmail: "ahmed.m@sinai.edu.eg",
-    avatar: "👨‍💻",
+    avatar: "‍",
     likes: ["admin@sinai.edu.eg"],
     comments: [
       {
@@ -168,13 +168,13 @@ const INITIAL_POSTS: CommunityPost[] = [
   },
   {
     id: "post-2",
-    title: "جلسة دراسية وتطبيق عملي لمشروع تطوير الويب بـ React & Next.js 🚀",
+    title: "جلسة دراسية وتطبيق عملي لمشروع تطوير الويب بـ React & Next.js ",
     category: "Web Development",
     content: "بنجهز لجروب عمل وتدريب أسبوعي زوم لتطبيق مشاريع تخرج وأفكار مواقع حقيقية بـ Next.js و Tailwind. اللي حابب ينضم يسيب تعليق بمهاراته الحالية!",
     date: "2026-07-27",
     author: "مريم علي",
     authorEmail: "mariam.a@sinai.edu.eg",
-    avatar: "👩‍💻",
+    avatar: "‍",
     likes: [],
     comments: [],
     reported: false
@@ -746,7 +746,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
       if (badgeNotification) {
         sendNotificationToUser(user.email, {
-          title: `شارة جديدة مفتوحة 🏆`,
+          title: `شارة جديدة مفتوحة `,
           content: badgeNotification,
           type: "badge"
         });

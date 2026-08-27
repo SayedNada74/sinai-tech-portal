@@ -120,23 +120,191 @@ const NAME_MAP: Record<string, string> = {
   saeed: "سعيد"
 };
 
-export function getLocalizedUserName(name: string | undefined | null, lang: "ar" | "en"): string {
-  if (!name) return "";
-  if (lang === "en") return name;
+// Comprehensive Reverse Map (Arabic -> English)
+const AR_TO_EN_MAP: Record<string, string> = {
+  "سيد": "Sayed",
+  "ندا": "Nada",
+  "محمود": "Mahmoud",
+  "أحمد": "Ahmed",
+  "احمد": "Ahmed",
+  "محمد": "Mohamed",
+  "مصطفى": "Mostafa",
+  "إبراهيم": "Ibrahim",
+  "ابراهيم": "Ibrahim",
+  "يوسف": "Youssef",
+  "عمر": "Omar",
+  "علي": "Ali",
+  "حسن": "Hassan",
+  "حسين": "Hussein",
+  "حسام": "Hossam",
+  "خالد": "Khaled",
+  "طارق": "Tarek",
+  "عمرو": "Amr",
+  "كريم": "Karim",
+  "إسلام": "Islam",
+  "اسلام": "Islam",
+  "هادي": "Hady",
+  "مينا": "Mina",
+  "بيشوي": "Bishoy",
+  "كيرلس": "Kerollos",
+  "جورج": "George",
+  "بيتر": "Peter",
+  "مريم": "Mariam",
+  "سارة": "Sara",
+  "نور": "Nour",
+  "هبة": "Heba",
+  "مروة": "Marwa",
+  "آية": "Aya",
+  "ايه": "Aya",
+  "دينا": "Dina",
+  "منى": "Mona",
+  "أميرة": "Amira",
+  "اميرة": "Amira",
+  "إيمان": "Eman",
+  "ايمان": "Eman",
+  "ياسمين": "Yasmine",
+  "سلمى": "Salma",
+  "ريم": "Reem",
+  "حبيبة": "Habiba",
+  "جنى": "Jana",
+  "ملك": "Malak",
+  "فريدة": "Farida",
+  "منة": "Menna",
+  "روان": "Rawan",
+  "شهد": "Shahd",
+  "رضوى": "Radwa",
+  "داليا": "Dalia",
+  "دعاء": "Doaa",
+  "علاء": "Alaa",
+  "علا": "Ola",
+  "سمير": "Samir",
+  "سامح": "Sameh",
+  "سامي": "Samy",
+  "شريف": "Sherif",
+  "أشرف": "Ashraf",
+  "اشرف": "Ashraf",
+  "أيمن": "Ayman",
+  "ايمن": "Ayman",
+  "تامر": "Tamer",
+  "وائل": "Wael",
+  "وليد": "Walid",
+  "ياسر": "Yasser",
+  "زياد": "Ziad",
+  "سيف": "Seif",
+  "زين": "Zain",
+  "آدم": "Adam",
+  "ادم": "Adam",
+  "حمزة": "Hamza",
+  "آسر": "Asser",
+  "اسر": "Asser",
+  "إياد": "Eyad",
+  "اياد": "Eyad",
+  "بلال": "Belal",
+  "مازن": "Mazen",
+  "مهند": "Mohaned",
+  "أنس": "Anas",
+  "انس": "Anas",
+  "مالك": "Malek",
+  "ياسين": "Yassin",
+  "مروان": "Marwan",
+  "بدر": "Badr",
+  "رامي": "Ramy",
+  "رامز": "Ramez",
+  "مهاب": "Mohab",
+  "مجدي": "Magdy",
+  "عماد": "Emad",
+  "إيهاب": "Ehab",
+  "ايهاب": "Ehab",
+  "مدحت": "Medhat",
+  "نبيل": "Nabil",
+  "عادل": "Adel",
+  "سعد": "Saad",
+  "جمال": "Gamal",
+  "كمال": "Kamal",
+  "جابر": "Gaber",
+  "فتحي": "Fathy",
+  "رفعت": "Refaat",
+  "شوقي": "Shawky",
+  "فاروق": "Farouk",
+  "حلمي": "Helmy",
+  "سعيد": "Saeed",
+  "عبدالله": "Abdullah",
+  "عبد الله": "Abdullah",
+  "عبدالرحمن": "Abdelrahman",
+  "عبد الرحمن": "Abdelrahman"
+};
 
-  // If already contains Arabic characters, return as is
-  if (/[\u0600-\u06FF]/.test(name)) {
-    return name;
+// Populate reverse map dynamically for any remaining entries
+for (const [en, ar] of Object.entries(NAME_MAP)) {
+  if (!AR_TO_EN_MAP[ar]) {
+    AR_TO_EN_MAP[ar] = en.charAt(0).toUpperCase() + en.slice(1);
+  }
+}
+
+export function getLocalizedUserName(
+  userOrName: { name?: string; nameAr?: string; nameEn?: string } | string | undefined | null,
+  lang: "ar" | "en"
+): string {
+  if (!userOrName) return "";
+
+  let nameAr = "";
+  let nameEn = "";
+  let rawName = "";
+
+  if (typeof userOrName === "object") {
+    nameAr = (userOrName.nameAr || "").trim();
+    nameEn = (userOrName.nameEn || "").trim();
+    rawName = (userOrName.name || "").trim();
+  } else {
+    rawName = userOrName.trim();
+    if (/[\u0600-\u06FF]/.test(rawName)) {
+      nameAr = rawName;
+    } else {
+      nameEn = rawName;
+    }
   }
 
-  // Transliterate English words to Arabic if matched
-  const words = name.trim().split(/\s+/);
-  const localizedWords = words.map((w) => {
-    const clean = w.toLowerCase().replace(/[^a-z]/g, "");
-    return NAME_MAP[clean] || w;
-  });
+  if (lang === "ar") {
+    // 1. Explicit Arabic name
+    if (nameAr) return nameAr;
 
-  return localizedWords.join(" ");
+    // 2. Raw name already in Arabic
+    if (/[\u0600-\u06FF]/.test(rawName)) return rawName;
+
+    // 3. Fallback: Transliterate English name into Arabic
+    const candidate = nameEn || rawName;
+    if (candidate) {
+      const words = candidate.split(/\s+/);
+      const converted = words.map((w) => {
+        const clean = w.toLowerCase().replace(/[^a-z]/g, "");
+        return NAME_MAP[clean] || w;
+      });
+      return converted.join(" ");
+    }
+
+    return "طالب";
+  } else {
+    // 1. Explicit English name
+    if (nameEn) return nameEn;
+
+    // 2. Raw name already in English (no Arabic characters)
+    if (rawName && !/[\u0600-\u06FF]/.test(rawName) && /[a-zA-Z]/.test(rawName)) {
+      return rawName;
+    }
+
+    // 3. Fallback: Transliterate Arabic name into English
+    const candidate = nameAr || rawName;
+    if (candidate) {
+      const words = candidate.split(/\s+/);
+      const converted = words.map((w) => {
+        const clean = w.replace(/[^\u0600-\u06FF]/g, "");
+        return AR_TO_EN_MAP[clean] || AR_TO_EN_MAP[w] || w;
+      });
+      return converted.join(" ");
+    }
+
+    return "Student";
+  }
 }
 
 export function getAvatarFallback(avatar?: string, name?: string): string {

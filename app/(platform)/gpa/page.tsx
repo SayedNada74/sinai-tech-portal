@@ -1,22 +1,22 @@
 "use client";
 
-import * as React from "react";
-import { useApp } from "@/context/app-context";
-import { useAcademic, GRADE_POINTS, GRADE_OPTIONS, GRADE_LABELS } from "@/context/academic-context";
-import { useAdmin } from "@/context/admin-context";
-import { useAuth } from "@/context/auth-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useToast } from "@/components/ui/toast";
-import { motion, AnimatePresence } from "framer-motion";
-import { AnimatedNumber } from "@/components/ui/animated-number";
-import { GradeSelect } from "@/components/ui/grade-select";
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import * as React from"react";
+import { useApp } from"@/context/app-context";
+import { useAcademic, GRADE_POINTS, GRADE_OPTIONS, GRADE_LABELS } from"@/context/academic-context";
+import { useAdmin } from"@/context/admin-context";
+import { useAuth } from"@/context/auth-context";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
+import { Badge } from"@/components/ui/badge";
+import { SpotlightCard } from"@/components/ui/spotlight-card";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft } from"lucide-react";
+import Link from"next/link";
+import { useToast } from"@/components/ui/toast";
+import { motion, AnimatePresence } from"framer-motion";
+import { AnimatedNumber } from"@/components/ui/animated-number";
+import { GradeSelect } from"@/components/ui/grade-select";
+import { useLocalStorage } from"@/lib/hooks/use-local-storage";
 
 interface SemesterCourseInput {
   id: string;
@@ -27,7 +27,7 @@ interface SemesterCourseInput {
 
 export default function GpaPage() {
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin" || user?.role === "super-admin";
+  const isAdmin = user?.role ==="admin" || user?.role ==="super-admin";
   const { t, lang, dir } = useApp();
   const { toast } = useToast();
   const { courses } = useAdmin();
@@ -41,13 +41,13 @@ export default function GpaPage() {
   } = useAcademic();
 
   const handlePrintReport = () => {
-    toast(t("جاري تجهيز التقرير للطباعة والتصدير...", "Preparing report for export & printing..."), "info");
+    toast(t("جاري تجهيز التقرير للطباعة والتصدير...","Preparing report for export & printing..."),"info");
     setTimeout(() => {
       window.print();
     }, 400);
   };
 
-  const [activeTab, setActiveTab] = useLocalStorage<"calculator" | "predictor">("su_gpa_active_tab", "calculator");
+  const [activeTab, setActiveTab] = useLocalStorage<"calculator" |"predictor">("su_gpa_active_tab","calculator");
 
   // --- Semester GPA Calculator States ---
   const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
@@ -56,7 +56,7 @@ export default function GpaPage() {
   const addCalcRow = () => {
     setCalcCourses([
       ...calcCourses,
-      { id: Math.random().toString(36).substring(2, 9), code: "", credits: 3, grade: "B" }
+      { id: Math.random().toString(36).substring(2, 9), code:"", credits: 3, grade:"B" }
     ]);
   };
 
@@ -69,7 +69,7 @@ export default function GpaPage() {
       calcCourses.map((row) => {
         if (row.id === id) {
           const updated = { ...row, [field]: value };
-          if (field === "code" && value) {
+          if (field ==="code" && value) {
             const course = courses.find((c) => c.code === value);
             if (course) {
               updated.credits = course.credits;
@@ -101,11 +101,8 @@ export default function GpaPage() {
   const handleSaveToCompleted = () => {
     if (!user) {
       toast(
-        t(
-          "💡 يرجى تسجيل الدخول أو إنشاء حسابك لحفظ ومزامنة درجاتك في سجلك الأكاديمي.",
-          "💡 Please sign in or create an account to save & sync your grades to your academic profile."
-        ),
-        "info"
+        t(" يرجى تسجيل الدخول أو إنشاء حسابك لحفظ ومزامنة درجاتك في سجلك الأكاديمي."," Please sign in or create an account to save & sync your grades to your academic profile."
+        ),"info"
       );
       return;
     }
@@ -133,11 +130,11 @@ export default function GpaPage() {
 
   const predictorStatus = React.useMemo(() => {
     if (remainingCredits <= 0) {
-      return { type: "info", text: t("لقد أتممت بالفعل جميع الساعات المطلوبة للتخرج!", "You have completed all required graduation credits!") };
+      return { type:"info", text: t("لقد أتممت بالفعل جميع الساعات المطلوبة للتخرج!","You have completed all required graduation credits!") };
     }
     if (requiredGpa > 4.0) {
       return {
-        type: "error",
+        type:"error",
         text: t(
           `المعدل المطلوب هو ${requiredGpa}. من الناحية الرياضية، لا يمكنك الوصول للمعدل المستهدف (${targetGpa}) حتى لو حصلت على امتياز مرتفع A+ في جميع المواد المتبقية.`,
           `Required GPA is ${requiredGpa}. Mathematically impossible to reach target (${targetGpa}) even with A+ in all remaining courses.`
@@ -146,7 +143,7 @@ export default function GpaPage() {
     }
     if (requiredGpa < 0) {
       return {
-        type: "success",
+        type:"success",
         text: t(
           `المعدل المطلوب هو 0.00! لقد حققت بالفعل أو تجاوزت متطلبات معدل التخرج المستهدف الخاص بك بمعدلك الحالي!`,
           `Required GPA is 0.00! You have already met or exceeded your target graduation GPA!`
@@ -155,7 +152,7 @@ export default function GpaPage() {
     }
     if (requiredGpa > 3.4) {
       return {
-        type: "warning",
+        type:"warning",
         text: t(
           `المعدل المطلوب هو ${requiredGpa}. هذا يتطلب منك مجهوداً كبيراً جداً والحصول على امتياز (A) في أغلب المواد المتبقية.`,
           `Required GPA is ${requiredGpa}. This requires high effort and obtaining (A) in most remaining courses.`
@@ -163,7 +160,7 @@ export default function GpaPage() {
       };
     }
     return {
-      type: "success",
+      type:"success",
       text: t(
         `المعدل المطلوب هو ${requiredGpa}. يمكنك تحقيق هدفك بمستوى دراسي جيد جداً (متوسط درجات B+ إلى A-) في المواد المتبقية.`,
         `Required GPA is ${requiredGpa}. You can easily achieve your goal with a solid (B+ to A-) average in remaining courses.`
@@ -171,7 +168,7 @@ export default function GpaPage() {
     };
   }, [requiredGpa, targetGpa, remainingCredits, t]);
 
-  const isRtl = dir === "rtl";
+  const isRtl = dir ==="rtl";
 
   return (
     <>
@@ -179,20 +176,19 @@ export default function GpaPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">
-            {t("حساب وتوقع المعدل التراكمي (GPA)", "GPA Calculator & Simulator")}
+          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2.5">
+            <Calculator className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+            {t("حساب وتوقع المعدل التراكمي (GPA)","GPA Calculator & Simulator")}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            {t(
-              "احسب معدلك الفصلي الحالي، أو خطط وتوقع السيناريوهات المطلوبة لتحقيق معدلك المستهدف.",
-              "Calculate your semester GPA or simulate target scenarios to reach your goal."
+            {t("احسب معدلك الفصلي الحالي، أو خطط وتوقع السيناريوهات المطلوبة لتحقيق معدلك المستهدف.","Calculate your semester GPA or simulate target scenarios to reach your goal."
             )}
           </p>
         </div>
 
         <Button onClick={handlePrintReport} variant="outline" className="gap-2 text-xs font-bold shadow-sm self-start sm:self-auto cursor-pointer">
-          <Printer className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-          <span>{t("تصدير / طباعة التقرير (PDF)", "Export / Print PDF Report")}</span>
+          <Printer className="h-4 w-4 text-primary dark:text-sky-400" />
+          <span>{t("تصدير / طباعة التقرير (PDF)","Export / Print PDF Report")}</span>
         </Button>
       </div>
 
@@ -209,15 +205,13 @@ export default function GpaPage() {
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
-                <span>{t("وضع التجربة والاستخدام السريع للزوار", "Guest & Free Exploration Mode")}</span>
+                <span>{t("وضع التجربة والاستخدام السريع للزوار","Guest & Free Exploration Mode")}</span>
                 <Badge className="bg-sky-500/20 text-sky-700 dark:text-sky-300 border-none text-[10px] font-bold">
-                  {t("مفتوح بالكامل بدون تسجيل ⚡", "Fully Open & Free ⚡")}
+                  {t("مفتوح بالكامل بدون تسجيل","Fully Open & Free")}
                 </Badge>
               </h3>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {t(
-                  "احسب وتوقع معدلك الفصلي والتراكمي فوراً! لحفظ ومزامنة درجاتك تلقائياً في خطتك الدراسية، يمكنك إنشاء حسابك الجامعي.",
-                  "Calculate and simulate your GPA instantly! Create your university account to automatically save your curriculum record."
+                {t("احسب وتوقع معدلك الفصلي والتراكمي فوراً! لحفظ ومزامنة درجاتك تلقائياً في خطتك الدراسية، يمكنك إنشاء حسابك الجامعي.","Calculate and simulate your GPA instantly! Create your university account to automatically save your curriculum record."
                 )}
               </p>
             </div>
@@ -226,12 +220,12 @@ export default function GpaPage() {
           <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
             <Link href="/auth/login" className="flex-1 sm:flex-none">
               <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9">
-                {t("تسجيل الدخول", "Sign In")}
+                {t("تسجيل الدخول","Sign In")}
               </Button>
             </Link>
             <Link href="/auth/register" className="flex-1 sm:flex-none">
               <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md">
-                {t("إنشاء حساب 🚀", "Register 🚀")}
+                {t("إنشاء حساب","Register")}
               </Button>
             </Link>
           </div>
@@ -241,8 +235,8 @@ export default function GpaPage() {
       {isAdmin && (
         <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">
           <div className="flex items-center gap-2">
-            <span>⚙️</span>
-            <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): هذه حاسبة معدل افتراضية لاختبار تجربة الطلاب.", "Admin View Mode: This is a preview of the GPA calculator tool for testing student experience.")}</span>
+            <span>️</span>
+            <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): هذه حاسبة معدل افتراضية لاختبار تجربة الطلاب.","Admin View Mode: This is a preview of the GPA calculator tool for testing student experience.")}</span>
           </div>
           <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
         </div>
@@ -253,33 +247,33 @@ export default function GpaPage() {
         <button
           onClick={() => setActiveTab("calculator")}
           className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-            activeTab === "calculator"
-              ? "border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
-              : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+            activeTab ==="calculator"
+              ?"border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
+              :"border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           }`}
         >
           <span className="flex items-center gap-2">
             <Calculator className="h-4.5 w-4.5" />
-            {t("حاسبة المعدل الفصلي", "Semester GPA Calculator")}
+            {t("حاسبة المعدل الفصلي","Semester GPA Calculator")}
           </span>
         </button>
         <button
           onClick={() => setActiveTab("predictor")}
           className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-            activeTab === "predictor"
-              ? "border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
-              : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+            activeTab ==="predictor"
+              ?"border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
+              :"border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           }`}
         >
           <span className="flex items-center gap-2">
             <TrendingUp className="h-4.5 w-4.5" />
-            {t("محاكي التوقع التراكمي (What-If)", "GPA Target Simulator (What-If)")}
+            {t("محاكي التوقع التراكمي (What-If)","GPA Target Simulator (What-If)")}
           </span>
         </button>
       </div>
 
       <AnimatePresence mode="wait">
-        {activeTab === "calculator" ? (
+        {activeTab ==="calculator" ? (
           <motion.div
             key="calculator"
             initial={{ opacity: 0, y: 15 }}
@@ -293,15 +287,15 @@ export default function GpaPage() {
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
                 <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-800/60 mb-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <CardTitle className="text-base font-bold">{t("مواد الفصل الدراسي", "Semester Courses")}</CardTitle>
+                    <CardTitle className="text-base font-bold">{t("مواد الفصل الدراسي","Semester Courses")}</CardTitle>
                     <div className="flex gap-2 w-full sm:w-auto">
                       <Button variant="outline" size="sm" onClick={resetCalculator} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
                         <RefreshCw className="h-3.5 w-3.5" />
-                        {t("إعادة تعيين", "Reset")}
+                        {t("إعادة تعيين","Reset")}
                       </Button>
                       <Button size="sm" onClick={addCalcRow} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
                         <Plus className="h-3.5 w-3.5" />
-                        {t("إضافة مادة", "Add Course")}
+                        {t("إضافة مادة","Add Course")}
                       </Button>
                     </div>
                   </div>
@@ -311,9 +305,9 @@ export default function GpaPage() {
                   {calcCourses.length > 0 ? (
                     <>
                       <div className="hidden sm:grid grid-cols-12 gap-4 text-xs font-bold text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-850">
-                        <div className="col-span-6">{t("المادة الدراسية", "Course")}</div>
-                        <div className="col-span-3 text-center">{t("الساعات", "Credits")}</div>
-                        <div className="col-span-2 text-center">{t("التقدير المتوقع", "Grade")}</div>
+                        <div className="col-span-6">{t("المادة الدراسية","Course")}</div>
+                        <div className="col-span-3 text-center">{t("الساعات","Credits")}</div>
+                        <div className="col-span-2 text-center">{t("التقدير المتوقع","Grade")}</div>
                         <div className="col-span-1"></div>
                       </div>
 
@@ -321,16 +315,16 @@ export default function GpaPage() {
                         <div key={row.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center border-b border-zinc-100/50 dark:border-zinc-850/40 pb-3 sm:pb-0 sm:border-0">
                           {/* Course Selection */}
                           <div className="col-span-12 sm:col-span-6">
-                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("المادة", "Course")}</label>
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("المادة","Course")}</label>
                             <select
                               value={row.code}
-                              onChange={(e) => updateCalcRow(row.id, "code", e.target.value)}
+                              onChange={(e) => updateCalcRow(row.id,"code", e.target.value)}
                               className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer"
                             >
-                              <option value="">{t("-- اختر مقرر دراسي --", "-- Select a course --")}</option>
+                              <option value="">{t("-- اختر مقرر دراسي --","-- Select a course --")}</option>
                               {courses.map((course) => (
                                 <option key={course.code} value={course.code}>
-                                  {course.code} - {t(course.arabic, course.english)} ({course.credits} {t("ساعة", "cr")})
+                                  {course.code} - {t(course.arabic, course.english)} ({course.credits} {t("ساعة","cr")})
                                 </option>
                               ))}
                             </select>
@@ -338,23 +332,23 @@ export default function GpaPage() {
 
                           {/* Credit Hours */}
                           <div className="col-span-6 sm:col-span-3">
-                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("عدد الساعات", "Credits")}</label>
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("عدد الساعات","Credits")}</label>
                             <Input
                               type="number"
                               min={0}
                               max={6}
                               value={row.credits}
-                              onChange={(e) => updateCalcRow(row.id, "credits", parseInt(e.target.value) || 0)}
+                              onChange={(e) => updateCalcRow(row.id,"credits", parseInt(e.target.value) || 0)}
                               className="text-center"
                             />
                           </div>
 
                           {/* Grade */}
                           <div className="col-span-6 sm:col-span-2">
-                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("التقدير", "Grade")}</label>
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("التقدير","Grade")}</label>
                             <GradeSelect
                               value={row.grade}
-                              onChange={(val) => updateCalcRow(row.id, "grade", val)}
+                              onChange={(val) => updateCalcRow(row.id,"grade", val)}
                               options={GRADE_OPTIONS}
                               className="w-full h-11"
                             />
@@ -374,13 +368,13 @@ export default function GpaPage() {
                     </>
                   ) : (
                     <div className="py-12 text-center text-zinc-400 dark:text-zinc-550 space-y-3">
-                      <Calculator className="h-9 w-9 mx-auto text-zinc-300 dark:text-zinc-700" />
+                      <Calculator className="h-9 w-9 mx-auto text-primary dark:text-zinc-700" />
                       <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
-                        {t("لا توجد مواد مضافة حالياً. اضغط على 'إضافة مادة' للبدء بحساب معدلك.", "No courses added yet. Click 'Add Course' to calculate GPA.")}
+                        {t("لا توجد مواد مضافة حالياً. اضغط على'إضافة مادة' للبدء بحساب معدلك.","No courses added yet. Click'Add Course' to calculate GPA.")}
                       </p>
                       <Button size="sm" onClick={addCalcRow} className="gap-1.5 text-xs font-bold px-5">
                         <Plus className="h-4 w-4" />
-                        {t("إضافة مادة جديدة", "Add New Course")}
+                        {t("إضافة مادة جديدة","Add New Course")}
                       </Button>
                     </div>
                   )}
@@ -391,25 +385,23 @@ export default function GpaPage() {
               <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30 rounded-2xl gap-4">
                 <div>
                   <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
-                    {t("حفظ الدرجات للملف الشخصي", "Save Grades to Profile")}
+                    {t("حفظ الدرجات للملف الشخصي","Save Grades to Profile")}
                   </h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                    {t(
-                      "احفظ المواد المختارة فوراً في سجلك الأكاديمي المنجز لتنعكس في إحصائيات لوحة التحكم ومخطط المواد.",
-                      "Save chosen courses to your academic record to update dashboard statistics and checklist."
+                    {t("احفظ المواد المختارة فوراً في سجلك الأكاديمي المنجز لتنعكس في إحصائيات لوحة التحكم ومخطط المواد.","Save chosen courses to your academic record to update dashboard statistics and checklist."
                     )}
                   </p>
                 </div>
                 <Button onClick={handleSaveToCompleted} className="gap-2 shrink-0 font-bold">
                   <Save className="h-4.5 w-4.5" />
-                  {t("مزامنة المواد المنجزة", "Sync Completed Courses")}
+                  {t("مزامنة المواد المنجزة","Sync Completed Courses")}
                 </Button>
               </div>
 
               {savedSuccess && (
                 <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 text-xs font-semibold flex items-center gap-2.5">
                   <CheckCircle2 className="h-5 w-5" />
-                  <span>{t("تم بنجاح تحديث ومزامنة سجلك الأكاديمي في قاعدة البيانات!", "Academic record updated & synced successfully!")}</span>
+                  <span>{t("تم بنجاح تحديث ومزامنة سجلك الأكاديمي في قاعدة البيانات!","Academic record updated & synced successfully!")}</span>
                 </div>
               )}
             </div>
@@ -419,26 +411,26 @@ export default function GpaPage() {
               <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.22)">
                 <div className="pt-8 pb-6 px-6">
                   <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
-                    {t("المعدل الفصلي المتوقع", "Expected Semester GPA")}
+                    {t("المعدل الفصلي المتوقع","Expected Semester GPA")}
                   </h3>
                   <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
                     <AnimatedNumber value={semesterGpa} decimals={2} />
                   </div>
                   <Badge className="mt-3 bg-zinc-100 text-zinc-900 border-zinc-300 text-xs py-1 px-3 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700">
                     {semesterGpa >= 3.4
-                      ? t("جيد جداً مرتفع 🚀", "High Distinction 🚀")
+                      ? t("جيد جداً مرتفع","High Distinction")
                       : semesterGpa >= 2.8
-                      ? t("جيد جداً 👍", "Very Good 👍")
-                      : t("مقبول", "Passing")}
+                      ? t("جيد جداً","Very Good")
+                      : t("مقبول","Passing")}
                   </Badge>
 
-                  <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"}`}>
+                  <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"}`}>
                     <div>
-                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات", "Total Credits")}</span>
-                      <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة", "Hours")}</span>
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات","Total Credits")}</span>
+                      <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة","Hours")}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة", "Quality Points")}</span>
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة","Quality Points")}</span>
                       <span className="text-base font-bold text-zinc-950 dark:text-white">
                         {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
                       </span>
@@ -468,15 +460,11 @@ export default function GpaPage() {
                     </div>
                     <div>
                       <h4 className="text-xs sm:text-sm font-black">
-                        {t(
-                          "⚠️ تنبيه: محاكي التوقع التراكمي (What-If) يحتاج إلى سجل موادك المكتملة",
-                          "⚠️ Notice: What-If Simulator works best with your completed course history"
+                        {t("️ تنبيه: محاكي التوقع التراكمي (What-If) يحتاج إلى سجل موادك المكتملة","️ Notice: What-If Simulator works best with your completed course history"
                         )}
                       </h4>
                       <p className="text-xs text-amber-800/80 dark:text-amber-300/80 mt-1 leading-relaxed">
-                        {t(
-                          "لكي يحسب النظام التقدير والدرجات المطلوبة للتخرج بدقة 100%، يفضّل تسجيل الدخول لكي يعرف النظام عدد الساعات والمواد التي اجتزتها بالفعل في خطتك الدراسية.",
-                          "For 100% accurate graduation predictions, sign in so the system knows your exact completed credits and past grades."
+                        {t("لكي يحسب النظام التقدير والدرجات المطلوبة للتخرج بدقة 100%، يفضّل تسجيل الدخول لكي يعرف النظام عدد الساعات والمواد التي اجتزتها بالفعل في خطتك الدراسية.","For 100% accurate graduation predictions, sign in so the system knows your exact completed credits and past grades."
                         )}
                       </p>
                     </div>
@@ -484,12 +472,12 @@ export default function GpaPage() {
                   <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                     <Link href="/auth/login" className="flex-1 sm:flex-none">
                       <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl border-amber-500/40 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10">
-                        {t("تسجيل الدخول", "Sign In")}
+                        {t("تسجيل الدخول","Sign In")}
                       </Button>
                     </Link>
                     <Link href="/auth/register" className="flex-1 sm:flex-none">
                       <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-md">
-                        {t("إنشاء حساب 🚀", "Register 🚀")}
+                        {t("إنشاء حساب","Register")}
                       </Button>
                     </Link>
                   </div>
@@ -498,13 +486,13 @@ export default function GpaPage() {
 
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-base font-bold">{t("تحديد المعدل المستهدف", "Set Target GPA")}</CardTitle>
-                  <CardDescription className="text-xs">{t("استخدم المنزلق لتحديد المعدل التراكمي (GPA) الذي تود التخرج به.", "Use slider to set target graduation GPA.")}</CardDescription>
+                  <CardTitle className="text-base font-bold">{t("تحديد المعدل المستهدف","Set Target GPA")}</CardTitle>
+                  <CardDescription className="text-xs">{t("استخدم المنزلق لتحديد المعدل التراكمي (GPA) الذي تود التخرج به.","Use slider to set target graduation GPA.")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm font-bold">
-                      <span className="text-zinc-650 dark:text-zinc-400">{t("المعدل المستهدف عند التخرج:", "Target GPA at graduation:")}</span>
+                      <span className="text-zinc-650 dark:text-zinc-400">{t("المعدل المستهدف عند التخرج:","Target GPA at graduation:")}</span>
                       <span className="text-lg text-sky-600 dark:text-sky-400 font-extrabold">{targetGpa.toFixed(2)}</span>
                     </div>
 
@@ -519,22 +507,22 @@ export default function GpaPage() {
                     />
 
                     <div className="flex justify-between text-[10px] font-bold text-zinc-400">
-                      <span>2.00 {t("مقبول", "Good")}</span>
-                      <span>3.00 {t("جيد جداً", "Very Good")}</span>
-                      <span>4.00 {t("امتياز مرتفع", "High Distinction")}</span>
+                      <span>2.00 {t("مقبول","Good")}</span>
+                      <span>3.00 {t("جيد جداً","Very Good")}</span>
+                      <span>4.00 {t("امتياز مرتفع","High Distinction")}</span>
                     </div>
                   </div>
 
                   <div className={`p-4.5 rounded-2xl border text-xs leading-relaxed font-semibold flex gap-3 ${
-                    predictorStatus.type === "success"
-                      ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
-                      : predictorStatus.type === "error"
-                      ? "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
-                      : "bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400"
+                    predictorStatus.type ==="success"
+                      ?"bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+                      : predictorStatus.type ==="error"
+                      ?"bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+                      :"bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400"
                   }`}>
-                    {predictorStatus.type === "success" && <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />}
-                    {predictorStatus.type === "error" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
-                    {predictorStatus.type === "warning" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type ==="success" && <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type ==="error" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type ==="warning" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
                     <span>{predictorStatus.text}</span>
                   </div>
                 </CardContent>
@@ -546,23 +534,23 @@ export default function GpaPage() {
               <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(6, 182, 212, 0.15)">
                 <div className="pt-8 pb-6 px-6">
                   <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
-                    {t("المعدل المطلوب في الساعات المتبقية", "Required GPA in Remaining Hours")}
+                    {t("المعدل المطلوب في الساعات المتبقية","Required GPA in Remaining Hours")}
                   </h3>
                   <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
-                    {requiredGpa <= 0 ? "0.00" : requiredGpa > 4.0 ? "A+" : requiredGpa.toFixed(2)}
+                    {requiredGpa <= 0 ?"0.00" : requiredGpa > 4.0 ?"A+" : requiredGpa.toFixed(2)}
                   </div>
                   <p className="text-[11px] text-zinc-600 dark:text-zinc-300 mt-2.5">
                     ({t(`مستند إلى معدلك الحالي ${cumulativeGpa.toFixed(2)} وإتمامك ${completedCredits} ساعة`, `Based on current GPA ${cumulativeGpa.toFixed(2)} & ${completedCredits} credits`)})
                   </p>
 
-                  <div className={`mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ? "text-right" : "text-left"} space-y-4`}>
+                  <div className={`mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"} space-y-4`}>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المنجزة:", "Completed Credits:")}</span>
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المنجزة:","Completed Credits:")}</span>
                       <span className="font-bold text-zinc-950 dark:text-white">{completedCredits} / 144</span>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المتبقية للتخرج:", "Remaining Credits:")}</span>
-                      <span className="font-bold text-zinc-950 dark:text-white">{remainingCredits} {t("ساعة", "Hours")}</span>
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المتبقية للتخرج:","Remaining Credits:")}</span>
+                      <span className="font-bold text-zinc-950 dark:text-white">{remainingCredits} {t("ساعة","Hours")}</span>
                     </div>
                   </div>
                 </div>
@@ -579,19 +567,19 @@ export default function GpaPage() {
         <div className="flex justify-between items-center border-b-2 border-black pb-4">
           <div className="space-y-1">
             <h1 className="text-xl font-black">
-              {t("جامعة سيناء — Sinai University", "Sinai University")}
+              {t("جامعة سيناء — Sinai University","Sinai University")}
             </h1>
             <h2 className="text-sm font-bold">
-              {t("كلية الحاسبات وتكنولوجيا المعلومات (SU IT Guide)", "Faculty of Computers & Information Technology (SU IT Guide)")}
+              {t("كلية الحاسبات وتكنولوجيا المعلومات (SU IT Guide)","Faculty of Computers & Information Technology (SU IT Guide)")}
             </h2>
             <p className="text-xs text-gray-700 font-semibold">
-              {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)", "Official Academic Transcript Summary")}
+              {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)","Official Academic Transcript Summary")}
             </p>
           </div>
-          <div className={`${isRtl ? "text-left" : "text-right"} text-xs space-y-1 font-bold`}>
-            <p>{t("تاريخ التصدير:", "Export Date:")} {new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")}</p>
+          <div className={`${isRtl ?"text-left" :"text-right"} text-xs space-y-1 font-bold`}>
+            <p>{t("تاريخ التصدير:","Export Date:")} {new Date().toLocaleDateString(lang ==="ar" ?"ar-EG" :"en-US")}</p>
             <p className="text-gray-600">
-              {t("نوع المستند: التقرير الفصلي والتراكمي", "Document Type: Semester & Cumulative Report")}
+              {t("نوع المستند: التقرير الفصلي والتراكمي","Document Type: Semester & Cumulative Report")}
             </p>
           </div>
         </div>
@@ -599,39 +587,39 @@ export default function GpaPage() {
         {/* Student Metadata Box */}
         <div className="grid grid-cols-2 gap-4 border border-black p-4 rounded-xl text-xs bg-gray-50">
           <div>
-            <span className="font-bold text-gray-700">{t("اسم الطالب:", "Student Name:")} </span>
-            <span className="font-black text-black">{user ? (lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : t("طالب زائر (تقرير تجريبي)", "Guest Student (Trial Report)")}</span>
+            <span className="font-bold text-gray-700">{t("اسم الطالب:","Student Name:")} </span>
+            <span className="font-black text-black">{user ? (lang ==="ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : t("طالب زائر (تقرير تجريبي)","Guest Student (Trial Report)")}</span>
           </div>
           <div>
-            <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):", "Student ID:")} </span>
-            <span className="font-black text-black">{user?.studentId || t("غير مسجل (حساب زائر)", "Unregistered (Guest)")}</span>
+            <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):","Student ID:")} </span>
+            <span className="font-black text-black">{user?.studentId || t("غير مسجل (حساب زائر)","Unregistered (Guest)")}</span>
           </div>
           <div>
-            <span className="font-bold text-gray-700">{t("التخصص / القسم الأكاديمي:", "Department / Major:")} </span>
-            <span className="font-black text-black">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)", "Information Technology & CS")}</span>
+            <span className="font-bold text-gray-700">{t("التخصص / القسم الأكاديمي:","Department / Major:")} </span>
+            <span className="font-black text-black">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)","Information Technology & CS")}</span>
           </div>
           <div>
-            <span className="font-bold text-gray-700">{t("المستوى:", "Level / Year:")} </span>
-            <span className="font-black text-black">{user?.level || t("تقرير استرشادي فصلي", "Guidance & Simulation Report")}</span>
+            <span className="font-bold text-gray-700">{t("المستوى:","Level / Year:")} </span>
+            <span className="font-black text-black">{user?.level || t("تقرير استرشادي فصلي","Guidance & Simulation Report")}</span>
           </div>
         </div>
 
         {/* Academic Stats Box */}
         <div className="grid grid-cols-4 gap-3 text-center text-xs">
           <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("المعدل التراكمي الفعلي", "Cumulative GPA")}</span>
+            <span className="block font-bold text-gray-600 mb-1">{t("المعدل التراكمي الفعلي","Cumulative GPA")}</span>
             <span className="text-xl font-black">{cumulativeGpa.toFixed(2)}</span>
           </div>
           <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المستكملة", "Completed Credits")}</span>
+            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المستكملة","Completed Credits")}</span>
             <span className="text-xl font-black">{completedCredits} / 144</span>
           </div>
           <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المتبقية", "Remaining Credits")}</span>
-            <span className="text-xl font-black">{remainingCredits} {t("ساعة", "cr")}</span>
+            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المتبقية","Remaining Credits")}</span>
+            <span className="text-xl font-black">{remainingCredits} {t("ساعة","cr")}</span>
           </div>
           <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("المعدل الفصلي الحالي", "Semester GPA")}</span>
+            <span className="block font-bold text-gray-600 mb-1">{t("المعدل الفصلي الحالي","Semester GPA")}</span>
             <span className="text-xl font-black">{semesterGpa}</span>
           </div>
         </div>
@@ -639,17 +627,17 @@ export default function GpaPage() {
         {/* Courses Grade Table */}
         <div className="space-y-3 pt-2">
           <h3 className="text-xs font-bold border-b border-black pb-1">
-            {t("بيان درجات ومواد التقرير الحالي:", "Current Semester Course Grades:")}
+            {t("بيان درجات ومواد التقرير الحالي:","Current Semester Course Grades:")}
           </h3>
-          <table className={`w-full ${isRtl ? "text-right" : "text-left"} text-xs border-collapse border border-black`}>
+          <table className={`w-full ${isRtl ?"text-right" :"text-left"} text-xs border-collapse border border-black`}>
             <thead>
               <tr className="bg-gray-100 border-b border-black font-bold">
-                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>#</th>
-                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("رمز المقرر", "Course Code")}</th>
-                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("اسم المادة الدراسية", "Course Name")}</th>
-                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("الساعات", "Credits")}</th>
-                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("التقدير المتوقع", "Grade")}</th>
-                <th className="p-2.5">{t("النقاط المكتسبة", "Quality Points")}</th>
+                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>#</th>
+                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("رمز المقرر","Course Code")}</th>
+                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("اسم المادة الدراسية","Course Name")}</th>
+                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("الساعات","Credits")}</th>
+                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("التقدير المتوقع","Grade")}</th>
+                <th className="p-2.5">{t("النقاط المكتسبة","Quality Points")}</th>
               </tr>
             </thead>
             <tbody>
@@ -658,11 +646,11 @@ export default function GpaPage() {
                 const pts = (GRADE_POINTS[c.grade] || 0) * (c.credits || 0);
                 return (
                   <tr key={c.id} className="border-b border-black">
-                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{idx + 1}</td>
-                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black`}>{c.code || t("مقرر فصلي", "Semester Course")}</td>
-                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-semibold`}>{found ? t(found.arabic, found.english) : t("مقرر اختياري/إجباري", "Elective/Core Course")}</td>
-                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{c.credits}</td>
-                    <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black`}>{c.grade} ({GRADE_LABELS[c.grade] || ""})</td>
+                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-bold`}>{idx + 1}</td>
+                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-black`}>{c.code || t("مقرر فصلي","Semester Course")}</td>
+                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-semibold`}>{found ? t(found.arabic, found.english) : t("مقرر اختياري/إجباري","Elective/Core Course")}</td>
+                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-bold`}>{c.credits}</td>
+                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-black`}>{c.grade} ({GRADE_LABELS[c.grade] ||""})</td>
                     <td className="p-2.5 font-black">{pts.toFixed(1)}</td>
                   </tr>
                 );
@@ -674,14 +662,14 @@ export default function GpaPage() {
         {/* Sign-off Verification Footer */}
         <div className="pt-8 border-t border-black flex justify-between items-end text-[10px] text-gray-700">
           <div>
-            <p className="font-bold">{t("تنبيه رسمي:", "Official Notice:")}</p>
-            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر دليل ومرشد طلاب الحاسبات (SU IT Guide).", "This official transcript summary is automatically generated and verified via SU IT Guide.")}</p>
+            <p className="font-bold">{t("تنبيه رسمي:","Official Notice:")}</p>
+            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر دليل ومرشد طلاب الحاسبات (SU IT Guide).","This official transcript summary is automatically generated and verified via SU IT Guide.")}</p>
             <p>Verification URL: su-it-guide.vercel.app</p>
           </div>
           <div className="text-center space-y-1">
-            <p className="font-bold">{t("اعتماد وتوثيق النظام الأكاديمي", "Academic System Verification & Endorsement")}</p>
+            <p className="font-bold">{t("اعتماد وتوثيق النظام الأكاديمي","Academic System Verification & Endorsement")}</p>
             <div className="w-32 h-12 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center font-bold text-[9px] text-gray-500">
-              {t("[ ختم التوثيق الإلكتروني ]", "[ Digital Seal & Verification ]")}
+              {t("[ ختم التوثيق الإلكتروني ]","[ Digital Seal & Verification ]")}
             </div>
           </div>
         </div>

@@ -1,17 +1,17 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, Mail, ArrowLeft, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { Logo } from"@/components/ui/logo";
+import * as React from"react";
+import Link from"next/link";
+import { useRouter } from"next/navigation";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardContent, CardFooter } from"@/components/ui/card";
+import { GraduationCap, Mail, ArrowLeft, Send } from"lucide-react";
+import { motion } from"framer-motion";
 
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getPasswordResetCallbackURL } from "@/lib/auth-helpers";
+import { supabase, isSupabaseConfigured } from"@/lib/supabase";
+import { getPasswordResetCallbackURL } from"@/lib/auth-helpers";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState("");
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">البريد الإلكتروني</label>
                     <div className="relative">
-                      <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                      <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
                       <Input
                         type="email"
                         placeholder="username@su.edu.eg"

@@ -61,12 +61,12 @@ export default function DashboardPage() {
   const isRtl = dir === "rtl";
 
   const gpaDescription = React.useMemo(() => {
-    if (cumulativeGpa === 0) return t("طالب جديد", "New Student");
-    if (cumulativeGpa >= 3.6) return t("امتياز مرتفع 🚀", "Excellent 🚀");
-    if (cumulativeGpa >= 3.0) return t("جيد جداً 👍", "Very Good 👍");
-    if (cumulativeGpa >= 2.5) return t("جيد ⭐️", "Good ⭐️");
-    if (cumulativeGpa >= 2.0) return t("مقبول", "Pass");
-    return t("ضعيف", "Poor");
+    if (cumulativeGpa === 0) return t("طالب جديد 🌱", "New Student 🌱");
+    if (cumulativeGpa >= 3.6) return t("امتياز 🏆", "Excellent 🏆");
+    if (cumulativeGpa >= 3.0) return t("جيد جداً 🌟", "Very Good 🌟");
+    if (cumulativeGpa >= 2.5) return t("جيد 👍", "Good 👍");
+    if (cumulativeGpa >= 2.0) return t("مقبول ✅", "Satisfactory ✅");
+    return t("ضعيف ⚠️", "Poor ⚠️");
   }, [cumulativeGpa, t]);
 
   const isAdmin = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
@@ -206,13 +206,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8" dir={dir}>
       {/* Welcome Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-600 to-teal-600 p-5 sm:p-8 md:p-10 text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-600 to-teal-600 px-6 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14 text-white shadow-xl">
         <div className="absolute -top-10 -left-10 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <Badge variant="secondary" className="bg-white/20 text-white dark:bg-white/20 dark:text-white border-transparent mb-3 backdrop-blur-md">
-              {t("نسخة 2.0 ✨", " Version 2.0 ✨")}
-            </Badge>
             <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight mb-2.5">
               {lang === "ar"
                 ? `أهلاً بك، ${userName.split(" ")[0]} 👋`

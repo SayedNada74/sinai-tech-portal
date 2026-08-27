@@ -1,22 +1,22 @@
 "use client";
 
-import { Logo } from "@/components/ui/logo";
-import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import { useApp } from "@/context/app-context";
-import { useSocial } from "@/context/social-context";
-import { useAdmin } from "@/context/admin-context";
-import { ProtectedRoute } from "@/components/protected-route";
-import { DesktopSidebar } from "@/components/DesktopSidebar";
-import { MobileSidebar } from "@/components/MobileSidebar";
-import { MobileTaskbar } from "@/components/MobileTaskbar";
-import { GlobalSearchBar } from "@/components/GlobalSearchBar";
-import { CompleteProfileModal } from "@/components/complete-profile-modal";
-import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Logo } from"@/components/ui/logo";
+import * as React from"react";
+import Link from"next/link";
+import { usePathname } from"next/navigation";
+import { useAuth } from"@/context/auth-context";
+import { useApp } from"@/context/app-context";
+import { useSocial } from"@/context/social-context";
+import { useAdmin } from"@/context/admin-context";
+import { ProtectedRoute } from"@/components/protected-route";
+import { DesktopSidebar } from"@/components/DesktopSidebar";
+import { MobileSidebar } from"@/components/MobileSidebar";
+import { MobileTaskbar } from"@/components/MobileTaskbar";
+import { GlobalSearchBar } from"@/components/GlobalSearchBar";
+import { CompleteProfileModal } from"@/components/complete-profile-modal";
+import { PageTransitionWrapper } from"@/components/page-transition-wrapper";
+import { Button } from"@/components/ui/button";
+import { cn } from"@/lib/utils";
 import {
   Bell,
   Trophy,
@@ -30,8 +30,8 @@ import {
   AlertCircle,
   AlertTriangle,
   Briefcase
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+} from"lucide-react";
+import { motion, AnimatePresence } from"framer-motion";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,12 +44,12 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   const [isNotifOpen, setIsNotifOpen] = React.useState(false);
 
   const unreadNotifs = notifications.filter(n => !n.read);
-  const isRtl = dir === "rtl";
+  const isRtl = dir ==="rtl";
 
   return (
     <ProtectedRoute>
       <div
-        className="min-h-screen w-full max-w-full min-w-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans"
+        className="min-h-[calc(100vh+30px)] w-full max-w-full min-w-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans"
         dir={dir}
       >
         {/* Global Search Dialog Triggered by Ctrl+K */}
@@ -64,9 +64,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           <div className="fixed top-0 inset-x-0 z-[100] bg-amber-600 text-white font-extrabold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 shadow-lg border-b border-amber-500">
             <AlertTriangle className="h-4 w-4 animate-bounce shrink-0" />
             <span>
-              {t(
-                "⚠️ إشعار الصيانة: ميزّة وضع الصيانة المؤقتة مفعّلة حالياً بالكامل على كافة أرجاء المنصة من قِبل إدارة النظام.",
-                "⚠️ Maintenance Alert: Live maintenance mode is currently activated across the entire platform by System Administration."
+              {t("️ إشعار الصيانة: ميزّة وضع الصيانة المؤقتة مفعّلة حالياً بالكامل على كافة أرجاء المنصة من قِبل إدارة النظام.","️ Maintenance Alert: Live maintenance mode is currently activated across the entire platform by System Administration."
               )}
             </span>
           </div>
@@ -74,20 +72,20 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
         {/* Mobile Header */}
         <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
-          <Logo size="sm" href={user ? "/dashboard" : "/"} />
+          <Logo size="sm" href={user ?"/dashboard" :"/"} />
 
           <div className="flex items-center gap-1.5">
             {/* Search Trigger for Mobile */}
             <button
               onClick={() => {
                 const event = new KeyboardEvent("keydown", {
-                  key: "k",
+                  key:"k",
                   ctrlKey: true,
                   bubbles: true
                 });
                 window.dispatchEvent(event);
               }}
-              title={t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}
+              title={t("ابحث عن مواد أو صفحات...","Search courses or pages...")}
               className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
             >
               <Search className="h-4 w-4" />
@@ -95,19 +93,19 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
             {/* Language Toggle */}
             <button
-              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
               className="p-1.5 px-2 rounded-lg text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer"
             >
-              {lang === "ar" ? "EN" : "عربي"}
+              {lang ==="ar" ?"EN" :"عربي"}
             </button>
 
             {/* Theme Toggle */}
             <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => setTheme(theme ==="dark" ?"light" :"dark")}
               suppressHydrationWarning
               className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
             >
-              {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}
+              {theme ==="dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-primary" />}
             </button>
 
             {user ? (
@@ -136,7 +134,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             ) : (
               <Link href="/auth/login">
                 <Button size="sm" className="h-8 px-3 text-xs font-bold rounded-lg shadow-sm">
-                  {t("دخول", "Sign In")}
+                  {t("دخول","Sign In")}
                 </Button>
               </Link>
             )}
@@ -147,12 +145,12 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
 
           {/* Top Header Bar for Desktop */}
-          <header className="hidden sm:flex h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/50 dark:border-zinc-800/40 px-8 items-center justify-between shrink-0">
+          <header className="hidden sm:flex h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/50 dark:border-zinc-800/40 px-4 sm:px-6 md:px-8 items-center justify-between shrink-0">
             {user ? (
               <>
                 {/* Left/Right depending on dir: Global search advice and trigger button */}
-                <div className="flex items-center gap-4">
-                  <span className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base md:text-lg font-black text-zinc-900 dark:text-zinc-50 tracking-tight truncate max-w-[150px] sm:max-w-none">
                     {lang === "ar"
                       ? `أهلاً بك، ${userName.split(" ")[0] || "طالب"} 👋`
                       : `Welcome, ${userName.split(" ")[0] || "Student"} 👋`}
@@ -171,7 +169,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                     className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors text-xs font-semibold cursor-pointer"
                   >
                     <Search className="h-3.5 w-3.5" />
-                    <span>{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
+                    <span className="hidden md:inline">{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
+                    <span className="md:hidden text-xs">{t("بحث...", "Search...")}</span>
                   </button>
                 </div>
 
@@ -199,20 +198,20 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className={`absolute ${isRtl ? "left-0" : "right-0"} mt-3 w-80 sm:w-96 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl z-50 overflow-hidden`}
+                            className={`absolute ${isRtl ?"left-0" :"right-0"} mt-3 w-80 sm:w-96 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl z-50 overflow-hidden`}
                           >
                             <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                               <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                                <Bell className="h-4 w-4 text-cyan-500" />
-                                {t("الإشعارات والتنبيهات", "System Alerts")}
+                                <Bell className="h-4 w-4 text-primary" />
+                                {t("الإشعارات والتنبيهات","System Alerts")}
                               </h4>
                               <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500">
                                 <button onClick={markAllAsRead} className="hover:text-cyan-600 transition-colors">
-                                  {t("تحديد كمقروء", "Mark all read")}
+                                  {t("تحديد كمقروء","Mark all read")}
                                 </button>
                                 <span>•</span>
                                 <button onClick={clearNotifications} className="hover:text-red-500 transition-colors">
-                                  {t("مسح الكل", "Clear all")}
+                                  {t("مسح الكل","Clear all")}
                                 </button>
                               </div>
                             </div>
@@ -226,24 +225,23 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                                       markAsRead(notif.id);
                                       setIsNotifOpen(false);
                                     }}
-                                    className={cn(
-                                      "p-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors cursor-pointer text-right flex gap-3 items-start",
-                                      !notif.read && "bg-cyan-50/20 dark:bg-cyan-950/10",
-                                      !isRtl && "text-left"
+                                    className={cn("p-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors cursor-pointer text-right flex gap-3 items-start",
+                                      !notif.read &&"bg-cyan-50/20 dark:bg-cyan-950/10",
+                                      !isRtl &&"text-left"
                                     )}
                                     dir={dir}
                                   >
                                     <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 shrink-0">
-                                      {notif.type === "badge" ? (
+                                      {notif.type ==="badge" ? (
                                         <Trophy className="h-3.5 w-3.5 text-amber-500" />
-                                      ) : notif.type === "career" ? (
-                                        <Briefcase className="h-3.5 w-3.5 text-emerald-500" />
+                                      ) : notif.type ==="career" ? (
+                                        <Briefcase className="h-3.5 w-3.5 text-primary" />
                                       ) : (
                                         <AlertCircle className="h-3.5 w-3.5 text-cyan-505" />
                                       )}
                                     </div>
                                     <div className="space-y-1 min-w-0 flex-1">
-                                      <h5 className={cn("text-xs font-bold text-zinc-850 dark:text-zinc-200", !notif.read && "text-cyan-600")}>
+                                      <h5 className={cn("text-xs font-bold text-zinc-850 dark:text-zinc-200", !notif.read &&"text-cyan-600")}>
                                         {notif.title}
                                       </h5>
                                       <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -255,8 +253,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                                 ))
                               ) : (
                                 <div className="py-12 text-center text-zinc-400 dark:text-zinc-550 space-y-1">
-                                  <Bell className="h-8 w-8 mx-auto text-zinc-300" />
-                                  <p className="text-xs font-bold">{t("لا توجد إشعارات جديدة", "No new alerts")}</p>
+                                  <Bell className="h-8 w-8 mx-auto text-primary" />
+                                  <p className="text-xs font-bold">{t("لا توجد إشعارات جديدة","No new alerts")}</p>
                                 </div>
                               )}
                             </div>
@@ -275,13 +273,13 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                     href="/"
                     className="text-xs font-bold text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors"
                   >
-                    {t("الرئيسية", "Home")}
+                    {t("الرئيسية","Home")}
                   </Link>
                   <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
                   <button
                     onClick={() => {
                       const event = new KeyboardEvent("keydown", {
-                        key: "k",
+                        key:"k",
                         ctrlKey: true,
                         bubbles: true
                       });
@@ -290,32 +288,32 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                     className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors text-xs font-semibold cursor-pointer"
                   >
                     <Search className="h-3.5 w-3.5" />
-                    <span>{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
+                    <span>{t("ابحث عن مواد أو صفحات...","Search courses or pages...")}</span>
                   </button>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+                    onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
                     className="px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   >
-                    {lang === "ar" ? "English" : "العربية"}
+                    {lang ==="ar" ?"English" :"العربية"}
                   </button>
                   <button
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    onClick={() => setTheme(theme ==="dark" ?"light" :"dark")}
                     suppressHydrationWarning
                     className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   >
-                    {theme === "dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-zinc-600" />}
+                    {theme ==="dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-primary" />}
                   </button>
                   <Link href="/auth/login">
                     <Button variant="outline" size="sm" className="rounded-xl font-bold">
-                      {t("تسجيل الدخول", "Sign In")}
+                      {t("تسجيل الدخول","Sign In")}
                     </Button>
                   </Link>
                   <Link href="/auth/register">
                     <Button size="sm" className="rounded-xl font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-md">
-                      {t("إنشاء حساب 🚀", "Register 🚀")}
+                      {t("إنشاء حساب","Register")}
                     </Button>
                   </Link>
                 </div>
@@ -324,18 +322,17 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </header>
 
           {/* Main workspace container */}
-          <main className={cn(
-            "flex-1 w-full max-w-full min-w-0 p-3.5 sm:p-6 md:p-8 bg-zinc-50 dark:bg-zinc-950",
-            pathname === "/ai-assistant" ? "pb-20 sm:pb-8 pt-1.5 sm:pt-6" : "pb-24 sm:pb-8"
+          <main className={cn("flex-1 w-full max-w-full min-w-0 p-3.5 sm:p-6 md:p-8 bg-zinc-50 dark:bg-zinc-950",
+            pathname ==="/ai-assistant" ?"pb-20 sm:pb-8 pt-1.5 sm:pt-6" :"pb-24 sm:pb-8"
           )}>
             {/* Mobile Quick Search Pill Bar (hidden on AI assistant page to give full room to chat) */}
-            {pathname !== "/ai-assistant" && (
+            {pathname !=="/ai-assistant" && (
               <div className="sm:hidden mb-4">
                 <button
                   type="button"
                   onClick={() => {
                     const event = new KeyboardEvent("keydown", {
-                      key: "k",
+                      key:"k",
                       ctrlKey: true,
                       bubbles: true
                     });
@@ -343,8 +340,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                   }}
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-all text-xs font-medium cursor-pointer"
                 >
-                  <Search className="h-4 w-4 shrink-0 text-zinc-400" />
-                  <span className="text-zinc-500 dark:text-zinc-400 font-semibold">{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
+                  <Search className="h-4 w-4 shrink-0 text-primary" />
+                  <span className="text-zinc-500 dark:text-zinc-400 font-semibold">{t("ابحث عن مواد أو صفحات...","Search courses or pages...")}</span>
                 </button>
               </div>
             )}
@@ -358,22 +355,22 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           {isNotifOpen && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 sm:hidden">
               <motion.div
-                initial={{ y: "100%" }}
+                initial={{ y:"100%" }}
                 animate={{ y: 0 }}
-                exit={{ y: "100%" }}
+                exit={{ y:"100%" }}
                 className="w-full max-w-md bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 rounded-t-3xl sm:rounded-3xl shadow-xl overflow-hidden max-h-[80vh] flex flex-col"
               >
                 <div className="p-5 border-b border-zinc-100 dark:border-zinc-850 flex justify-between items-center">
                   <h4 className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100">
-                    {t("الإشعارات والتنبيهات", "Notifications & Alerts")}
+                    {t("الإشعارات والتنبيهات","Notifications & Alerts")}
                   </h4>
                   <button onClick={() => setIsNotifOpen(false)} className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
                 <div className="flex justify-between items-center bg-zinc-50 dark:bg-zinc-900/50 px-5 py-2.5 border-b border-zinc-100 dark:border-zinc-800 text-[10px] font-bold text-zinc-500">
-                  <button onClick={markAllAsRead} className="text-cyan-600">{t("تحديد المقروء", "Mark all read")}</button>
-                  <button onClick={clearNotifications} className="text-zinc-400">{t("مسح الكل", "Clear all")}</button>
+                  <button onClick={markAllAsRead} className="text-cyan-600">{t("تحديد المقروء","Mark all read")}</button>
+                  <button onClick={clearNotifications} className="text-zinc-400">{t("مسح الكل","Clear all")}</button>
                 </div>
                 <div className="overflow-y-auto flex-1 divide-y divide-zinc-100 dark:divide-zinc-900" dir={dir}>
                   {notifications.length > 0 ? (
@@ -384,14 +381,13 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                           markAsRead(notif.id);
                           setIsNotifOpen(false);
                         }}
-                        className={cn(
-                          "p-4 flex gap-3 text-right items-start",
-                          !notif.read && "bg-cyan-50/10 dark:bg-cyan-950/10",
-                          !isRtl && "text-left"
+                        className={cn("p-4 flex gap-3 text-right items-start",
+                          !notif.read &&"bg-cyan-50/10 dark:bg-cyan-950/10",
+                          !isRtl &&"text-left"
                         )}
                       >
                         <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 shrink-0">
-                          {notif.type === "badge" ? <Trophy className="h-4 w-4 text-amber-500" /> : <Bell className="h-4 w-4 text-cyan-500" />}
+                          {notif.type ==="badge" ? <Trophy className="h-4 w-4 text-amber-500" /> : <Bell className="h-4 w-4 text-primary" />}
                         </div>
                         <div className="space-y-1 flex-1 min-w-0">
                           <h5 className="text-xs font-bold text-zinc-850 dark:text-zinc-200">{notif.title}</h5>
@@ -402,8 +398,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                     ))
                   ) : (
                     <div className="py-16 text-center text-zinc-400 space-y-2">
-                      <Bell className="h-10 w-10 mx-auto text-zinc-300" />
-                      <p className="text-xs font-bold">{t("لا توجد إشعارات حالية", "No current alerts")}</p>
+                      <Bell className="h-10 w-10 mx-auto text-primary" />
+                      <p className="text-xs font-bold">{t("لا توجد إشعارات حالية","No current alerts")}</p>
                     </div>
                   )}
                 </div>

@@ -1,16 +1,16 @@
 "use client";
 
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Code2, X } from "lucide-react";
-import { useApp } from "@/context/app-context";
+import * as React from"react";
+import { motion, AnimatePresence } from"framer-motion";
+import { Globe, Code2, X } from"lucide-react";
+import { useApp } from"@/context/app-context";
 
 interface DeveloperCreditProps {
-  variant?: "navbar" | "sidebar" | "footer" | "default";
+  variant?:"navbar" |"sidebar" |"footer" |"default";
   className?: string;
 }
 
-export function DeveloperCredit({ variant = "default", className = "" }: DeveloperCreditProps) {
+export function DeveloperCredit({ variant ="default", className ="" }: DeveloperCreditProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const { dir } = useApp();
@@ -24,7 +24,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key ==="Escape") {
         setIsOpen(false);
       }
     };
@@ -87,7 +87,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
               className="flex items-center justify-between px-3 py-2 text-xs font-bold text-zinc-800 dark:text-zinc-100 hover:bg-teal-50 dark:hover:bg-zinc-800/80 hover:text-teal-600 dark:hover:text-teal-400 rounded-xl transition-all group"
             >
               <span>Portfolio</span>
-              <Globe className="h-4 w-4 text-zinc-500 group-hover:text-teal-600 dark:text-zinc-400 dark:group-hover:text-teal-400 transition-colors" />
+              <Globe className="h-4 w-4 text-primary group-hover:text-teal-600 dark:text-zinc-400 dark:group-hover:text-teal-400 transition-colors" />
             </a>
           </div>
         </motion.div>
@@ -96,10 +96,10 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
   );
 
   // 1. FOOTER VARIANT (Landing Page footer & Mobile drawer badge)
-  if (variant === "footer") {
+  if (variant ==="footer") {
     return (
       <div className={`relative inline-block ${className}`} ref={containerRef}>
-        {renderPopup("Founder / Developer", "bottom-full mb-2 left-1/2 -translate-x-1/2")}
+        {renderPopup("Founder / Developer","bottom-full mb-2 left-1/2 -translate-x-1/2")}
 
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -107,7 +107,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
           dir="ltr"
           aria-expanded={isOpen}
         >
-          <Code2 className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+          <Code2 className="h-3.5 w-3.5 text-primary dark:text-teal-400" />
           <span>Developed by <strong className="font-bold text-zinc-950 dark:text-zinc-50">Sayed Nada</strong></span>
         </button>
       </div>
@@ -115,7 +115,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
   }
 
   // 2. NAVBAR VARIANT (Top navigation bar chip)
-  if (variant === "navbar") {
+  if (variant ==="navbar") {
     return (
       <div className={`relative inline-block ${className}`} ref={containerRef}>
         <button
@@ -125,11 +125,11 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
           aria-label="Developer Information"
           aria-expanded={isOpen}
         >
-          <Code2 className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+          <Code2 className="h-4 w-4 text-primary dark:text-teal-400" />
           <span className="hidden lg:inline text-[11px] font-bold text-zinc-800 dark:text-zinc-200" dir="ltr">Sayed Nada</span>
         </button>
 
-        {renderPopup("Lead Developer", "top-full mt-2 left-1/2 -translate-x-1/2")}
+        {renderPopup("Lead Developer","top-full mt-2 left-1/2 -translate-x-1/2")}
       </div>
     );
   }
@@ -137,7 +137,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
   // 3. SIDEBAR / DEFAULT VARIANT (Desktop & Mobile Sidebars bottom button)
   return (
     <div className={`relative flex flex-col w-full ${className}`} ref={containerRef}>
-      {renderPopup("Founder / Developer", "bottom-full left-0 right-0 mb-2 w-full")}
+      {renderPopup("Founder / Developer","bottom-full left-0 right-0 mb-2 w-full")}
 
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -147,7 +147,7 @@ export function DeveloperCredit({ variant = "default", className = "" }: Develop
         <span className="text-[10px] font-bold text-zinc-800 dark:text-zinc-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors" dir="ltr">
           Developed by Sayed Nada
         </span>
-        <Code2 className="h-4 w-4 text-teal-600 dark:text-teal-400 group-hover:rotate-12 transition-transform" />
+        <Code2 className="h-4 w-4 text-primary dark:text-teal-400 group-hover:rotate-12 transition-transform" />
       </button>
     </div>
   );

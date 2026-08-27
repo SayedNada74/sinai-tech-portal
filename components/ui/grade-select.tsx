@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { createPortal } from "react-dom";
-import { Star, ChevronDown, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import * as React from"react";
+import { createPortal } from"react-dom";
+import { Star, ChevronDown, Check } from"lucide-react";
+import { motion, AnimatePresence } from"framer-motion";
 
 interface GradeSelectProps {
   value: string;
@@ -79,13 +79,13 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
         >
           <div className="flex items-center gap-2">
             <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 shrink-0" />
-            <span className="mt-0.5 whitespace-nowrap">{value || "-"}</span>
+            <span className="mt-0.5 whitespace-nowrap">{value ||"-"}</span>
           </div>
-          <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 text-zinc-400 opacity-70 shrink-0 ml-1 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 text-zinc-400 opacity-70 shrink-0 ml-1 transition-transform ${isOpen ?"rotate-180" :""}`} />
         </button>
       </div>
 
-      {mounted && typeof document !== "undefined" && createPortal(
+      {mounted && typeof document !=="undefined" && createPortal(
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -95,7 +95,7 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
               exit={{ opacity: 0, y: -5 }}
               transition={{ duration: 0.15 }}
               style={{
-                position: "absolute",
+                position:"absolute",
                 top: coords.top,
                 left: coords.left,
                 width: coords.width,
@@ -119,8 +119,8 @@ export function GradeSelect({ value, onChange, options, disabled, className }: G
                   onClick={() => { onChange(opt); setIsOpen(false); }}
                   className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm font-bold transition-colors ${
                     value === opt 
-                      ? "bg-cyan-50 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400" 
-                      : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      ?"bg-cyan-50 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400" 
+                      :"text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                   }`}
                 >
                   <span>{opt}</span>

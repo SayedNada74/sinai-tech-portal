@@ -1,21 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { supabase, isSupabaseConfigured, insertToSupabase } from "@/lib/supabase";
-import { useAuth } from "@/context/auth-context";
-import { Logo } from "@/components/ui/logo";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ShieldAlert, CheckCircle2, ArrowLeft, RefreshCw } from "lucide-react";
-import { motion } from "framer-motion";
+import * as React from"react";
+import { useRouter, useSearchParams } from"next/navigation";
+import { supabase, isSupabaseConfigured, insertToSupabase } from"@/lib/supabase";
+import { useAuth } from"@/context/auth-context";
+import { Logo } from"@/components/ui/logo";
+import { Card, CardContent, CardFooter } from"@/components/ui/card";
+import { Button } from"@/components/ui/button";
+import { ShieldAlert, CheckCircle2, ArrowLeft, RefreshCw } from"lucide-react";
+import { motion } from"framer-motion";
 
 function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useAuth() as any;
 
-  const [status, setStatus] = React.useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = React.useState<"loading" |"success" |"error">("loading");
   const [errorMessage, setErrorMessage] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -31,14 +31,14 @@ function CallbackHandler() {
         const errorParam = searchParams.get("error");
         const errorDescription = searchParams.get("error_description");
         if (errorParam || errorDescription) {
-          throw new Error(errorDescription || errorParam || "فشل التحقق من الهوية من قبل المزود.");
+          throw new Error(errorDescription || errorParam ||"فشل التحقق من الهوية من قبل المزود.");
         }
 
         // Check if this is a Password Recovery flow
         const isRecovery =
-          searchParams.get("type") === "recovery" ||
-          searchParams.get("next") === "/auth/reset-password" ||
-          (typeof window !== "undefined" && (window.location.hash.includes("type=recovery") || window.location.href.includes("reset-password")));
+          searchParams.get("type") ==="recovery" ||
+          searchParams.get("next") ==="/auth/reset-password" ||
+          (typeof window !=="undefined" && (window.location.hash.includes("type=recovery") || window.location.href.includes("reset-password")));
 
         // 2. Handle PKCE Code Exchange (`?code=...`)
         const code = searchParams.get("code");
@@ -61,7 +61,7 @@ function CallbackHandler() {
         if (tokenHash && type) {
           const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
           if (error) throw error;
-          if (type === "recovery" || isRecovery) {
+          if (type ==="recovery" || isRecovery) {
             if (isMounted) router.push("/auth/reset-password");
             return;
           }
@@ -72,7 +72,7 @@ function CallbackHandler() {
         }
 
         // 4. Handle Implicit Hash Fragment (`#access_token=...`) if present in window.location
-        if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
+        if (typeof window !=="undefined" && window.location.hash.includes("access_token")) {
           const { data: { session }, error } = await supabase.auth.getSession();
           if (error) throw error;
           if (session?.user) {
@@ -101,14 +101,14 @@ function CallbackHandler() {
       } catch (err: any) {
         console.error("Auth callback error:", err);
         if (isMounted) {
-          setErrorMessage(err.message || "حدث خطأ غير متوقع أثناء تفعيل الجلسة.");
+          setErrorMessage(err.message ||"حدث خطأ غير متوقع أثناء تفعيل الجلسة.");
           setStatus("error");
         }
       }
     }
 
     async function syncSessionAndRedirect(authUser: any) {
-      const userEmail = authUser.email || "";
+      const userEmail = authUser.email ||"";
 
       // Check if existing profile already exists in Supabase DB
       let existingProfile: any = null;
@@ -125,15 +125,15 @@ function CallbackHandler() {
 
       const parseJson = (val: any, fallback: any) => {
         if (!val) return fallback;
-        if (typeof val === "string") {
+        if (typeof val ==="string") {
           try { return JSON.parse(val); } catch (e) { return fallback; }
         }
         return val;
       };
 
-      const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء";
-      const userLevel = existingProfile?.level || authUser.user_metadata?.level || "الفرقة الأولى";
-      const userDepartment = existingProfile?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
+      const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] ||"طالب سيناء";
+      const userLevel = existingProfile?.level || authUser.user_metadata?.level ||"الفرقة الأولى";
+      const userDepartment = existingProfile?.department || authUser.user_metadata?.department ||"تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
       const userStudentId = existingProfile?.student_id || existingProfile?.studentId || authUser.user_metadata?.student_id || `2026${Math.floor(1000 + Math.random() * 9000)}`;
       const isCompleted = existingProfile ? (existingProfile.is_profile_completed !== false) : false;
 
@@ -144,12 +144,12 @@ function CallbackHandler() {
         level: userLevel,
         department: userDepartment,
         studentId: userStudentId,
-        bio: existingProfile?.bio || "مستخدم مسجل وموثق في المنصة الأكاديمية.",
+        bio: existingProfile?.bio ||"مستخدم مسجل وموثق في المنصة الأكاديمية.",
         skills: parseJson(existingProfile?.skills, []),
         socialLinks: parseJson(existingProfile?.social_links || existingProfile?.socialLinks, {}),
-        avatar: existingProfile?.avatar || authUser.user_metadata?.avatar_url || "🎓",
-        role: existingProfile?.role || "student",
-        cvUrl: existingProfile?.cv_url || existingProfile?.cvUrl || "",
+        avatar: existingProfile?.avatar || authUser.user_metadata?.avatar_url ||"🎓",
+        role: existingProfile?.role ||"student",
+        cvUrl: existingProfile?.cv_url || existingProfile?.cvUrl ||"",
         projects: parseJson(existingProfile?.projects, []),
         badges: existingProfile?.badges || ["حساب موثق"],
         points: existingProfile?.points || 100,
@@ -159,7 +159,7 @@ function CallbackHandler() {
       };
 
       // Persist in local storage for instantaneous client hydration
-      if (typeof window !== "undefined") {
+      if (typeof window !=="undefined") {
         localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
       }
 
@@ -203,7 +203,7 @@ function CallbackHandler() {
     };
   }, [searchParams, router, setUser]);
 
-  if (status === "loading") {
+  if (status ==="loading") {
     return (
       <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60 p-8 text-center">
         <div className="flex flex-col items-center gap-4 py-8">
@@ -215,7 +215,7 @@ function CallbackHandler() {
     );
   }
 
-  if (status === "success") {
+  if (status ==="success") {
     return (
       <Card className="border border-emerald-500/30 bg-emerald-500/5 shadow-xl backdrop-blur-md text-center p-8">
         <div className="flex flex-col items-center gap-3 py-6">

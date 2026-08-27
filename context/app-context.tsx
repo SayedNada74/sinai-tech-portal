@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useAuth } from "./auth-context";
 import { firebaseDb, FirebaseUser } from "@/lib/firebase";
+import { getLocalizedUserName } from "@/lib/utils";
 
 export interface AppContextType {
   lang: "ar" | "en";
@@ -171,7 +172,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [lang]);
 
   // 5. User settings mapping
-  const userName = user ? (lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : "";
+  const userName = getLocalizedUserName(user, lang);
   const setUserName = React.useCallback((n: string) => {
     updateProfile({ name: n });
   }, [updateProfile]);

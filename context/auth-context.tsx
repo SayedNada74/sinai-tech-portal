@@ -131,13 +131,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               bio: profileRow.bio || prev?.bio || "طالب مسجل في المنصة الأكاديمية.",
               skills: mergedSkills,
               socialLinks: mergedSocial,
-              avatar: profileRow.avatar || prev?.avatar || authUser.user_metadata?.avatar_url || "🎓",
-              role: profileRow.role || prev?.role || "student",
-              cvUrl: profileRow.cv_url || profileRow.cvUrl || prev?.cvUrl || "",
+              avatar: profileRow.avatar || (prev?.id === (profileRow.id || authUser.id) ? prev?.avatar : null) || authUser.user_metadata?.avatar_url || "🎓",
+              role: profileRow.role || (prev?.id === (profileRow.id || authUser.id) ? prev?.role : "student"),
+              cvUrl: profileRow.cv_url || profileRow.cvUrl || (prev?.id === (profileRow.id || authUser.id) ? prev?.cvUrl : ""),
               projects: mergedProjects,
-              badges: profileRow.badges || prev?.badges || ["طالب"],
-              points: profileRow.points || prev?.points || 50,
-              following: profileRow.following || prev?.following || [],
+              badges: profileRow.badges || (prev?.id === (profileRow.id || authUser.id) ? prev?.badges : ["طالب"]),
+              points: profileRow.points || (prev?.id === (profileRow.id || authUser.id) ? prev?.points : 50),
+              following: profileRow.following || (prev?.id === (profileRow.id || authUser.id) ? prev?.following : []),
               isProfileComplete: isCompleted,
               needsOnboarding: !isCompleted,
               is_profile_completed: isCompleted,
@@ -253,7 +253,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           nameAr: user.nameAr,
           nameEn: user.nameEn,
           email: user.email,
-          avatar: user.avatar || "👤",
+          avatar: user.avatar || "",
           role: user.role,
           lastActive: now
         });
@@ -349,7 +349,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const lowerInputEmail = email.toLowerCase().trim();
     if (!lowerInputEmail.endsWith("@su.edu.eg") && !lowerInputEmail.endsWith("@sinai.edu.eg")) {
       setIsLoading(false);
-      throw new Error("⚠️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
+      throw new Error("️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
     }
 
     let matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
@@ -411,7 +411,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // FAILED: Check if account is suspended
     if (matchedUser.bio && matchedUser.bio.includes("[SUSPENDED]")) {
       setIsLoading(false);
-      throw new Error("🚫 هذا الحساب مجمد وموقوف مؤقتاً بقرار إداري. جميع بياناتك ومحفوظاتك وتقدمك الأكاديمي محفوظ بأمان، يرجى التواصل مع إدارة النظام.");
+      throw new Error(" هذا الحساب مجمد وموقوف مؤقتاً بقرار إداري. جميع بياناتك ومحفوظاتك وتقدمك الأكاديمي محفوظ بأمان، يرجى التواصل مع إدارة النظام.");
     }
 
     // Try fetching Cloud profile if available
@@ -461,7 +461,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const lowerEmail = email.toLowerCase().trim();
     if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
       setIsLoading(false);
-      throw new Error("⚠️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
+      throw new Error("️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
     }
 
     // Validate Password Complexity (Min 8 chars, letter, number, special char)
@@ -472,14 +472,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!hasMinLen || !hasLetter || !hasNum || !hasSpecial) {
       setIsLoading(false);
-      throw new Error("⚠️ كلمة المرور ضعيفة! يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).");
+      throw new Error("️ كلمة المرور ضعيفة! يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).");
     }
 
     // Ensure email uniqueness globally
     const allExistingUsers = [...savedUsers];
     if (allExistingUsers.some((u) => u.email.toLowerCase() === lowerEmail)) {
       setIsLoading(false);
-      throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
+      throw new Error("️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
     }
 
     if (isSupabaseConfigured && supabase) {
@@ -487,7 +487,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: existingCloud } = await supabase.from("profiles").select("id, email").eq("email", lowerEmail).maybeSingle();
         if (existingCloud) {
           setIsLoading(false);
-          throw new Error("⚠️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
+          throw new Error("️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
         }
       } catch (e) {}
     }
@@ -513,7 +513,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (signUpErr) {
            setIsLoading(false);
-           throw new Error(`⚠️ ${signUpErr.message}`);
+           throw new Error(`️ ${signUpErr.message}`);
         }
         
         if (signUpData?.user?.id) {
@@ -624,7 +624,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         bio: `مستخدم مسجل عبر ${provider}`,
         skills: [],
         socialLinks: { github: "", linkedin: "" },
-        avatar: provider === "google" ? "🌐" : "🐈",
+        avatar: provider === "google" ? "" : "",
         role: "student",
         cvUrl: "",
         projects: [],
@@ -671,7 +671,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return false;
     }
     inFlightUpdateProfileRef.current = true;
-    setIsLoading(true);
 
     try {
       const updatedUser = {
@@ -714,7 +713,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const conflict = linksToCheck.some(link => otherLinks.includes(link));
               if (conflict) {
                 setIsLoading(false);
-                throw new Error("🚫 عذراً، هذا الرابط (Portfolio/GitHub/LinkedIn) مسجل بالفعل باسم طالب آخر في المنصة. يرجى استخدام الروابط الخاصة بك فقط.");
+                throw new Error(" عذراً، هذا الرابط (Portfolio/GitHub/LinkedIn) مسجل بالفعل باسم طالب آخر في المنصة. يرجى استخدام الروابط الخاصة بك فقط.");
               }
             }
           }
@@ -768,7 +767,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
     window.dispatchEvent(new Event("su_users_updated"));
 
-    setIsLoading(false);
     return true;
     } finally {
       inFlightUpdateProfileRef.current = false;

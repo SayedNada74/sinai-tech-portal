@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import { getAiResponse, sleep, AiMessage } from "@/lib/ai-engine";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-import { Bot, X, Send, Sparkles, MessageCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import * as React from"react";
+import { getAiResponse, sleep, AiMessage } from"@/lib/ai-engine";
+import { Card, CardHeader, CardTitle, CardContent } from"@/components/ui/card";
+import { Input } from"@/components/ui/input";
+import { Button } from"@/components/ui/button";
+import { Spinner } from"@/components/ui/spinner";
+import { Bot, X, Send, Sparkles, MessageCircle } from"lucide-react";
+import { motion, AnimatePresence } from"framer-motion";
 
 export function AiFloatingButton() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<AiMessage[]>([
-    { role: "assistant", content: "مرحباً! اسألني أي سؤال أكاديمي سريع وسأجيبك فوراً." }
+    { role:"assistant", content:"مرحباً! اسألني أي سؤال أكاديمي سريع وسأجيبك فوراً." }
   ]);
   const [inputVal, setInputVal] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -20,7 +20,7 @@ export function AiFloatingButton() {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior:"smooth" });
   }, [messages, isLoading, isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -28,7 +28,7 @@ export function AiFloatingButton() {
     if (!inputVal.trim() || isLoading) return;
 
     const textToSend = inputVal;
-    const newMessages = [...messages, { role: "user" as const, content: textToSend }];
+    const newMessages = [...messages, { role:"user" as const, content: textToSend }];
     setMessages(newMessages);
     setInputVal("");
     setIsLoading(true);
@@ -36,11 +36,11 @@ export function AiFloatingButton() {
     try {
       await sleep(1200);
       const response = getAiResponse(textToSend);
-      setMessages([...newMessages, { role: "assistant" as const, content: response }]);
+      setMessages([...newMessages, { role:"assistant" as const, content: response }]);
     } catch (e) {
       setMessages([
         ...newMessages,
-        { role: "assistant" as const, content: "⚠️ خطأ في الاتصال." }
+        { role:"assistant" as const, content:"️ خطأ في الاتصال." }
       ]);
     } finally {
       setIsLoading(false);
@@ -79,31 +79,31 @@ export function AiFloatingButton() {
             {/* Messages container */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((msg, index) => {
-                const isAssistant = msg.role === "assistant";
+                const isAssistant = msg.role ==="assistant";
                 return (
                   <div
                     key={index}
                     className={`flex gap-2.5 max-w-[85%] ${
-                      isAssistant ? "mr-0 ml-auto" : "mr-auto ml-0 flex-row-reverse"
+                      isAssistant ?"mr-0 ml-auto" :"mr-auto ml-0 flex-row-reverse"
                     }`}
                   >
                     <div className={`h-6.5 w-6.5 rounded-lg flex items-center justify-center shrink-0 text-xs ${
-                      isAssistant ? "bg-sky-100 text-sky-800 dark:bg-sky-950/40" : "bg-zinc-100 text-zinc-650"
+                      isAssistant ?"bg-sky-100 text-sky-800 dark:bg-sky-950/40" :"bg-zinc-100 text-zinc-650"
                     }`}>
-                      {isAssistant ? "🤖" : "👤"}
+                      {isAssistant ?"" :""}
                     </div>
                     <div className={`p-3 rounded-2xl text-[11px] leading-relaxed ${
                       isAssistant
-                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 font-medium"
-                        : "bg-sky-600 text-white dark:bg-sky-600 font-medium"
+                        ?"bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 font-medium"
+                        :"bg-sky-600 text-white dark:bg-sky-600 font-medium"
                     }`}>
                       {/* Simple line formatting */}
                       {msg.content.split("\n").map((line, lIdx) => {
                         if (line.startsWith("###")) {
-                          return <span key={lIdx} className="block font-black mt-2 text-zinc-900 dark:text-zinc-50">{line.replace("###", "").trim()}</span>;
+                          return <span key={lIdx} className="block font-black mt-2 text-zinc-900 dark:text-zinc-50">{line.replace("###","").trim()}</span>;
                         }
                         if (line.startsWith("-") || line.startsWith("1.")) {
-                          return <span key={lIdx} className="block pr-2 font-semibold">· {line.replace("-", "").substring(2).trim()}</span>;
+                          return <span key={lIdx} className="block pr-2 font-semibold">· {line.replace("-","").substring(2).trim()}</span>;
                         }
                         return <span key={lIdx} className="block">{line}</span>;
                       })}
@@ -115,7 +115,7 @@ export function AiFloatingButton() {
               {isLoading && (
                 <div className="flex gap-2.5 max-w-[85%] mr-0 ml-auto">
                   <div className="h-6.5 w-6.5 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center shrink-0 text-xs">
-                    🤖
+                    
                   </div>
                   <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 flex items-center gap-1.5 text-[10px] font-bold">
                     <Spinner className="h-3 w-3 text-sky-500" />
