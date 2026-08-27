@@ -137,11 +137,7 @@ export default function PublicProfilePage({ params }: PageProps) {
                 {isValidImageAvatar(profile.avatar) ? (
                   <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className={cn("flex items-center justify-center font-black text-sky-700 dark:text-sky-300",
-                    getAvatarFallback(profile.avatar, profile.name).length > 2 ?"text-4xl" :"text-6xl"
-                  )}>
-                    {getAvatarFallback(profile.avatar, profile.name)}
-                  </span>
+                  <User className="h-16 w-16 text-sky-700/50 dark:text-sky-300/50" />
                 )}
               </div>
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>

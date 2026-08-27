@@ -171,7 +171,7 @@ export function DesktopSidebar() {
               {isImageAvatar ? (
                 <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
               ) : (
-                userAvatar
+                <User className="h-4 w-4 text-zinc-400" />
               )}
             </div>
             <div className="min-w-0 flex-1">

@@ -125,9 +125,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               nameAr: profileRow.name_ar || prev?.nameAr || "",
               nameEn: profileRow.name_en || prev?.nameEn || "",
               email: userEmail || authUser.email,
-              level: profileRow.level || prev?.level || authUser.user_metadata?.level || "الفرقة الأولى",
+              level: profileRow.level || prev?.level || authUser.user_metadata?.level || "",
               department: profileRow.department || prev?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
-              studentId: profileRow.student_id || profileRow.studentId || prev?.studentId || authUser.user_metadata?.student_id || "20261001",
+              studentId: profileRow.student_id || profileRow.studentId || prev?.studentId || authUser.user_metadata?.student_id || "",
               bio: profileRow.bio || prev?.bio || "طالب مسجل في المنصة الأكاديمية.",
               skills: mergedSkills,
               socialLinks: mergedSocial,
@@ -143,9 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               is_profile_completed: isCompleted,
               learning_state: profileRow.learning_state || prev?.learning_state,
               social_state: profileRow.social_state || prev?.social_state,
-              privacySettings: typeof profileRow.privacy_settings === "string" 
-                               ? JSON.parse(profileRow.privacy_settings) 
-                               : (profileRow.privacy_settings || prev?.privacySettings || { publicSkills: true, publicProjects: true })
+              privacySettings: typeof profileRow.privacy_settings === "string"
+                ? JSON.parse(profileRow.privacy_settings)
+                : (profileRow.privacy_settings || prev?.privacySettings || { publicSkills: true, publicProjects: true })
             };
 
             localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (parsed && parsed.id) {
               setUser(parsed);
             }
-          } catch (err) {}
+          } catch (err) { }
         }
       }
     };
@@ -368,9 +368,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             nameEn: cloudRow.name_en || "",
             email: cloudRow.email || lowerInputEmail,
             password: cloudRow.password || password,
-            level: cloudRow.level || "الفرقة الأولى",
+            level: cloudRow.level || "",
             department: cloudRow.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
-            studentId: cloudRow.student_id || cloudRow.studentId || "20261001",
+            studentId: cloudRow.student_id || cloudRow.studentId || "",
             bio: cloudRow.bio || "طالب مسجل في المنصة الأكاديمية.",
             skills: Array.isArray(cloudRow.skills) ? cloudRow.skills : (typeof cloudRow.skills === "string" ? JSON.parse(cloudRow.skills || "[]") : []),
             socialLinks: cloudRow.social_links || cloudRow.socialLinks || {},
@@ -421,7 +421,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: profileRows } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).limit(1);
         const profileRow = profileRows?.[0];
         if (profileRow) dbProfile = profileRow;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // SUCCESS: Authenticate and grant user session
@@ -489,15 +489,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsLoading(false);
           throw new Error("️ هذا البريد الإلكتروني مسجل بالفعل في منصة الجامعة. يرجى الانتقال لتسجيل الدخول.");
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     let finalUserId = `user-${Date.now()}`;
-    const generatedStudentId = studentId || `2026${Math.floor(1000 + Math.random() * 9000)}`;
+    const generatedStudentId = studentId ? studentId.trim() : "";
+
+    // Validate student_id uniqueness for registration
+    if (generatedStudentId && isSupabaseConfigured && supabase) {
+      try {
+        const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", generatedStudentId).limit(1).single();
+        if (existingStudentId) {
+          setIsLoading(false);
+          throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
+        }
+      } catch (err: any) {
+        if (err.message.includes("مسجل بالفعل")) throw err;
+      }
+    }
 
     // Save profile to Supabase Cloud DB & Auth if available
     let requiresEmailConfirmation = false;
-    
+
     if (isSupabaseConfigured && supabase) {
       try {
         const callbackUrl = getAuthCallbackURL();
@@ -510,23 +523,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             data: { name: fullStudentName, level, department, student_id: generatedStudentId }
           }
         });
-        
+
         if (signUpErr) {
-           setIsLoading(false);
-           throw new Error(`️ ${signUpErr.message}`);
+          setIsLoading(false);
+          throw new Error(`️ ${signUpErr.message}`);
         }
-        
+
         if (signUpData?.user?.id) {
           finalUserId = signUpData.user.id;
         }
-        
+
         // If user is returned but session is null, email confirmation is required!
         if (signUpData?.user && !signUpData.session) {
-           requiresEmailConfirmation = true;
+          requiresEmailConfirmation = true;
         }
       } catch (e: any) {
         if (e.message) {
-            throw e; // rethrow formatted error
+          throw e; // rethrow formatted error
         }
         console.warn("Supabase signUp error:", e);
       }
@@ -571,7 +584,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         student_id: generatedStudentId,
         avatar: "🎓"
       });
-    } catch (err) {}
+    } catch (err) { }
 
     // Save to local storage list
     savedUsers.push(newUser);
@@ -682,92 +695,107 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: updatedUser.name,
         name_ar: updatedUser.nameAr || "",
         name_en: updatedUser.nameEn || "",
-      level: updatedUser.level,
-      department: updatedUser.department,
-      student_id: updatedUser.studentId,
-      bio: updatedUser.bio,
-      avatar: updatedUser.avatar,
-      role: updatedUser.role,
-      social_links: updatedUser.socialLinks || {},
-      skills: updatedUser.skills || [],
-      cv_url: updatedUser.cvUrl || "",
-      projects: updatedUser.projects || [],
-      points: updatedUser.points || 50,
-      badges: updatedUser.badges || [],
-      is_profile_completed: updatedUser.isProfileComplete ?? true,
-      privacy_settings: updatedUser.privacySettings || { publicSkills: true, publicProjects: true },
-      learning_state: updatedUser.learning_state !== undefined ? updatedUser.learning_state : user.learning_state,
-      social_state: updatedUser.social_state !== undefined ? updatedUser.social_state : user.social_state
-    };
+        level: updatedUser.level,
+        department: updatedUser.department,
+        student_id: updatedUser.studentId,
+        bio: updatedUser.bio,
+        avatar: updatedUser.avatar,
+        role: updatedUser.role,
+        social_links: updatedUser.socialLinks || {},
+        skills: updatedUser.skills || [],
+        cv_url: updatedUser.cvUrl || "",
+        projects: updatedUser.projects || [],
+        points: updatedUser.points || 50,
+        badges: updatedUser.badges || [],
+        is_profile_completed: updatedUser.isProfileComplete ?? true,
+        privacy_settings: updatedUser.privacySettings || { publicSkills: true, publicProjects: true },
+        learning_state: updatedUser.learning_state !== undefined ? updatedUser.learning_state : user.learning_state,
+        social_state: updatedUser.social_state !== undefined ? updatedUser.social_state : user.social_state
+      };
 
-    // Uniqueness validation for social links
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const linksToCheck = Object.values(updatedUser.socialLinks || {}).filter(url => typeof url === 'string' && url.trim().length > 0);
-        if (linksToCheck.length > 0) {
-          // Check if any of these links exist in other profiles
-          const { data: allProfiles } = await supabase.from("profiles").select("id, social_links").neq("id", user.id);
-          if (allProfiles) {
-            for (const profile of allProfiles) {
-              const otherLinks = Object.values(profile.social_links || {});
-              const conflict = linksToCheck.some(link => otherLinks.includes(link));
-              if (conflict) {
-                setIsLoading(false);
-                throw new Error(" عذراً، هذا الرابط (Portfolio/GitHub/LinkedIn) مسجل بالفعل باسم طالب آخر في المنصة. يرجى استخدام الروابط الخاصة بك فقط.");
+      // Uniqueness validation for social links
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const linksToCheck = Object.values(updatedUser.socialLinks || {}).filter(url => typeof url === 'string' && url.trim().length > 0);
+          if (linksToCheck.length > 0) {
+            // Check if any of these links exist in other profiles
+            const { data: allProfiles } = await supabase.from("profiles").select("id, social_links").neq("id", user.id);
+            if (allProfiles) {
+              for (const profile of allProfiles) {
+                const otherLinks = Object.values(profile.social_links || {});
+                const conflict = linksToCheck.some(link => otherLinks.includes(link));
+                if (conflict) {
+                  setIsLoading(false);
+                  throw new Error(" عذراً، هذا الرابط (Portfolio/GitHub/LinkedIn) مسجل بالفعل باسم طالب آخر في المنصة. يرجى استخدام الروابط الخاصة بك فقط.");
+                }
               }
             }
           }
+        } catch (err: any) {
+          setIsLoading(false);
+          if (err.message.includes("مسجل بالفعل")) throw err;
+          console.warn("Uniqueness check warning:", err);
         }
-      } catch (err: any) {
-        setIsLoading(false);
-        if (err.message.includes("مسجل بالفعل")) throw err;
-        console.warn("Uniqueness check warning:", err);
       }
-    }
 
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const fullPayload = { 
-          ...updatePayload, 
-          id: user.id, 
-          email: user.email 
-        };
-        const { error } = await supabase.from("profiles").upsert(fullPayload, { onConflict: "id" }).select();
-        
-        if (error) {
-          console.warn("Supabase upsert by ID failed, attempting by email fallback:", error);
-          // If ID conflict fails (e.g., ID changed but email same), try updating by email
-          const { data: existingUser } = await supabase.from("profiles").select("id").eq("email", user.email.toLowerCase().trim()).maybeSingle();
-          if (existingUser) {
-             await supabase.from("profiles").update(updatePayload).eq("id", existingUser.id);
-          } else {
-             // Force insert if totally missing
-             await supabase.from("profiles").insert([fullPayload]);
+      // Uniqueness validation for student ID
+      if (updatedUser.studentId && isSupabaseConfigured && supabase) {
+        try {
+          const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", updatedUser.studentId).neq("id", user.id).limit(1).single();
+          if (existingStudentId) {
+            setIsLoading(false);
+            throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
           }
+        } catch (err: any) {
+          setIsLoading(false);
+          if (err.message.includes("مسجل بالفعل")) throw err;
+          console.warn("Student ID uniqueness check warning:", err);
         }
-      } catch (err) {
-        console.warn("Cloud sync error during updateProfile:", err);
       }
-    }
 
-    setUser(updatedUser);
-    localStorage.setItem("su_user_session", JSON.stringify(updatedUser));
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const fullPayload = {
+            ...updatePayload,
+            id: user.id,
+            email: user.email
+          };
+          const { error } = await supabase.from("profiles").upsert(fullPayload, { onConflict: "id" }).select();
 
-    const savedUsersStr = localStorage.getItem("su_registered_users") || "[]";
-    const savedUsers = JSON.parse(savedUsersStr) as UserProfile[];
-    const userIndex = savedUsers.findIndex((u) => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
-    if (userIndex !== -1) {
-      savedUsers[userIndex] = {
-        ...savedUsers[userIndex],
-        ...updatedUser
-      };
-    } else {
-      savedUsers.push(updatedUser);
-    }
-    localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
-    window.dispatchEvent(new Event("su_users_updated"));
+          if (error) {
+            console.warn("Supabase upsert by ID failed, attempting by email fallback:", error);
+            // If ID conflict fails (e.g., ID changed but email same), try updating by email
+            const { data: existingUser } = await supabase.from("profiles").select("id").eq("email", user.email.toLowerCase().trim()).maybeSingle();
+            if (existingUser) {
+              await supabase.from("profiles").update(updatePayload).eq("id", existingUser.id);
+            } else {
+              // Force insert if totally missing
+              await supabase.from("profiles").insert([fullPayload]);
+            }
+          }
+        } catch (err) {
+          console.warn("Cloud sync error during updateProfile:", err);
+        }
+      }
 
-    return true;
+      setUser(updatedUser);
+      localStorage.setItem("su_user_session", JSON.stringify(updatedUser));
+
+      const savedUsersStr = localStorage.getItem("su_registered_users") || "[]";
+      const savedUsers = JSON.parse(savedUsersStr) as UserProfile[];
+      const userIndex = savedUsers.findIndex((u) => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
+      if (userIndex !== -1) {
+        savedUsers[userIndex] = {
+          ...savedUsers[userIndex],
+          ...updatedUser
+        };
+      } else {
+        savedUsers.push(updatedUser);
+      }
+      localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
+      window.dispatchEvent(new Event("su_users_updated"));
+
+      return true;
     } finally {
       inFlightUpdateProfileRef.current = false;
     }

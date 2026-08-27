@@ -29,8 +29,10 @@ import {
   X,
   AlertCircle,
   AlertTriangle,
-  Briefcase
-} from"lucide-react";
+  Briefcase,
+  User,
+  ArrowUpRight
+} from "lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
@@ -42,9 +44,27 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const [isNotifOpen, setIsNotifOpen] = React.useState(false);
+  const [showProfilePrompt, setShowProfilePrompt] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkPrompt = () => {
+      if (typeof window !== "undefined") {
+        const val = localStorage.getItem("su_prompt_complete_profile");
+        setShowProfilePrompt(val === "true");
+      }
+    };
+    checkPrompt();
+
+    window.addEventListener("su_prompt_complete_profile_updated", checkPrompt);
+    window.addEventListener("storage", checkPrompt);
+    return () => {
+      window.removeEventListener("su_prompt_complete_profile_updated", checkPrompt);
+      window.removeEventListener("storage", checkPrompt);
+    };
+  }, []);
 
   const unreadNotifs = notifications.filter(n => !n.read);
-  const isRtl = dir ==="rtl";
+  const isRtl = dir === "rtl";
 
   return (
     <ProtectedRoute>
@@ -344,6 +364,52 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                   <span className="text-zinc-500 dark:text-zinc-400 font-semibold">{t("ابحث عن مواد أو صفحات...","Search courses or pages...")}</span>
                 </button>
               </div>
+            )}
+
+            {/* Quick Profile Completion Prompt Banner */}
+            {showProfilePrompt && pathname !== "/profile" && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 p-4 rounded-2xl bg-gradient-to-r from-sky-600/15 via-cyan-500/15 to-blue-600/15 border border-sky-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sky-600 to-cyan-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                      {t("يرجى استكمال البيانات في صفحة البروفايل", "Please complete your details on the profile page")}
+                    </h4>
+                    <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed">
+                      {t("أضف نبذتك الشخصية، مهاراتك، وروابط التواصل المهنية لإبراز وتوثيق ملفك الجامعي.", "Add your bio, skills, and professional social links to fully activate your student profile.")}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 w-full sm:w-auto justify-end">
+                  <Link href="/profile" className="flex-1 sm:flex-none">
+                    <Button size="sm" className="w-full sm:w-auto gap-1.5 text-xs font-bold rounded-xl h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md cursor-pointer">
+                      <User className="h-3.5 w-3.5" />
+                      <span>{t("استكمال البروفايل", "Complete Profile")}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfilePrompt(false);
+                      if (typeof window !== "undefined") {
+                        localStorage.removeItem("su_prompt_complete_profile");
+                      }
+                    }}
+                    className="p-2 rounded-xl text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    title={t("إغلاق", "Dismiss")}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </motion.div>
             )}
 
             <PageTransitionWrapper>{children}</PageTransitionWrapper>

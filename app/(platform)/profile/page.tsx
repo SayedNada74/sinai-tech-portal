@@ -326,16 +326,24 @@ export default function ProfilePage() {
       });
 
       if (success) {
-        if (typeof window !== "undefined" && user) {
-          localStorage.removeItem(`su_profile_draft_${user.id}`);
+        if (typeof window !== "undefined") {
+          if (user) {
+            localStorage.removeItem(`su_profile_draft_${user.id}`);
+          }
+          localStorage.removeItem("su_prompt_complete_profile");
+          window.dispatchEvent(new Event("su_prompt_complete_profile_updated"));
         }
         setMessage({ type: "success", text: t("تم تحديث صورة الشخصية وملف الطالب بنجاح!", "Profile image and student profile updated successfully!") });
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         setMessage({ type: "error", text: t("فشل حفظ التعديلات. يرجى المحاولة لاحقاً.", "Failed to save changes. Please try again later.") });
       }
-    } catch (err) {
-      setMessage({ type: "error", text: t("حدث خطأ أثناء الاتصال بالخادم.", "An error occurred while connecting to the server.") });
+    } catch (err: any) {
+      if (err.message && err.message.includes("مسجل بالفعل")) {
+        setMessage({ type: "error", text: err.message });
+      } else {
+        setMessage({ type: "error", text: t("حدث خطأ أثناء الاتصال بالخادم.", "An error occurred while connecting to the server.") });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -466,9 +474,7 @@ export default function ProfilePage() {
                   {isValidImageAvatar(avatar) ? (
                     <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
                   ) : (
-                    <span className={cn("font-black text-cyan-700 dark:text-cyan-300",
-                      getAvatarFallback(avatar, user?.name).length > 2 ?"text-3xl" :"text-5xl"
-                    )}>{getAvatarFallback(avatar, user?.name)}</span>
+                    <User className="h-12 w-12 text-cyan-700/50 dark:text-cyan-300/50" />
                   )}
                   <button
                     type="button"
@@ -643,9 +649,7 @@ export default function ProfilePage() {
                   {isValidImageAvatar(avatar) ? (
                     <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
                   ) : (
-                    <span className={cn("font-black text-sky-700 dark:text-sky-300",
-                      getAvatarFallback(avatar, user?.name).length > 2 ?"text-3xl" :"text-5xl"
-                    )}>{getAvatarFallback(avatar, user?.name)}</span>
+                    <User className="h-12 w-12 text-sky-700/50 dark:text-sky-300/50" />
                   )}
 
                   {/* Upload Trigger Hover Overlay */}

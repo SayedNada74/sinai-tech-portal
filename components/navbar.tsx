@@ -120,9 +120,7 @@ export function Navbar() {
                   {isImageAvatar ? (
                     <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
-                    <span className={cn("font-black text-sky-700 dark:text-sky-300",
-                      getAvatarFallback(userAvatar, userName).length > 2 ?"text-xs" :"text-lg"
-                    )}>{getAvatarFallback(userAvatar, userName)}</span>
+                    <User className="h-5 w-5 text-sky-700 dark:text-sky-300" />
                   )}
                 </button>
 
@@ -268,9 +266,7 @@ export function Navbar() {
                       {isImageAvatar ? (
                         <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                       ) : (
-                        <span className={cn("font-black text-sky-700 dark:text-sky-300",
-                          getAvatarFallback(userAvatar, userName).length > 2 ?"text-sm" :"text-xl"
-                        )}>{getAvatarFallback(userAvatar, userName)}</span>
+                        <User className="h-5 w-5 text-sky-700 dark:text-sky-300" />
                       )}
                     </div>
                     <div className="min-w-0">

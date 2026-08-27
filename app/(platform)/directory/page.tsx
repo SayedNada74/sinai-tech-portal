@@ -8,7 +8,7 @@ import { Input } from"@/components/ui/input";
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import Link from"next/link";
-import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight } from"lucide-react";
+import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight, User } from"lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
 import { cn, getAvatarFallback, isValidImageAvatar } from"@/lib/utils";
 
@@ -170,9 +170,7 @@ export default function DirectoryPage() {
                         {isValidImageAvatar(user.avatar) ? (
                           <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span className={cn("font-black text-sky-700 dark:text-sky-300",
-                            getAvatarFallback(user.avatar, user.name).length > 2 ?"text-xl" :"text-3xl"
-                          )}>{getAvatarFallback(user.avatar, user.name)}</span>
+                          <User className="h-8 w-8 text-sky-700/50 dark:text-sky-300/50" />
                         )}
                       </div>
                       

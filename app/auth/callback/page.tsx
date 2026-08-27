@@ -131,10 +131,10 @@ function CallbackHandler() {
         return val;
       };
 
-      const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] ||"طالب سيناء";
-      const userLevel = existingProfile?.level || authUser.user_metadata?.level ||"الفرقة الأولى";
-      const userDepartment = existingProfile?.department || authUser.user_metadata?.department ||"تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
-      const userStudentId = existingProfile?.student_id || existingProfile?.studentId || authUser.user_metadata?.student_id || `2026${Math.floor(1000 + Math.random() * 9000)}`;
+      const userName = existingProfile?.name || authUser.user_metadata?.full_name || authUser.user_metadata?.name || userEmail.split("@")[0] || "طالب سيناء";
+      const userLevel = existingProfile?.level || authUser.user_metadata?.level || "";
+      const userDepartment = existingProfile?.department || authUser.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)";
+      const userStudentId = existingProfile?.student_id || existingProfile?.studentId || authUser.user_metadata?.student_id || "";
       const isCompleted = existingProfile ? (existingProfile.is_profile_completed !== false) : false;
 
       const sessionUser = {
