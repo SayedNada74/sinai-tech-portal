@@ -25,7 +25,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
           initial={{ width: 0 }}
           animate={{ width: `${clampedValue}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="h-full bg-violet-600 dark:bg-violet-400 rounded-full"
+          className="h-full bg-sky-600 dark:bg-sky-500 rounded-full"
         />
       </div>
     );

@@ -82,7 +82,7 @@ export default function RegisterPage() {
   return (
     <div className="w-full flex flex-col items-center relative">
       {/* Background Decorative Glow */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-sky-600/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                     value={level}
                     onChange={(e) => setFormField("level", e.target.value)}
                     disabled={isLoading}
-                    className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
+                    className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
                   >
                     <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)", "Year 1 (Freshman)")}</option>
                     <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
@@ -213,7 +213,7 @@ export default function RegisterPage() {
                     className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
                     title={showPassword ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-violet-500" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4 text-sky-600" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
 
@@ -248,7 +248,7 @@ export default function RegisterPage() {
           <CardFooter className="justify-center border-t border-zinc-100/50 py-4 dark:border-zinc-800/30">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {t("لديك حساب بالفعل؟", "Already have an account?")}{" "}
-              <Link href="/auth/login" className="font-bold text-violet-600 hover:underline dark:text-violet-400">
+              <Link href="/auth/login" className="font-bold text-sky-600 hover:underline dark:text-sky-400">
                 {t("سجل الدخول", "Sign in")}
               </Link>
             </p>

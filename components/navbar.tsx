@@ -61,7 +61,7 @@ export function Navbar() {
       {/* Dynamic Scroll Progress Bar */}
       <motion.div
         style={{ scaleX, transformOrigin: dir === "rtl" ? "right" : "left" }}
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-400 z-[70] shadow-[0_0_12px_rgba(139,92,246,0.7)]"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-600 via-cyan-500 to-sky-400 z-[70] shadow-[0_0_12px_rgba(2,132,199,0.7)]"
       />
 
       <header
@@ -77,7 +77,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-zinc-600 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors duration-200"
+                className="text-sm font-medium text-zinc-600 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -103,7 +103,7 @@ export function Navbar() {
               className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer text-xs font-bold flex items-center gap-1.5"
               title={t("تغيير لغة المنصة", "Change Language")}
             >
-              <Globe className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              <Globe className="h-4 w-4 text-sky-600 dark:text-sky-400" />
               <span>{lang === "ar" ? "English" : "العربية"}</span>
             </button>
 
@@ -115,13 +115,13 @@ export function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="h-10 w-10 rounded-xl bg-violet-50 dark:bg-violet-950/40 border border-violet-100 dark:border-violet-800/30 flex items-center justify-center text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer overflow-hidden"
+                  className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-800/30 flex items-center justify-center text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer overflow-hidden"
                 >
                   {isImageAvatar ? (
                     <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
                     <span className={cn(
-                      "font-black text-violet-700 dark:text-violet-300",
+                      "font-black text-sky-700 dark:text-sky-300",
                       getAvatarFallback(userAvatar, userName).length > 2 ? "text-xs" : "text-lg"
                     )}>{getAvatarFallback(userAvatar, userName)}</span>
                   )}
@@ -188,7 +188,7 @@ export function Navbar() {
                   <Button variant="outline" size="sm" className="rounded-xl font-bold border-zinc-200 dark:border-zinc-800 text-xs px-3.5 h-9">{t("تسجيل الدخول", "Sign In")}</Button>
                 </Link>
                 <Link href="/auth/login">
-                  <Button size="sm" className="gap-1.5 font-bold rounded-xl text-xs px-3.5 h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md shadow-violet-600/20">
+                  <Button size="sm" className="gap-1.5 font-bold rounded-xl text-xs px-3.5 h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md shadow-sky-600/20">
                     <Sparkles className="h-4 w-4" />
                     {t("ابدأ التخطيط", "Get Started")}
                   </Button>
@@ -254,7 +254,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-semibold text-zinc-700 hover:text-violet-600 dark:text-zinc-300 dark:hover:text-violet-400 transition-colors"
+                  className="text-base font-semibold text-zinc-700 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -265,12 +265,12 @@ export function Navbar() {
               {isAuthenticated ? (
                 <>
                   <div className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/40 rounded-xl mb-1">
-                    <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/30 flex items-center justify-center text-xl overflow-hidden shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/30 flex items-center justify-center text-xl overflow-hidden shrink-0">
                       {isImageAvatar ? (
                         <img src={userAvatar} alt="Profile" className="h-full w-full object-cover" />
                       ) : (
                         <span className={cn(
-                          "font-black text-violet-700 dark:text-violet-300",
+                          "font-black text-sky-700 dark:text-sky-300",
                           getAvatarFallback(userAvatar, userName).length > 2 ? "text-sm" : "text-xl"
                         )}>{getAvatarFallback(userAvatar, userName)}</span>
                       )}

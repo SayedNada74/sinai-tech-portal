@@ -40,7 +40,7 @@ export default function CurriculumProgressChecklist() {
   const prefixLegend = [
     { prefix: "CSW", nameAr: "علوم الحاسب والبرمجيات", nameEn: "Computer Science & Web", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/40" },
     { prefix: "INT", nameAr: "تكنولوجيا المعلومات والشبكات", nameEn: "Information Technology & Networks", color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/40" },
-    { prefix: "ISD", nameAr: "نظم المعلومات وقواعد البيانات", nameEn: "Information Systems & Data", color: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/40" },
+    { prefix: "ISD", nameAr: "نظم المعلومات وقواعد البيانات", nameEn: "Information Systems & Data", color: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/40" },
     { prefix: "HU", nameAr: "المواد العامة والإنسانية", nameEn: "Humanities & General Courses", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40" },
     { prefix: "BS / MATH", nameAr: "العلوم الأساسية والرياضيات", nameEn: "Basic Sciences & Mathematics", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/40" }
   ];
@@ -145,7 +145,7 @@ export default function CurriculumProgressChecklist() {
           <div className="px-6 py-6 flex flex-col justify-center h-full">
             <div className="flex justify-between items-center mb-2.5 text-xs font-bold">
               <span className="text-zinc-900 dark:text-white font-bold">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
-              <span className="text-violet-600 dark:text-cyan-400 font-black">
+              <span className="text-sky-600 dark:text-sky-400 font-black">
                 <CountUp to={graduationPercentage} suffix="%" duration={1.4} />
               </span>
             </div>
@@ -161,7 +161,7 @@ export default function CurriculumProgressChecklist() {
       <Card className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/60 shadow-sm">
         <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-850">
           <CardTitle className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
-            <Info className="h-4 w-4 text-violet-500" />
+            <Info className="h-4 w-4 text-sky-600" />
             <span>{t("دليل رموز وأكواد المقررات الأكاديمية", "Academic Course Code Reference Legend")}</span>
           </CardTitle>
         </CardHeader>
@@ -295,7 +295,7 @@ export default function CurriculumProgressChecklist() {
                                 onClick={() => planned ? unmarkPlanned(c.code) : markPlanned(c.code)}
                                 className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                                   planned
-                                    ? "bg-violet-600 border-violet-600 text-white"
+                                    ? "bg-sky-600 border-sky-600 text-white"
                                     : "border-zinc-250 text-zinc-400 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
                                 }`}
                                 title={planned ? t("إلغاء المخطط", "Cancel planned") : t("إضافة للمخطط", "Bookmark as planned")}

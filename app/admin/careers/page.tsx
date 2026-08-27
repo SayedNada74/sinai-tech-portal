@@ -201,7 +201,7 @@ export default function AdminCareersPage() {
                 <CardTitle className="text-sm font-bold text-zinc-900 dark:text-zinc-50 mt-2 line-clamp-1">
                   {job.title}
                 </CardTitle>
-                <CardDescription className="text-xs font-semibold text-violet-600 dark:text-violet-400">
+                <CardDescription className="text-xs font-semibold text-sky-600 dark:text-sky-400">
                   {job.company} · {job.location}
                 </CardDescription>
               </CardHeader>

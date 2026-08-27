@@ -14,15 +14,15 @@ export interface ButtonProps
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", isLoading, children, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none active:scale-[0.98]";
+      "inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none active:scale-[0.98]";
 
     const variants = {
-      default: "bg-violet-600 text-white shadow-lg shadow-violet-500/20 hover:bg-violet-500 hover:shadow-violet-500/30 dark:bg-violet-500 dark:hover:bg-violet-400",
+      default: "bg-sky-600 text-white shadow-md shadow-sky-600/20 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-400",
       destructive: "bg-red-600 text-white shadow-lg shadow-red-500/20 hover:bg-red-500 hover:shadow-red-500/30",
       outline: "border border-zinc-200 bg-transparent hover:bg-zinc-50 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900",
       secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700",
       ghost: "hover:bg-zinc-100 text-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900",
-      link: "text-violet-600 underline-offset-4 hover:underline dark:text-violet-400",
+      link: "text-sky-600 underline-offset-4 hover:underline dark:text-sky-400",
     };
 
     const sizes = {

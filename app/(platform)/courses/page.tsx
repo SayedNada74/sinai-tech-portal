@@ -146,16 +146,16 @@ export default function CoursesPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-cyan-500/10 border border-violet-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-500/10 border border-sky-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
         >
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-md">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
                 <span>{t("دليل المقررات مفتوح للجميع", "Open Course Catalog")}</span>
-                <Badge className="bg-violet-500/20 text-violet-700 dark:text-violet-300 border-none text-[10px] font-bold">
+                <Badge className="bg-sky-500/20 text-sky-700 dark:text-sky-300 border-none text-[10px] font-bold">
                   {t("تصفح واستكشف بحرية ⚡", "Free Access ⚡")}
                 </Badge>
               </h3>
@@ -175,7 +175,7 @@ export default function CoursesPage() {
               </Button>
             </Link>
             <Link href="/auth/register" className="flex-1 sm:flex-none">
-              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md">
                 {t("إنشاء حساب 🚀", "Register 🚀")}
               </Button>
             </Link>
@@ -206,7 +206,7 @@ export default function CoursesPage() {
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className={`flex-1 sm:flex-initial gap-2 text-xs font-bold cursor-pointer h-11 ${
-                showFilters ? "border-violet-500 text-violet-600 bg-violet-50 dark:bg-violet-950/20" : ""
+                showFilters ? "border-sky-500 text-sky-600 bg-sky-50 dark:bg-sky-950/20" : ""
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -218,7 +218,7 @@ export default function CoursesPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full sm:w-auto h-11 pl-8 pr-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none"
+                className="w-full sm:w-auto h-11 pl-8 pr-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer appearance-none"
               >
                 <option value="ACADEMIC_ASC">{t("الترتيب أكاديمياً", "Academic Order")}</option>
                 <option value="CODE_ASC">{t("الترتيب برمز المقرر", "Sort by Code")}</option>
@@ -248,7 +248,7 @@ export default function CoursesPage() {
                 <select
                   value={selectedDept}
                   onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 cursor-pointer"
+                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 cursor-pointer"
                 >
                   {departments.map((d) => (
                     <option key={d.value} value={d.value}>{t(d.labelAr, d.labelEn)}</option>
@@ -262,7 +262,7 @@ export default function CoursesPage() {
                 <select
                   value={selectedLevel}
                   onChange={(e) => setSelectedLevel(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 cursor-pointer"
+                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 cursor-pointer"
                 >
                   {levels.map((l) => (
                     <option key={l.value} value={l.value}>{t(l.labelAr, l.labelEn)}</option>
@@ -276,7 +276,7 @@ export default function CoursesPage() {
                 <select
                   value={selectedDiff}
                   onChange={(e) => setSelectedDiff(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 cursor-pointer"
+                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 cursor-pointer"
                 >
                   <option value="ALL">{t("جميع مستويات الصعوبة", "All Difficulty Levels")}</option>
                   <option value="easy">{t("سهل 🟢", "Easy 🟢")}</option>
@@ -291,7 +291,7 @@ export default function CoursesPage() {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 cursor-pointer"
+                  className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 cursor-pointer"
                 >
                   <option value="ALL">{t("جميع الحالات", "All Statuses")}</option>
                   <option value="completed">{t("منجزة ✓", "Completed ✓")}</option>
@@ -318,7 +318,7 @@ export default function CoursesPage() {
                   completed
                     ? "border-green-500/20 bg-green-500/[0.01]"
                     : planned
-                    ? "border-violet-500/20 bg-violet-500/[0.01]"
+                    ? "border-sky-500/20 bg-sky-500/[0.01]"
                     : "border-zinc-200/50 dark:border-zinc-800/50"
                 }`}
               >
@@ -389,12 +389,12 @@ export default function CoursesPage() {
                     onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       planned
-                        ? "bg-violet-600 border-violet-600 text-white shadow-md"
-                        : "border-violet-500 dark:border-violet-500/60 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-violet-600 dark:text-violet-400"
+                        ? "bg-sky-600 border-sky-600 text-white shadow-md"
+                        : "border-sky-500 dark:border-sky-500/60 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400"
                     }`}
                     title={planned ? t("إلغاء الخطة", "Remove from Plan") : t("إضافة للمخطط الدراسي", "Add to Study Plan")}
                   >
-                    <Bookmark className={`h-4.5 w-4.5 stroke-[2.4] ${planned ? "text-white fill-white" : "text-violet-600 dark:text-violet-400"}`} />
+                    <Bookmark className={`h-4.5 w-4.5 stroke-[2.4] ${planned ? "text-white fill-white" : "text-sky-600 dark:text-sky-400"}`} />
                   </button>
                 </div>
               </Card>

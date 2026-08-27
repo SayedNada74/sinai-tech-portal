@@ -190,7 +190,7 @@ export default function SystemLogsAndErrorsPage() {
                         <td className="p-4 text-zinc-600 dark:text-zinc-400">
                           {log.details}
                         </td>
-                        <td className="p-4 font-bold text-violet-600 dark:text-violet-400">
+                        <td className="p-4 font-bold text-sky-600 dark:text-sky-400">
                           {log.userName} ({log.userEmail})
                         </td>
                         <td className="p-4 text-[10px] text-zinc-400 font-mono">

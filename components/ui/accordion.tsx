@@ -17,7 +17,7 @@ export function AccordionItem({ title, children }: AccordionItemProps) {
     <div className="border-b border-zinc-100 dark:border-zinc-800/60 last:border-0 py-4">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between font-semibold text-zinc-900 dark:text-zinc-100 transition-colors text-right py-2 cursor-pointer hover:text-violet-600 dark:hover:text-violet-400"
+        className="flex w-full items-center justify-between font-semibold text-zinc-900 dark:text-zinc-100 transition-colors text-right py-2 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
       >
         <span className="text-base sm:text-lg">{title}</span>
         <motion.span

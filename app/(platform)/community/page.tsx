@@ -224,7 +224,7 @@ export default function CommunityPage() {
             onClick={() => setSelectedCategory(cat)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
               selectedCategory === cat
-                ? "bg-violet-600 text-white shadow-md shadow-violet-500/10"
+                ? "bg-sky-600 text-white shadow-md shadow-sky-500/10"
                 : "bg-white border border-zinc-200/60 text-zinc-700 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-850"
             }`}
           >
@@ -255,13 +255,13 @@ export default function CommunityPage() {
                     {/* Post Top Meta */}
                     <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
+                        <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center text-lg shadow-inner overflow-hidden shrink-0">
                           {renderAvatar(post.avatar, "🧑‍🎓")}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             {users.find(u => u.email === post.authorEmail)?.id ? (
-                              <Link href={`/profile/${users.find(u => u.email === post.authorEmail)?.id}`} className="font-bold text-sm text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                              <Link href={`/profile/${users.find(u => u.email === post.authorEmail)?.id}`} className="font-bold text-sm text-zinc-900 dark:text-zinc-100 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                                 {getAuthorDisplayName(post.authorEmail, post.author)}
                               </Link>
                             ) : (
@@ -290,7 +290,7 @@ export default function CommunityPage() {
                             <>
                               <button
                                 onClick={() => handleStartEdit(post)}
-                                className="p-2 text-zinc-400 hover:text-violet-600 hover:bg-zinc-50 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
+                                className="p-2 text-zinc-400 hover:text-sky-600 hover:bg-zinc-50 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
                                 title={t("تعديل المنشور", "Edit Post")}
                               >
                                 <Edit className="h-4 w-4" />
@@ -336,7 +336,7 @@ export default function CommunityPage() {
                             rows={4}
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+                            className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
                             placeholder={t("محتوى المنشور المعدل", "Edit Content")}
                             required
                           />
@@ -357,7 +357,7 @@ export default function CommunityPage() {
                           {/* File Attachment */}
                           {post.attachmentName && (
                             <div className="flex items-center gap-2.5 p-3.5 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-250/20 dark:border-zinc-800/40 rounded-xl max-w-sm">
-                              <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                              <FileText className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                               <div className="min-w-0 flex-1">
                                 <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200 block truncate">{post.attachmentName}</span>
                                 <span className="text-[10px] text-zinc-400 block mt-0.5">
@@ -366,7 +366,7 @@ export default function CommunityPage() {
                               </div>
                               <a
                                 href={post.attachmentUrl}
-                                className="text-xs font-black text-violet-600 dark:text-violet-400 hover:underline shrink-0"
+                                className="text-xs font-black text-sky-600 dark:text-sky-400 hover:underline shrink-0"
                                 download
                               >
                                 {t("تحميل", "Download")}
@@ -380,17 +380,17 @@ export default function CommunityPage() {
                               onClick={() => likePost(post.id)}
                               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                                 hasLiked
-                                  ? "text-violet-650 bg-violet-50/50 dark:text-violet-400 dark:bg-violet-950/20 font-black"
-                                  : "text-zinc-500 hover:text-violet-650 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850"
+                                  ? "text-sky-600 bg-sky-50/50 dark:text-sky-400 dark:bg-sky-950/20 font-black"
+                                  : "text-zinc-500 hover:text-sky-600 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850"
                               }`}
                             >
-                              <ThumbsUp className={`h-4 w-4 ${hasLiked ? "fill-violet-600 dark:fill-violet-550" : ""}`} />
+                              <ThumbsUp className={`h-4 w-4 ${hasLiked ? "fill-sky-600 dark:fill-sky-500" : ""}`} />
                               <span>{post.likes.length} {t("إعجاب", "Likes")}</span>
                             </button>
 
                             <button
                               onClick={() => toggleComments(post.id)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-zinc-500 hover:text-violet-650 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-zinc-500 hover:text-sky-600 hover:bg-zinc-50 dark:text-zinc-450 dark:hover:bg-zinc-850 rounded-lg transition-colors cursor-pointer"
                             >
                               <MessageSquare className="h-4 w-4" />
                               <span>{post.comments.length} {t("تعليقات", "Comments")}</span>
@@ -416,7 +416,7 @@ export default function CommunityPage() {
                                           <div className="flex-1 space-y-1 min-w-0">
                                             <div className="flex justify-between items-center">
                                               {users.find(u => u.email === comment.authorEmail)?.id ? (
-                                                <Link href={`/profile/${users.find(u => u.email === comment.authorEmail)?.id}`} className="font-bold text-xs text-zinc-900 dark:text-zinc-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                                <Link href={`/profile/${users.find(u => u.email === comment.authorEmail)?.id}`} className="font-bold text-xs text-zinc-900 dark:text-zinc-100 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                                                   {getAuthorDisplayName(comment.authorEmail, comment.author)}
                                                 </Link>
                                               ) : (
@@ -450,7 +450,7 @@ export default function CommunityPage() {
                                               <div className="flex-1 space-y-0.5 min-w-0">
                                                 <div className="flex justify-between items-center">
                                                   {users.find(u => u.email === reply.authorEmail)?.id ? (
-                                                    <Link href={`/profile/${users.find(u => u.email === reply.authorEmail)?.id}`} className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                                                    <Link href={`/profile/${users.find(u => u.email === reply.authorEmail)?.id}`} className="font-bold text-[11px] text-zinc-850 dark:text-zinc-200 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
                                                       {getAuthorDisplayName(reply.authorEmail, reply.author)}
                                                     </Link>
                                                   ) : (
@@ -604,7 +604,7 @@ export default function CommunityPage() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as CommunityPost["category"])}
-                    className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
+                    className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
                   >
                     {categories.filter(c => c !== "الكل").map((cat) => (
                       <option key={cat} value={cat}>
@@ -625,7 +625,7 @@ export default function CommunityPage() {
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
                     required
-                    className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 leading-relaxed resize-none"
+                    className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 leading-relaxed resize-none"
                   />
                 </div>
 

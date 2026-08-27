@@ -175,7 +175,7 @@ export default function CourseDetailPage({ params }: PageProps) {
   const getIcon = (type: string) => {
     switch (type) {
       case "book":
-        return <BookOpen className="h-4.5 w-4.5 text-indigo-500" />;
+        return <BookOpen className="h-4.5 w-4.5 text-sky-500" />;
       case "github":
         return <FileText className="h-4.5 w-4.5 text-emerald-500" />;
       default:
@@ -190,7 +190,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     <div className="space-y-8" dir={dir}>
       {/* Back button */}
       <div className="flex justify-between items-center">
-        <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+        <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 transition-colors">
           <BackArrow className="h-4 w-4" />
           {t("العودة لمستكشف المواد", "Back to Course Explorer")}
         </Link>
@@ -207,14 +207,14 @@ export default function CourseDetailPage({ params }: PageProps) {
           }}
           className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border-2 transition-all cursor-pointer ${
             bookmarked
-              ? "bg-violet-600 border-violet-600 text-white shadow-md"
-              : "border-violet-500 dark:border-violet-500/60 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-violet-600 dark:text-violet-400"
+              ? "bg-sky-600 border-sky-600 text-white shadow-md"
+              : "border-sky-500 dark:border-sky-500/60 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400"
           }`}
         >
           {bookmarked ? (
             <BookmarkCheck className="h-4 w-4 text-white stroke-[2.4]" />
           ) : (
-            <Bookmark className="h-4 w-4 text-violet-600 dark:text-violet-400 stroke-[2.4]" />
+            <Bookmark className="h-4 w-4 text-sky-600 dark:text-sky-400 stroke-[2.4]" />
           )}
           <span>{bookmarked ? t("محفوظة في المفضلة", "Bookmarked") : t("حفظ المادة", "Bookmark Course")}</span>
         </button>
@@ -222,7 +222,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
       {/* Main Header Card */}
       <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 overflow-hidden relative shadow-sm">
-        <div className="absolute -top-12 -left-12 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-12 -left-12 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <CardContent className="pt-8 pb-7 px-6 sm:px-8 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -305,7 +305,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               <ul className="space-y-3">
                 {outcomesList.map((outcome, index) => (
                   <li key={index} className="flex gap-3 text-xs text-zinc-700 dark:text-zinc-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-600 dark:bg-violet-400 mt-2 shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-600 dark:bg-sky-400 mt-2 shrink-0" />
                     <span>{outcome}</span>
                   </li>
                 ))}
@@ -338,7 +338,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                         incrementDownload(res.id);
                         toast(t(`📥 جاري تحميل المستند: "${res.title}"...`, `📥 Downloading document: "${res.title}"...`), "info");
                       }}
-                      className="h-8 gap-1.5 text-[10px] text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400"
+                      className="h-8 gap-1.5 text-[10px] text-zinc-500 hover:text-sky-600 dark:hover:text-sky-400"
                     >
                       <Download className="h-3.5 w-3.5" />
                       {t("تحميل", "Download")}
@@ -375,7 +375,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                 </Button>
               ) : (
                 <Link href="/auth/login">
-                  <Button size="sm" variant="outline" className="text-xs font-bold gap-1 text-violet-600 dark:text-violet-400 border-violet-500/30 hover:bg-violet-50 dark:hover:bg-violet-950/30">
+                  <Button size="sm" variant="outline" className="text-xs font-bold gap-1 text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-50 dark:hover:bg-sky-950/30">
                     <span>{t("تسجيل الدخول للمشاركة 💬", "Sign In to Review 💬")}</span>
                   </Button>
                 </Link>
@@ -387,7 +387,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               {user && showReviewForm && (
                 <form onSubmit={handleSubmitReview} className="p-5 border border-dashed border-zinc-250 dark:border-zinc-800 rounded-2xl space-y-4 bg-zinc-50/50 dark:bg-zinc-950/40">
                   <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                    <Sparkles className="h-4 w-4 text-violet-500" />
+                    <Sparkles className="h-4 w-4 text-sky-600" />
                     {t("أضف مراجعتك الأكاديمية الصادقة", "Add Your Academic Review")}
                   </h4>
 
@@ -411,7 +411,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                       <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 block">
                         {t(`مستوى صعوبة المادة: ${difficulty} / 5`, `Course Difficulty: ${difficulty} / 5`)}
                       </span>
-                      <input type="range" min="1" max="5" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-violet-600" />
+                      <input type="range" min="1" max="5" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-sky-600" />
                     </div>
 
                     {/* Workload Slider */}
@@ -419,7 +419,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                       <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 block">
                         {t(`كمية التكليفات والمهام: ${workload} / 5`, `Workload & Assignments: ${workload} / 5`)}
                       </span>
-                      <input type="range" min="1" max="5" value={workload} onChange={(e) => setWorkload(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-violet-600" />
+                      <input type="range" min="1" max="5" value={workload} onChange={(e) => setWorkload(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-sky-600" />
                     </div>
 
                     {/* Exam Difficulty */}
@@ -427,7 +427,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                       <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 block">
                         {t(`صعوبة الامتحانات: ${examDiff} / 5`, `Exam Difficulty: ${examDiff} / 5`)}
                       </span>
-                      <input type="range" min="1" max="5" value={examDiff} onChange={(e) => setExamDiff(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-violet-600" />
+                      <input type="range" min="1" max="5" value={examDiff} onChange={(e) => setExamDiff(Number(e.target.value))} className="w-full h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-800 accent-sky-600" />
                     </div>
 
                     {/* Attendance */}
@@ -437,11 +437,11 @@ export default function CourseDetailPage({ params }: PageProps) {
                       </span>
                       <div className="flex gap-4">
                         <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer">
-                          <input type="radio" checked={attendance === true} onChange={() => setAttendance(true)} className="text-violet-600 focus:ring-0" />
+                          <input type="radio" checked={attendance === true} onChange={() => setAttendance(true)} className="text-sky-600 focus:ring-0" />
                           {t("نعم، إلزامي", "Yes, Mandatory")}
                         </label>
                         <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer">
-                          <input type="radio" checked={attendance === false} onChange={() => setAttendance(false)} className="text-violet-600 focus:ring-0" />
+                          <input type="radio" checked={attendance === false} onChange={() => setAttendance(false)} className="text-sky-600 focus:ring-0" />
                           {t("لا، اختياري", "No, Optional")}
                         </label>
                       </div>
@@ -481,17 +481,17 @@ export default function CourseDetailPage({ params }: PageProps) {
                       <div className="flex justify-between items-center gap-3">
                         {rev.authorId ? (
                           <Link href={`/profile/${rev.authorId}`} className="flex items-center gap-2 group hover:opacity-80 transition-opacity">
-                            <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold group-hover:bg-violet-200 dark:group-hover:bg-violet-900/50">
+                            <div className="h-7 w-7 rounded-lg bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xs font-bold group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50">
                               {rev.author[0]}
                             </div>
                             <div>
-                              <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{rev.author}</h5>
+                              <h5 className="font-bold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">{rev.author}</h5>
                               <span className="text-[9px] text-zinc-400 dark:text-zinc-500 block">{rev.date}</span>
                             </div>
                           </Link>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold">
+                            <div className="h-7 w-7 rounded-lg bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xs font-bold">
                               {rev.author[0]}
                             </div>
                             <div>
@@ -521,8 +521,8 @@ export default function CourseDetailPage({ params }: PageProps) {
                           <span className="text-[9px] text-zinc-400 dark:text-zinc-500 block mb-0.5">{t("التجربة الشخصية:", "Personal Experience:")}</span>
                           {rev.comment}
                         </p>
-                        <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-semibold p-3.5 bg-violet-500/[0.03] border border-violet-500/10 rounded-xl">
-                          <span className="text-[9px] text-violet-600 dark:text-violet-400 font-black block mb-1">💡 {t("نصيحة للمذاكرة:", "Study Tip:")}</span>
+                        <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-semibold p-3.5 bg-sky-500/[0.03] border border-sky-500/10 rounded-xl">
+                          <span className="text-[9px] text-sky-600 dark:text-sky-400 font-black block mb-1">💡 {t("نصيحة للمذاكرة:", "Study Tip:")}</span>
                           {rev.tips}
                         </p>
                       </div>
@@ -548,7 +548,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                         {/* Helpful upvote */}
                         <button
                           onClick={() => toggleHelpfulReview(rev.id)}
-                          className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 cursor-pointer"
+                          className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-sky-600 dark:hover:text-sky-400 cursor-pointer"
                         >
                           <ThumbsUp className="h-3.5 w-3.5" />
                           <span>{t(`مفيدة (${rev.helpfulCount})`, `Helpful (${rev.helpfulCount})`)}</span>
@@ -578,7 +578,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                 <div className="flex flex-wrap gap-2">
                   {course.prerequisites.map((pre) => (
                     <Link href={`/courses/${pre}`} key={pre}>
-                      <Badge className="bg-zinc-100 text-zinc-700 hover:bg-violet-50 hover:text-violet-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-violet-950/40 dark:hover:text-violet-400 cursor-pointer text-xs">
+                      <Badge className="bg-zinc-100 text-zinc-700 hover:bg-sky-50 hover:text-sky-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-sky-950/40 dark:hover:text-sky-400 cursor-pointer text-xs">
                         {pre}
                       </Badge>
                     </Link>
@@ -600,7 +600,7 @@ export default function CourseDetailPage({ params }: PageProps) {
             <CardContent className="pt-4 space-y-3.5">
               {relatedCourses.map((rc) => (
                 <Link href={`/courses/${rc.code}`} key={rc.code} className="block group">
-                  <h4 className="font-bold text-xs text-zinc-700 group-hover:text-violet-600 dark:text-zinc-300 dark:group-hover:text-violet-400 transition-colors">
+                  <h4 className="font-bold text-xs text-zinc-700 group-hover:text-sky-600 dark:text-zinc-300 dark:group-hover:text-sky-400 transition-colors">
                     {t(rc.arabic, rc.english)}
                   </h4>
                   <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">{rc.code} · {rc.credits} {t("ساعات", "Credits")}</p>

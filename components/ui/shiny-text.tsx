@@ -25,7 +25,7 @@ export function ShinyText({
       )}
       style={{
         backgroundImage:
-          "linear-gradient(120deg, rgba(139, 92, 246, 0.8) 0%, rgba(255, 255, 255, 1) 50%, rgba(139, 92, 246, 0.8) 100%)",
+          "linear-gradient(120deg, rgba(2, 132, 199, 0.85) 0%, rgba(255, 255, 255, 1) 50%, rgba(2, 132, 199, 0.85) 100%)",
         backgroundSize: "200% 100%",
         animationDuration: `${speed}s`,
       }}

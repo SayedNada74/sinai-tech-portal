@@ -96,7 +96,7 @@ export default function SavedItemsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
-          <BookmarkCheck className="h-6.5 w-6.5 text-violet-550" />
+          <BookmarkCheck className="h-6.5 w-6.5 text-sky-600" />
           {t("العناصر المحفوظة", "Saved Items")}
         </h1>
         <p className="text-sm text-zinc-550 dark:text-zinc-400 mt-1">
@@ -118,13 +118,13 @@ export default function SavedItemsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`pb-3 px-4 text-xs font-extrabold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
                 active
-                  ? "border-violet-650 text-violet-650 dark:border-violet-450 dark:text-violet-400"
+                  ? "border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
                   : "border-transparent text-zinc-450 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
               }`}
             >
               <Icon className="h-4 w-4" />
               {tab.label}
-              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${active ? "bg-violet-100 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400" : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-450"}`}>
+              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${active ? "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400" : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-450"}`}>
                 {tab.count}
               </span>
             </button>
@@ -266,7 +266,7 @@ export default function SavedItemsPage() {
                 <Card key={job.id} className="border border-zinc-200/50 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm flex flex-col justify-between">
                   <CardHeader className="pb-3 flex flex-row justify-between items-start space-y-0 gap-3">
                     <div>
-                      <Badge className="bg-violet-50 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400 text-[10px] font-bold">
+                      <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 text-[10px] font-bold">
                         {typesArabic[job.type] ? t(typesArabic[job.type].ar, typesArabic[job.type].en) : job.type}
                       </Badge>
                       <CardTitle className="text-sm font-bold text-zinc-950 dark:text-zinc-100 mt-2">{job.title}</CardTitle>
@@ -308,7 +308,7 @@ export default function SavedItemsPage() {
                 <Card key={ev.id} className="border border-zinc-200/50 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm flex flex-col justify-between">
                   <CardHeader className="pb-3 flex flex-row justify-between items-start space-y-0 gap-3">
                     <div>
-                      <Badge className="bg-indigo-50 text-indigo-650 dark:bg-indigo-950/40 dark:text-indigo-400 text-[10px] font-bold">
+                      <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 text-[10px] font-bold">
                         {eventTypesArabic[ev.type] ? t(eventTypesArabic[ev.type].ar, eventTypesArabic[ev.type].en) : ev.type}
                       </Badge>
                       <CardTitle className="text-sm font-bold text-zinc-950 dark:text-zinc-100 mt-2 leading-snug">{ev.title}</CardTitle>

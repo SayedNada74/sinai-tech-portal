@@ -25,7 +25,7 @@ function VerifyEmailContent() {
   return (
     <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60 text-center">
       <CardContent className="pt-8 pb-6 px-6">
-        <div className="mx-auto h-16 w-16 rounded-full bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-6">
+        <div className="mx-auto h-16 w-16 rounded-full bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-400 mb-6">
           <MailCheck className="h-9 w-9" />
         </div>
 
@@ -47,7 +47,7 @@ function VerifyEmailContent() {
       </CardContent>
 
       <CardFooter className="justify-center border-t border-zinc-100/50 py-4 dark:border-zinc-800/30">
-        <Link href="/auth/login" className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-violet-600 transition-colors dark:text-zinc-400 dark:hover:text-violet-400">
+        <Link href="/auth/login" className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-sky-600 transition-colors dark:text-zinc-400 dark:hover:text-sky-400">
           <ArrowLeft className="h-3.5 w-3.5" />
           العودة لتسجيل الدخول
         </Link>
@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
   return (
     <div className="w-full flex flex-col items-center relative">
       {/* Background Decorative Glow */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-sky-600/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ export default function VerifyEmailPage() {
         <React.Suspense fallback={
           <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60 p-8 text-center">
             <div className="flex flex-col items-center gap-4 py-8">
-              <div className="h-8 w-8 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+              <div className="h-8 w-8 rounded-full border-2 border-sky-600 border-t-transparent animate-spin" />
               <p className="text-sm text-zinc-500 dark:text-zinc-400">جاري تحميل صفحة التحقق...</p>
             </div>
           </Card>

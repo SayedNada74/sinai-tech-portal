@@ -60,12 +60,12 @@ export function AiFloatingButton() {
             className="mb-4 w-[340px] h-[450px] bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/65 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
           >
             {/* Header */}
-            <CardHeader className="py-3.5 px-4 bg-violet-650 text-white flex flex-row items-center justify-between shrink-0 space-y-0">
+            <CardHeader className="py-3.5 px-4 bg-sky-600 text-white flex flex-row items-center justify-between shrink-0 space-y-0">
               <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-violet-100" />
+                <Bot className="h-5 w-5 text-sky-100" />
                 <div className="text-right">
                   <h3 className="font-extrabold text-xs">المرشد الأكاديمي السريع</h3>
-                  <span className="text-[9px] text-violet-200">مساعد الذكاء الاصطناعي الذكي</span>
+                  <span className="text-[9px] text-sky-200">مساعد الذكاء الاصطناعي الذكي</span>
                 </div>
               </div>
               <button
@@ -88,14 +88,14 @@ export function AiFloatingButton() {
                     }`}
                   >
                     <div className={`h-6.5 w-6.5 rounded-lg flex items-center justify-center shrink-0 text-xs ${
-                      isAssistant ? "bg-violet-100 text-violet-750 dark:bg-violet-950/40" : "bg-zinc-100 text-zinc-650"
+                      isAssistant ? "bg-sky-100 text-sky-800 dark:bg-sky-950/40" : "bg-zinc-100 text-zinc-650"
                     }`}>
                       {isAssistant ? "🤖" : "👤"}
                     </div>
                     <div className={`p-3 rounded-2xl text-[11px] leading-relaxed ${
                       isAssistant
                         ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700/60 font-medium"
-                        : "bg-violet-600 text-white dark:bg-violet-600 font-medium"
+                        : "bg-sky-600 text-white dark:bg-sky-600 font-medium"
                     }`}>
                       {/* Simple line formatting */}
                       {msg.content.split("\n").map((line, lIdx) => {
@@ -114,11 +114,11 @@ export function AiFloatingButton() {
 
               {isLoading && (
                 <div className="flex gap-2.5 max-w-[85%] mr-0 ml-auto">
-                  <div className="h-6.5 w-6.5 rounded-lg bg-violet-100 text-violet-750 flex items-center justify-center shrink-0 text-xs">
+                  <div className="h-6.5 w-6.5 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center shrink-0 text-xs">
                     🤖
                   </div>
                   <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 flex items-center gap-1.5 text-[10px] font-bold">
-                    <Spinner className="h-3 w-3 text-violet-500" />
+                    <Spinner className="h-3 w-3 text-sky-500" />
                     <span>يكتب...</span>
                   </div>
                 </div>
@@ -147,7 +147,7 @@ export function AiFloatingButton() {
       {/* Floating Trigger FAB */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-14 w-14 rounded-full bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600 text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-105 active:scale-95 cursor-pointer relative"
+        className="h-14 w-14 rounded-full bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-105 active:scale-95 cursor-pointer relative"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
@@ -157,7 +157,7 @@ export function AiFloatingButton() {
           ) : (
             <motion.div key="chat" initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="relative">
               <MessageCircle className="h-6 w-6" />
-              <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 border-2 border-violet-600 flex items-center justify-center text-[7px] font-black text-white">1</span>
+              <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 border-2 border-sky-600 flex items-center justify-center text-[7px] font-black text-white">1</span>
             </motion.div>
           )}
         </AnimatePresence>

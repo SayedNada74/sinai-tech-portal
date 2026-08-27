@@ -108,8 +108,8 @@ export default function DirectoryPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-3">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center shadow-inner">
-            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 dark:text-indigo-400" />
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-sky-100 dark:bg-sky-500/20 flex items-center justify-center shadow-inner">
+            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-sky-600 dark:text-sky-400" />
           </div>
           {t("دليل الطلاب", "Student Directory")}
         </h1>
@@ -166,14 +166,14 @@ export default function DirectoryPage() {
                 transition={{ duration: 0.2 }}
               >
                 <Link href={`/profile/${user.id}`}>
-                  <Card className="group h-full border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800/50 rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl transition-all cursor-pointer relative">
+                  <Card className="group h-full border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-sky-800/50 rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl transition-all cursor-pointer relative">
                     <CardContent className="p-5 flex flex-col items-center text-center h-full relative z-10">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-sm overflow-hidden mb-3 group-hover:scale-105 transition-transform">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-sm overflow-hidden mb-3 group-hover:scale-105 transition-transform">
                         {isValidImageAvatar(user.avatar) ? (
                           <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                         ) : (
                           <span className={cn(
-                            "font-black text-indigo-700 dark:text-indigo-300",
+                            "font-black text-sky-700 dark:text-sky-300",
                             getAvatarFallback(user.avatar, user.name).length > 2 ? "text-xl" : "text-3xl"
                           )}>{getAvatarFallback(user.avatar, user.name)}</span>
                         )}
@@ -198,7 +198,7 @@ export default function DirectoryPage() {
                       </p>
 
                       <div className="mt-auto pt-4 w-full flex justify-center">
-                        <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 group-hover:gap-2 transition-all">
+                        <span className="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1 group-hover:gap-2 transition-all">
                           {t("زيارة الملف الشخصي", "View Profile")}
                           <ArrowIcon className="h-3 w-3" />
                         </span>

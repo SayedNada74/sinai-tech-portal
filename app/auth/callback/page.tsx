@@ -207,7 +207,7 @@ function CallbackHandler() {
     return (
       <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60 p-8 text-center">
         <div className="flex flex-col items-center gap-4 py-8">
-          <div className="h-10 w-10 rounded-full border-3 border-violet-600 border-t-transparent animate-spin" />
+          <div className="h-10 w-10 rounded-full border-3 border-sky-600 border-t-transparent animate-spin" />
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">جاري توثيق الهوية وإنشاء الجلسة...</h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">يرجى الانتظار لحظة أثناء توجيهك إلى لوحتك الأكاديمية.</p>
         </div>
@@ -262,7 +262,7 @@ function CallbackHandler() {
 export default function AuthCallbackPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col justify-center items-center px-6 py-12 relative" dir="rtl">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-sky-600/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -277,7 +277,7 @@ export default function AuthCallbackPage() {
         <React.Suspense fallback={
           <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60 p-8 text-center">
             <div className="flex flex-col items-center gap-4 py-8">
-              <div className="h-8 w-8 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+              <div className="h-8 w-8 rounded-full border-2 border-sky-600 border-t-transparent animate-spin" />
               <p className="text-sm text-zinc-500 dark:text-zinc-400">جاري معالجة رابط التفعيل...</p>
             </div>
           </Card>

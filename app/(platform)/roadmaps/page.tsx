@@ -97,7 +97,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleEn: "Full Stack Developer",
     category: "Web Development",
     icon: "🚀",
-    color: "from-violet-500 to-purple-600",
+    color: "from-sky-500 to-blue-600",
     descAr: "الجمع بين الواجهات الأمامية والأنظمة الخلفية لتطوير تطبيقات ويب متكاملة وقابلة للتوسع.",
     descEn: "Combine frontend and backend skills to build scalable, full-stack web applications.",
     url: "https://roadmap.sh/full-stack",
@@ -170,7 +170,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleEn: "Computer Science Fundamentals",
     category: "Core Academics",
     icon: "💻",
-    color: "from-indigo-500 to-blue-700",
+    color: "from-sky-600 to-blue-700",
     descAr: "أساسيات هياكل البيانات، الخوارزميات، نظم التشغيل، شبكات الحاسب، وتصميم الأنظمة.",
     descEn: "Core concepts of Data Structures, Algorithms, Operating Systems, Networks, and System Design.",
     url: "https://roadmap.sh/computer-science",
@@ -187,7 +187,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleEn: "DevOps Engineer",
     category: "Cloud & Infrastructure",
     icon: "☁️",
-    color: "from-sky-500 to-indigo-600",
+    color: "from-sky-500 to-cyan-600",
     descAr: "أتمتة البنية التحتية، Docker, Kubernetes, CI/CD Pipelines, والسحابة الإلكترونية AWS.",
     descEn: "Infrastructure automation, Docker, Kubernetes, CI/CD Pipelines, and AWS Cloud.",
     url: "https://roadmap.sh/devops",
@@ -264,10 +264,10 @@ export default function RoadmapsPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-cyan-600/10 via-indigo-600/10 to-violet-500/10 border border-cyan-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-500/10 border border-cyan-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
         >
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-cyan-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-md">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
@@ -293,7 +293,7 @@ export default function RoadmapsPage() {
               </Button>
             </Link>
             <Link href="/auth/register" className="flex-1 sm:flex-none">
-              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-700 hover:to-indigo-700 text-white shadow-md">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white shadow-md">
                 {t("إنشاء حساب 🚀", "Register 🚀")}
               </Button>
             </Link>

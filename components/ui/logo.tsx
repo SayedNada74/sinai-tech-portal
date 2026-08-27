@@ -41,7 +41,7 @@ export function Logo({
       gap: "gap-4"
     },
     xl: {
-      box: "h-24 w-24 rounded-3xl p-3.5 shadow-xl shadow-violet-500/10",
+      box: "h-24 w-24 rounded-3xl p-3.5 shadow-xl shadow-sky-500/10",
       title: "text-3xl font-black tracking-tight mt-2 leading-none",
       sub: "text-[13px] font-bold tracking-[0.3em] leading-none mt-2",
       gap: "gap-1 flex-col items-center text-center"
@@ -74,7 +74,7 @@ export function Logo({
       {/* High-contrast logo container badge that guarantees 100% visibility in both Light and Dark mode */}
       <div
         className={cn(
-          "bg-white dark:bg-white border border-zinc-200 dark:border-zinc-300 shadow-md shadow-violet-500/10 overflow-hidden flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
+          "bg-white dark:bg-white border border-zinc-200 dark:border-zinc-300 shadow-md shadow-sky-500/10 overflow-hidden flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
           currentSize.box
         )}
       >
@@ -90,7 +90,7 @@ export function Logo({
           <span className={cn("font-sans tracking-tight text-zinc-900 dark:text-zinc-50 font-bold", currentSize.title)}>
             SU IT
           </span>
-          <span className={cn("uppercase text-violet-600 dark:text-violet-400 font-mono mt-0.5", currentSize.sub)}>
+          <span className={cn("uppercase text-sky-600 dark:text-sky-400 font-mono mt-0.5", currentSize.sub)}>
             {subtitle}
           </span>
         </div>

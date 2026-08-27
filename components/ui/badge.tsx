@@ -11,7 +11,7 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
 
   const variants = {
     default:
-      "bg-violet-100 text-violet-800 dark:bg-violet-500/10 dark:text-violet-400 border border-violet-200/50 dark:border-violet-500/20",
+      "bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400 border border-sky-200/60 dark:border-sky-500/20",
     secondary:
       "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-700/50",
     success:

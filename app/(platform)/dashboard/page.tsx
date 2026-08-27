@@ -85,7 +85,7 @@ export default function DashboardPage() {
           value: `${courses.length}`,
           description: t("مقرر دراسي بالكلية", "Faculty Courses"),
           icon: BookOpen,
-          color: "text-indigo-500"
+          color: "text-sky-500"
         },
         {
           label: t("حالة السيرفر والخدمات الحية", "System Operational Health"),
@@ -108,7 +108,7 @@ export default function DashboardPage() {
           value: `${completedCredits} / 144`,
           description: t("ساعة معتمدة", "Credits"),
           icon: GraduationCap,
-          color: "text-indigo-500"
+          color: "text-sky-500"
         },
         {
           label: t("المواد المتبقية للتخرج", "Remaining Courses"),
@@ -266,13 +266,13 @@ export default function DashboardPage() {
           const Icon = stat.icon;
           const spotlightColors = [
             "rgba(6, 182, 212, 0.35)",  // Cyan for GPA
-            "rgba(99, 102, 241, 0.35)", // Indigo for Credits
+            "rgba(2, 132, 199, 0.35)",  // Sinai Tech Blue for Credits
             "rgba(20, 184, 166, 0.35)"  // Teal for Remaining Courses
           ];
           return (
             <SpotlightCard
               key={idx}
-              className="border border-zinc-200/70 dark:border-zinc-800/80 shadow-sm hover:border-violet-500/50 dark:hover:border-violet-400/50 hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 transition-all duration-300 cursor-default"
+              className="border border-zinc-200/70 dark:border-zinc-800/80 shadow-sm hover:border-sky-500/50 dark:hover:border-sky-400/50 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 cursor-default"
               spotlightColor={spotlightColors[idx % spotlightColors.length]}
             >
               <div className="p-6">
@@ -334,8 +334,8 @@ export default function DashboardPage() {
                       </SpotlightCard>
                     </Link>
                     <Link href="/admin/courses" className="block">
-                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(99, 102, 241, 0.35)">
-                        <BookOpen className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-sky-500 dark:hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(2, 132, 199, 0.35)">
+                        <BookOpen className="h-6 w-6 text-sky-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة المقررات", "Manage Courses")}</span>
                       </SpotlightCard>
                     </Link>
@@ -361,8 +361,8 @@ export default function DashboardPage() {
                       </SpotlightCard>
                     </Link>
                     <Link href="/settings" className="block">
-                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(99, 102, 241, 0.35)">
-                        <Settings className="h-6 w-6 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-sky-500 dark:hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(2, 132, 199, 0.35)">
+                        <Settings className="h-6 w-6 text-sky-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الإعدادات", "Settings")}</span>
                       </SpotlightCard>
                     </Link>
@@ -415,7 +415,7 @@ export default function DashboardPage() {
           <Card className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-black uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
-                <Compass className="h-5 w-5 text-indigo-500" />
+                <Compass className="h-5 w-5 text-sky-500" />
                 {t("متابعة تقدم خارطة الطريق المهنية", "Career Roadmap Progress Tracking")}
               </CardTitle>
             </CardHeader>

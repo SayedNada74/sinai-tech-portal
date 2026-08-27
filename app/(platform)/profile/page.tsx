@@ -432,8 +432,8 @@ export default function ProfilePage() {
 
         {message.text && (
           <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${message.type === "success"
-              ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
-              : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+            ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+            : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
             }`}>
             {message.type === "success" ? <Check className="h-5 w-5 shrink-0" /> : <ShieldAlert className="h-5 w-5 shrink-0" />}
             <span>{message.text}</span>
@@ -589,10 +589,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Completion Progress Bar with ReactBits SpotlightCard & CountUp */}
-        <SpotlightCard className="w-full sm:w-72 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm" spotlightColor="rgba(139, 92, 246, 0.15)">
+        <SpotlightCard className="w-full sm:w-72 p-4 border border-zinc-200/50 dark:border-zinc-800/60 rounded-2xl shadow-sm" spotlightColor="rgba(2, 132, 199, 0.22)">
           <div className="flex justify-between items-center text-xs font-bold text-zinc-700 dark:text-zinc-50 mb-2">
             <span>{t("نسبة اكتمال البورتفوليو", "Portfolio Completion")}</span>
-            <span className="text-violet-650 dark:text-zinc-50 font-black">
+            <span className="text-sky-600 dark:text-sky-400 font-black">
               <CountUp to={completionPercentage} suffix="%" duration={1.2} />
             </span>
           </div>
@@ -601,7 +601,7 @@ export default function ProfilePage() {
               initial={{ width: 0 }}
               animate={{ width: `${completionPercentage}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-violet-600 to-indigo-650"
+              className="h-full bg-gradient-to-r from-sky-600 to-cyan-600"
             />
           </div>
         </SpotlightCard>
@@ -609,8 +609,8 @@ export default function ProfilePage() {
 
       {message.text && (
         <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center gap-3 ${message.type === "success"
-            ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
-            : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+          ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+          : "bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
           }`}>
           {message.type === "success" ? <Check className="h-5 w-5 shrink-0" /> : <ShieldAlert className="h-5 w-5 shrink-0" />}
           <span>{message.text}</span>
@@ -624,12 +624,12 @@ export default function ProfilePage() {
             <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm text-center">
               <CardContent className="pt-8">
                 {/* Profile Avatar Display & Upload Overlay */}
-                <div className="relative mx-auto h-28 w-28 rounded-3xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-800/40 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
+                <div className="relative mx-auto h-28 w-28 rounded-3xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/40 shadow-lg overflow-hidden group mb-4 flex items-center justify-center">
                   {isValidImageAvatar(avatar) ? (
                     <img src={avatar} alt="Profile" className="h-full w-full object-cover rounded-3xl" />
                   ) : (
                     <span className={cn(
-                      "font-black text-violet-700 dark:text-violet-300",
+                      "font-black text-sky-700 dark:text-sky-300",
                       getAvatarFallback(avatar, user?.name).length > 2 ? "text-3xl" : "text-5xl"
                     )}>{getAvatarFallback(avatar, user?.name)}</span>
                   )}
@@ -706,8 +706,8 @@ export default function ProfilePage() {
                         type="button"
                         onClick={() => setAvatar(av)}
                         className={`h-9 w-9 rounded-lg border text-sm flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-850 transition-colors cursor-pointer ${avatar === av
-                            ? "border-violet-650 bg-violet-50 text-violet-650 dark:border-violet-500 dark:bg-violet-950/45"
-                            : "border-zinc-200 dark:border-zinc-800 bg-transparent"
+                          ? "border-sky-600 bg-sky-50 text-sky-600 dark:border-sky-500 dark:bg-sky-950/45"
+                          : "border-zinc-200 dark:border-zinc-800 bg-transparent"
                           }`}
                       >
                         {av}
@@ -907,7 +907,7 @@ export default function ProfilePage() {
                         value={level}
                         onChange={(e) => setLevel(e.target.value)}
                         disabled={isLoading}
-                        className={`w-full h-11 ${isRtl ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-sm text-zinc-905 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer appearance-none`}
+                        className={`w-full h-11 ${isRtl ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-sm text-zinc-905 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer appearance-none`}
                       >
                         <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)", "Year 1 (Freshman)")}</option>
                         <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
@@ -947,7 +947,7 @@ export default function ProfilePage() {
                     onChange={(e) => setBio(e.target.value)}
                     disabled={isLoading}
                     placeholder={t("اكتب نبذة قصيرة عن اهتماماتك الأكاديمية والتقنية...", "Write a short bio about your academic & tech interests...")}
-                    className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 transition-all duration-200 resize-none leading-relaxed"
+                    className="w-full p-3 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-950 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 transition-all duration-200 resize-none leading-relaxed"
                   />
                 </div>
               </CardContent>
@@ -980,7 +980,7 @@ export default function ProfilePage() {
                       skills.map((skill, idx) => (
                         <Badge
                           key={idx}
-                          className="bg-violet-50 hover:bg-red-50 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400 border border-violet-100 dark:border-violet-800/30 pl-2 pr-2.5 py-1 text-xs rounded-lg cursor-pointer flex items-center gap-1.5 group transition-colors hover:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-950/20 hover:border-red-200"
+                          className="bg-sky-50 hover:bg-red-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 border border-sky-100 dark:border-sky-800/30 pl-2 pr-2.5 py-1 text-xs rounded-lg cursor-pointer flex items-center gap-1.5 group transition-colors hover:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-950/20 hover:border-red-200"
                           onClick={() => handleRemoveSkill(skill)}
                         >
                           <span>{skill}</span>
@@ -1114,7 +1114,7 @@ export default function ProfilePage() {
                             href={proj.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[9px] font-black text-violet-600 dark:text-violet-400 hover:underline mt-1 block"
+                            className="text-[9px] font-black text-sky-600 dark:text-sky-400 hover:underline mt-1 block"
                           >
                             {t("عرض كود المشروع 🔗", "View Project Code 🔗")}
                           </a>
@@ -1144,8 +1144,8 @@ export default function ProfilePage() {
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm col-span-1 md:col-span-2 overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-3xl">
             <CardHeader className="bg-zinc-50/50 dark:bg-zinc-950/20 border-b border-zinc-100 dark:border-zinc-850 p-4 sm:p-5">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center shrink-0 shadow-inner">
-                  <ShieldAlert className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="h-9 w-9 rounded-2xl bg-sky-100 dark:bg-sky-500/20 flex items-center justify-center shrink-0 shadow-inner">
+                  <ShieldAlert className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                 </div>
                 <div>
                   <CardTitle className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
@@ -1168,7 +1168,7 @@ export default function ProfilePage() {
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-center">
                     <input type="checkbox" className="sr-only peer" checked={publicSkills} onChange={(e) => setPublicSkills(e.target.checked)} />
-                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
+                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-sky-600"></div>
                   </label>
                 </div>
 
@@ -1181,7 +1181,7 @@ export default function ProfilePage() {
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer shrink-0 self-start sm:self-center">
                     <input type="checkbox" className="sr-only peer" checked={publicProjects} onChange={(e) => setPublicProjects(e.target.checked)} />
-                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
+                    <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-sky-600"></div>
                   </label>
                 </div>
               </div>

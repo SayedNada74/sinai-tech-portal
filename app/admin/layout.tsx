@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case "super-admin":
         return { label: t("مشرف أعلى 👑", "Super Admin 👑"), color: "bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-400" };
       case "admin":
-        return { label: t("مسؤول النظام ⚙️", "System Admin ⚙️"), color: "bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-950/20 dark:border-violet-900 dark:text-violet-400" };
+        return { label: t("مسؤول النظام ⚙️", "System Admin ⚙️"), color: "bg-sky-50 border-sky-200 text-sky-700 dark:bg-sky-950/20 dark:border-sky-900 dark:text-sky-400" };
       case "moderator":
         return { label: t("منسق محتوى 📚", "Content Moderator 📚"), color: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400" };
       default:
@@ -94,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity min-w-0"
             title={t("العودة للرئيسية الإدارية", "Go to Admin Dashboard")}
           >
-            <div className="h-8 w-8 rounded-lg bg-violet-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+            <div className="h-8 w-8 rounded-lg bg-sky-600 flex items-center justify-center text-white shrink-0 shadow-xs">
               <GraduationCap className="h-4.5 w-4.5" />
             </div>
             <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-50 truncate">
@@ -176,11 +176,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.path}
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${active
-                        ? "bg-violet-50 text-violet-600 dark:bg-violet-950/20 dark:text-violet-400"
+                        ? "bg-sky-50 text-sky-600 dark:bg-sky-950/20 dark:text-sky-400"
                         : "text-zinc-650 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-950 dark:hover:text-zinc-100"
                       }`}
                   >
-                    <Icon className={`h-4.5 w-4.5 ${active ? "text-violet-600 dark:text-violet-400" : "text-zinc-400"}`} />
+                    <Icon className={`h-4.5 w-4.5 ${active ? "text-sky-600 dark:text-sky-400" : "text-zinc-400"}`} />
                     <span>{t(item.nameAr, item.nameEn)}</span>
                   </Link>
                 );
@@ -197,7 +197,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-850 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer shadow-2xs"
                 title={t("تغيير لغة المنصة", "Change Language")}
               >
-                <Globe className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+                <Globe className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                 <span>{lang === "ar" ? "English" : "العربية"}</span>
               </button>
 

@@ -62,7 +62,7 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Calculator className="h-7 w-7 text-violet-600 dark:text-violet-400" />,
+      icon: <Calculator className="h-7 w-7 text-sky-600 dark:text-sky-400" />,
       title: t("حاسبة ومحاكي المعدل التراكمي (GPA)", "GPA Calculator & Predictor"),
       description: t(
         "حساب فوري دقيق لمعدلك الفصلي والتراكمي، مع محاكي ذكي يحدد التقدير والدرجات المطلوبة بالضبط للتخرج بالمعدل الذي تطمح إليه.",
@@ -78,7 +78,7 @@ export default function LandingPage() {
       )
     },
     {
-      icon: <Sparkles className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />,
+      icon: <Sparkles className="h-7 w-7 text-sky-600 dark:text-sky-400" />,
       title: t("المساعد الأكاديمي الذكي (AI Advisor)", "Smart AI Academic Advisor"),
       description: t(
         "مرشد ذكي مدرب على اللوائح الأكاديمية لجامعة سيناء يجيب على تساؤلاتك، يقترح خطط التسجيل، ويحلل أدائك.",
@@ -119,15 +119,15 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 overflow-x-hidden selection:bg-violet-500 selection:text-white" dir={dir}>
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 overflow-x-hidden selection:bg-sky-500 selection:text-white" dir={dir}>
       <Navbar />
 
       <main className="flex-1">
         {/* Hero Section - Perfectly framed to fill viewport ending right at the guest tools cards */}
         <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center items-center py-6 sm:py-8 px-4 sm:px-6 overflow-hidden">
           {/* Glowing Background Orbs */}
-          <div className="absolute -top-40 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-violet-600/10 via-indigo-600/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute top-1/3 left-10 w-[400px] h-[400px] bg-gradient-to-tr from-indigo-500/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute -top-40 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-sky-600/10 via-cyan-600/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/3 left-10 w-[400px] h-[400px] bg-gradient-to-tr from-sky-500/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
 
           <div className="w-full max-w-5xl mx-auto text-center relative z-10 space-y-3 sm:space-y-4 my-auto">
             {/* Top Floating Badge */}
@@ -135,10 +135,10 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-violet-500/25 dark:border-violet-500/30 bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white text-xs sm:text-sm font-semibold shadow-xs backdrop-blur-md transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-sky-500/25 dark:border-sky-500/30 bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white text-xs sm:text-sm font-semibold shadow-xs backdrop-blur-md transition-colors"
             >
               <span>{t("المنصة التعليمية الشاملة لطلاب جامعة سيناء", "The comprehensive educational platform for Sinai University students.")}</span>
-              <GraduationCap className="h-4 w-4 text-violet-500 dark:text-violet-400 shrink-0" />
+              <GraduationCap className="h-4 w-4 text-sky-600 dark:text-sky-400 shrink-0" />
             </motion.div>
 
             {/* Hero Main Headline - Matches screenshot 1 exact calm lavender styling */}
@@ -151,7 +151,7 @@ export default function LandingPage() {
               <span className="block text-zinc-950 dark:text-white">
                 {t("دليلك الأكاديمي والمهني لرحلة", "Your Academic & Career Guide for a")}
               </span>
-              <span className="block mt-1 sm:mt-2 text-violet-400 dark:text-violet-300">
+              <span className="block mt-1 sm:mt-2 text-sky-600 dark:text-sky-400">
                 {t("تخرج ذكية وبدون عوائق", "Smart Graduation Without Hurdles")}
               </span>
             </motion.h1>
@@ -178,7 +178,7 @@ export default function LandingPage() {
             >
               <Link href={portalHref} className="w-full sm:w-auto">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button size="lg" className="w-full sm:w-auto px-7 py-2.5 text-sm font-bold shadow-md shadow-violet-600/20 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl gap-2 cursor-pointer">
+                  <Button size="lg" className="w-full sm:w-auto px-7 py-2.5 text-sm font-bold shadow-md shadow-sky-600/20 bg-sky-600 hover:bg-sky-700 text-white rounded-2xl gap-2 cursor-pointer">
                     <span>{t("دخول منصة الطالب", "Open Student Portal")}</span>
                     <ArrowRight className={`h-4 w-4 ${lang === "ar" ? "rotate-180" : ""}`} />
                   </Button>
@@ -202,14 +202,14 @@ export default function LandingPage() {
               className="pt-3 sm:pt-4 max-w-4xl mx-auto w-full"
             >
               {/* Eye-catching Chic Badge with Live Pulse Dot & ShinyText */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-violet-500/30 dark:border-violet-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-sm shadow-violet-500/5 backdrop-blur-md transition-all">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-sky-500/30 dark:border-sky-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-sm shadow-sky-500/5 backdrop-blur-md transition-all">
                 {/* Live glowing radar pulse dot */}
                 <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
                 </span>
                 <ShinyText text={t("أدوات مفتوحة للتجربة السريعة بدون تسجيل", "Instant Free Exploration Tools (No Login Required)")} className="font-bold text-zinc-850 dark:text-zinc-100" />
-                <span className="px-1.5 py-0.5 rounded-md bg-violet-500/10 dark:bg-violet-400/15 text-violet-600 dark:text-violet-300 text-[9px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-md bg-sky-500/10 dark:bg-sky-400/15 text-sky-600 dark:text-sky-300 text-[9px] font-bold">
                   {t("متاح للجميع ⚡", "Open to All ⚡")}
                 </span>
               </div>
@@ -217,30 +217,30 @@ export default function LandingPage() {
               {/* Ambient Glow Wrapper & 3 Interactive Cards */}
               <div className="relative group/grid max-w-3xl mx-auto">
                 {/* Subtle ambient blur glow behind cards */}
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-600/10 rounded-3xl blur-xl opacity-50 group-hover/grid:opacity-80 transition-opacity pointer-events-none -z-10" />
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-600/10 rounded-3xl blur-xl opacity-50 group-hover/grid:opacity-80 transition-opacity pointer-events-none -z-10" />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-right" dir={dir}>
                   {/* Card 1: GPA Calculator with ReactBits SpotlightCard */}
                   <Link href="/gpa" className="group block h-full">
-                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-violet-500/10 hover:border-violet-500/50 dark:hover:border-violet-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(139, 92, 246, 0.18)">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-sky-500/10 hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(2, 132, 199, 0.22)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                          <div className="h-9 w-9 rounded-xl bg-sky-50 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300 border border-sky-100 dark:border-zinc-700/50 shadow-2xs">
                             <Calculator className="h-4.5 w-4.5" />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("حاسبة الـ GPA", "GPA Calculator")}</h4>
-                              <span className="text-[9px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/60 px-1.5 py-0.5 rounded border border-violet-200/40 dark:border-violet-800/40 shrink-0">
+                              <span className="text-[9px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-200/40 dark:border-sky-800/40 shrink-0">
                                 {t("فوري", "Instant")}
                               </span>
                             </div>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("حساب فوري وسيناريوهات التخرج", "Instant GPA & What-If Simulation")}</p>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("توقع درجات التخرج والمعدل الفصلي", "Target Graduation Predictor")}</p>
                           </div>
                         </div>
 
                         {/* Chic Action Indicator */}
-                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
@@ -249,16 +249,16 @@ export default function LandingPage() {
 
                   {/* Card 2: Course Explorer with ReactBits SpotlightCard */}
                   <Link href="/courses" className="group block h-full">
-                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(99, 102, 241, 0.18)">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-sky-500/10 hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(2, 132, 199, 0.22)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                          <div className="h-9 w-9 rounded-xl bg-sky-50 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300 border border-sky-100 dark:border-zinc-700/50 shadow-2xs">
                             <BookOpen className="h-4.5 w-4.5" />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("دليل المقررات", "Course Explorer")}</h4>
-                              <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded border border-indigo-200/40 dark:border-indigo-800/40 shrink-0">
+                              <span className="text-[9px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-200/40 dark:border-sky-800/40 shrink-0">
                                 {t("الشجرة", "Tree")}
                               </span>
                             </div>
@@ -267,7 +267,7 @@ export default function LandingPage() {
                         </div>
 
                         {/* Chic Action Indicator */}
-                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
@@ -276,16 +276,16 @@ export default function LandingPage() {
 
                   {/* Card 3: Career Roadmaps with ReactBits SpotlightCard */}
                   <Link href="/roadmaps" className="group block h-full">
-                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/50 dark:hover:border-purple-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(168, 85, 247, 0.18)">
+                    <SpotlightCard className="h-full p-3.5 shadow-xs hover:shadow-lg hover:shadow-sky-500/10 hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between" spotlightColor="rgba(2, 132, 199, 0.22)">
                       <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-9 w-9 rounded-xl bg-violet-50 dark:bg-zinc-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 border border-violet-100 dark:border-zinc-700/50 shadow-2xs">
+                          <div className="h-9 w-9 rounded-xl bg-sky-50 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300 border border-sky-100 dark:border-zinc-700/50 shadow-2xs">
                             <Compass className="h-4.5 w-4.5" />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
                               <h4 className="text-xs font-bold text-zinc-950 dark:text-white truncate">{t("مسارات التعلّم", "Career Roadmaps")}</h4>
-                              <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-200/40 dark:border-purple-800/40 shrink-0">
+                              <span className="text-[9px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-200/40 dark:border-sky-800/40 shrink-0">
                                 {t("2026", "2026")}
                               </span>
                             </div>
@@ -294,7 +294,7 @@ export default function LandingPage() {
                         </div>
 
                         {/* Chic Action Indicator */}
-                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
+                        <div className="h-7 w-7 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                           <ArrowUpRight className={`h-3.5 w-3.5 ${lang === "ar" ? "-scale-x-100" : ""}`} />
                         </div>
                       </div>
@@ -329,7 +329,7 @@ export default function LandingPage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`px-3 py-2.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none ${
                       activeTab === tab.id
-                        ? "bg-violet-600 text-white shadow-md shadow-violet-600/25"
+                        ? "bg-sky-600 text-white shadow-md shadow-sky-600/25"
                         : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-zinc-100/80 dark:bg-zinc-800/50 hover:bg-zinc-200/80 dark:hover:bg-zinc-800"
                     }`}
                   >
@@ -344,7 +344,7 @@ export default function LandingPage() {
                 {activeTab === "gpa" && (
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-none font-bold">
+                      <Badge className="bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-none font-bold">
                         {t("توقع فوري محاذى للوائح الكلية", "Sinai Regulations Compliant")}
                       </Badge>
                       <span className="text-xs text-zinc-400 font-semibold">{t("144 ساعة معتمدة", "144 Credit Hours")}</span>
@@ -384,7 +384,7 @@ export default function LandingPage() {
                 {activeTab === "ai" && (
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
+                      <Badge className="bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-none font-bold">
                         {t("ذكاء اصطناعي مخصص", "Custom AI Model")}
                       </Badge>
                       <span className="text-xs text-zinc-400 font-semibold">{t("استجابة لغوية فائقة", "Instant AI Response")}</span>
@@ -434,7 +434,7 @@ export default function LandingPage() {
                     }
                     className="w-full sm:w-auto"
                   >
-                    <Button size="sm" className="w-full sm:w-auto gap-2 font-bold text-xs cursor-pointer shadow-md bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl">
+                    <Button size="sm" className="w-full sm:w-auto gap-2 font-bold text-xs cursor-pointer shadow-md bg-sky-600 hover:bg-sky-700 text-white rounded-xl">
                       <span>{t("تجربة الخدمة مباشرة 🚀", "Try Feature Now 🚀")}</span>
                       <ChevronLeft className={`h-4 w-4 ${lang === "en" ? "rotate-180" : ""}`} />
                     </Button>
@@ -458,7 +458,7 @@ export default function LandingPage() {
                   icon: Calculator,
                   labelAr: "حاسبة ومحاكي الـ GPA الذكي",
                   labelEn: "Smart GPA Simulator & Predictor",
-                  color: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 },
                 {
                   icon: Calendar,
@@ -470,7 +470,7 @@ export default function LandingPage() {
                   icon: Sparkles,
                   labelAr: "المرشد الأكاديمي الذكي بالـ AI",
                   labelEn: "24/7 AI Academic Counselor",
-                  color: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 },
                 {
                   icon: GraduationCap,
@@ -506,14 +506,14 @@ export default function LandingPage() {
                   icon: Zap,
                   labelAr: "أداء فائق واستجابة لحظية",
                   labelEn: "Sub-Second Performance & Speed",
-                  color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 }
               ].map((item, idx) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={`t1-${idx}`}
-                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-violet-400 dark:hover:border-violet-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
+                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-sky-400 dark:hover:border-sky-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
                   >
                     <div className={`p-1 rounded-lg border ${item.color} flex items-center justify-center shrink-0`}>
                       <Icon className="h-3.5 w-3.5" />
@@ -533,7 +533,7 @@ export default function LandingPage() {
                   icon: Calculator,
                   labelAr: "حاسبة ومحاكي الـ GPA الذكي",
                   labelEn: "Smart GPA Simulator & Predictor",
-                  color: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 },
                 {
                   icon: Calendar,
@@ -545,7 +545,7 @@ export default function LandingPage() {
                   icon: Sparkles,
                   labelAr: "المرشد الأكاديمي الذكي بالـ AI",
                   labelEn: "24/7 AI Academic Counselor",
-                  color: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 },
                 {
                   icon: GraduationCap,
@@ -581,14 +581,14 @@ export default function LandingPage() {
                   icon: Zap,
                   labelAr: "أداء فائق واستجابة لحظية",
                   labelEn: "Sub-Second Performance & Speed",
-                  color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
+                  color: "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/20"
                 }
               ].map((item, idx) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={`t2-${idx}`}
-                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-violet-400 dark:hover:border-violet-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
+                    className="flex items-center gap-2.5 px-4.5 py-2.5 rounded-full bg-white/90 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800/80 shadow-2xs hover:shadow-md hover:border-sky-400 dark:hover:border-sky-600/70 hover:scale-105 transition-all duration-200 select-none shrink-0"
                   >
                     <div className={`p-1 rounded-lg border ${item.color} flex items-center justify-center shrink-0`}>
                       <Icon className="h-3.5 w-3.5" />
@@ -612,8 +612,8 @@ export default function LandingPage() {
                   key={idx}
                   whileHover={{ y: -4 }}
                 >
-                  <SpotlightCard className="p-4 sm:p-5 text-center shadow-sm hover:shadow-md hover:border-violet-500/40 dark:hover:border-violet-500/40" spotlightColor="rgba(139, 92, 246, 0.12)">
-                    <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-500 mb-1">
+                  <SpotlightCard className="p-4 sm:p-5 text-center shadow-sm hover:shadow-md hover:border-sky-500/40 dark:hover:border-sky-500/40" spotlightColor="rgba(2, 132, 199, 0.18)">
+                    <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-cyan-500 mb-1">
                       <CountUp to={stat.num} suffix={stat.suffix} duration={1.6} />
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
@@ -630,7 +630,7 @@ export default function LandingPage() {
         <section className="py-12 sm:py-16 px-4 sm:px-6 bg-zinc-100/40 dark:bg-zinc-900/10">
           <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
             <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-              <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-none font-bold">
+              <Badge className="bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-none font-bold">
                 {t("سهولة فائقة في الاستخدام", "Simple & Intuitive")}
               </Badge>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
@@ -649,8 +649,8 @@ export default function LandingPage() {
                 {
                   step: "01",
                   icon: GraduationCap,
-                  iconClasses: "bg-violet-100 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 border border-violet-200/80 dark:border-violet-800/60 shadow-sm shadow-violet-500/10",
-                  badgeClasses: "bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20",
+                  iconClasses: "bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200/80 dark:border-sky-800/60 shadow-sm shadow-sky-500/10",
+                  badgeClasses: "bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20",
                   title: t("حدد فرقتك وقسمك التخصصي", "1. Choose Year & Department"),
                   desc: t(
                     "اختر فرقتك الدراسية (الأولى، الثانية، الثالثة، الرابعة) وتخصصك (IT, CS, IS) لتهيئة خطتك الدراسية فوراً.",
@@ -671,8 +671,8 @@ export default function LandingPage() {
                 {
                   step: "03",
                   icon: Sparkles,
-                  iconClasses: "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/60 shadow-sm shadow-indigo-500/10",
-                  badgeClasses: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20",
+                  iconClasses: "bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 shadow-sm shadow-blue-500/10",
+                  badgeClasses: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20",
                   title: t("احصل على توقعات الـ GPA وإرشاد الـ AI", "3. Get GPA Insights & AI Advice"),
                   desc: t(
                     "استمتع بحساب وتوقع فوري للمعدل التراكمي المطلوب للتخرج بامتياز، مع استشارات ذكية من المرشد الأكاديمي الذكي.",
@@ -719,7 +719,7 @@ export default function LandingPage() {
         <section id="features" className="py-12 sm:py-16 px-4 sm:px-6 relative">
           <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
             <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-              <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-none font-bold">
+              <Badge className="bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-none font-bold">
                 {t("مميزات حصرية", "Exclusive Features")}
               </Badge>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50">
@@ -742,7 +742,7 @@ export default function LandingPage() {
             >
               {features.map((feature, idx) => (
                 <motion.div key={idx} variants={itemVariants} whileHover={{ y: -4, scale: 1.01 }}>
-                  <Card className="h-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 backdrop-blur-sm shadow-md hover:shadow-xl hover:border-violet-500/50 transition-all rounded-3xl">
+                  <Card className="h-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 backdrop-blur-sm shadow-md hover:shadow-xl hover:border-sky-500/50 transition-all rounded-3xl">
                     <CardHeader className="flex flex-row items-center gap-3.5 pb-2">
                       <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800/60 rounded-2xl shrink-0">
                         {feature.icon}
@@ -762,17 +762,17 @@ export default function LandingPage() {
         </section>
 
         {/* PWA Mobile App Install Section */}
-        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-to-b from-zinc-50 to-violet-50/40 dark:from-zinc-950 dark:to-violet-950/20 overflow-hidden">
+        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-to-b from-zinc-50 to-sky-50/40 dark:from-zinc-950 dark:to-sky-950/20 overflow-hidden">
           <div className="max-w-6xl mx-auto">
-            <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-violet-50/90 via-indigo-50/80 to-purple-50/70 dark:from-violet-950/80 dark:via-indigo-950/70 dark:to-zinc-950 shadow-2xl border border-violet-200/80 dark:border-violet-800/40 relative overflow-hidden transition-all">
+            <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-sky-50/90 via-blue-50/80 to-cyan-50/70 dark:from-sky-950/80 dark:via-blue-950/70 dark:to-zinc-950 shadow-2xl border border-sky-200/80 dark:border-sky-800/40 relative overflow-hidden transition-all">
               {/* Background Ambient Glows */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/15 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-400/15 dark:bg-violet-600/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-sky-400/15 dark:bg-sky-600/30 rounded-full blur-3xl pointer-events-none" />
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center relative z-10">
                 <div className={`lg:col-span-8 space-y-4 sm:space-y-5 ${dir === "rtl" ? "text-right" : "text-left"}`} dir={dir}>
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 dark:bg-white/10 backdrop-blur-md border border-violet-200 dark:border-white/20 text-xs font-bold text-violet-700 dark:text-violet-200">
-                    <Smartphone className="h-4 w-4 text-violet-600 dark:text-cyan-300" />
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-100 dark:bg-white/10 backdrop-blur-md border border-sky-200 dark:border-white/20 text-xs font-bold text-sky-700 dark:text-sky-200">
+                    <Smartphone className="h-4 w-4 text-sky-600 dark:text-cyan-300" />
                     <span>{t("تطبيق الهاتف المحمول PWA", "Mobile App Experience (PWA)")}</span>
                   </div>
 
@@ -804,8 +804,8 @@ export default function LandingPage() {
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-violet-200/90 dark:border-white/20 shadow-xl w-full max-w-xs space-y-3.5">
-                    <div className="h-14 w-14 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg">
+                  <div className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-white/10 backdrop-blur-xl border border-sky-200/90 dark:border-white/20 shadow-xl w-full max-w-xs space-y-3.5">
+                    <div className="h-14 w-14 mx-auto rounded-2xl bg-gradient-to-tr from-cyan-400 to-sky-600 flex items-center justify-center shadow-lg">
                       <Download className="h-7 w-7 text-white" />
                     </div>
                     <div>
@@ -816,7 +816,7 @@ export default function LandingPage() {
                       onClick={() => {
                         window.dispatchEvent(new Event("trigger-pwa-install"));
                       }}
-                      className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-extrabold text-xs h-10 rounded-xl shadow-lg shadow-violet-500/25 cursor-pointer gap-2"
+                      className="w-full bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs h-10 rounded-xl shadow-lg shadow-sky-500/25 cursor-pointer gap-2"
                     >
                       <Download className="h-4 w-4 text-white" />
                       <span>{t("تثبيت التطبيق الآن 🚀", "Install App Now 🚀")}</span>
@@ -832,7 +832,7 @@ export default function LandingPage() {
         <section id="faq" className="py-12 sm:py-16 px-4 sm:px-6">
           <div className="max-w-4xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <div className="inline-flex p-3 bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 rounded-2xl">
+              <div className="inline-flex p-3 bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 rounded-2xl">
                 <HelpCircle className="h-6 w-6" />
               </div>
               <h2 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">{t("الأسئلة الشائعة", "Frequently Asked Questions")}</h2>

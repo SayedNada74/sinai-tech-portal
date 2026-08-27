@@ -55,7 +55,7 @@ export function AdminProtectedRoute({
           </p>
           <button
             onClick={() => router.replace("/auth/login")}
-            className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-xs font-extrabold text-white cursor-pointer transition-all shadow-lg"
+            className="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-extrabold text-white cursor-pointer transition-all shadow-lg"
           >
             التوجه لصفحة تسجيل الدخول 🔑
           </button>

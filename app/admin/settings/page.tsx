@@ -105,7 +105,7 @@ export default function PlatformSettingsPage() {
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm lg:col-span-2">
           <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
             <CardTitle className="text-base font-bold flex items-center gap-2">
-              <Globe className="h-4.5 w-4.5 text-violet-600" />
+              <Globe className="h-4.5 w-4.5 text-sky-600" />
               {t("الهوية والبيانات الأساسية للموقع", "Identity & Basic System Info")}
             </CardTitle>
           </CardHeader>
@@ -143,7 +143,7 @@ export default function PlatformSettingsPage() {
                 type="checkbox"
                 checked={maintenanceMode}
                 onChange={(e) => setMaintenanceMode(e.target.checked)}
-                className="h-5 w-5 rounded text-violet-600 focus:ring-0 cursor-pointer"
+                className="h-5 w-5 rounded text-sky-600 accent-sky-600 focus:ring-0 cursor-pointer"
               />
             </div>
           </CardContent>
@@ -153,29 +153,29 @@ export default function PlatformSettingsPage() {
         <Card className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm">
           <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
             <CardTitle className="text-base font-bold flex items-center gap-2">
-              <Sliders className="h-4.5 w-4.5 text-violet-600" />
+              <Sliders className="h-4.5 w-4.5 text-sky-600" />
               {t("مفاتيح الميزات (Feature Flags)", "Feature Flags")}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4 space-y-4">
             <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl">
               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{t("حاسبة المعدل التراكمي (GPA)", "GPA Calculator")}</span>
-              <input type="checkbox" checked={flagGpa} onChange={(e) => setFlagGpa(e.target.checked)} className="h-4 w-4 text-violet-600 focus:ring-0 cursor-pointer" />
+              <input type="checkbox" checked={flagGpa} onChange={(e) => setFlagGpa(e.target.checked)} className="h-4 w-4 text-sky-600 accent-sky-600 focus:ring-0 cursor-pointer" />
             </div>
 
             <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl">
               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{t("المساعد الذكي (AI Assistant)", "AI Assistant")}</span>
-              <input type="checkbox" checked={flagAi} onChange={(e) => setFlagAi(e.target.checked)} className="h-4 w-4 text-violet-600 focus:ring-0 cursor-pointer" />
+              <input type="checkbox" checked={flagAi} onChange={(e) => setFlagAi(e.target.checked)} className="h-4 w-4 text-sky-600 accent-sky-600 focus:ring-0 cursor-pointer" />
             </div>
 
             <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl">
               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{t("تقييم ومراجعة المواد", "Course Reviews")}</span>
-              <input type="checkbox" checked={flagReviews} onChange={(e) => setFlagReviews(e.target.checked)} className="h-4 w-4 text-violet-600 focus:ring-0 cursor-pointer" />
+              <input type="checkbox" checked={flagReviews} onChange={(e) => setFlagReviews(e.target.checked)} className="h-4 w-4 text-sky-600 accent-sky-600 focus:ring-0 cursor-pointer" />
             </div>
 
             <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl">
               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{t("مشاركة وتحميل الملفات", "Resource Sharing")}</span>
-              <input type="checkbox" checked={flagSharing} onChange={(e) => setFlagSharing(e.target.checked)} className="h-4 w-4 text-violet-600 focus:ring-0 cursor-pointer" />
+              <input type="checkbox" checked={flagSharing} onChange={(e) => setFlagSharing(e.target.checked)} className="h-4 w-4 text-sky-600 accent-sky-600 focus:ring-0 cursor-pointer" />
             </div>
           </CardContent>
         </Card>

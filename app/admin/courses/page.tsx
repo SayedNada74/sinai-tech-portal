@@ -208,7 +208,7 @@ export default function CourseManagementPage() {
                   <Badge variant="outline" className="text-[10px] font-bold font-mono">
                     {c.code}
                   </Badge>
-                  <Badge className="text-[9px] py-0 px-2 border-transparent bg-violet-100 text-violet-700 dark:bg-violet-950/40 dark:text-violet-400">
+                  <Badge className="text-[9px] py-0 px-2 border-transparent bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
                     {c.department}
                   </Badge>
                 </div>

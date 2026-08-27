@@ -133,12 +133,12 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="col-span-1 space-y-6">
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
             <CardContent className="p-6 text-center">
-              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-tr from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden mb-4">
+              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-tr from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden mb-4">
                 {isValidImageAvatar(profile.avatar) ? (
                   <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className={cn(
-                    "flex items-center justify-center font-black text-indigo-700 dark:text-indigo-300",
+                    "flex items-center justify-center font-black text-sky-700 dark:text-sky-300",
                     getAvatarFallback(profile.avatar, profile.name).length > 2 ? "text-4xl" : "text-6xl"
                   )}>
                     {getAvatarFallback(profile.avatar, profile.name)}
@@ -160,7 +160,7 @@ export default function PublicProfilePage({ params }: PageProps) {
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
             <CardHeader className="p-5 border-b border-zinc-100 dark:border-zinc-850">
               <CardTitle className="text-base font-black flex items-center gap-2">
-                <User className="h-4 w-4 text-indigo-500" />
+                <User className="h-4 w-4 text-sky-500" />
                 {t("السيرة الذاتية", "Bio")}
               </CardTitle>
             </CardHeader>
@@ -245,7 +245,7 @@ export default function PublicProfilePage({ params }: PageProps) {
             <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
               <CardHeader className="p-5 border-b border-zinc-100 dark:border-zinc-850">
                 <CardTitle className="text-base font-black flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-violet-500" />
+                  <FileText className="h-4 w-4 text-sky-600" />
                   {t("المشاريع ومعرض الأعمال", "Projects & Portfolio")}
                 </CardTitle>
               </CardHeader>
@@ -257,7 +257,7 @@ export default function PublicProfilePage({ params }: PageProps) {
                         <h4 className="font-bold text-zinc-900 dark:text-zinc-50 text-sm mb-1">{proj.title}</h4>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3">{proj.description}</p>
                         {proj.link && (
-                          <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline">
+                          <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline">
                             <Link2 className="h-3 w-3" />
                             {t("عرض المشروع", "View Project")}
                           </a>

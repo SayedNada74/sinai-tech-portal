@@ -139,7 +139,7 @@ export default function PlannerPage() {
               <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400">
                 {t("التقدم نحو التخرج", "Graduation Progress")}
               </span>
-              <span className="text-sm font-extrabold text-violet-600 dark:text-violet-400">{graduationPercentage}%</span>
+              <span className="text-sm font-extrabold text-sky-600 dark:text-sky-400">{graduationPercentage}%</span>
             </div>
             <Progress value={graduationPercentage} className="h-2 bg-zinc-100 dark:bg-zinc-800" />
             <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block mt-2.5">
@@ -169,7 +169,7 @@ export default function PlannerPage() {
         <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-violet-50 dark:bg-violet-950/20 text-violet-600 dark:text-violet-400 rounded-xl">
+              <div className="p-2.5 bg-sky-50 dark:bg-sky-950/20 text-sky-600 dark:text-sky-400 rounded-xl">
                 <Clock className="h-5 w-5" />
               </div>
               <div>
@@ -205,7 +205,7 @@ export default function PlannerPage() {
                   key={key}
                   className={`border rounded-2xl transition-all overflow-hidden ${
                     isOpen
-                      ? "border-violet-500/30 bg-violet-500/2 dark:bg-violet-500/1"
+                      ? "border-sky-500/30 bg-sky-500/2 dark:bg-sky-500/1"
                       : "border-zinc-200/60 bg-white dark:border-zinc-800/60 dark:bg-zinc-900 hover:border-zinc-300"
                   }`}
                 >
@@ -223,7 +223,7 @@ export default function PlannerPage() {
                         <span>•</span>
                         <span className="text-green-600 dark:text-green-400">{completedInPeriod} {t("منجزة", "completed")}</span>
                         <span>•</span>
-                        <span className="text-violet-600 dark:text-violet-400">{plannedInPeriod} {t("مخططة", "planned")}</span>
+                        <span className="text-sky-600 dark:text-sky-400">{plannedInPeriod} {t("مخططة", "planned")}</span>
                       </div>
                     </div>
 
@@ -271,7 +271,7 @@ export default function PlannerPage() {
                                     completed
                                       ? "bg-green-500/5 border-green-200 dark:bg-green-950/10 dark:border-green-900/30"
                                       : planned
-                                      ? "bg-violet-500/5 border-violet-200 dark:bg-violet-950/10 dark:border-violet-900/30"
+                                      ? "bg-sky-500/5 border-sky-200 dark:bg-sky-950/10 dark:border-sky-900/30"
                                       : "bg-white border-zinc-150 dark:bg-zinc-950 dark:border-zinc-850"
                                   }`}
                                 >
@@ -323,7 +323,7 @@ export default function PlannerPage() {
                                       onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
                                       className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center ${
                                         planned
-                                          ? "bg-violet-600 border-violet-600 text-white hover:bg-violet-750"
+                                          ? "bg-sky-600 border-sky-600 text-white hover:bg-sky-700"
                                           : "bg-transparent border-zinc-200 text-zinc-650 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
                                       }`}
                                     >
@@ -349,7 +349,7 @@ export default function PlannerPage() {
           <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900">
             <CardHeader>
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Sparkles className="h-4.5 w-4.5 text-violet-500" />
+                <Sparkles className="h-4.5 w-4.5 text-sky-600" />
                 {t("المحطات الرئيسية للبرنامج الدراسي", "Key Program Milestones")}
               </CardTitle>
             </CardHeader>

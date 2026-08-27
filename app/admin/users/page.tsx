@@ -126,7 +126,7 @@ export default function UserManagementPage() {
       emoji = avatar;
     }
     return (
-      <div className="h-9 w-9 rounded-xl bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center text-lg shadow-inner shrink-0">
+      <div className="h-9 w-9 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center text-lg shadow-inner shrink-0">
         <span>{emoji}</span>
       </div>
     );
@@ -378,7 +378,7 @@ export default function UserManagementPage() {
             {/* Add User Button */}
             <Button
               onClick={() => setIsAddModalOpen(true)}
-              className="bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs px-4 h-10 rounded-xl cursor-pointer w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 shadow-md"
+              className="bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-xs px-4 h-10 rounded-xl cursor-pointer w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 shadow-md"
             >
               <UserCheck className="h-4 w-4" />
               <span>{t("إضافة حساب جديد ➕", "Add New Account ➕")}</span>
@@ -389,8 +389,8 @@ export default function UserManagementPage() {
 
       {/* Bulk Actions Panel */}
       {selectedIds.length > 0 && (
-        <div className="p-3 sm:p-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200/50 dark:border-violet-850 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <span className="text-xs font-bold text-violet-700 dark:text-violet-400">
+        <div className="p-3 sm:p-4 bg-sky-50 dark:bg-sky-950/20 border border-sky-200/50 dark:border-sky-850 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <span className="text-xs font-bold text-sky-700 dark:text-sky-400">
             {t(`تم اختيار ${selectedIds.length} مستخدمين لتطبيق إجراء جماعي:`, `Selected ${selectedIds.length} users for bulk action:`)}
           </span>
 
@@ -398,21 +398,21 @@ export default function UserManagementPage() {
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("student")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
+              className="text-[9px] h-8 font-bold border-sky-300 hover:bg-sky-100 dark:border-sky-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كطالب", "Set Student")}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("moderator")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
+              className="text-[9px] h-8 font-bold border-sky-300 hover:bg-sky-100 dark:border-sky-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كمنسق", "Set Moderator")}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleBulkRoleChange("admin")}
-              className="text-[9px] h-8 font-bold border-violet-300 hover:bg-violet-100 dark:border-violet-800 flex-1 sm:flex-initial"
+              className="text-[9px] h-8 font-bold border-sky-300 hover:bg-sky-100 dark:border-sky-800 flex-1 sm:flex-initial"
             >
               {t("تعيين كمسؤول", "Set Admin")}
             </Button>
@@ -441,7 +441,7 @@ export default function UserManagementPage() {
                 <th className="p-4 w-10 text-center">
                   <button onClick={toggleSelectAll} className="cursor-pointer">
                     {selectedIds.length === filteredUsers.length && filteredUsers.length > 0 ? (
-                      <CheckSquare className="h-4 w-4 text-violet-600" />
+                      <CheckSquare className="h-4 w-4 text-sky-600" />
                     ) : (
                       <Square className="h-4 w-4 text-zinc-400" />
                     )}
@@ -464,13 +464,13 @@ export default function UserManagementPage() {
                   return (
                     <tr
                       key={u.id}
-                      className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-950/40 transition-colors ${isSelected ? "bg-violet-50/40 dark:bg-violet-950/10" : ""
+                      className={`hover:bg-zinc-50/70 dark:hover:bg-zinc-950/40 transition-colors ${isSelected ? "bg-sky-50/40 dark:bg-sky-950/10" : ""
                         }`}
                     >
                       <td className="p-4 text-center">
                         <button onClick={() => toggleSelect(u.id)} className="cursor-pointer">
                           {isSelected ? (
-                            <CheckSquare className="h-4 w-4 text-violet-600" />
+                            <CheckSquare className="h-4 w-4 text-sky-600" />
                           ) : (
                             <Square className="h-4 w-4 text-zinc-400" />
                           )}
@@ -487,7 +487,7 @@ export default function UserManagementPage() {
                             {getUserDisplayAvatar(u)}
                           </div>
                           <div>
-                            <h4 className="font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                            <h4 className="font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                               {getUserLocalizedName(u)}
                             </h4>
                             <p className="text-[10px] text-zinc-400 font-mono">{u.email}</p>
@@ -496,7 +496,7 @@ export default function UserManagementPage() {
                       </td>
 
                       <td className="p-4 font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                        <Link href={`/profile/${u.id}`} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer inline-block">
+                        <Link href={`/profile/${u.id}`} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors cursor-pointer inline-block">
                           {u.role === "student" ? (
                             u.studentId || "N/A"
                           ) : (
@@ -556,7 +556,7 @@ export default function UserManagementPage() {
                           {/* View Profile */}
                           <Link
                             href={`/profile/${u.id}`}
-                            className="p-1.5 rounded-lg text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-950/30 transition-colors cursor-pointer"
                             title={t("عرض الملف الشخصي", "View Profile")}
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -685,7 +685,7 @@ export default function UserManagementPage() {
           <Card className="w-full max-w-md max-h-[90vh] my-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <UserCheck className="h-5 w-5 text-violet-600" />
+                <UserCheck className="h-5 w-5 text-sky-600" />
                 <span>{t("إضافة حساب إداري أو طالب جديد ➕", "Add New Account ➕")}</span>
               </CardTitle>
               <CardDescription className="text-xs">
@@ -759,7 +759,7 @@ export default function UserManagementPage() {
               <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(false)} className="text-xs font-bold cursor-pointer">
                 {t("إلغاء", "Cancel")}
               </Button>
-              <Button size="sm" onClick={handleCreateUser} className="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold cursor-pointer">
+              <Button size="sm" onClick={handleCreateUser} className="bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
                 {t("إنشاء الحساب فوراً ⚡", "Create Account ⚡")}
               </Button>
             </div>

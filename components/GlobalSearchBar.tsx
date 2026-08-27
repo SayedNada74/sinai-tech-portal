@@ -124,7 +124,7 @@ export function GlobalSearchBar() {
       case "item":
         return <GraduationCap className="h-4.5 w-4.5 text-emerald-500" />;
       case "section":
-        return <Bookmark className="h-4.5 w-4.5 text-purple-500" />;
+        return <Bookmark className="h-4.5 w-4.5 text-sky-500" />;
     }
   };
 

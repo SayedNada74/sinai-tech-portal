@@ -191,7 +191,7 @@ export default function GpaPage() {
         </div>
 
         <Button onClick={handlePrintReport} variant="outline" className="gap-2 text-xs font-bold shadow-sm self-start sm:self-auto cursor-pointer">
-          <Printer className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+          <Printer className="h-4 w-4 text-sky-600 dark:text-sky-400" />
           <span>{t("تصدير / طباعة التقرير (PDF)", "Export / Print PDF Report")}</span>
         </Button>
       </div>
@@ -201,16 +201,16 @@ export default function GpaPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-cyan-500/10 border border-violet-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-500/10 border border-sky-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
         >
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-md">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
                 <span>{t("وضع التجربة والاستخدام السريع للزوار", "Guest & Free Exploration Mode")}</span>
-                <Badge className="bg-violet-500/20 text-violet-700 dark:text-violet-300 border-none text-[10px] font-bold">
+                <Badge className="bg-sky-500/20 text-sky-700 dark:text-sky-300 border-none text-[10px] font-bold">
                   {t("مفتوح بالكامل بدون تسجيل ⚡", "Fully Open & Free ⚡")}
                 </Badge>
               </h3>
@@ -230,7 +230,7 @@ export default function GpaPage() {
               </Button>
             </Link>
             <Link href="/auth/register" className="flex-1 sm:flex-none">
-              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md">
+              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md">
                 {t("إنشاء حساب 🚀", "Register 🚀")}
               </Button>
             </Link>
@@ -254,7 +254,7 @@ export default function GpaPage() {
           onClick={() => setActiveTab("calculator")}
           className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === "calculator"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
+              ? "border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
               : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           }`}
         >
@@ -267,7 +267,7 @@ export default function GpaPage() {
           onClick={() => setActiveTab("predictor")}
           className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === "predictor"
-              ? "border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400"
+              ? "border-sky-600 text-sky-600 dark:border-sky-400 dark:text-sky-400"
               : "border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
           }`}
         >
@@ -325,7 +325,7 @@ export default function GpaPage() {
                             <select
                               value={row.code}
                               onChange={(e) => updateCalcRow(row.id, "code", e.target.value)}
-                              className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-violet-500 transition-all duration-200 cursor-pointer"
+                              className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer"
                             >
                               <option value="">{t("-- اختر مقرر دراسي --", "-- Select a course --")}</option>
                               {courses.map((course) => (
@@ -388,7 +388,7 @@ export default function GpaPage() {
               </Card>
 
               {/* Save widget */}
-              <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-violet-50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/30 rounded-2xl gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30 rounded-2xl gap-4">
                 <div>
                   <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
                     {t("حفظ الدرجات للملف الشخصي", "Save Grades to Profile")}
@@ -416,7 +416,7 @@ export default function GpaPage() {
 
             {/* Results Sidebar with ReactBits SpotlightCard */}
             <div>
-              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(139, 92, 246, 0.15)">
+              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.22)">
                 <div className="pt-8 pb-6 px-6">
                   <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
                     {t("المعدل الفصلي المتوقع", "Expected Semester GPA")}
@@ -505,7 +505,7 @@ export default function GpaPage() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center text-sm font-bold">
                       <span className="text-zinc-650 dark:text-zinc-400">{t("المعدل المستهدف عند التخرج:", "Target GPA at graduation:")}</span>
-                      <span className="text-lg text-violet-600 dark:text-violet-400 font-extrabold">{targetGpa.toFixed(2)}</span>
+                      <span className="text-lg text-sky-600 dark:text-sky-400 font-extrabold">{targetGpa.toFixed(2)}</span>
                     </div>
 
                     <input
@@ -515,7 +515,7 @@ export default function GpaPage() {
                       step="0.05"
                       value={targetGpa}
                       onChange={(e) => setTargetGpa(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-violet-650"
+                      className="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-600"
                     />
 
                     <div className="flex justify-between text-[10px] font-bold text-zinc-400">

@@ -10,7 +10,7 @@ export const Card = React.forwardRef<
     className={cn(
       "rounded-2xl border border-zinc-200/80 bg-white/70 shadow-sm backdrop-blur-md transition-all duration-300",
       "dark:border-zinc-800/80 dark:bg-zinc-950/60 dark:shadow-black/20",
-      hoverGlow && "hover:-translate-y-1 hover:border-violet-500/20 hover:shadow-lg hover:shadow-violet-500/5 dark:hover:border-violet-500/30",
+      hoverGlow && "hover:-translate-y-0.5 hover:border-sky-500/30 hover:shadow-md hover:shadow-sky-500/5 dark:hover:border-sky-500/40",
       className
     )}
     {...props}

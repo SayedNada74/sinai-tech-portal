@@ -43,17 +43,17 @@ export function Footer() {
           </h4>
           <ul className="space-y-3">
             <li>
-              <a href="#features" className="text-sm text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+              <a href="#features" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
                 {t("الميزات الذكية", "Smart Features")}
               </a>
             </li>
             <li>
-              <a href="#stats" className="text-sm text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+              <a href="#stats" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
                 {t("الإحصائيات", "Statistics")}
               </a>
             </li>
             <li>
-              <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+              <Link href="/dashboard" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
                 {t("لوحة التحكم", "Dashboard")}
               </Link>
             </li>
@@ -67,7 +67,7 @@ export function Footer() {
           </h4>
           <ul className="space-y-3">
             <li>
-              <a href="#faq" className="text-sm text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors">
+              <a href="#faq" className="text-sm text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors">
                 {t("الأسئلة الشائعة", "FAQ")}
               </a>
             </li>

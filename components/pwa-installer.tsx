@@ -149,12 +149,12 @@ export function PWAInstaller() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="fixed bottom-5 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9990] p-4 sm:p-5 rounded-3xl border border-violet-500/40 bg-zinc-950/95 text-zinc-100 shadow-2xl shadow-violet-900/30 backdrop-blur-2xl"
+            className="fixed bottom-5 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-[9990] p-4 sm:p-5 rounded-3xl border border-sky-500/40 bg-zinc-950/95 text-zinc-100 shadow-2xl shadow-sky-900/30 backdrop-blur-2xl"
             dir={dir}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-violet-600/30">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-sky-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-sky-600/30">
                   <Smartphone className="h-6 w-6" />
                 </div>
                 <div>
@@ -184,7 +184,7 @@ export function PWAInstaller() {
             <div className="mt-4 flex items-center gap-2">
               <Button
                 onClick={handleInstallClick}
-                className="w-full h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs gap-2 shadow-lg shadow-violet-600/30 transition-all cursor-pointer"
+                className="w-full h-10 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs gap-2 shadow-lg shadow-sky-600/30 transition-all cursor-pointer"
               >
                 <Download className="h-4 w-4" />
                 {t("تثبيت التطبيق على الهاتف الآن", "Install App Now")}

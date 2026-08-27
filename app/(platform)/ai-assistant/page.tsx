@@ -336,8 +336,8 @@ export default function AiAssistantPage() {
     },
     {
       icon: LinkIcon,
-      color: "from-purple-500 to-indigo-500",
-      bgLight: "bg-purple-500/10 border-purple-200 dark:border-purple-800/40 text-purple-600 dark:text-purple-400",
+      color: "from-sky-600 to-cyan-600",
+      bgLight: "bg-sky-500/10 border-sky-200 dark:border-sky-800/40 text-sky-600 dark:text-sky-400",
       titleAr: "المتطلبات والسلاسل",
       titleEn: "Prerequisites Chains",
       descAr: "فحص شروط أي مادة والمواد المفتاحية قبل التسجيل الأكاديمي.",
@@ -372,7 +372,7 @@ export default function AiAssistantPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 shrink-0">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500 fill-violet-500/10" />
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-sky-500 fill-sky-500/10" />
             {t("المرشد الأكاديمي والتقني الذكي", "Smart Academic & Tech AI Guide")}
           </h1>
           <p className="hidden sm:block text-xs text-zinc-500 dark:text-zinc-400 mt-1">
@@ -398,8 +398,8 @@ export default function AiAssistantPage() {
             onClick={startNewChatScreen}
             className={`w-full p-3 rounded-2xl border flex items-center gap-2.5 font-bold text-xs transition-all cursor-pointer shadow-2xs ${
               activeSessionId === ""
-                ? "bg-violet-600 text-white border-violet-600 shadow-sm"
-                : "bg-zinc-50 dark:bg-zinc-850/50 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:border-violet-400"
+                ? "bg-sky-600 text-white border-sky-600 shadow-sm"
+                : "bg-zinc-50 dark:bg-zinc-850/50 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:border-sky-400"
             }`}
           >
             <Plus className="h-4 w-4" />
@@ -428,12 +428,12 @@ export default function AiAssistantPage() {
                     onClick={() => setActiveSessionId(s.id)}
                     className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group ${
                       isActive
-                        ? "border-violet-500/50 bg-violet-50/80 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-extrabold shadow-xs"
+                        ? "border-sky-500/50 bg-sky-50/80 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-extrabold shadow-xs"
                         : "border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-850/50 text-zinc-900 dark:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? "text-violet-600 dark:text-violet-400" : "text-zinc-700 dark:text-zinc-200"}`} />
+                      <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? "text-sky-600 dark:text-sky-400" : "text-zinc-700 dark:text-zinc-200"}`} />
                       <div className="min-w-0">
                         <span className="text-xs font-bold text-zinc-900 dark:text-white truncate block">{s.title}</span>
                         <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-300 block mt-0.5">{s.createdAt}</span>
@@ -463,7 +463,7 @@ export default function AiAssistantPage() {
               onClick={startNewChatScreen}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 ${
                 activeSessionId === ""
-                  ? "bg-violet-600 text-white shadow-xs"
+                  ? "bg-sky-600 text-white shadow-xs"
                   : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200"
               }`}
             >
@@ -476,7 +476,7 @@ export default function AiAssistantPage() {
                 onClick={() => setActiveSessionId(s.id)}
                 className={`px-3 py-1.5 rounded-xl border text-xs font-semibold shrink-0 max-w-[130px] truncate ${
                   s.id === activeSessionId
-                    ? "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-violet-300 font-bold"
+                    ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-sky-300 font-bold"
                     : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400"
                 }`}
               >
@@ -493,7 +493,7 @@ export default function AiAssistantPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-1.5 sm:space-y-2.5 max-w-xl shrink-0"
               >
-                <div className="h-10 w-10 sm:h-16 sm:w-16 mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white flex items-center justify-center shadow-md sm:shadow-lg shadow-violet-500/20">
+                <div className="h-10 w-10 sm:h-16 sm:w-16 mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-sky-600 to-cyan-500 text-white flex items-center justify-center shadow-md sm:shadow-lg shadow-sky-500/20">
                   <Sparkles className="h-5 w-5 sm:h-8 sm:w-8" />
                 </div>
                 <h2 className="text-base sm:text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
@@ -572,7 +572,7 @@ export default function AiAssistantPage() {
                       {/* Avatar Icon */}
                       <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center shrink-0 ${
                         isAssistant
-                          ? "bg-violet-100 text-violet-650 dark:bg-violet-950/60 dark:text-violet-400"
+                          ? "bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-400"
                           : "bg-zinc-100 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-350"
                       }`}>
                         {isAssistant ? <Bot className="h-4 w-4 sm:h-4.5 sm:w-4.5" /> : <User className="h-4 w-4 sm:h-4.5 sm:w-4.5" />}
@@ -582,7 +582,7 @@ export default function AiAssistantPage() {
                       <div className={`p-3 sm:p-4.5 rounded-2xl text-xs leading-relaxed break-words overflow-hidden ${
                         isAssistant
                           ? "bg-zinc-100 dark:bg-zinc-800/90 text-zinc-900 dark:text-zinc-100 border border-zinc-200/80 dark:border-zinc-700/60 shadow-sm"
-                          : "bg-violet-600 text-white dark:bg-violet-600 shadow-md font-medium"
+                          : "bg-sky-600 text-white dark:bg-sky-600 shadow-md font-medium"
                       }`}>
                         {/* Render simple markdown lines */}
                         <div className="space-y-2 prose max-w-none dark:prose-invert">
@@ -648,11 +648,11 @@ export default function AiAssistantPage() {
                   animate={{ opacity: 1 }}
                   className={`flex gap-3.5 max-w-[85%] ${isRtl ? "mr-0 ml-auto" : "ml-0 mr-auto"}`}
                 >
-                  <div className="h-8 w-8 rounded-xl bg-violet-100 dark:bg-violet-950/60 dark:text-violet-400 flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-xl bg-sky-100 dark:bg-sky-950/60 dark:text-sky-400 flex items-center justify-center shrink-0">
                     <Bot className="h-4.5 w-4.5" />
                   </div>
                   <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 flex items-center gap-2">
-                    <Spinner className="h-4 w-4 text-violet-500" />
+                    <Spinner className="h-4 w-4 text-sky-600" />
                     <span className="text-[11px] font-bold">
                       {t("جاري معالجة الإجابة والأكواد المباشرة...", "Processing live data & response...")}
                     </span>

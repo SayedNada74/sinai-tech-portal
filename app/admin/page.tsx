@@ -147,7 +147,7 @@ export default function AdminDashboardOverview() {
           <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("إجمالي الطلاب", "Total Students")}</span>
-              <div className="p-1.5 rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950/20 shrink-0">
+              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/20 shrink-0">
                 <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
@@ -179,13 +179,13 @@ export default function AdminDashboardOverview() {
           <CardContent className="p-3.5 sm:p-4.5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-start">
               <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">{t("المقررات والمواد", "Courses & Subjects")}</span>
-              <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20 shrink-0">
+              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/20 shrink-0">
                 <BookOpen className="h-3.5 sm:h-4 w-3.5 sm:w-4" />
               </div>
             </div>
             <div className="mt-3 sm:mt-4">
               <span className="text-lg sm:text-xl font-black">{totalCourses}</span>
-              <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold block mt-0.5 truncate">{t("مقرر دراسي بالخطة", "curriculum courses")}</span>
+              <span className="text-[9px] text-blue-600 dark:text-blue-400 font-bold block mt-0.5 truncate">{t("مقرر دراسي بالخطة", "curriculum courses")}</span>
             </div>
           </CardContent>
         </Card>
@@ -376,8 +376,8 @@ export default function AdminDashboardOverview() {
                         strokeWidth="1"
                       />
 
-                      <circle cx={x} cy={userY} r="4.5" className="fill-violet-600 stroke-white dark:stroke-zinc-900" strokeWidth="1.5" />
-                      <circle cx={x} cy={convY} r="4.5" className="fill-sky-500 stroke-white dark:stroke-zinc-900" strokeWidth="1.5" />
+                      <circle cx={x} cy={userY} r="4.5" className="fill-sky-600 stroke-white dark:stroke-zinc-900" strokeWidth="1.5" />
+                      <circle cx={x} cy={convY} r="4.5" className="fill-cyan-500 stroke-white dark:stroke-zinc-900" strokeWidth="1.5" />
 
                       <text
                         x={x}
@@ -399,7 +399,7 @@ export default function AdminDashboardOverview() {
                     return path + `${i === 0 ? "M" : "L"} ${x} ${y}`;
                   }, "")}
                   fill="none"
-                  className="stroke-violet-600"
+                  className="stroke-sky-600"
                   strokeWidth="3"
                 />
 
@@ -411,7 +411,7 @@ export default function AdminDashboardOverview() {
                     return path + `${i === 0 ? "M" : "L"} ${x} ${y}`;
                   }, "")}
                   fill="none"
-                  className="stroke-sky-500"
+                  className="stroke-cyan-500"
                   strokeWidth="3"
                 />
               </svg>
@@ -420,11 +420,11 @@ export default function AdminDashboardOverview() {
             {/* Legend */}
             <div className="flex gap-4.5 justify-center mt-3 text-[10px] font-extrabold text-zinc-500 dark:text-zinc-400">
               <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-violet-600" />
+                <span className="h-2.5 w-2.5 rounded-full bg-sky-600" />
                 <span>{t("حسابات المستخدمين", "User Accounts")}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
+                <span className="h-2.5 w-2.5 rounded-full bg-cyan-500" />
                 <span>{t("إجمالي الأنشطة الموثقة", "Total Logged Interactions")}</span>
               </div>
             </div>
@@ -450,7 +450,7 @@ export default function AdminDashboardOverview() {
                 </div>
                 <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-l from-violet-600 to-indigo-500 rounded-full"
+                    className="h-full bg-gradient-to-l from-sky-600 to-cyan-500 rounded-full"
                     style={{ width: `${d.pct}%` }}
                   />
                 </div>
@@ -513,7 +513,7 @@ export default function AdminDashboardOverview() {
             <div className="space-y-3.5">
               {auditLogs.slice(0, 3).length > 0 ? (
                 auditLogs.slice(0, 3).map((log) => (
-                  <div key={log.id} className={`flex gap-3 items-start text-xs ${dir === "rtl" ? "border-r-2 pr-3" : "border-l-2 pl-3"} border-violet-500`}>
+                  <div key={log.id} className={`flex gap-3 items-start text-xs ${dir === "rtl" ? "border-r-2 pr-3" : "border-l-2 pl-3"} border-sky-500`}>
                     <div className="flex-1 min-w-0">
                       <h5 className="font-bold text-zinc-800 dark:text-zinc-200 line-clamp-1">{log.action}</h5>
                       <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">{log.details}</p>

@@ -273,7 +273,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                   <Logo size="md" href="/" />
                   <Link
                     href="/"
-                    className="text-xs font-bold text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors"
+                    className="text-xs font-bold text-zinc-500 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors"
                   >
                     {t("الرئيسية", "Home")}
                   </Link>
@@ -314,7 +314,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                     </Button>
                   </Link>
                   <Link href="/auth/register">
-                    <Button size="sm" className="rounded-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md">
+                    <Button size="sm" className="rounded-xl font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-md">
                       {t("إنشاء حساب 🚀", "Register 🚀")}
                     </Button>
                   </Link>

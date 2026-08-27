@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="w-full flex flex-col items-center relative">
       {/* Background Decorative Glow */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-sky-600/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -114,7 +114,7 @@ export default function ForgotPasswordPage() {
           </CardContent>
 
           <CardFooter className="justify-center border-t border-zinc-100/50 py-4 dark:border-zinc-800/30">
-            <Link href="/auth/login" className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-violet-600 transition-colors dark:text-zinc-400 dark:hover:text-violet-400">
+            <Link href="/auth/login" className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-sky-600 transition-colors dark:text-zinc-400 dark:hover:text-sky-400">
               <ArrowLeft className="h-3.5 w-3.5" />
               العودة لتسجيل الدخول
             </Link>

@@ -135,7 +135,7 @@ export default function CareersPage() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-850 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
+                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-850 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
                   >
                     {Object.entries(typesArabic).map(([k, v]) => (
                       <option key={k} value={k}>{t(v.ar, v.en)}</option>
@@ -151,7 +151,7 @@ export default function CareersPage() {
                   <select
                     value={selectedExp}
                     onChange={(e) => setSelectedExp(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-855 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
+                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-855 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
                   >
                     {Object.entries(experienceArabic).map(([k, v]) => (
                       <option key={k} value={k}>{t(v.ar, v.en)}</option>
@@ -167,7 +167,7 @@ export default function CareersPage() {
                   <select
                     value={selectedDept}
                     onChange={(e) => setSelectedDept(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-855 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
+                    className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-855 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 cursor-pointer"
                   >
                     {Object.entries(deptsArabic).map(([k, v]) => (
                       <option key={k} value={k}>{t(v.ar, v.en)}</option>
@@ -196,15 +196,15 @@ export default function CareersPage() {
                 >
                   <Card className="h-full border border-zinc-200/50 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
                     {/* Decorative side color border */}
-                    <div className={`absolute top-0 ${isRtl ? "right-0" : "left-0"} bottom-0 w-1 bg-violet-600/80 group-hover:bg-violet-650 transition-colors`} />
+                    <div className={`absolute top-0 ${isRtl ? "right-0" : "left-0"} bottom-0 w-1 bg-sky-600/80 group-hover:bg-sky-600 transition-colors`} />
 
                     <CardHeader className={`pb-3 ${isRtl ? "text-right" : "text-left"}`}>
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-1.5">
-                          <Badge className="bg-violet-50 text-violet-650 dark:bg-violet-950/40 dark:text-violet-400 text-[10px] px-2.5 py-0.5 rounded-md font-bold">
+                          <Badge className="bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 text-[10px] px-2.5 py-0.5 rounded-md font-bold">
                             {typesArabic[job.type] ? t(typesArabic[job.type].ar, typesArabic[job.type].en) : job.type}
                           </Badge>
-                          <CardTitle className="text-base font-extrabold text-zinc-950 dark:text-zinc-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mt-2">
+                          <CardTitle className="text-base font-extrabold text-zinc-950 dark:text-zinc-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mt-2">
                             {job.title}
                           </CardTitle>
                         </div>
@@ -214,7 +214,7 @@ export default function CareersPage() {
                           onClick={() => toggleSaveJob(job.id)}
                           className={`p-2 rounded-xl border transition-all cursor-pointer ${
                             saved
-                              ? "bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-950/40 dark:border-violet-850 dark:text-violet-400"
+                              ? "bg-sky-50 border-sky-200 text-sky-600 dark:bg-sky-950/40 dark:border-sky-850 dark:text-sky-400"
                               : "bg-white border-zinc-200 hover:bg-zinc-50 text-zinc-400 dark:bg-zinc-950 dark:border-zinc-800 dark:hover:bg-zinc-850"
                           }`}
                           title={saved ? t("إزالة من المحفوظات", "Remove Bookmark") : t("حفظ الفرصة", "Bookmark Opportunity")}

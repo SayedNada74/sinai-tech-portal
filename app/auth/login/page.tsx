@@ -68,7 +68,7 @@ export default function LoginPage() {
   return (
     <div className="w-full flex flex-col items-center relative">
       {/* Background Decorative Glow */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[350px] h-[350px] bg-sky-600/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -113,7 +113,7 @@ export default function LoginPage() {
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور", "Password")}</label>
-                  <Link href="/auth/forgot-password" className="text-xs font-semibold text-violet-600 hover:underline dark:text-violet-400">
+                  <Link href="/auth/forgot-password" className="text-xs font-semibold text-sky-600 hover:underline dark:text-sky-400">
                     {t("نسيت كلمة المرور؟", "Forgot password?")}
                   </Link>
                 </div>
@@ -133,7 +133,7 @@ export default function LoginPage() {
                     className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
                     title={showPassword ? t("إخفاء كلمة المرور", "Hide password") : t("إظهار كلمة المرور", "Show password")}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-violet-500" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4 text-sky-600" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function LoginPage() {
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-violet-600 focus:ring-violet-500 accent-violet-600 cursor-pointer"
+                  className="h-4 w-4 rounded border-zinc-300 text-sky-600 focus:ring-sky-500 accent-sky-600 cursor-pointer"
                 />
                 <label htmlFor="rememberMe" className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 select-none cursor-pointer">
                   {t("تذكرني على هذا الجهاز", "Remember me on this device")}
@@ -202,8 +202,8 @@ export default function LoginPage() {
           <CardFooter className="justify-center border-t border-zinc-100/50 py-4 dark:border-zinc-800/30">
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {t("ليس لديك حساب؟", "Don't have an account?")}{" "}
-              <Link href="/auth/register" className="font-bold text-violet-600 hover:underline dark:text-violet-400">
-                {t("أنشئ حساباً جديداً", "Register now")}
+              <Link href="/auth/register" className="font-bold text-sky-600 hover:underline dark:text-sky-400">
+                {t("إنشاء حساب جديد", "Sign up")}
               </Link>
             </p>
           </CardFooter>

@@ -180,7 +180,7 @@ export default function AdminRoadmapsPage() {
             <CardContent className="pb-3 text-xs space-y-2">
               <div className="p-3 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl space-y-1.5 border border-zinc-100 dark:border-zinc-850">
                 <span className="text-[9px] font-bold text-zinc-400 block">{t("المرحلة الأولى البارزة:", "First Stage:")}</span>
-                <span className="font-bold text-xs text-violet-600 dark:text-violet-400 block">
+                <span className="font-bold text-xs text-sky-600 dark:text-sky-400 block">
                   {r.nodes[0] ? (lang === "ar" ? r.nodes[0].label : (r.nodes[0].labelEn || r.nodes[0].label)) : t("لا توجد مراحل", "No stages")}
                 </span>
               </div>
@@ -244,7 +244,7 @@ export default function AdminRoadmapsPage() {
                 {/* Nodes builder */}
                 <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 space-y-3">
                   <h4 className="font-extrabold text-xs text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                    <Layers className="h-4 w-4 text-violet-600" />
+                    <Layers className="h-4 w-4 text-sky-600" />
                     {t(`مراحل وخطوات التعلم (${nodes.length})`, `Learning Stages (${nodes.length})`)}
                   </h4>
 

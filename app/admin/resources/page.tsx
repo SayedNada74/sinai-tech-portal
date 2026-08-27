@@ -350,8 +350,8 @@ export default function ResourceManagementPage() {
                   onDrop={handleDrop}
                   className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors cursor-pointer ${
                     dragging
-                      ? "border-violet-500 bg-violet-50/50 dark:bg-violet-950/20"
-                      : "border-zinc-250 dark:border-zinc-800 hover:border-violet-400"
+                      ? "border-sky-500 bg-sky-50/50 dark:bg-sky-950/20"
+                      : "border-zinc-250 dark:border-zinc-800 hover:border-sky-400"
                   }`}
                 >
                   <Upload className="h-8 w-8 mx-auto text-zinc-400 mb-2" />

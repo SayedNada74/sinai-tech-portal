@@ -537,7 +537,7 @@ export default function ReviewModerationPage() {
               <Card key={rev.id} className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-sm p-4 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-xl bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xs">
+                    <div className="h-8 w-8 rounded-xl bg-sky-100 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
                       {rev.author[0]}
                     </div>
                     <div>
@@ -569,8 +569,8 @@ export default function ReviewModerationPage() {
                   <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed font-semibold">
                     {rev.comment}
                   </p>
-                  <p className="p-3 bg-violet-500/[0.04] border border-violet-500/10 rounded-xl text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    <span className="text-violet-600 dark:text-violet-400 font-bold block mb-0.5">💡 {t("النصيحة الأكاديمية للمذاكرة:", "Study Tip:")}</span>
+                  <p className="p-3 bg-sky-500/[0.04] border border-sky-500/10 rounded-xl text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    <span className="text-sky-600 dark:text-sky-400 font-bold block mb-0.5">💡 {t("النصيحة الأكاديمية للمذاكرة:", "Study Tip:")}</span>
                     {rev.tips}
                   </p>
                 </div>
