@@ -110,6 +110,15 @@ function CallbackHandler() {
     async function syncSessionAndRedirect(authUser: any) {
       const userEmail = authUser.email ||"";
 
+      // Validate university email domain
+      if (!userEmail.toLowerCase().endsWith("@su.edu.eg") && !userEmail.toLowerCase().endsWith("@sinai.edu.eg")) {
+        // Sign out the user immediately if they bypassed the client-side check via OAuth
+        if (isSupabaseConfigured && supabase) {
+          await supabase.auth.signOut();
+        }
+        throw new Error("عذراً، يُسمح فقط باستخدام البريد الإلكتروني الجامعي (@su.edu.eg أو @sinai.edu.eg).");
+      }
+
       // Check if existing profile already exists in Supabase DB
       let existingProfile: any = null;
       if (isSupabaseConfigured && supabase) {
