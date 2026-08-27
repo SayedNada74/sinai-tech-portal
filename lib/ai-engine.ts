@@ -52,42 +52,60 @@ function findMatchingCourse(query: string): Course | null {
   const normQuery = normalizeText(query);
   if (!normQuery) return null;
 
-  // 1. Direct Code or Exact Title Match
+  // 1. Direct Code Match (e.g. "csw 221" or "csw221")
+  const strippedQuery = normQuery.replace(/\s+/g, "");
   for (const c of COURSES) {
-    const normCode = normalizeText(c.code);
-    const normAr = normalizeText(c.arabic);
-    const normEn = normalizeText(c.english);
-
-    if (
-      normQuery.includes(normCode) ||
-      normQuery.includes(normAr) ||
-      normQuery.includes(normEn) ||
-      normAr.includes(normQuery) ||
-      normEn.includes(normQuery)
-    ) {
+    const strippedCode = normalizeText(c.code).replace(/\s+/g, "");
+    if (strippedQuery.includes(strippedCode)) {
       return c;
     }
   }
 
-  // 2. Tokenized Fuzzy Keyword Match (e.g., "data structure", "هياكل", "شبكات", "برمجة 2", "قواعد بيانات")
-  const tokens = normQuery.split(/\s+/).filter((t) => t.length > 2);
+  // 2. Exact Title Match
+  for (const c of COURSES) {
+    const normAr = normalizeText(c.arabic);
+    const normEn = normalizeText(c.english);
+    if (normQuery.includes(normAr) || normQuery.includes(normEn)) {
+      return c;
+    }
+  }
+
+  // 3. Tokenized Keyword Match (Strict Word Boundary)
+  const stopWords = ["انا", "اي", "ايه", "كيف", "هل", "عايز", "اريد", "متي", "مادة", "ماده", "مواد", "كورسات", "كورس", "مقرر", "مقررات", "فاضلي", "بتاعي", "خاصتي", "كام", "دلوقتي", "عن", "من", "في", "علي", "الي", "يا", "لو"];
+  const tokens = normQuery.split(/\s+/).filter((t) => t.length > 2 && !stopWords.includes(t));
+  
+  if (tokens.length === 0) return null;
+
   let bestMatch: Course | null = null;
   let highestScore = 0;
 
   for (const c of COURSES) {
-    const courseText = normalizeText(`${c.code} ${c.arabic} ${c.english}`);
+    const courseWords = normalizeText(`${c.arabic} ${c.english}`).split(/\s+/);
     let score = 0;
 
     for (const token of tokens) {
-      if (courseText.includes(token)) {
+      // Must match at least the beginning of a course word to count, not just any substring inside a word.
+      if (courseWords.some(cw => cw.startsWith(token) || cw === token)) {
         score += 1;
       }
     }
 
-    if (score > highestScore) {
+    if (score > highestScore && score >= Math.min(2, tokens.length)) {
       highestScore = score;
       bestMatch = c;
     }
+  }
+
+  // If we only have 1 valid token, we require a perfect match with a course word to avoid false positives
+  if (tokens.length === 1 && highestScore === 1) {
+      const token = tokens[0];
+      for (const c of COURSES) {
+        const courseWords = normalizeText(`${c.arabic} ${c.english}`).split(/\s+/);
+        if (courseWords.some(cw => cw === token)) {
+           return c;
+        }
+      }
+      return null;
   }
 
   return highestScore > 0 ? bestMatch : null;
