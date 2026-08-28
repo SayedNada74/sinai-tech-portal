@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { signToken } from "@/lib/jwt";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limiter";
 
 // Initialize Supabase admin client for backend validation
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -10,15 +11,37 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    // 1. IP & Rate Limiting Check (Max 6 attempts per minute)
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || req.headers.get("x-real-ip") || "unknown-client";
+    const rateCheck = checkRateLimit(`login-${ip}`, { limit: 6, windowSeconds: 60 });
+    
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح به من محاولات الدخول. يرجى الانتظار لمدة دقيقة ثم المحاولة مجدداً." },
+        { 
+          status: 429,
+          headers: {
+            "Retry-After": `${rateCheck.reset}`,
+            "X-RateLimit-Limit": `${rateCheck.limit}`,
+            "X-RateLimit-Remaining": "0"
+          }
+        }
+      );
     }
 
-    // 1. Authenticate user using Supabase to verify credentials securely
+    const { email, password } = await req.json();
+
+    if (!email || !password || typeof email !== "string" || typeof password !== "string") {
+      return NextResponse.json({ error: "البريد الإلكتروني وكلمة المرور مطلوبان." }, { status: 400 });
+    }
+
+    if (email.length > 254 || password.length > 128) {
+      return NextResponse.json({ error: "البيانات المدخلة تتجاوز الطول المسموح به." }, { status: 400 });
+    }
+
+    // 2. Authenticate user using Supabase to verify credentials securely
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(),
       password,
     });
 
