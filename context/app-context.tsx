@@ -188,7 +188,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user) return null;
     return {
       uid: user.id,
-      displayName: lang === "ar" ? (user.nameAr || user.name) : (user.nameEn || user.name),
+      displayName: getLocalizedUserName(user, lang),
       email: user.email,
       photoURL: user.avatar
     };

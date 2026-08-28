@@ -5,8 +5,9 @@ import Link from"next/link";
 import { usePathname } from"next/navigation";
 import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
-import { useAnimationProps } from"@/lib/motion";
-import { motion, AnimatePresence } from"framer-motion";
+import { useAnimationProps } from "@/lib/motion";
+import { getLocalizedUserName } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Bot,
@@ -190,7 +191,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h5 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-sky-600 transition-colors">{user?.name || t("طالب سيناء", "Student")}</h5>
+                    <h5 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-sky-600 transition-colors">{getLocalizedUserName(user, lang) || t("طالب سيناء", "Student")}</h5>
                     <span className="text-[10px] text-zinc-400 block truncate leading-none mt-0.5">
                       {userRole === "student" ? t("طالب الكلية", "Faculty Student") : t("مشرف المنصة", "Admin")}
                     </span>

@@ -25,8 +25,9 @@ import {
   Users
 } from"lucide-react";
 
-import { useAdmin } from"@/context/admin-context";
-import { DeveloperCredit } from"@/components/ui/developer-credit";
+import { useAdmin } from "@/context/admin-context";
+import { DeveloperCredit } from "@/components/ui/developer-credit";
+import { getLocalizedUserName } from "@/lib/utils";
 
 export function DesktopSidebar() {
   const pathname = usePathname();
@@ -175,7 +176,7 @@ export function DesktopSidebar() {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h5 className="text-[11px] font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-sky-600 transition-colors">{userName || user?.name}</h5>
+              <h5 className="text-[11px] font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-sky-600 transition-colors">{userName || getLocalizedUserName(user, lang) || t("طالب الكلية", "Student")}</h5>
               <span className="text-[9px] text-zinc-400 block truncate leading-none mt-0.5">
                 {userRole === "student" ? t("طالب الكلية", "Faculty Student") : t("مشرف المنصة", "Admin")}
               </span>

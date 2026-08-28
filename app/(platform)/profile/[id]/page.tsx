@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from"@/components/ui/card";
 import { Badge } from"@/components/ui/badge";
 import { Button } from"@/components/ui/button";
 import Link from"next/link";
-import { cn, getAvatarFallback, isValidImageAvatar } from"@/lib/utils";
+import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
 import {
   User,
   GraduationCap,
@@ -56,7 +56,7 @@ export default function PublicProfilePage({ params }: PageProps) {
   const publicSkills = profile.privacySettings?.publicSkills ?? true;
   const publicProjects = profile.privacySettings?.publicProjects ?? true;
 
-  const displayName = lang ==="ar" ? (profile.nameAr || profile.name) : (profile.nameEn || profile.name);
+  const displayName = getLocalizedUserName(profile, lang);
 
   const getLevelLabel = (lvl?: string) => {
     if (!lvl) return"";

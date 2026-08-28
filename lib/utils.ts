@@ -231,7 +231,25 @@ const AR_TO_EN_MAP: Record<string, string> = {
   "عبدالله": "Abdullah",
   "عبد الله": "Abdullah",
   "عبدالرحمن": "Abdelrahman",
-  "عبد الرحمن": "Abdelrahman"
+  "عبد الرحمن": "Abdelrahman",
+  "صبري": "Sabry",
+  "صبرى": "Sabry",
+  "غني": "Ghaney",
+  "غنى": "Ghaney",
+  "طه": "Taha",
+  "طاهر": "Taher",
+  "صلاح": "Salah",
+  "سلامة": "Salama",
+  "سلامه": "Salama",
+  "عطية": "Atia",
+  "عطيه": "Atia",
+  "حافظ": "Hafez",
+  "مراد": "Morad",
+  "محسن": "Mohsen",
+  "فهمي": "Fahmy",
+  "فهمى": "Fahmy",
+  "حسني": "Hosny",
+  "حسنى": "Hosny"
 };
 
 // Populate reverse map dynamically for any remaining entries
@@ -239,6 +257,51 @@ for (const [en, ar] of Object.entries(NAME_MAP)) {
   if (!AR_TO_EN_MAP[ar]) {
     AR_TO_EN_MAP[ar] = en.charAt(0).toUpperCase() + en.slice(1);
   }
+}
+
+export function transliterateArabicWordToEnglish(word: string): string {
+  if (!word) return "";
+  const clean = word.replace(/[^\u0600-\u06FF]/g, "");
+  if (!clean) return word;
+
+  if (AR_TO_EN_MAP[clean]) return AR_TO_EN_MAP[clean];
+  if (AR_TO_EN_MAP[word]) return AR_TO_EN_MAP[word];
+
+  let res = "";
+  for (let i = 0; i < clean.length; i++) {
+    const char = clean[i];
+    switch (char) {
+      case "أ": case "إ": case "آ": case "ا": case "ء": case "ئ": case "ؤ":
+        res += i === 0 ? "A" : "a";
+        break;
+      case "ب": res += i === 0 ? "B" : "b"; break;
+      case "ت": case "ط": case "ة": res += i === 0 ? "T" : "t"; break;
+      case "ث": res += i === 0 ? "Th" : "th"; break;
+      case "ج": res += i === 0 ? "G" : "g"; break;
+      case "ح": case "ه": res += i === 0 ? "H" : "h"; break;
+      case "خ": res += i === 0 ? "Kh" : "kh"; break;
+      case "د": case "ض": res += i === 0 ? "D" : "d"; break;
+      case "ذ": case "ز": case "ظ": res += i === 0 ? "Z" : "z"; break;
+      case "ر": res += i === 0 ? "R" : "r"; break;
+      case "س": case "ص": res += i === 0 ? "S" : "s"; break;
+      case "ش": res += i === 0 ? "Sh" : "sh"; break;
+      case "ع": res += i === 0 ? "A" : "a"; break;
+      case "غ": res += i === 0 ? "Gh" : "gh"; break;
+      case "ف": res += i === 0 ? "F" : "f"; break;
+      case "ق": case "ك": res += i === 0 ? "K" : "k"; break;
+      case "ل": res += i === 0 ? "L" : "l"; break;
+      case "م": res += i === 0 ? "M" : "m"; break;
+      case "ن": res += i === 0 ? "N" : "n"; break;
+      case "و": res += i === 0 ? "W" : "w"; break;
+      case "ي": case "ى": res += i === 0 ? "Y" : "y"; break;
+      default: res += char;
+    }
+  }
+
+  if (res.length > 0) {
+    return res.charAt(0).toUpperCase() + res.slice(1);
+  }
+  return word;
 }
 
 export function getLocalizedUserName(
@@ -269,12 +332,12 @@ export function getLocalizedUserName(
     if (nameAr) return nameAr;
 
     // 2. Raw name already in Arabic
-    if (/[\u0600-\u06FF]/.test(rawName)) return rawName;
+    if (rawName && /[\u0600-\u06FF]/.test(rawName)) return rawName;
 
-    // 3. Fallback: Transliterate English name into Arabic
+    // 3. Transliterate English name into Arabic
     const candidate = nameEn || rawName;
     if (candidate) {
-      const words = candidate.split(/\s+/);
+      const words = candidate.split(/\s+/).filter(Boolean);
       const converted = words.map((w) => {
         const clean = w.toLowerCase().replace(/[^a-z]/g, "");
         return NAME_MAP[clean] || w;
@@ -292,14 +355,11 @@ export function getLocalizedUserName(
       return rawName;
     }
 
-    // 3. Fallback: Transliterate Arabic name into English
+    // 3. Transliterate Arabic candidate into English
     const candidate = nameAr || rawName;
     if (candidate) {
-      const words = candidate.split(/\s+/);
-      const converted = words.map((w) => {
-        const clean = w.replace(/[^\u0600-\u06FF]/g, "");
-        return AR_TO_EN_MAP[clean] || AR_TO_EN_MAP[w] || w;
-      });
+      const words = candidate.split(/\s+/).filter(Boolean);
+      const converted = words.map((w) => transliterateArabicWordToEnglish(w));
       return converted.join(" ");
     }
 

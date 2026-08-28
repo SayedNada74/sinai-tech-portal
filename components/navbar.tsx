@@ -7,7 +7,7 @@ import { useAuth } from"@/context/auth-context";
 import { useApp } from"@/context/app-context";
 import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from"lucide-react";
 import { Button } from"@/components/ui/button";
-import { cn, getAvatarFallback, isValidImageAvatar } from"@/lib/utils";
+import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
 import { motion, AnimatePresence, useScroll, useSpring } from"framer-motion";
 import { DeveloperCredit } from"@/components/ui/developer-credit";
 
@@ -52,8 +52,8 @@ export function Navbar() {
     { label: t("الأسئلة الشائعة","FAQ"), href:"/#faq" }
   ];
 
-  const userAvatar = user?.avatar ||"🎓";
-  const userName = user?.name ||"";
+  const userAvatar = user?.avatar || "🎓";
+  const userName = getLocalizedUserName(user, lang);
   const isImageAvatar = isValidImageAvatar(userAvatar);
 
   return (
@@ -270,7 +270,7 @@ export function Navbar() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50 truncate">{user?.name}</p>
+                      <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50 truncate">{userName || getLocalizedUserName(user, lang)}</p>
                       <p className="text-[10px] text-zinc-400 truncate">{user?.email}</p>
                     </div>
                   </div>

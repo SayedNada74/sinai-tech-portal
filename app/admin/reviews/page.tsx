@@ -5,7 +5,8 @@ import Link from"next/link";
 import { useLearning, CourseReview } from"@/context/learning-context";
 import { useSocial, CommunityPost } from"@/context/social-context";
 import { useAdmin } from"@/context/admin-context";
-import { useApp } from"@/context/app-context";
+import { useApp } from "@/context/app-context";
+import { getLocalizedUserName } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Badge } from"@/components/ui/badge";
 import { Button } from"@/components/ui/button";
@@ -60,15 +61,17 @@ export default function ReviewModerationPage() {
 
   const getAuthorDisplayName = (authorEmail?: string, fallbackAuthor?: string) => {
     const target = users.find(u => u.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim());
-    let raw = fallbackAuthor ||"";
+    let raw = "";
     if (target) {
-      raw = lang ==="ar" ? (target.nameAr || target.name || fallbackAuthor ||"") : (target.nameEn || target.name || fallbackAuthor ||"");
+      raw = getLocalizedUserName(target, lang);
+    } else {
+      raw = getLocalizedUserName(fallbackAuthor, lang);
     }
     const parts = raw.trim().split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return `${parts[0]} ${parts[1]}`;
     }
-    return raw || fallbackAuthor || (lang ==="ar" ?"طالب" :"Student");
+    return raw || (lang === "ar" ? "طالب" : "Student");
   };
 
   const renderAvatar = (avatar: string | undefined, fallback: string ="") => {

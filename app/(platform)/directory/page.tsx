@@ -10,7 +10,7 @@ import { Badge } from"@/components/ui/badge";
 import Link from"next/link";
 import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight, User } from"lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
-import { cn, getAvatarFallback, isValidImageAvatar } from"@/lib/utils";
+import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
 
 export default function DirectoryPage() {
   const { t, lang, dir } = useApp();
@@ -175,7 +175,7 @@ export default function DirectoryPage() {
                       </div>
                       
                       <h3 className="font-extrabold text-zinc-950 dark:text-zinc-50 text-base line-clamp-1">
-                        {lang ==="ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)}
+                        {getLocalizedUserName(user, lang)}
                       </h3>
                       
                       <div className="mt-1.5 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 font-bold">

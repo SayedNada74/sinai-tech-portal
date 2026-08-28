@@ -4,8 +4,9 @@ import * as React from"react";
 import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
 import { useAdmin } from"@/context/admin-context";
-import { useSocial, CommunityPost, PostComment } from"@/context/social-context";
-import Link from"next/link";
+import { useSocial, CommunityPost, PostComment } from "@/context/social-context";
+import { getLocalizedUserName } from "@/lib/utils";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Button } from"@/components/ui/button";
 import { Input } from"@/components/ui/input";
@@ -78,15 +79,17 @@ export default function CommunityPage() {
   // Helper to resolve short localized author name (First 2 names in active website language)
   const getAuthorDisplayName = (authorEmail?: string, fallbackAuthor?: string) => {
     const target = users.find(u => u.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim()) || (user?.email?.toLowerCase().trim() === authorEmail?.toLowerCase().trim() ? user : null);
-    let raw = fallbackAuthor ||"";
+    let raw = "";
     if (target) {
-      raw = lang ==="ar" ? (target.nameAr || target.name || fallbackAuthor ||"") : (target.nameEn || target.name || fallbackAuthor ||"");
+      raw = getLocalizedUserName(target, lang);
+    } else {
+      raw = getLocalizedUserName(fallbackAuthor, lang);
     }
     const parts = raw.trim().split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return `${parts[0]} ${parts[1]}`;
     }
-    return raw || fallbackAuthor || (lang ==="ar" ?"طالب" :"Student");
+    return raw || (lang === "ar" ? "طالب" : "Student");
   };
 
   // Helper to safely render avatar (handles base64 image strings, image URLs, or unicode emojis)

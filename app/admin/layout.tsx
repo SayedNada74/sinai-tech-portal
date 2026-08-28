@@ -6,8 +6,9 @@ import Link from"next/link";
 import { usePathname, useRouter } from"next/navigation";
 import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
-import { AdminProtectedRoute } from"@/components/admin-protected-route";
-import { PageTransitionWrapper } from"@/components/page-transition-wrapper";
+import { AdminProtectedRoute } from "@/components/admin-protected-route";
+import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
+import { getLocalizedUserName } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
@@ -157,7 +158,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="px-5 py-4.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
               <span className="text-2xl">{user?.avatar ||"‍"}</span>
               <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate">{user?.name}</h4>
+                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate">{getLocalizedUserName(user, lang)}</h4>
                 <p className="text-[9px] text-zinc-400 truncate mb-1.5">{user?.email}</p>
                 <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold border ${badge.color}`}>
                   {badge.label}

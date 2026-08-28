@@ -500,7 +500,7 @@ export default function ProfilePage() {
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </div>
 
-                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-50">{(isRtl ? nameAr : nameEn) ||"Admin"}</h3>
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-50">{getLocalizedUserName({ nameAr, nameEn, name: user?.name }, lang) || "Admin"}</h3>
                 <p className="text-xs text-zinc-500 font-mono mt-0.5">{email}</p>
 
                 <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-right space-y-2.5">

@@ -5,7 +5,8 @@ import Link from"next/link";
 import { createPortal } from"react-dom";
 import { useAdmin } from"@/context/admin-context";
 import { useAuth, UserProfile } from"@/context/auth-context";
-import { useApp } from"@/context/app-context";
+import { useApp } from "@/context/app-context";
+import { getLocalizedUserName } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Input } from"@/components/ui/input";
 import { Button } from"@/components/ui/button";
@@ -133,13 +134,9 @@ export default function UserManagementPage() {
   }, []);
 
   const getUserLocalizedName = React.useCallback((u: Partial<UserProfile> | any) => {
-    if (!u) return"";
+    if (!u) return "";
     const profile = users.find(user => user.email?.toLowerCase().trim() === u.email?.toLowerCase().trim() || user.id === u.userId || user.id === u.id) || u;
-    if (lang ==="ar") {
-      return profile.nameAr || profile.name || profile.nameEn ||"مستخدم";
-    } else {
-      return profile.nameEn || profile.name || profile.nameAr ||"User";
-    }
+    return getLocalizedUserName(profile, lang) || (lang === "ar" ? "مستخدم" : "User");
   }, [users, lang]);
 
   // Filtering

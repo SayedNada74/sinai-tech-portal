@@ -16,7 +16,8 @@ import { useToast } from"@/components/ui/toast";
 import { motion, AnimatePresence } from"framer-motion";
 import { AnimatedNumber } from"@/components/ui/animated-number";
 import { GradeSelect } from"@/components/ui/grade-select";
-import { useLocalStorage } from"@/lib/hooks/use-local-storage";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { getLocalizedUserName } from "@/lib/utils";
 
 interface SemesterCourseInput {
   id: string;
@@ -588,7 +589,7 @@ export default function GpaPage() {
         <div className="grid grid-cols-2 gap-4 border border-black p-4 rounded-xl text-xs bg-gray-50">
           <div>
             <span className="font-bold text-gray-700">{t("اسم الطالب:","Student Name:")} </span>
-            <span className="font-black text-black">{user ? (lang ==="ar" ? (user.nameAr || user.name) : (user.nameEn || user.name)) : t("طالب زائر (تقرير تجريبي)","Guest Student (Trial Report)")}</span>
+            <span className="font-black text-black">{user ? getLocalizedUserName(user, lang) : t("طالب زائر (تقرير تجريبي)","Guest Student (Trial Report)")}</span>
           </div>
           <div>
             <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):","Student ID:")} </span>
