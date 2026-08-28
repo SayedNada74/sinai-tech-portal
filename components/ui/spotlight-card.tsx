@@ -3,6 +3,8 @@
 import React, { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
+import { initCardTilt } from "@/lib/gsap-animations";
+
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
@@ -18,6 +20,13 @@ export function SpotlightCard({
   const divRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [opacity, setOpacity] = useState<number>(0);
+
+  React.useEffect(() => {
+    if (divRef.current) {
+      const cleanup = initCardTilt(divRef.current);
+      return () => cleanup();
+    }
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;

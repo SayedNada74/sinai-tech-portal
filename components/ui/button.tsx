@@ -4,6 +4,8 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+import { animateButtonPress } from "@/lib/gsap-animations";
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
@@ -12,7 +14,7 @@ export interface ButtonProps
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", isLoading, children, ...props }, ref) => {
+  ({ className, variant = "default", size = "default", isLoading, onClick, children, ...props }, ref) => {
     const baseStyles =
       "inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none active:scale-[0.98]";
 
@@ -32,12 +34,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon: "h-11 w-11 rounded-xl",
     };
 
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      animateButtonPress(e.currentTarget, variant === "destructive" ? "delete" : "default");
+      if (onClick) {
+        onClick(e);
+      }
+    };
+
     return (
       <motion.button
         whileHover={{ scale: 1.015 }}
-        whileTap={{ scale: 0.985 }}
         ref={ref as any}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
+        onClick={handleClick}
         {...(props as any)}
       >
         {isLoading ? (
