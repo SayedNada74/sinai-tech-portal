@@ -62,39 +62,51 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Calculator className="h-7 w-7 text-primary dark:text-sky-400" />,
-      title: t("حاسبة ومحاكي المعدل التراكمي (GPA)","GPA Calculator & Predictor"),
-      description: t("حساب فوري دقيق لمعدلك الفصلي والتراكمي، مع محاكي ذكي يحدد التقدير والدرجات المطلوبة بالضبط للتخرج بالمعدل الذي تطمح إليه.","Instant accurate calculation for semester and cumulative GPA, with smart simulator to predict target graduation grades."
+      icon: <Calculator className="h-7 w-7 text-sky-600 dark:text-sky-400" />,
+      title: t("حاسبة ومحاكي المعدل التراكمي (GPA)", "GPA Calculator & Graduation Predictor"),
+      description: t(
+        "حساب فوري دقيق لمعدلك الفصلي والتراكمي طبقاً للائحة الـ 144 ساعة، مع محاكي ذكي يحدد التقدير والدرجات المطلوبة للتخرج بمعدل ممتاز أو جيد جداً.",
+        "Accurate calculation for semester and cumulative GPA based on 144-credit regulations, with smart What-If simulation to predict target graduation grades."
       )
     },
     {
-      icon: <BookOpen className="h-7 w-7 text-primary dark:text-cyan-400" />,
-      title: t("دليل المقررات الأكاديمي والترتيب التسلسلي","Curriculum Guide & Course Hierarchy"),
-      description: t("استكشف كافة مواد الكلية بالترتيب الأكاديمي من الفرقة الأولى حتى الرابعة، مع المتطلبات المسبقة ومخرجات التعلم ومراجع التنزيل.","Explore all faculty courses in academic order from Year 1 to Year 4, with prerequisites, outcomes, and downloadable references."
+      icon: <BookOpen className="h-7 w-7 text-cyan-600 dark:text-cyan-400" />,
+      title: t("دليل المقررات والشجرة الأكاديمية", "Curriculum Guide & Prerequisites Tree"),
+      description: t(
+        "استكشف كافة مواد الكلية بالترتيب الأكاديمي من المستوى الأول حتى الرابع، مع توضيح المتطلبات المسبقة، مخرجات التعلم، والملخصات المتاحة.",
+        "Explore all faculty courses in academic order from Year 1 to Year 4, with prerequisites, learning outcomes, and downloadable references."
       )
     },
     {
-      icon: <Sparkles className="h-7 w-7 text-primary dark:text-sky-400" />,
-      title: t("المساعد الأكاديمي الذكي (AI Advisor)","Smart AI Academic Advisor"),
-      description: t("مرشد ذكي مدرب على اللوائح الأكاديمية لجامعة سيناء يجيب على تساؤلاتك، يقترح خطط التسجيل، ويحلل أدائك.","AI advisor trained on Sinai University regulations to answer questions, suggest registration plans, and analyze performance."
+      icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
+      title: t("دليل الطلاب الموثق بالبريد الجامعي", "Verified Student Directory & Profiles"),
+      description: t(
+        "شبكة موثوقة لطلاب جامعة سيناء تتيح التواصل مع أبناء تخصصك (IT, CS, IS)، تصفح البروفايلات، وتبادل الخبرات الأكاديمية بالأرقام الأكاديمية.",
+        "Secure student directory for Sinai University students with official email verification, allowing connection with peers in IT, CS, and IS tracks."
       )
     },
     {
-      icon: <Compass className="h-7 w-7 text-primary dark:text-emerald-400" />,
-      title: t("مسارات التعلم والمهارات المهنية","Learning Roadmaps & Skill Paths"),
-      description: t("خراط طريق واضحة تربط المواد الجامعة بمسارات العمل المطلوبة (Front-end, Back-end, AI, CyberSecurity).","Clear career roadmaps connecting university courses with in-demand industry tracks (Frontend, Backend, AI, Security)."
+      icon: <Sparkles className="h-7 w-7 text-sky-600 dark:text-sky-400" />,
+      title: t("المرشد الأكاديمي الذكي (AI Counselor)", "24/7 AI Academic Advisor"),
+      description: t(
+        "مرشد ذكي مدرب على اللوائح الأكاديمية لجامعة سيناء يجيب على استفساراتك، يساعدك في فتح المواد، ويقترح خطط التسجيل المناسبة لظروفك.",
+        "AI advisor trained on Sinai University regulations to answer questions, resolve registration conflicts, and suggest optimized study schedules."
       )
     },
     {
-      icon: <Briefcase className="h-7 w-7 text-amber-600 dark:text-amber-400" />,
-      title: t("بوابة التدريب والفرص الوظيفية","Careers & Internship Portal"),
-      description: t("منصة لعرض الفرص والتدريبات الصيفية (Internships) المتاحة لطلاب تكنولوجيا المعلومات والحاسبات.","Dedicated portal for summer internships, job opportunities, and career announcements for IT students."
+      icon: <Compass className="h-7 w-7 text-amber-600 dark:text-amber-400" />,
+      title: t("مسارات التعلّم وسوق العمل", "Career Roadmaps & Skill Paths"),
+      description: t(
+        "خرائط طريق واضحة تربط المواد الجامعية بمتطلبات العمل الواقعية في تطوير الويب، الذكاء الاصطناعي، شبكات الحواسيب، والتدريبات الصيفية.",
+        "Clear career roadmaps connecting university curricula to real-world job roles in Web Development, AI, Networking, and Summer Internships."
       )
     },
     {
-      icon: <Users className="h-7 w-7 text-primary dark:text-rose-400" />,
-      title: t("المجتمع الطلابي والنقاشات الأكاديمية","Student Community & Forum"),
-      description: t("مكان مخصص للطلاب لتبادل الملاحظات والملخصات، طرح الاستفسارات الأكاديمية، والتفاعل الإيجابي.","Space for students to share notes, summaries, post academic questions, and engage constructively."
+      icon: <Smartphone className="h-7 w-7 text-teal-600 dark:text-teal-400" />,
+      title: t("تطبيق PWA ومزامنة تقويم Moodle", "Instant PWA App & Moodle Sync"),
+      description: t(
+        "تثبيت فوري للمنصة كتطبيق على هاتف المحمول، مع مزامنة آلية لجدول محاضراتك وامتحاناتك مباشرة من نظام Moodle الرسمي.",
+        "Install the portal as an instant app on your phone with zero app store hassle, plus automatic Moodle calendar sync for assignments and exams."
       )
     }
   ];
@@ -218,7 +230,7 @@ export default function LandingPage() {
                                 {t("فوري","Instant")}
                               </span>
                             </div>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("توقع درجات التخرج والمعدل الفصلي","Target Graduation Predictor")}</p>
+                            <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium truncate mt-0.5">{t("توقع درجات التخرج والمعدل الفصلي","Target Graduation Predictor")}</p>
                           </div>
                         </div>
 
@@ -245,7 +257,7 @@ export default function LandingPage() {
                                 {t("الشجرة","Tree")}
                               </span>
                             </div>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("شجرة المواد والمتطلبات السابقة","Course Hierarchy & Prerequisites")}</p>
+                            <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium truncate mt-0.5">{t("شجرة المواد والمتطلبات السابقة","Course Hierarchy & Prerequisites")}</p>
                           </div>
                         </div>
 
@@ -272,7 +284,7 @@ export default function LandingPage() {
                                 {t("2026","2026")}
                               </span>
                             </div>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{t("خارطة طريق Frontend, AI, Backend","Frontend, AI & Backend tracks")}</p>
+                            <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium truncate mt-0.5">{t("خارطة طريق Frontend, AI, Backend","Frontend, AI & Backend tracks")}</p>
                           </div>
                         </div>
 
@@ -715,7 +727,7 @@ export default function LandingPage() {
                       <CardTitle className="text-base sm:text-lg font-bold">{feature.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
+                      <CardDescription className="text-xs sm:text-sm leading-relaxed text-zinc-700 dark:text-zinc-300 font-medium">
                         {feature.description}
                       </CardDescription>
                     </CardContent>
@@ -803,17 +815,26 @@ export default function LandingPage() {
             </div>
 
             <Accordion dir={dir}>
-              <AccordionItem title={t("كيف يتم حساب التوقعات في محاكي الـ GPA؟","How does the GPA Predictor calculate target grades?")}>
-                {t("يقوم النظام بالمعادلة التالية: يطرح عدد الساعات التي أنجزتها (مضروبة في نقاط التقديرات) من إجمالي نقاط المعدل المستهدف عند التخرج (144 ساعة)، ثم يقسم الناتج على الساعات المتبقية ليحدد لك بدقة التقدير المطلوب الحصول عليه مستقبلاً.","The system subtracts completed grade points from target graduation points (144 hours), dividing the remainder over remaining hours to determine precise target semester grades."
-                )}
+              <AccordionItem title={t("كيف يتم حساب المعدل التراكمي (GPA) الفصلي والإجمالي؟", "How is the semester and cumulative GPA calculated?")}>
+                {t("يتم حساب الـ GPA بضرب نقاط تقدير كل مقرر دراسي (مثلاً: A=4.0، B=3.0، C=2.0) في عدد ساعاته المعتمدة لنحصل على نقاط المقرر، ثم يتم جمع نقاط جميع المقررات وقسمة المجموع على إجمالي الساعات المسجلة. كما توفر لك المنصة حاسبة ذكية ومحاكي GPA يقوم بكل هذه الحسابات وتوقع معدلك المستهدف بدقة تلقائياً دون الحاجة لحسابها يدوياً.", "GPA is calculated by multiplying each course's grade points (e.g. A=4.0, B=3.0, C=2.0) by its credit hours to get course points, summing all course points, and dividing by total registered credit hours. The platform also provides a built-in smart calculator and predictor that computes this automatically.")}
               </AccordionItem>
-              <AccordionItem title={t("هل المنصة آمنة ومربوطة بسيرفر سحابي؟","Is the platform secure and cloud-backed?")}>
-                {t("نعم، المنصة مربوطة بسيرفر قاعدة بيانات سحابية (Supabase Cloud Database) تؤمن بيانات الحسابات، التقييمات، والمنشورات بالكامل مع تشفير البيانات.","Yes, the platform is backed by Supabase Cloud Database securing accounts, reviews, and student posts with encryption."
-                )}
+              <AccordionItem title={t("كيف يساعدني محاكي الـ GPA وكيف يتم حساب المعدل المستهدف؟", "How does the GPA Predictor calculate target grades?")}>
+                {t("يُمكنك المحاكي من إدخال المعدل المستهدف للتخرج (مثلاً 3.5)، وسيقوم النظام بطرح نقاطك المنجزة وتقسيم المتبقي على الساعات القادمة لتحديد التقديرات المحددة والحد الأدنى للدرجات المطلوب تحقيقها في المواد والساعات المتبقية.", "The predictor allows you to input a target graduation GPA (e.g. 3.5). The system subtracts completed grade points from total required points and divides the remainder over remaining hours to determine precise target semester grades.")}
               </AccordionItem>
-              <AccordionItem title={t("كيف تتم المزامنة مع Moodle؟","How does Moodle synchronization work?")}>
-                {t("المزامنة تتم من خلال رابط تقويم iCal العام الذي تقوم بنسخه من Moodle. المنصة تقرأ فقط التواريخ الخاصة بالمهام الأكاديمية والامتحانات وتضعها في تقويمك الخاص.","Sync operates via public iCal calendar URL from Moodle. The system parses exam and assignment dates directly into your calendar."
-                )}
+              <AccordionItem title={t("هل التسجيل متاح بأي بريد إلكتروني أم بـ بريد الجامعة فقط؟", "Is registration open to any email or university email only?")}>
+                {t("التسجيل في المنصة مخصص حصرياً لطلاب الجامعة باستخدام البريد الأكاديمي المعتمد (@su.edu.eg أو @sinai.edu.eg) لضمان أمان وحصرية الخدمات والأدوات للطلاب.", "Registration is strictly restricted to students using official university email (@su.edu.eg or @sinai.edu.eg) to guarantee account security and platform integrity.")}
+              </AccordionItem>
+              <AccordionItem title={t("هل المنصة آمنة ومربوطة بسيرفر سحابي؟", "Is the platform secure and cloud-backed?")}>
+                {t("نعم، المنصة مربوطة بسيرفر قاعدة بيانات سحابية (Supabase Cloud Database) تؤمن بيانات الحسابات، التقييمات، والمنشورات بالكامل مع تشفير البيانات.", "Yes, the platform is backed by Supabase Cloud Database securing accounts, reviews, and student posts with full data encryption.")}
+              </AccordionItem>
+              <AccordionItem title={t("كيف تتم المزامنة مع Moodle والتقويم الأكاديمي؟", "How does Moodle synchronization work?")}>
+                {t("المزامنة تتم من خلال رابط تقويم iCal العام الذي تقوم بنسخه من Moodle. المنصة تقرأ التواريخ الخاصة بالمهام الأكاديمية والامتحانات وتضعها وتنبّهك بها تلقائياً في تقويمك.", "Sync operates via public iCal calendar URL copied from Moodle. The system automatically parses exam and assignment dates into your personal dashboard calendar.")}
+              </AccordionItem>
+              <AccordionItem title={t("هل يتم حفظ كلمة مرور Moodle الخاصة بي؟", "Is my Moodle password saved?")}>
+                {t("لا، المنصة تستخدم رابط تقويم iCal العام المخصص للمهام والامتحانات فقط دون الحاجة لإدخال كلمة مرور Moodle الخاصة بك، مما يضمن أمان حسابك الجامعي بالكامل.", "No, the portal only uses the public iCal calendar feed for assignment dates without requiring your Moodle password, keeping your credentials completely safe.")}
+              </AccordionItem>
+              <AccordionItem title={t("كيف يساعدني المرشد الأكاديمي الذكي (AI Advisor)؟", "How does the AI Advisor support my studies?")}>
+                {t("يعتمد المرشد الذكي على الذكاء الاصطناعي للإجابة على استفساراتك حول اللوائح، شرح مفاهيم المواد، تقديم نصائح الاستذكار، ومساعدتك في اختيار التخصصات والمواد.", "Powered by AI, the advisor answers rule queries, clarifies course concepts, offers tailored study advice, and assists with academic decision-making.")}
               </AccordionItem>
             </Accordion>
           </div>

@@ -459,9 +459,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Validate Official University Email Domain (@su.edu.eg or @sinai.edu.eg)
     const lowerEmail = email.toLowerCase().trim();
-    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@su.edu.eg")) {
+    if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
       setIsLoading(false);
-      throw new Error("️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
+      throw new Error("️ يرجى استخدام البريد الإلكتروني الجامعي الرسمي المنتهي بـ @su.edu.eg أو @sinai.edu.eg لتأكيد هويتك كطالب بجامعة سيناء.");
     }
 
     // Validate Password Complexity (Min 8 chars, letter, number, special char)
