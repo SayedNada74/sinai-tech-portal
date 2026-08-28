@@ -188,6 +188,38 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize and Sync states
   React.useEffect(() => {
+    const defaultAccounts: UserProfile[] = [
+      { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "admin", is_profile_completed: true },
+      { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "super-admin", is_profile_completed: true },
+      { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "moderator", is_profile_completed: true }
+    ];
+
+    const deduplicateUsers = (localList: UserProfile[], cloudList: UserProfile[] = []): UserProfile[] => {
+      const map = new Map<string, UserProfile>();
+
+      // 1. Add defaults
+      defaultAccounts.forEach(da => {
+        const key = da.email ? da.email.toLowerCase().trim() : da.id;
+        map.set(key, da);
+      });
+
+      // 2. Merge local
+      localList.forEach(lu => {
+        const key = lu.email ? lu.email.toLowerCase().trim() : lu.id;
+        const existing = map.get(key);
+        map.set(key, { ...existing, ...lu });
+      });
+
+      // 3. Merge cloud (authoritative)
+      cloudList.forEach(cl => {
+        const key = cl.email ? cl.email.toLowerCase().trim() : cl.id;
+        const existing = map.get(key);
+        map.set(key, { ...existing, ...cl });
+      });
+
+      return Array.from(map.values());
+    };
+
     const loadUsers = () => {
       const savedRegs = localStorage.getItem("su_registered_users");
       let currentUsers: UserProfile[] = [];
@@ -197,34 +229,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         } catch (e) { }
       }
 
-      // Ensure we have some default roles for demo
-      const defaultAccounts: UserProfile[] = [
-        { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "️", role: "admin", is_profile_completed: true },
-        { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "super-admin", is_profile_completed: true },
-        { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "moderator", is_profile_completed: true }
-      ];
-
-      defaultAccounts.forEach(da => {
-        const idx = currentUsers.findIndex(u => u.email?.toLowerCase().trim() === da.email.toLowerCase().trim() || u.id === da.id);
-        if (idx === -1) {
-          currentUsers.push(da);
-        } else {
-          currentUsers[idx] = {
-            ...da,
-            ...currentUsers[idx],
-            name: currentUsers[idx].name || da.name,
-            nameAr: currentUsers[idx].nameAr || da.nameAr,
-            nameEn: currentUsers[idx].nameEn || da.nameEn,
-            avatar: currentUsers[idx].avatar || da.avatar,
-            studentId: currentUsers[idx].studentId || da.studentId,
-            level: currentUsers[idx].level || da.level,
-            department: currentUsers[idx].department || da.department,
-            role: currentUsers[idx].role || da.role
-          };
-        }
-      });
-      setUsers(currentUsers);
-      localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
+      const merged = deduplicateUsers(currentUsers);
+      setUsers(merged);
+      localStorage.setItem("su_registered_users", JSON.stringify(merged));
     };
 
     loadUsers();
@@ -254,17 +261,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               is_profile_completed: p.is_profile_completed ?? true
             }));
 
-            const defaultAccounts: UserProfile[] = [
-              { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "admin", is_profile_completed: true },
-              { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "super-admin", is_profile_completed: true },
-              { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "moderator", is_profile_completed: true }
-            ];
+            const savedRegs = localStorage.getItem("su_registered_users");
+            let localList: UserProfile[] = [];
+            if (savedRegs) {
+              try { localList = JSON.parse(savedRegs); } catch (e) {}
+            }
 
-            const combinedMap = new Map<string, UserProfile>();
-            defaultAccounts.forEach(da => combinedMap.set(da.id, da));
-            mappedProfiles.forEach(mp => combinedMap.set(mp.id, mp));
-
-            const finalUsers = Array.from(combinedMap.values());
+            const finalUsers = deduplicateUsers(localList, mappedProfiles);
             setUsers(finalUsers);
             localStorage.setItem("su_registered_users", JSON.stringify(finalUsers));
           }
