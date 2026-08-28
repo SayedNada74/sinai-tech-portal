@@ -3,6 +3,8 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 
+import { motion } from "framer-motion";
+
 export function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -12,9 +14,16 @@ export function PageTransitionWrapper({ children }: { children: React.ReactNode 
   }, [pathname]);
 
   return (
-    <div key={pathname} className="w-full animate-fade-in">
+    <motion.div
+      key={pathname}
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="w-full min-w-0"
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 

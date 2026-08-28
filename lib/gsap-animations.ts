@@ -12,17 +12,19 @@ export const animateButtonPress = (
 ) => {
   if (!element) return;
 
+  gsap.killTweensOf(element);
+
   if (variant === "delete") {
-    // Subtle warning shake
+    // Crisp warning shake
     gsap.fromTo(
       element,
       { x: 0 },
       {
-        x: 4,
-        duration: 0.05,
+        x: -8,
+        duration: 0.06,
         repeat: 3,
         yoyo: true,
-        ease: "power1.inOut",
+        ease: "power2.inOut",
         onComplete: () => {
           gsap.set(element, { x: 0 });
         }
@@ -34,8 +36,8 @@ export const animateButtonPress = (
       element,
       { scale: 1 },
       {
-        scale: 0.94,
-        duration: 0.08,
+        scale: 0.90,
+        duration: 0.1,
         ease: "power2.out",
         yoyo: true,
         repeat: 1,
@@ -90,14 +92,14 @@ export const initCardTilt = (element: HTMLElement | null) => {
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
 
-    const rotX = (-y / rect.height) * 6; // Max 3deg tilt
-    const rotY = (x / rect.width) * 6;
+    const rotX = (-y / rect.height) * 12; // Clearly noticeable 3D tilt
+    const rotY = (x / rect.width) * 12;
 
     gsap.to(element, {
       rotationX: rotX,
       rotationY: rotY,
       transformPerspective: 1000,
-      duration: 0.3,
+      duration: 0.25,
       ease: "power2.out"
     });
   };
@@ -106,7 +108,7 @@ export const initCardTilt = (element: HTMLElement | null) => {
     gsap.to(element, {
       rotationX: 0,
       rotationY: 0,
-      duration: 0.5,
+      duration: 0.4,
       ease: "power2.out"
     });
   };
