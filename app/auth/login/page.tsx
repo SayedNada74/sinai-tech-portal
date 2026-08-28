@@ -100,13 +100,13 @@ export default function LoginPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني","Email Address")}</label>
                 <div className="relative">
-                  <Mail className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Mail className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none`} />
                   <Input
                     type="email"
                     placeholder="username@su.edu.eg"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={lang ==="ar" ?"pr-10" :"pl-10"}
+                    className={lang === "ar" ? "pr-10" : "pl-10"}
                     disabled={isLoading}
                   />
                 </div>
@@ -121,22 +121,22 @@ export default function LoginPage() {
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Lock className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none`} />
                   <Input
-                    type={showPassword ?"text" :"password"}
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={lang ==="ar" ?"pr-10 pl-10" :"pl-10 pr-10"}
+                    className={lang === "ar" ? "pr-10 pl-10" : "pl-10 pr-10"}
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute ${lang ==="ar" ?"left-3.5" :"right-3.5"} top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 rounded-lg`}
+                    className={`absolute ${lang === "ar" ? "left-3.5" : "right-3.5"} top-1/2 -translate-y-1/2 transition-colors cursor-pointer p-0.5 rounded-lg`}
                     title={showPassword ? t("إخفاء كلمة المرور","Hide password") : t("إظهار كلمة المرور","Show password")}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-primary" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4 input-icon text-sky-500" /> : <Eye className="h-4 w-4 input-icon" />}
                   </button>
                 </div>
               </div>

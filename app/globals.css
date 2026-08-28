@@ -133,6 +133,38 @@
   opacity: 0.8 !important;
 }
 
+/* Custom Autofill & Input Icon High Contrast Rules */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #09090b !important;
+  transition: background-color 50000s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-text-fill-color: #fafafa !important;
+}
+
+.input-icon,
+[data-input-icon] {
+  color: #52525b !important;
+}
+
+.dark .input-icon,
+.dark [data-input-icon] {
+  color: #a1a1aa !important;
+}
+
+.input-icon:hover,
+.dark .input-icon:hover {
+  color: #0284c7 !important;
+}
+
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;

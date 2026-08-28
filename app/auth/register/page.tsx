@@ -101,8 +101,8 @@ export default function RegisterPage() {
         {/* Logo and Header */}
         <div className="flex flex-col items-center mb-6 text-center">
           <Logo size="xl" href="/" className="mb-3" />
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{t("إنشاء حساب جديد","Create New Account")}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-normal">{t("ابدأ رحلتك الأكاديمية الذكية اليوم","Start your academic journey today")}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{t("إنشاء حساب جديد", "Create New Account")}</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-normal">{t("ابدأ رحلتك الأكاديمية الذكية اليوم", "Start your academic journey today")}</p>
         </div>
 
         <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60">
@@ -120,13 +120,13 @@ export default function RegisterPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">الاسم الكامل (عربي)</label>
                   <div className="relative">
-                    <User className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                    <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                     <Input
                       type="text"
                       placeholder="اسم الطالب"
                       value={nameAr}
                       onChange={(e) => setFormField("nameAr", e.target.value)}
-                      className={lang ==="ar" ?"pr-10 text-xs text-right" :"pl-10 text-xs text-right"}
+                      className={lang === "ar" ? "pr-10 text-xs text-right" : "pl-10 text-xs text-right"}
                       disabled={isLoading}
                       dir="rtl"
                     />
@@ -137,13 +137,13 @@ export default function RegisterPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Full Name (English)</label>
                   <div className="relative">
-                    <User className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                    <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                     <Input
                       type="text"
                       placeholder="Student Name"
                       value={nameEn}
                       onChange={(e) => setFormField("nameEn", e.target.value)}
-                      className={lang ==="ar" ?"pr-10 text-xs text-left" :"pl-10 text-xs text-left"}
+                      className={lang === "ar" ? "pr-10 text-xs text-left" : "pl-10 text-xs text-left"}
                       disabled={isLoading}
                       dir="ltr"
                     />
@@ -153,15 +153,15 @@ export default function RegisterPage() {
 
               {/* Email */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني الجامعي","University Email")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("البريد الإلكتروني الجامعي", "University Email")}</label>
                 <div className="relative">
-                  <Mail className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Mail className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                   <Input
                     type="email"
                     placeholder="username@su.edu.eg"
                     value={email}
                     onChange={(e) => setFormField("email", e.target.value)}
-                    className={lang ==="ar" ?"pr-10 text-xs" :"pl-10 text-xs"}
+                    className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
                     disabled={isLoading}
                   />
                 </div>
@@ -169,34 +169,34 @@ export default function RegisterPage() {
 
               {/* Academic Level */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الفرقة الدراسية","Academic Level")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الفرقة الدراسية", "Academic Level")}</label>
                 <div className="relative">
-                  <Calendar className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none`} />
+                  <Calendar className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                   <select
                     value={level}
                     onChange={(e) => setFormField("level", e.target.value)}
                     disabled={isLoading}
-                    className={`w-full h-11 ${lang ==="ar" ?"pr-10 pl-3" :"pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
+                    className={`w-full h-11 ${lang === "ar" ? "pr-10 pl-3" : "pl-10 pr-3"} rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 transition-all cursor-pointer appearance-none`}
                   >
-                    <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)","Year 1 (Freshman)")}</option>
-                    <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)","Year 2 (Sophomore)")}</option>
-                    <option value="الفرقة الثالثة">{t("الفرقة الثالثة (سنة ثالثة)","Year 3 (Junior)")}</option>
-                    <option value="الفرقة الرابعة">{t("الفرقة الرابعة (سنة رابعة)","Year 4 (Senior)")}</option>
+                    <option value="الفرقة الأولى">{t("الفرقة الأولى (سنة أولى)", "Year 1 (Freshman)")}</option>
+                    <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
+                    <option value="الفرقة الثالثة">{t("الفرقة الثالثة (سنة ثالثة)", "Year 3 (Junior)")}</option>
+                    <option value="الفرقة الرابعة">{t("الفرقة الرابعة (سنة رابعة)", "Year 4 (Senior)")}</option>
                   </select>
                 </div>
               </div>
 
               {/* Student ID */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الرقم الجامعي (ID)","Student ID")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("الرقم الجامعي (ID)", "Student ID")}</label>
                 <div className="relative">
-                  <User className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <User className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                   <Input
                     type="text"
-                    placeholder={t("الرقم الجامعي الخاص بك","Your Student ID")}
+                    placeholder={t("الرقم الجامعي الخاص بك", "Your Student ID")}
                     value={studentId}
                     onChange={(e) => setFormField("studentId", e.target.value)}
-                    className={lang ==="ar" ?"pr-10 text-xs" :"pl-10 text-xs"}
+                    className={lang === "ar" ? "pr-10 text-xs" : "pl-10 text-xs"}
                     disabled={isLoading}
                   />
                 </div>
@@ -204,15 +204,15 @@ export default function RegisterPage() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور المعقدة","Complex Password")}</label>
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">{t("كلمة المرور المعقدة", "Complex Password")}</label>
                 <div className="relative">
-                  <Lock className={`absolute ${lang ==="ar" ?"right-3.5" :"left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400`} />
+                  <Lock className={`absolute ${lang === "ar" ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-4 w-4 input-icon pointer-events-none text-zinc-400`} />
                   <Input
-                    type={showPassword ?"text" :"password"}
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setFormField("password", e.target.value)}
-                    className={lang ==="ar" ?"pr-10 pl-10 text-xs font-mono" :"pl-10 pr-10 text-xs font-mono"}
+                    className={lang === "ar" ? "pr-10 pl-10 text-xs font-mono" : "pl-10 pr-10 text-xs font-mono"}
                     disabled={isLoading}
                   />
                   <button
