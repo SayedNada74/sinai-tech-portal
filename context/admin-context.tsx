@@ -452,6 +452,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     saveState("su_registered_users", updated);
     logAction("حذف حساب مستخدم", `تم إزالة الحساب تماماً للبريد: ${target?.email}`, "auth");
 
+    try {
+      await fetch("/api/admin/delete-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+      });
+    } catch (e) {
+      console.warn("API delete-user error:", e);
+    }
+
     if (isSupabaseConfigured && supabase) {
       await supabase.from("profiles").delete().eq("id", userId);
     }
@@ -517,6 +527,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction("حذف جماعي للمستخدمين", `تم حذف ${userIds.length} مستخدمين من قاعدة البيانات`, "auth");
+
+    for (const id of userIds) {
+      try {
+        await fetch("/api/admin/delete-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: id })
+        });
+      } catch (e) {}
+    }
 
     if (isSupabaseConfigured && supabase) {
       await supabase.from("profiles").delete().in("id", userIds);
