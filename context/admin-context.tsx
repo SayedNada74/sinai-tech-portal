@@ -228,10 +228,63 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadUsers();
+    
+    const fetchAdminUsersCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data: suProfiles, error } = await supabase
+            .from("profiles")
+            .select("*");
 
-    window.addEventListener("su_users_updated", loadUsers);
+          if (!error && suProfiles && suProfiles.length > 0) {
+            const mappedProfiles: UserProfile[] = suProfiles.map((p: any) => ({
+              id: p.id,
+              name: p.full_name_ar || p.full_name_en || p.email?.split("@")[0] || "طالب جديد",
+              nameAr: p.full_name_ar || p.full_name_en || "",
+              nameEn: p.full_name_en || p.full_name_ar || "",
+              email: p.email,
+              level: p.level || "الفرقة الأولى",
+              department: p.department || "تكنولوجيا المعلومات (IT)",
+              studentId: p.student_id || "",
+              bio: p.bio || "",
+              skills: p.skills || [],
+              socialLinks: p.social_links || { github: "", linkedin: "" },
+              avatar: p.avatar_url || "",
+              role: p.role || "student",
+              is_profile_completed: p.is_profile_completed ?? true
+            }));
+
+            const defaultAccounts: UserProfile[] = [
+              { id: "user-admin", name: "سيد المسؤول", nameAr: "سيد المسؤول", nameEn: "Sayed Admin", email: "admin@example.com", level: "الكادر الإداري والفني", department: "إدارة المنصة والسياسات", studentId: "ADM-001", bio: "مسؤول النظام الإداري", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "admin", is_profile_completed: true },
+              { id: "user-super", name: "سيد المشرف الأعلى", nameAr: "سيد المشرف الأعلى", nameEn: "Sayed Super Admin", email: "super@example.com", level: "الإدارة العليا للجامعة", department: "الإشراف والرقابة العامة", studentId: "SUP-001", bio: "المشرف الأعلى على المنصة", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "super-admin", is_profile_completed: true },
+              { id: "user-mod", name: "سيد المنسق", nameAr: "سيد المنسق", nameEn: "Sayed Moderator", email: "mod@example.com", level: "كادر التنسيق الطلابي", department: "الرقابة وجودة المحتوى", studentId: "MOD-001", bio: "منسق ومراجع المحتوى والمنتدى", skills: [], socialLinks: { github: "", linkedin: "" }, avatar: "", role: "moderator", is_profile_completed: true }
+            ];
+
+            const combinedMap = new Map<string, UserProfile>();
+            defaultAccounts.forEach(da => combinedMap.set(da.id, da));
+            mappedProfiles.forEach(mp => combinedMap.set(mp.id, mp));
+
+            const finalUsers = Array.from(combinedMap.values());
+            setUsers(finalUsers);
+            localStorage.setItem("su_registered_users", JSON.stringify(finalUsers));
+          }
+        } catch (err) {
+          console.warn("[Admin Users] Cloud fetch error:", err);
+        }
+      }
+    };
+
+    fetchAdminUsersCloud();
+
+    window.addEventListener("su_users_updated", () => {
+      loadUsers();
+      fetchAdminUsersCloud();
+    });
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "su_registered_users") loadUsers();
+      if (e.key === "su_registered_users") {
+        loadUsers();
+        fetchAdminUsersCloud();
+      }
     };
     window.addEventListener("storage", handleStorageChange);
 
