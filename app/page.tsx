@@ -188,7 +188,7 @@ export default function LandingPage() {
               className="pt-3 sm:pt-4 max-w-4xl mx-auto w-full"
             >
               {/* Eye-catching Chic Badge with Live Pulse Dot & ShinyText */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-sky-500/30 dark:border-sky-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-sm shadow-sky-500/5 backdrop-blur-md transition-all">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-sky-500/30 dark:border-sky-500/40 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold mb-3.5 shadow-2xs transition-all">
                 {/* Live glowing radar pulse dot */}
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
@@ -200,11 +200,8 @@ export default function LandingPage() {
                 </span>
               </div>
 
-              {/* Ambient Glow Wrapper & 3 Interactive Cards */}
-              <div className="relative group/grid max-w-3xl mx-auto">
-                {/* Subtle ambient blur glow behind cards */}
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-600/10 rounded-3xl blur-xl opacity-50 group-hover/grid:opacity-80 transition-opacity pointer-events-none -z-10" />
-
+              {/* 3 Interactive Cards Container */}
+              <div className="relative max-w-3xl mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-right" dir={dir}>
                   {/* Card 1: GPA Calculator with ReactBits SpotlightCard */}
                   <Link href="/gpa" className="group block h-full">
