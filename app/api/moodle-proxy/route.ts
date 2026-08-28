@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rate-limiter";
 
 // Comprehensive list of disallowed private / loopback / link-local IP patterns and hostnames
 const BLOCKED_HOSTNAMES = new Set([
@@ -133,6 +134,16 @@ function validateSafeMoodleUrl(rawUrl: string): { isValid: boolean; error?: stri
 }
 
 export async function GET(req: NextRequest) {
+  // Rate Limiting: Max 20 proxy requests per minute per IP (process-local, development protection)
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || req.headers.get("x-real-ip") || "unknown";
+  const rateCheck = checkRateLimit(`moodle-proxy-${ip}`, { limit: 20, windowSeconds: 60 });
+  if (!rateCheck.success) {
+    return NextResponse.json(
+      { error: "تم تجاوز الحد المسموح به من الطلبات. يرجى الانتظار لمدة دقيقة." },
+      { status: 429, headers: { "Retry-After": `${rateCheck.reset}` } }
+    );
+  }
+
   const urlParam = req.nextUrl.searchParams.get("url");
 
   if (!urlParam) {

@@ -11,7 +11,7 @@ export interface UserProfile {
   nameAr?: string;
   nameEn?: string;
   email: string;
-  password?: string;
+
   level: string;
   department: string;
   studentId: string;
@@ -271,184 +271,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string, rememberMe: boolean): Promise<boolean> => {
     setIsLoading(true);
 
-    const savedUsersStr = localStorage.getItem("su_registered_users");
-    let currentUsers: UserProfile[] = [];
-    if (savedUsersStr) {
-      try {
-        currentUsers = JSON.parse(savedUsersStr) as UserProfile[];
-      } catch (e) { }
+    // Authentication is exclusively through Supabase Auth — no local fallback
+    if (!isSupabaseConfigured || !supabase) {
+      setIsLoading(false);
+      throw new Error("خدمة المصادقة غير متوفرة حالياً. يرجى المحاولة لاحقاً.");
     }
 
-    // Sanitize
-    currentUsers = currentUsers.map((u) => ({
-      ...u,
-      password: u.password || "123456"
-    }));
-
-    // 1. Try Supabase cloud auth if configured
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (!error && data?.user) {
-          // Query complete profile row from Supabase Cloud DB
-          let dbProfile: any = null;
-          try {
-            const { data: profileRow } = await supabase.from("profiles").select("*").eq("email", email.toLowerCase().trim()).maybeSingle();
-            if (profileRow) dbProfile = profileRow;
-          } catch (e) { }
-
-          const matched = currentUsers.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
-          const isCompleted = dbProfile ? (dbProfile.is_profile_completed !== false) : true;
-          const sessionUser: UserProfile = {
-            id: dbProfile?.id || data.user.id,
-            name: dbProfile?.name || data.user.user_metadata?.name || matched?.name || email.split("@")[0],
-            nameAr: dbProfile?.name_ar || matched?.nameAr || "",
-            nameEn: dbProfile?.name_en || matched?.nameEn || "",
-            email: email.toLowerCase().trim(),
-            password: password,
-            level: dbProfile?.level || matched?.level || data.user.user_metadata?.level || "الفرقة الأولى",
-            department: dbProfile?.department || matched?.department || data.user.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
-            studentId: dbProfile?.student_id || dbProfile?.studentId || matched?.studentId || data.user.user_metadata?.student_id || "20261001",
-            bio: dbProfile?.bio || matched?.bio || "طالب مسجل في المنصة الأكاديمية.",
-            skills: Array.isArray(dbProfile?.skills) ? dbProfile.skills : (typeof dbProfile?.skills === "string" ? JSON.parse(dbProfile.skills || "[]") : matched?.skills || []),
-            socialLinks: dbProfile?.social_links || dbProfile?.socialLinks || matched?.socialLinks || {},
-            avatar: dbProfile?.avatar || matched?.avatar || "🎓",
-            role: dbProfile?.role || matched?.role || "student",
-            cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || matched?.cvUrl || "",
-            projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : matched?.projects || []),
-            badges: dbProfile?.badges || matched?.badges || ["طالب"],
-            points: dbProfile?.points || matched?.points || 50,
-            following: dbProfile?.following || matched?.following || [],
-            isProfileComplete: isCompleted,
-            needsOnboarding: !isCompleted,
-            is_profile_completed: isCompleted,
-            rememberMe
-          };
-
-          // Update local cache
-          const matchedIdx = currentUsers.findIndex(u => u.email.toLowerCase() === sessionUser.email.toLowerCase());
-          if (matchedIdx !== -1) {
-            currentUsers[matchedIdx] = sessionUser;
-          } else {
-            currentUsers.push(sessionUser);
-          }
-          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
-          window.dispatchEvent(new Event("su_users_updated"));
-
-          setUser(sessionUser);
-          localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
-          setIsLoading(false);
-          return true;
-        }
-      } catch (e) {
-        console.warn("Supabase auth failed, falling back to local credentials:", e);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+      if (error || !data?.user) {
+        setIsLoading(false);
+        return false;
       }
-    }
 
-    // 2. Strict Local Credentials Check
-    const lowerInputEmail = email.toLowerCase().trim();
-    if (!lowerInputEmail.endsWith("@su.edu.eg") && !lowerInputEmail.endsWith("@sinai.edu.eg")) {
-      setIsLoading(false);
-      throw new Error("️ لا يُسمح بتسجيل الدخول إلا بالبريد الإلكتروني الجامعي الرسمي المعتمد من جامعة سيناء (username@su.edu.eg).");
-    }
-
-    let matchedUser = currentUsers.find((u) => u.email.toLowerCase() === lowerInputEmail);
-
-    // If not found in local storage, query Supabase Cloud DB profiles table for cross-device authentication
-    if (!matchedUser && isSupabaseConfigured && supabase) {
+      // Query complete profile row from Supabase Cloud DB
+      let dbProfile: any = null;
       try {
-        const { data: cloudRows } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).limit(1);
-        const cloudRow = cloudRows?.[0];
-        if (cloudRow) {
-          const isCompleted = cloudRow.is_profile_completed !== false;
-          matchedUser = {
-            id: cloudRow.id,
-            name: cloudRow.name || lowerInputEmail.split("@")[0],
-            nameAr: cloudRow.name_ar || "",
-            nameEn: cloudRow.name_en || "",
-            email: cloudRow.email || lowerInputEmail,
-            password: cloudRow.password || password,
-            level: cloudRow.level || "",
-            department: cloudRow.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
-            studentId: cloudRow.student_id || cloudRow.studentId || "",
-            bio: cloudRow.bio || "طالب مسجل في المنصة الأكاديمية.",
-            skills: Array.isArray(cloudRow.skills) ? cloudRow.skills : (typeof cloudRow.skills === "string" ? JSON.parse(cloudRow.skills || "[]") : []),
-            socialLinks: cloudRow.social_links || cloudRow.socialLinks || {},
-            avatar: cloudRow.avatar || "🎓",
-            role: cloudRow.role || "student",
-            cvUrl: cloudRow.cv_url || cloudRow.cvUrl || "",
-            projects: Array.isArray(cloudRow.projects) ? cloudRow.projects : (typeof cloudRow.projects === "string" ? JSON.parse(cloudRow.projects || "[]") : []),
-            badges: cloudRow.badges || ["طالب"],
-            points: cloudRow.points || 50,
-            following: cloudRow.following || [],
-            isProfileComplete: isCompleted,
-            needsOnboarding: !isCompleted,
-            is_profile_completed: isCompleted
-          };
-
-          currentUsers.push(matchedUser);
-          localStorage.setItem("su_registered_users", JSON.stringify(currentUsers));
-          window.dispatchEvent(new Event("su_users_updated"));
+        const { data: profileRow } = await supabase.from("profiles").select("*").eq("id", data.user.id).maybeSingle();
+        if (!profileRow) {
+          // Fallback: query by email
+          const { data: byEmail } = await supabase.from("profiles").select("*").eq("email", email.toLowerCase().trim()).maybeSingle();
+          if (byEmail) dbProfile = byEmail;
+        } else {
+          dbProfile = profileRow;
         }
-      } catch (e) {
-        console.warn("Supabase cloud profile query failed:", e);
-      }
-    }
-
-    // FAILED: Email does NOT exist in registered users or Supabase DB
-    if (!matchedUser) {
-      setIsLoading(false);
-      return false;
-    }
-
-    // FAILED: Check Password Match Strictly!
-    const expectedPassword = matchedUser.password || "123456";
-    if (expectedPassword !== password) {
-      setIsLoading(false);
-      return false;
-    }
-
-    // FAILED: Check if account is suspended
-    if (matchedUser.bio && matchedUser.bio.includes("[SUSPENDED]")) {
-      setIsLoading(false);
-      throw new Error(" هذا الحساب مجمد وموقوف مؤقتاً بقرار إداري. جميع بياناتك ومحفوظاتك وتقدمك الأكاديمي محفوظ بأمان، يرجى التواصل مع إدارة النظام.");
-    }
-
-    // Try fetching Cloud profile if available
-    let dbProfile: any = null;
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { data: profileRows } = await supabase.from("profiles").select("*").eq("email", lowerInputEmail).limit(1);
-        const profileRow = profileRows?.[0];
-        if (profileRow) dbProfile = profileRow;
       } catch (e) { }
+
+      const isCompleted = dbProfile ? (dbProfile.is_profile_completed !== false) : true;
+      const sessionUser: UserProfile = {
+        id: dbProfile?.id || data.user.id,
+        name: dbProfile?.name || data.user.user_metadata?.name || email.split("@")[0],
+        nameAr: dbProfile?.name_ar || "",
+        nameEn: dbProfile?.name_en || "",
+        email: email.toLowerCase().trim(),
+        level: dbProfile?.level || data.user.user_metadata?.level || "الفرقة الأولى",
+        department: dbProfile?.department || data.user.user_metadata?.department || "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)",
+        studentId: dbProfile?.student_id || dbProfile?.studentId || data.user.user_metadata?.student_id || "",
+        bio: dbProfile?.bio || "طالب مسجل في المنصة الأكاديمية.",
+        skills: Array.isArray(dbProfile?.skills) ? dbProfile.skills : (typeof dbProfile?.skills === "string" ? JSON.parse(dbProfile.skills || "[]") : []),
+        socialLinks: dbProfile?.social_links || dbProfile?.socialLinks || {},
+        avatar: dbProfile?.avatar || data.user.user_metadata?.avatar_url || "🎓",
+        role: dbProfile?.role || "student",
+        cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || "",
+        projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : []),
+        badges: dbProfile?.badges || ["طالب"],
+        points: dbProfile?.points || 50,
+        following: dbProfile?.following || [],
+        isProfileComplete: isCompleted,
+        needsOnboarding: !isCompleted,
+        is_profile_completed: isCompleted,
+        rememberMe
+      };
+
+      setUser(sessionUser);
+      localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
+      setIsLoading(false);
+      return true;
+    } catch (e) {
+      console.warn("Supabase auth error:", e);
+      setIsLoading(false);
+      throw e;
     }
-
-    // SUCCESS: Authenticate and grant user session
-    const sessionUser: UserProfile = {
-      ...matchedUser,
-      id: dbProfile?.id || matchedUser.id,
-      name: dbProfile?.name || matchedUser.name,
-      nameAr: dbProfile?.name_ar || matchedUser.nameAr || "",
-      nameEn: dbProfile?.name_en || matchedUser.nameEn || "",
-      level: dbProfile?.level || matchedUser.level,
-      department: dbProfile?.department || matchedUser.department,
-      studentId: dbProfile?.student_id || dbProfile?.studentId || matchedUser.studentId,
-      bio: dbProfile?.bio || matchedUser.bio,
-      skills: Array.isArray(dbProfile?.skills) ? dbProfile.skills : (typeof dbProfile?.skills === "string" ? JSON.parse(dbProfile.skills || "[]") : matchedUser.skills || []),
-      socialLinks: dbProfile?.social_links || dbProfile?.socialLinks || matchedUser.socialLinks || {},
-      avatar: dbProfile?.avatar || matchedUser.avatar,
-      role: dbProfile?.role || matchedUser.role,
-      cvUrl: dbProfile?.cv_url || dbProfile?.cvUrl || matchedUser.cvUrl || "",
-      projects: Array.isArray(dbProfile?.projects) ? dbProfile.projects : (typeof dbProfile?.projects === "string" ? JSON.parse(dbProfile.projects || "[]") : matchedUser.projects || []),
-      is_profile_completed: dbProfile?.is_profile_completed !== false,
-      rememberMe
-    };
-
-    setUser(sessionUser);
-    localStorage.setItem("su_user_session", JSON.stringify(sessionUser));
-    setIsLoading(false);
-    return true;
   };
 
   const register = async (nameAr: string, nameEn: string, email: string, password: string, level = "الفرقة الأولى", department = "تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)", studentId = ""): Promise<boolean | "requires_verification"> => {
@@ -562,7 +445,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       nameAr,
       nameEn,
       email,
-      password: password || "123456", // Store user's chosen password
       level,
       department,
       studentId: generatedStudentId,
@@ -583,7 +465,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await insertToSupabase("profiles", {
         id: finalUserId,
         email,
-        password: password || "123456",
         name: fullStudentName,
         name_ar: nameAr,
         name_en: nameEn,
@@ -724,7 +605,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         student_id: updatedUser.studentId,
         bio: updatedUser.bio,
         avatar: updatedUser.avatar,
-        role: updatedUser.role,
+        // SECURITY: role is NOT sent from client — enforced by DB trigger protect_profile_role
         social_links: updatedUser.socialLinks || {},
         skills: updatedUser.skills || [],
         cv_url: updatedUser.cvUrl || "",

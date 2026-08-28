@@ -1,8 +1,13 @@
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 
-// Define the secret key. In production, this must be stored in environment variables.
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-development-key-change-me';
-const secretKey = new TextEncoder().encode(JWT_SECRET);
+// SECURITY: In production, JWT_SECRET MUST be set as an environment variable.
+// The development fallback key is ONLY used when NODE_ENV !== 'production'.
+const JWT_SECRET = process.env.JWT_SECRET || (
+  process.env.NODE_ENV === 'production'
+    ? (() => { throw new Error('FATAL: JWT_SECRET environment variable is not set. Refusing to start in production with default key.'); })()
+    : 'super-secret-development-key-change-me'
+);
+const secretKey = new TextEncoder().encode(JWT_SECRET as string);
 
 // Custom Payload Type exactly as requested
 export interface CustomJWTPayload extends JWTPayload {

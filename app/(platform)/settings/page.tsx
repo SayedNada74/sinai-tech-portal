@@ -95,7 +95,7 @@ export default function SettingsPage() {
         const { error } = await supabase.auth.updateUser({ password: newPassword });
         if (error) throw error;
       }
-      await updateProfile({ password: newPassword });
+      // Password is now strictly managed by Supabase Auth, no local state required
       setNewPassword("");
       setConfirmPassword("");
       setPasswordFeedback({

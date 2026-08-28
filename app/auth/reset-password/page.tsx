@@ -46,7 +46,8 @@ export default function ResetPasswordPage() {
           return;
         }
         if (updateData?.user?.id) {
-          await supabase.from("profiles").update({ password }).eq("id", updateData.user.id);
+          // SECURITY: Password is now strictly managed by Supabase Auth.
+          // We no longer write passwords to the profiles table.
         }
       } catch (err: any) {
         console.warn("Supabase updateUser password error:", err);

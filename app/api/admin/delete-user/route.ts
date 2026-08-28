@@ -19,31 +19,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Authorization Header Verification
+    // 2. Authorization Header Verification — MANDATORY
     const authHeader = req.headers.get("authorization");
     const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
 
-    if (token) {
-      const userClient = createClient(supabaseUrl, anonKey, {
-        auth: { autoRefreshToken: false, persistSession: false },
-        global: { headers: { Authorization: `Bearer ${token}` } }
-      });
-      const { data: { user }, error: userError } = await userClient.auth.getUser(token);
-      
-      if (userError || !user) {
-        return NextResponse.json({ error: "Unauthorized access: invalid token" }, { status: 401 });
-      }
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized: Authentication token required" }, { status: 401 });
+    }
 
-      // Check caller's role in profiles table
-      const { data: callerProfile } = await userClient
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+    const userClient = createClient(supabaseUrl, anonKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { Authorization: `Bearer ${token}` } }
+    });
+    const { data: { user }, error: userError } = await userClient.auth.getUser(token);
+    
+    if (userError || !user) {
+      return NextResponse.json({ error: "Unauthorized access: invalid token" }, { status: 401 });
+    }
 
-      if (!callerProfile || (callerProfile.role !== "admin" && callerProfile.role !== "super-admin")) {
-        return NextResponse.json({ error: "Forbidden: Admin or Super-Admin privileges required" }, { status: 403 });
-      }
+    // Check caller's role in profiles table
+    const { data: callerProfile } = await userClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (!callerProfile || (callerProfile.role !== "admin" && callerProfile.role !== "super-admin")) {
+      return NextResponse.json({ error: "Forbidden: Admin or Super-Admin privileges required" }, { status: 403 });
     }
 
     const { userId } = await req.json();

@@ -13,7 +13,12 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("App error:", error);
+    // SECURITY: Do not expose full stack traces in production browser console
+    if (process.env.NODE_ENV === "production") {
+      console.error("App error:", error.message);
+    } else {
+      console.error("App error:", error);
+    }
   }, [error]);
 
   return (
