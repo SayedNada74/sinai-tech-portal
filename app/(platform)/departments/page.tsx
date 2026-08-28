@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import { useApp } from "@/context/app-context";
+import { useAuth } from "@/context/auth-context";
 import { useAcademic, GRADE_OPTIONS } from "@/context/academic-context";
 import { useAdmin } from "@/context/admin-context";
+import Link from "next/link";
 import { PERIODS } from "@/lib/courses-data";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { GradeSelect } from "@/components/ui/grade-select";
@@ -11,15 +13,16 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { CountUp } from "@/components/ui/count-up";
-import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle } from "lucide-react";
-import Link from "next/link";
-import { useAuth } from "@/context/auth-context";
+import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle, Lock } from "lucide-react";
+import { GuestNoticeBanner } from "@/components/guest-notice-banner";
+import { AuthRequirementModal } from "@/components/auth-requirement-modal";
 
 export default function CurriculumProgressChecklist() {
   const { lang, t, dir } = useApp();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
   const { courses } = useAdmin();
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
 
   const {
     completedCredits,
@@ -52,6 +55,10 @@ export default function CurriculumProgressChecklist() {
 
   // Handle checking/unchecking a course
   const handleCheckCourse = (code: string, checked: boolean) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     if (checked) {
       markCompleted(code, ""); // Start with empty grade
     } else {
@@ -84,6 +91,15 @@ export default function CurriculumProgressChecklist() {
           <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
         </div>
       )}
+
+      <GuestNoticeBanner
+        title={t("دليل المقررات مفتوح للجميع", "Open Course Catalog")}
+        badge={t("تصفح واستكشف بحرية", "Free Access")}
+        description={t(
+          "استكشف كافة المقررات والمتطلبات السابقة. أنشئ حسابك الجامعي لتمييز المواد المنجزة وإضافتها لجدولك الأكاديمي.",
+          "Explore all courses and prerequisites. Create your student account to track completed courses in your plan."
+        )}
+      />
 
       {/* Header section */}
       <div>
@@ -251,12 +267,21 @@ export default function CurriculumProgressChecklist() {
 
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <Link
-                                    href={`/courses/${c.code}`}
-                                    className="text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:text-cyan-400 hover:underline transition-colors truncate"
-                                  >
-                                    {t(c.arabic, c.english)}
-                                  </Link>
+                                  {isAuthenticated ? (
+                                    <Link
+                                      href={`/courses/${c.code}`}
+                                      className="text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:text-cyan-400 hover:underline transition-colors truncate"
+                                    >
+                                      {t(c.arabic, c.english)}
+                                    </Link>
+                                  ) : (
+                                    <button
+                                      onClick={() => setShowAuthModal(true)}
+                                      className="text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:text-cyan-400 hover:underline transition-colors truncate text-start cursor-pointer"
+                                    >
+                                      {t(c.arabic, c.english)}
+                                    </button>
+                                  )}
                                   {/* Code Badge Next to Title */}
                                   <span className="text-[10px] font-mono font-black text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200/60 dark:border-cyan-800/40 px-2 py-0.5 rounded-md shrink-0">
                                     {c.code}
@@ -285,6 +310,10 @@ export default function CurriculumProgressChecklist() {
                               <GradeSelect
                                 value={completed ? currentGrade : ""}
                                 onChange={(val) => {
+                                  if (!isAuthenticated) {
+                                    setShowAuthModal(true);
+                                    return;
+                                  }
                                   markCompleted(c.code, val);
                                 }}
                                 options={GRADE_OPTIONS}
@@ -294,7 +323,13 @@ export default function CurriculumProgressChecklist() {
 
                               {/* Planned bookmark toggle */}
                               <button
-                                onClick={() => planned ? unmarkPlanned(c.code) : markPlanned(c.code)}
+                                onClick={() => {
+                                  if (!isAuthenticated) {
+                                    setShowAuthModal(true);
+                                    return;
+                                  }
+                                  planned ? unmarkPlanned(c.code) : markPlanned(c.code);
+                                }}
                                 className={`p-1.5 rounded-lg border transition-all cursor-pointer ${planned
                                     ? "bg-sky-600 border-sky-600 text-white"
                                     : "border-zinc-250 text-zinc-400 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
@@ -329,7 +364,6 @@ export default function CurriculumProgressChecklist() {
                 {[
                   t("إتمام 144 ساعة معتمدة بنجاح من كافة الفصول.", "Successfully complete 144 credit hours across all semesters."),
                   t("اجتياز مشروع التخرج 1 و 2 بتقدير D على الأقل.", "Pass Graduation Project 1 & 2 with grade D or higher."),
-                  t("إتمام فترة التدريب الصيفي الميداني المعتمدة بنجاح.", "Complete approved summer practical field training."),
                   t("الحصول على معدل تراكمي (GPA) لا يقل عن 2.00 عند التخرج.", "Maintain a cumulative GPA of at least 2.00 upon graduation.")
                 ].map((req, idx) => (
                   <li key={idx} className="flex gap-2.5 items-start text-xs text-zinc-650 dark:text-zinc-450 leading-relaxed font-semibold">
@@ -365,6 +399,17 @@ export default function CurriculumProgressChecklist() {
           </Card>
         </div>
       </div>
+
+      {/* Auth Requirement Modal */}
+      <AuthRequirementModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title={t("تسجيل الدخول مطلوب لإدارة مقرراتك", "Sign in required to manage courses")}
+        description={t(
+          "لتتمكن من تمييز المواد المنجزة وإضافتها لخطتك الدراسية ومتابعة الـ GPA، يرجى تسجيل الدخول أو إنشاء حساب جديد.",
+          "To mark completed courses and add them to your study plan, please sign in or create a new account."
+        )}
+      />
     </div>
   );
 }

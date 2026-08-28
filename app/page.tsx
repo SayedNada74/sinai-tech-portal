@@ -112,10 +112,50 @@ export default function LandingPage() {
   ];
 
   const stats = [
-    { num: 144, suffix:"", label: t("ساعة معتمدة مصممة بالكامل","Total Credit Hours Managed") },
-    { num: 4, suffix:"", label: t("أقسام أكاديمية تخصصية (IT/CS/IS/Basic)","Specialized Academic Tracks") },
-    { num: 100, suffix:"%", label: t("مزامنة أوتوماتيكية مع تقويم Moodle","Auto Synchronization with Moodle") },
-    { num: 24, suffix:"/7", label: t("إرشاد وتوقع أكاديمي ذكي","24/7 Smart AI Guidance") }
+    {
+      num: 144,
+      suffix: "",
+      icon: GraduationCap,
+      label: t("ساعة معتمدة مصممة بالكامل", "Accredited Credit Hours"),
+      sublabel: t("تغطية شاملة لمتطلبات التخرج وشجرة المواد", "Full degree matrix & prerequisite tree"),
+      badge: t("الخطة المعتمدة", "Accredited Plan"),
+      badgeColor: "text-emerald-700 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400",
+      iconColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-800/40",
+      href: "/departments"
+    },
+    {
+      num: 62,
+      suffix: "+",
+      icon: BookOpen,
+      label: t("مقرراً دراسياً مفهرساً وموثقاً", "Cataloged & Accredited Courses"),
+      sublabel: t("توصيفات دقيقة، ساعات معتمدة، ومتطلبات سابقة", "Course descriptions, credits & prerequisites"),
+      badge: t("دليل شامل", "Full Catalog"),
+      badgeColor: "text-sky-700 bg-sky-500/10 border-sky-500/20 dark:text-sky-400",
+      iconColor: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border-sky-200/60 dark:border-sky-800/40",
+      href: "/courses"
+    },
+    {
+      num: 100,
+      suffix: "%",
+      icon: Calendar,
+      label: t("مزامنة ذكية مع تقويم Moodle", "Smart Moodle Calendar Sync"),
+      sublabel: t("ربط تلقائي لجدول المحاضرات، الكويزات، والتسليمات", "Instant sync for lectures, deadlines & exams"),
+      badge: t("تزامن لحظي", "Real-Time Sync"),
+      badgeColor: "text-cyan-700 bg-cyan-500/10 border-cyan-500/20 dark:text-cyan-400",
+      iconColor: "text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40 border-cyan-200/60 dark:border-cyan-800/40",
+      href: "/calendar"
+    },
+    {
+      num: 24,
+      suffix: "/7",
+      icon: Sparkles,
+      label: t("مرشد أكاديمي ذكي بالـ AI", "24/7 AI Academic Advisor"),
+      sublabel: t("استشارات فورية مدربة على لوائح جامعة سيناء", "Instant advice tailored to Sinai Uni bylaws"),
+      badge: t("ذكاء اصطناعي", "AI Powered"),
+      badgeColor: "text-indigo-700 bg-indigo-500/10 border-indigo-500/20 dark:text-indigo-400",
+      iconColor: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-800/40",
+      href: "/ai-assistant"
+    }
   ];
 
   return (
@@ -591,24 +631,59 @@ export default function LandingPage() {
         </section>
 
         {/* Statistics Banner Section with ReactBits CountUp & SpotlightCard */}
-        <section id="stats" className="py-10 sm:py-12 px-4 sm:px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/20 backdrop-blur-md">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
-              {stats.map((stat, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -4 }}
-                >
-                  <SpotlightCard className="p-4 sm:p-5 text-center shadow-sm hover:shadow-md hover:border-sky-500/40 dark:hover:border-sky-500/40" spotlightColor="rgba(2, 132, 199, 0.18)">
-                    <span className="block text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-cyan-500 mb-1">
-                      <CountUp to={stat.num} suffix={stat.suffix} duration={1.6} />
-                    </span>
-                    <span className="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
-                      {stat.label}
-                    </span>
-                  </SpotlightCard>
-                </motion.div>
-              ))}
+        <section id="stats" className="py-10 sm:py-14 px-4 sm:px-6 border-y border-zinc-200/60 dark:border-zinc-900 bg-white/60 dark:bg-zinc-900/30 backdrop-blur-md relative overflow-hidden">
+          {/* Subtle Ambient Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-32 bg-sky-500/5 dark:bg-sky-500/10 blur-[100px] pointer-events-none" />
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {stats.map((stat, idx) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    whileHover={{ y: -4 }}
+                  >
+                    <Link href={stat.href} className="group block h-full">
+                      <SpotlightCard
+                        className="p-5 h-full flex flex-col justify-between shadow-xs hover:shadow-xl hover:shadow-sky-500/10 hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-300 rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200/80 dark:border-zinc-800/80 cursor-pointer"
+                        spotlightColor="rgba(2, 132, 199, 0.18)"
+                      >
+                        <div className="space-y-3.5">
+                          {/* Header: Icon + Badge */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border group-hover:scale-110 transition-transform duration-300 shadow-2xs ${stat.iconColor}`}>
+                              <Icon className="h-5 w-5" />
+                            </div>
+                            <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${stat.badgeColor}`}>
+                              {stat.badge}
+                            </span>
+                          </div>
+
+                          {/* Stat Number with CountUp */}
+                          <div>
+                            <span className="block text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-cyan-600 to-sky-500 dark:from-sky-400 dark:to-cyan-300 leading-none">
+                              <CountUp to={stat.num} suffix={stat.suffix} duration={1.6} />
+                            </span>
+                            <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mt-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                              {stat.label}
+                            </h3>
+                          </div>
+
+                          {/* Sublabel / Explanation */}
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">
+                            {stat.sublabel}
+                          </p>
+                        </div>
+                      </SpotlightCard>
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -636,8 +711,8 @@ export default function LandingPage() {
                   icon: GraduationCap,
                   iconClasses:"bg-sky-100 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200/80 dark:border-sky-800/60 shadow-sm shadow-sky-500/10",
                   badgeClasses:"bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20",
-                  title: t("حدد فرقتك وقسمك التخصصي","1. Choose Year & Department"),
-                  desc: t("اختر فرقتك الدراسية (الأولى، الثانية، الثالثة، الرابعة) وتخصصك (IT, CS, IS) لتهيئة خطتك الدراسية فوراً.","Select your academic level (Year 1 to 4) and specialized track (IT, CS, IS) to tailor your plan."
+                  title: t("حدد فرقتك ومستواك الأكاديمي","1. Choose Your Academic Level"),
+                  desc: t("اختر فرقتك الدراسية (الأولى، الثانية، الثالثة، الرابعة) لتخصيص ومتابعة خطتك من أصل 144 ساعة فوراً.","Select your academic level (Year 1 to 4) to instantly track and manage your 144-credit curriculum."
                   )
                 },
                 {

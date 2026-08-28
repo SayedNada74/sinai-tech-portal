@@ -12,16 +12,27 @@ import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import { Input } from"@/components/ui/input";
 import { CoursesGridSkeleton } from"@/components/ui/skeleton";
-import { Search, SlidersHorizontal, ArrowUpDown, Eye, Bookmark, CheckCircle, HelpCircle, Sparkles } from"lucide-react";
-import { motion, AnimatePresence } from"framer-motion";
+import { Search, SlidersHorizontal, ArrowUpDown, Eye, Bookmark, CheckCircle, HelpCircle, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthRequirementModal } from "@/components/auth-requirement-modal";
+import { GuestNoticeBanner } from "@/components/guest-notice-banner";
 
-const PERIODS_EN: Record<string, string> = {"year-1-sem-1":"Year 1 - Semester 1","year-1-sem-2":"Year 1 - Semester 2","year-2-sem-1":"Year 2 - Semester 1","year-2-sem-2":"Year 2 - Semester 2","year-3-sem-1":"Year 3 - Semester 1","year-3-sem-2":"Year 3 - Semester 2","year-4-sem-1":"Year 4 - Semester 1","year-4-sem-2":"Year 4 - Semester 2",
+const PERIODS_EN: Record<string, string> = {
+  "year-1-sem-1": "Year 1 - Semester 1",
+  "year-1-sem-2": "Year 1 - Semester 2",
+  "year-2-sem-1": "Year 2 - Semester 1",
+  "year-2-sem-2": "Year 2 - Semester 2",
+  "year-3-sem-1": "Year 3 - Semester 1",
+  "year-3-sem-2": "Year 3 - Semester 2",
+  "year-4-sem-1": "Year 4 - Semester 1",
+  "year-4-sem-2": "Year 4 - Semester 2",
 };
 
 export default function CoursesPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const { t, lang, dir } = useApp();
   const { courses } = useAdmin();
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
   const {
     isCompleted,
     isPlanned,
@@ -125,44 +136,14 @@ export default function CoursesPage() {
       </div>
 
       {/* Guest Mode Notification Banner */}
-      {!user && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-sky-600/10 via-cyan-600/10 to-blue-500/10 border border-sky-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
-        >
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-md">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex flex-wrap items-center gap-2">
-                <span>{t("دليل المقررات مفتوح للجميع","Open Course Catalog")}</span>
-                <Badge className="bg-sky-500/20 text-sky-700 dark:text-sky-300 border-none text-[10px] font-bold">
-                  {t("تصفح واستكشف بحرية","Free Access")}
-                </Badge>
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {t("استكشف كافة المقررات والمتطلبات السابقة. أنشئ حسابك الجامعي لتمييز المواد المنجزة وإضافتها لجدولك الأكاديمي.","Explore all courses and prerequisites. Create your student account to track completed courses in your plan."
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
-            <Link href="/auth/login" className="flex-1 sm:flex-none">
-              <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9">
-                {t("تسجيل الدخول","Sign In")}
-              </Button>
-            </Link>
-            <Link href="/auth/register" className="flex-1 sm:flex-none">
-              <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl h-9 bg-sky-600 hover:bg-sky-700 text-white shadow-md">
-                {t("إنشاء حساب","Register")}
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
-      )}
+      <GuestNoticeBanner
+        title={t("دليل المقررات مفتوح للجميع", "Open Course Catalog")}
+        badge={t("تصفح واستكشف بحرية", "Free Access")}
+        description={t(
+          "استكشف كافة المقررات والمتطلبات السابقة. أنشئ حسابك الجامعي لتمييز المواد المنجزة وإضافتها لجدولك الأكاديمي.",
+          "Explore all courses and prerequisites. Create your student account to track completed courses in your plan."
+        )}
+      />
 
       {/* Search & Sort Panel */}
       <div className="space-y-4">
@@ -352,28 +333,40 @@ export default function CoursesPage() {
 
                   <button
                     type="button"
-                    onClick={() => completed ? unmarkCompleted(course.code) : markCompleted(course.code,"A")}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        setShowAuthModal(true);
+                        return;
+                      }
+                      completed ? unmarkCompleted(course.code) : markCompleted(course.code, "A");
+                    }}
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       completed
-                        ?"bg-emerald-600 border-emerald-600 text-white shadow-md"
-                        :"border-emerald-500 dark:border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
+                        ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
+                        : "border-emerald-500 dark:border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
                     }`}
-                    title={completed ? t("تراجع عن الإنجاز","Undo Completion") : t("تحديد كمنجزة","Mark as Completed")}
+                    title={completed ? t("تراجع عن الإنجاز", "Undo Completion") : t("تحديد كمنجزة", "Mark as Completed")}
                   >
-                    <CheckCircle className={`h-4.5 w-4.5 stroke-[2.4] ${completed ?"text-white fill-emerald-600" :"text-emerald-600 dark:text-emerald-400"}`} />
+                    <CheckCircle className={`h-4.5 w-4.5 stroke-[2.4] ${completed ? "text-white fill-emerald-600" : "text-emerald-600 dark:text-emerald-400"}`} />
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        setShowAuthModal(true);
+                        return;
+                      }
+                      planned ? unmarkPlanned(course.code) : markPlanned(course.code);
+                    }}
                     className={`p-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                       planned
-                        ?"bg-sky-600 border-sky-600 text-white shadow-md"
-                        :"border-sky-500 dark:border-sky-500/60 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400"
+                        ? "bg-sky-600 border-sky-600 text-white shadow-md"
+                        : "border-sky-500 dark:border-sky-500/60 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400"
                     }`}
-                    title={planned ? t("إلغاء الخطة","Remove from Plan") : t("إضافة للمخطط الدراسي","Add to Study Plan")}
+                    title={planned ? t("إلغاء الخطة", "Remove from Plan") : t("إضافة للمخطط الدراسي", "Add to Study Plan")}
                   >
-                    <Bookmark className={`h-4.5 w-4.5 stroke-[2.4] ${planned ?"text-white fill-white" :"text-sky-600 dark:text-sky-400"}`} />
+                    <Bookmark className={`h-4.5 w-4.5 stroke-[2.4] ${planned ? "text-white fill-white" : "text-sky-600 dark:text-sky-400"}`} />
                   </button>
                 </div>
               </Card>
@@ -394,6 +387,17 @@ export default function CoursesPage() {
           </div>
         )}
       </div>
+
+      {/* Auth Requirement Modal */}
+      <AuthRequirementModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title={t("تسجيل الدخول مطلوب لإدارة مقرراتك", "Sign in required to manage courses")}
+        description={t(
+          "لتتمكن من تمييز المواد المنجزة وإضافتها لخطتك الدراسية ومتابعة الـ GPA، يرجى تسجيل الدخول أو إنشاء حساب جديد.",
+          "To mark completed courses and add them to your study plan, please sign in or create a new account."
+        )}
+      />
     </div>
   );
 }

@@ -28,6 +28,7 @@ import {
   Check
 } from"lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
+import { GuestNoticeBanner } from "@/components/guest-notice-banner";
 
 interface SubRoadmap {
   nameAr: string;
