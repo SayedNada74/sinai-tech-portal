@@ -74,7 +74,12 @@ export default function RegisterPage() {
       }
     } catch (err: any) {
       let errMsg = err?.message || t("حدث خطأ أثناء التسجيل. حاول مرة أخرى.","An error occurred during registration.");
-      if (errMsg.toLowerCase().includes("fetch") || errMsg.toLowerCase().includes("network") || errMsg.toLowerCase().includes("timeout")) {
+      if (errMsg.includes("User already registered") || errMsg.includes("already registered") || errMsg.includes("user_already_exists")) {
+        errMsg = t(
+          "هذا البريد الإلكتروني مسجل بالفعل في المنصة. إذا كنت قد سجلت سابقاً باستخدام جوجل (Google)، يرجى الانتقال لصفحة تسجيل الدخول واختيار (تسجيل الدخول بـ Google).",
+          "This email address is already registered. If you previously logged in with Google, please use (Sign in with Google) on the login page."
+        );
+      } else if (errMsg.toLowerCase().includes("fetch") || errMsg.toLowerCase().includes("network") || errMsg.toLowerCase().includes("timeout")) {
          errMsg = t("الخادم يواجه ضغطاً عالياً حالياً أو يوجد مشكلة في الاتصال. يرجى المحاولة بعد قليل.", "Server is experiencing high traffic or network issues. Please try again in a moment.");
       }
       setError(errMsg);

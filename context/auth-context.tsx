@@ -526,6 +526,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (signUpErr) {
           setIsLoading(false);
+          const rawMsg = signUpErr.message || "";
+          if (rawMsg.includes("User already registered") || rawMsg.includes("already registered") || rawMsg.includes("user_already_exists")) {
+            const isRtl = typeof window !== "undefined" && document.documentElement.dir === "rtl";
+            throw new Error(
+              isRtl
+                ? "هذا البريد الإلكتروني مسجل بالفعل في المنصة. إذا كنت قد سجلت سابقاً باستخدام جوجل (Google)، يرجى الانتقال لصفحة تسجيل الدخول واختيار (تسجيل الدخول بـ Google)."
+                : "This email address is already registered. If you previously logged in with Google, please use (Sign in with Google) on the login page."
+            );
+          }
           throw new Error(`️ ${signUpErr.message}`);
         }
 

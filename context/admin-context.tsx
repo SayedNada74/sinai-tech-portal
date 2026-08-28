@@ -512,11 +512,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAction("تحديث صلاحيات جماعي", `تغيير صلاحيات ${userIds.length} مستخدمين إلى: ${role}`, "auth");
   };
 
-  const bulkDeleteUsers = (userIds: string[]) => {
+  const bulkDeleteUsers = async (userIds: string[]) => {
     const updated = users.filter(u => !userIds.includes(u.id));
     setUsers(updated);
     saveState("su_registered_users", updated);
     logAction("حذف جماعي للمستخدمين", `تم حذف ${userIds.length} مستخدمين من قاعدة البيانات`, "auth");
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from("profiles").delete().in("id", userIds);
+    }
   };
 
   // Course Actions
