@@ -249,8 +249,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             const mappedProfiles: UserProfile[] = suProfiles.map((p: any) => ({
               id: p.id,
               name: p.name || p.name_ar || p.name_en || p.email?.split("@")[0] || "طالب جديد",
-              nameAr: p.name_ar || p.name || "",
-              nameEn: p.name_en || p.name || "",
+              nameAr: p.name_ar || (/[\u0600-\u06FF]/.test(p.name || "") ? p.name : ""),
+              nameEn: p.name_en || (!/[\u0600-\u06FF]/.test(p.name || "") ? p.name : ""),
               email: p.email,
               level: p.level || "الفرقة الأولى",
               department: p.department || "تكنولوجيا المعلومات (IT)",

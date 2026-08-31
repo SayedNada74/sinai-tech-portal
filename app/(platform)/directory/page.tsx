@@ -1,50 +1,47 @@
 "use client";
 
-import * as React from"react";
-import { useApp } from"@/context/app-context";
-import { useAdmin } from"@/context/admin-context";
-import { Card, CardContent } from"@/components/ui/card";
-import { Input } from"@/components/ui/input";
-import { Button } from"@/components/ui/button";
-import { Badge } from"@/components/ui/badge";
-import Link from"next/link";
-import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight, User } from"lucide-react";
-import { motion, AnimatePresence } from"framer-motion";
-import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
+import * as React from "react";
+import { useApp } from "@/context/app-context";
+import { useAdmin } from "@/context/admin-context";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight, User, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName, matchesUserQuery } from "@/lib/utils";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 
 export default function DirectoryPage() {
   const { t, lang, dir } = useApp();
   const { users } = useAdmin();
   
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [filterLevel, setFilterLevel] = React.useState("all");
+  // Persist search query and level filter across navigation
+  const [searchQuery, setSearchQuery] = useLocalStorage<string>("su_directory_search_query", "");
+  const [filterLevel, setFilterLevel] = useLocalStorage<string>("su_directory_filter_level", "all");
   
-  const isRtl = dir ==="rtl";
+  const isRtl = dir === "rtl";
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   const levels = React.useMemo(() => {
-    const studentUsers = users.filter((u) => !u.role || u.role ==="student");
+    const studentUsers = users.filter((u) => !u.role || u.role === "student");
     const uniqueLevels = new Set(studentUsers.map((u) => u.level).filter(Boolean));
     return Array.from(uniqueLevels);
   }, [users]);
 
   const filteredUsers = React.useMemo(() => {
     // If search is empty, don't show any users (privacy protection)
-    if (!searchQuery || searchQuery.trim() ==="") {
+    if (!searchQuery || searchQuery.trim() === "") {
       return [];
     }
 
     return users.filter((u) => {
       // Hide admin accounts from the directory completely
-      if (u.role && u.role !=="student") return false;
+      if (u.role && u.role !== "student") return false;
 
-      const matchesSearch = 
-        u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.nameAr?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.nameEn?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.studentId?.toLowerCase().includes(searchQuery.toLowerCase());
-        
-      const matchesLevel = filterLevel ==="all" || u.level === filterLevel;
+      const matchesSearch = matchesUserQuery(u, searchQuery);
+      const matchesLevel = filterLevel === "all" || u.level === filterLevel;
       
       return matchesSearch && matchesLevel;
     });
@@ -120,13 +117,23 @@ export default function DirectoryPage() {
       <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl overflow-hidden">
         <CardContent className="p-4 sm:p-5 flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className={`absolute ${isRtl ?"right-3" :"left-3"} top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400`} />
+            <Search className={`absolute ${isRtl ? "right-3.5" : "left-3.5"} top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none`} />
             <Input
-              placeholder={t("البحث بالاسم أو الرقم الأكاديمي...","Search by name or academic ID...")}
+              placeholder={t("ابحث بالاسم (عربي أو إنجليزي) أو الرقم الأكاديمي أو البريد...", "Search by name (Arabic/English), academic ID, or email...")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`h-12 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-2xl ${isRtl ?"pr-10" :"pl-10"}`}
+              className={`h-12 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-2xl ${isRtl ? "pr-11 pl-10" : "pl-11 pr-10"}`}
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className={`absolute ${isRtl ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors`}
+                title={t("مسح البحث", "Clear search")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
           
           <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide shrink-0 items-center">

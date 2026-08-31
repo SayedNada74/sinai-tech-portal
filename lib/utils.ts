@@ -304,8 +304,56 @@ export function transliterateArabicWordToEnglish(word: string): string {
   return word;
 }
 
+export function normalizeArabicText(text?: string | null): string {
+  if (!text) return "";
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[أإآٱ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/[ىي]/g, "ي")
+    .replace(/[\u064B-\u065F]/g, ""); // Remove Tashkeel/diacritics
+}
+
+export function matchesUserQuery(
+  user: { name?: string; nameAr?: string; nameEn?: string; email?: string; studentId?: string; department?: string; level?: string },
+  query: string
+): boolean {
+  if (!query || !query.trim()) return false;
+  const q = query.trim().toLowerCase();
+  const qNorm = normalizeArabicText(q);
+
+  const fields = [
+    user.name || "",
+    user.nameAr || "",
+    user.nameEn || "",
+    user.email || "",
+    user.email ? user.email.split("@")[0] : "",
+    user.studentId || "",
+    user.department || "",
+    user.level || "",
+  ];
+
+  return fields.some((field) => {
+    if (!field) return false;
+    const fLower = field.toLowerCase();
+    const fNorm = normalizeArabicText(fLower);
+    return fLower.includes(q) || fNorm.includes(qNorm);
+  });
+}
+
+function parseEmailPrefixToWords(raw: string): string[] {
+  // e.g. e.ebraheem2720 -> ['e', 'ebraheem']
+  // m.ghena1243 -> ['m', 'ghena']
+  return raw
+    .replace(/[0-9]/g, "")
+    .split(/[\._\-+]/)
+    .map((w) => w.trim().toLowerCase())
+    .filter((w) => w.length > 0);
+}
+
 export function getLocalizedUserName(
-  userOrName: { name?: string; nameAr?: string; nameEn?: string } | string | undefined | null,
+  userOrName: { name?: string; nameAr?: string; nameEn?: string; email?: string } | string | undefined | null,
   lang: "ar" | "en"
 ): string {
   if (!userOrName) return "";
@@ -313,11 +361,13 @@ export function getLocalizedUserName(
   let nameAr = "";
   let nameEn = "";
   let rawName = "";
+  let email = "";
 
   if (typeof userOrName === "object") {
     nameAr = (userOrName.nameAr || "").trim();
     nameEn = (userOrName.nameEn || "").trim();
     rawName = (userOrName.name || "").trim();
+    email = (userOrName.email || "").trim();
   } else {
     rawName = userOrName.trim();
     if (/[\u0600-\u06FF]/.test(rawName)) {
@@ -327,31 +377,54 @@ export function getLocalizedUserName(
     }
   }
 
+  // Fallback to email username if rawName is empty
+  if (!rawName && email) {
+    rawName = email.split("@")[0] || "";
+  }
+
   if (lang === "ar") {
-    // 1. Explicit Arabic name
-    if (nameAr) return nameAr;
+    // 1. Explicit Arabic name with actual Arabic characters
+    if (nameAr && /[\u0600-\u06FF]/.test(nameAr)) return nameAr;
 
     // 2. Raw name already in Arabic
     if (rawName && /[\u0600-\u06FF]/.test(rawName)) return rawName;
 
-    // 3. Transliterate English name into Arabic
-    const candidate = nameEn || rawName;
+    // 3. Candidate English name / Email prefix
+    const candidate = (nameEn && !nameEn.includes("@") ? nameEn : "") || rawName;
     if (candidate) {
-      const words = candidate.split(/\s+/).filter(Boolean);
+      // Check if it's an email-like string (e.g. e.ebraheem2720 or mazen.medhat)
+      const words = candidate.includes(".") || candidate.includes("_") || /\d/.test(candidate)
+        ? parseEmailPrefixToWords(candidate)
+        : candidate.split(/\s+/).filter(Boolean);
+
       const converted = words.map((w) => {
         const clean = w.toLowerCase().replace(/[^a-z]/g, "");
-        return NAME_MAP[clean] || w;
-      });
-      return converted.join(" ");
+        return NAME_MAP[clean] || (w.length > 1 ? w : "");
+      }).filter(Boolean);
+
+      if (converted.length > 0) {
+        return converted.join(" ");
+      }
     }
 
-    return "طالب";
+    return rawName || "طالب";
   } else {
     // 1. Explicit English name
-    if (nameEn) return nameEn;
+    if (nameEn && /[a-zA-Z]/.test(nameEn) && !nameEn.includes("@")) {
+      return nameEn;
+    }
 
     // 2. Raw name already in English (no Arabic characters)
     if (rawName && !/[\u0600-\u06FF]/.test(rawName) && /[a-zA-Z]/.test(rawName)) {
+      if (rawName.includes(".") || rawName.includes("_") || /\d/.test(rawName)) {
+        const words = parseEmailPrefixToWords(rawName);
+        const formatted = words.map((w) => {
+          const clean = w.toLowerCase().replace(/[^a-z]/g, "");
+          if (AR_TO_EN_MAP[NAME_MAP[clean]]) return AR_TO_EN_MAP[NAME_MAP[clean]];
+          return w.charAt(0).toUpperCase() + w.slice(1);
+        });
+        if (formatted.length > 0) return formatted.join(" ");
+      }
       return rawName;
     }
 
