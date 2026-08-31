@@ -198,25 +198,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const deduplicateUsers = (localList: UserProfile[], cloudList: UserProfile[] = []): UserProfile[] => {
       const map = new Map<string, UserProfile>();
 
-      // 1. Add defaults
+      // 1. Add defaults (admin, super-admin, moderator)
       defaultAccounts.forEach(da => {
         const key = da.email ? da.email.toLowerCase().trim() : da.id;
         map.set(key, da);
       });
 
-      // 2. Merge local
-      localList.forEach(lu => {
-        const key = lu.email ? lu.email.toLowerCase().trim() : lu.id;
-        const existing = map.get(key);
-        map.set(key, { ...existing, ...lu });
-      });
-
-      // 3. Merge cloud (authoritative)
-      cloudList.forEach(cl => {
-        const key = cl.email ? cl.email.toLowerCase().trim() : cl.id;
-        const existing = map.get(key);
-        map.set(key, { ...existing, ...cl });
-      });
+      // 2. If Supabase is connected and cloudList is provided, cloud is authoritative
+      if (isSupabaseConfigured && supabase && cloudList.length >= 0) {
+        cloudList.forEach(cl => {
+          const key = cl.email ? cl.email.toLowerCase().trim() : cl.id;
+          const existing = map.get(key);
+          map.set(key, { ...existing, ...cl });
+        });
+      } else {
+        // Fallback to local offline cache only when cloud is not configured
+        localList.forEach(lu => {
+          const key = lu.email ? lu.email.toLowerCase().trim() : lu.id;
+          const existing = map.get(key);
+          map.set(key, { ...existing, ...lu });
+        });
+      }
 
       return Array.from(map.values());
     };
@@ -232,7 +234,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       const merged = deduplicateUsers(currentUsers);
       setUsers(merged);
-      localStorage.setItem("su_registered_users", JSON.stringify(merged));
     };
 
     loadUsers();
@@ -244,31 +245,25 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             .from("profiles")
             .select("*");
 
-          if (!error && suProfiles && suProfiles.length > 0) {
+          if (!error && suProfiles) {
             const mappedProfiles: UserProfile[] = suProfiles.map((p: any) => ({
               id: p.id,
-              name: p.full_name_ar || p.full_name_en || p.email?.split("@")[0] || "طالب جديد",
-              nameAr: p.full_name_ar || p.full_name_en || "",
-              nameEn: p.full_name_en || p.full_name_ar || "",
+              name: p.name || p.name_ar || p.name_en || p.email?.split("@")[0] || "طالب جديد",
+              nameAr: p.name_ar || p.name || "",
+              nameEn: p.name_en || p.name || "",
               email: p.email,
               level: p.level || "الفرقة الأولى",
               department: p.department || "تكنولوجيا المعلومات (IT)",
               studentId: p.student_id || "",
               bio: p.bio || "",
-              skills: p.skills || [],
+              skills: Array.isArray(p.skills) ? p.skills : (typeof p.skills === "string" ? JSON.parse(p.skills || "[]") : []),
               socialLinks: p.social_links || { github: "", linkedin: "" },
-              avatar: p.avatar_url || "",
+              avatar: p.avatar || p.avatar_url || "🎓",
               role: p.role || "student",
               is_profile_completed: p.is_profile_completed ?? true
             }));
 
-            const savedRegs = localStorage.getItem("su_registered_users");
-            let localList: UserProfile[] = [];
-            if (savedRegs) {
-              try { localList = JSON.parse(savedRegs); } catch (e) {}
-            }
-
-            const finalUsers = deduplicateUsers(localList, mappedProfiles);
+            const finalUsers = deduplicateUsers([], mappedProfiles);
             setUsers(finalUsers);
             localStorage.setItem("su_registered_users", JSON.stringify(finalUsers));
           }

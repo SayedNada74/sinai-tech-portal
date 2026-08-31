@@ -62,7 +62,7 @@ export default function RegisterPage() {
       if (success ==="requires_verification") {
         resetForm(); // Clean up form state on successful creation
         toast(t(" تم إرسال رابط التأكيد. يرجى مراجعة بريدك الإلكتروني."," Verification link sent. Please check your email."),"success");
-        router.push("/auth/verify-email");
+        router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim())}`);
       } else if (success) {
         resetForm(); // Clean up form state on successful creation
         toast(t(" تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء."," Account created successfully! Welcome to Sinai University Portal."),"success");
@@ -73,17 +73,36 @@ export default function RegisterPage() {
         toast(errMsg,"error");
       }
     } catch (err: any) {
-      let errMsg = err?.message || t("حدث خطأ أثناء التسجيل. حاول مرة أخرى.","An error occurred during registration.");
+      let errMsg = "";
+      if (typeof err === "string" && err.trim() && err !== "{}") {
+        errMsg = err;
+      } else if (err?.message && typeof err.message === "string" && err.message.trim() && err.message !== "{}") {
+        errMsg = err.message;
+      } else if (err?.error_description && typeof err.error_description === "string") {
+        errMsg = err.error_description;
+      } else if (err?.msg && typeof err.msg === "string") {
+        errMsg = err.msg;
+      } else {
+        errMsg = t("حدث خطأ أثناء إرسال بريد التأكيد أو إنشاء الحساب. يرجى المحاولة بعد قليل.", "An error occurred while creating the account. Please try again.");
+      }
+
+      // Format known Supabase error messages
       if (errMsg.includes("User already registered") || errMsg.includes("already registered") || errMsg.includes("user_already_exists")) {
         errMsg = t(
           "هذا البريد الإلكتروني مسجل بالفعل في المنصة. إذا كنت قد سجلت سابقاً باستخدام جوجل (Google)، يرجى الانتقال لصفحة تسجيل الدخول واختيار (تسجيل الدخول بـ Google).",
           "This email address is already registered. If you previously logged in with Google, please use (Sign in with Google) on the login page."
         );
+      } else if (errMsg.includes("Error sending confirmation email") || errMsg.includes("error sending confirmation email") || errMsg.includes("SMTP")) {
+        errMsg = t(
+          "تعذر إرسال بريد التأكيد حالياً. يرجى التأكد من إعدادات سيرفر الإرسال (SMTP) في Supabase أو المحاولة لاحقاً.",
+          "Unable to send confirmation email. Please check your SMTP settings in Supabase."
+        );
       } else if (errMsg.toLowerCase().includes("fetch") || errMsg.toLowerCase().includes("network") || errMsg.toLowerCase().includes("timeout")) {
-         errMsg = t("الخادم يواجه ضغطاً عالياً حالياً أو يوجد مشكلة في الاتصال. يرجى المحاولة بعد قليل.", "Server is experiencing high traffic or network issues. Please try again in a moment.");
+        errMsg = t("الخادم يواجه ضغطاً عالياً حالياً أو يوجد مشكلة في الاتصال. يرجى المحاولة بعد قليل.", "Server is experiencing high traffic or network issues. Please try again in a moment.");
       }
+
       setError(errMsg);
-      toast(errMsg,"error");
+      toast(errMsg, "error");
     }
   };
 

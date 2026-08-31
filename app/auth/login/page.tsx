@@ -89,9 +89,21 @@ export default function LoginPage() {
         <Card className="border border-zinc-200/80 bg-white/70 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/60">
           <CardContent className="pt-6">
             {error && (
-              <div className="mb-4 p-3.5 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200/50 dark:border-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
-                <ShieldAlert className="h-4 w-4 shrink-0" />
-                <span>{error}</span>
+              <div className="mb-4 p-3.5 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200/50 dark:border-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+                {(error.includes("تأكيد") || error.toLowerCase().includes("confirm") || error.includes("التفعيل")) && (
+                  <div className="pt-1 border-t border-red-200/40 dark:border-red-500/20">
+                    <Link
+                      href={`/auth/verify-email?email=${encodeURIComponent(email.trim() || "")}`}
+                      className="inline-flex items-center gap-1 font-bold text-sky-600 dark:text-sky-400 hover:underline"
+                    >
+                      <span>{t("إعادة إرسال رابط التفعيل أو مراجعة الحساب ←", "Resend verification link or check account →")}</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 

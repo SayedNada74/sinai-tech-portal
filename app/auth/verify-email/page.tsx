@@ -1,25 +1,57 @@
 "use client";
 
-import { Logo } from"@/components/ui/logo";
-import * as React from"react";
-import Link from"next/link";
-import { useRouter, useSearchParams } from"next/navigation";
-import { Button } from"@/components/ui/button";
-import { Card, CardContent, CardFooter } from"@/components/ui/card";
-import { GraduationCap, MailCheck, ArrowLeft, RefreshCw } from"lucide-react";
-import { motion } from"framer-motion";
+import { Logo } from "@/components/ui/logo";
+import * as React from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { GraduationCap, MailCheck, ArrowLeft, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
+
+import { useToast } from "@/components/ui/toast";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") ||"your-email@sinai.edu.eg";
-  const [isVerifying, setIsVerifying] = React.useState(false);
+  const email = searchParams.get("email") || "بريدك الأكاديمي";
+  const [isResending, setIsResending] = React.useState(false);
+  const [cooldown, setCooldown] = React.useState(0);
+  const { toast } = useToast();
   const router = useRouter();
 
-  const handleSimulateVerification = async () => {
-    setIsVerifying(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate delay
-    setIsVerifying(false);
-    router.push("/dashboard");
+  React.useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const handleResend = async () => {
+    if (cooldown > 0 || isResending) return;
+    if (!email || !email.includes("@")) {
+      toast("يرجى التأكد من كتابة البريد الإلكتروني بشكل صحيح.", "error");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase.auth.resend({
+          type: "signup",
+          email: email.trim().toLowerCase(),
+        });
+        if (error) throw error;
+      }
+      toast("تمت إعادة إرسال رابط التفعيل بنجاح. تفقد صندوق الوارد أو مجلد الرسائل غير المرغوب فيها (Spam).", "success");
+      setCooldown(60); // 60s cooldown to protect SMTP limits
+    } catch (err: any) {
+      const msg = err?.message || "تعذر إعادة إرسال الرابط. يرجى المحاولة بعد قليل.";
+      toast(msg, "error");
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -31,17 +63,34 @@ function VerifyEmailContent() {
 
         <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">تفقد بريدك الإلكتروني</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-6">
-          لقد أرسلنا رابط تأكيد إلى <span className="font-semibold text-zinc-800 dark:text-zinc-200">{email}</span>.
-          يرجى فتح الرابط لتفعيل حسابك الأكاديمي.
+          لقد أرسلنا رابط تأكيد الحساب إلى:
+          <br />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-200 dir-ltr inline-block mt-1 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-lg text-xs">
+            {email}
+          </span>
         </p>
 
+        <div className="p-3.5 mb-6 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 text-start leading-relaxed">
+          💡 <strong>ملاحظة:</strong> إذا لم تجد الرسالة في صندوق الوارد الرئيسي (Inbox)، يرجى فحص مجلد <strong>الرسائل غير المرغوب فيها (Spam / Junk)</strong>.
+        </div>
+
         <div className="space-y-3">
-          <Button className="w-full gap-2 font-bold shadow-md" onClick={handleSimulateVerification} isLoading={isVerifying}>
-            {isVerifying ?"جاري تفعيل الحساب وتوثيقه..." :"تفعيل الحساب والدخول للمنصة"}
+          <Button
+            variant="outline"
+            className="w-full gap-2 font-medium"
+            onClick={handleResend}
+            disabled={isResending || cooldown > 0}
+            isLoading={isResending}
+          >
+            <RefreshCw className={`h-4 w-4 ${isResending ? "animate-spin" : ""}`} />
+            {cooldown > 0 ? `إعادة الإرسال بعد (${cooldown}) ثانية` : "إعادة إرسال رابط التفعيل"}
           </Button>
-          <Button variant="outline" className="w-full gap-2" disabled={isVerifying}>
-            <RefreshCw className="h-4 w-4" />
-            إعادة إرسال رابط التفعيل
+
+          <Button
+            className="w-full gap-2 font-bold shadow-md"
+            onClick={() => router.push("/auth/login")}
+          >
+            الذهاب لتسجيل الدخول
           </Button>
         </div>
       </CardContent>

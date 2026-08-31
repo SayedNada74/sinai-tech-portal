@@ -281,6 +281,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (error || !data?.user) {
         setIsLoading(false);
+        if (error?.message?.toLowerCase().includes("email not confirmed") || error?.message?.toLowerCase().includes("not confirmed")) {
+          throw new Error("لم يتم تأكيد بريدك الإلكتروني بعد. يرجى فتح بريدك الإلكتروني والضغط على رابط التفعيل للمتابعة.");
+        }
         return false;
       }
 
@@ -381,7 +384,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Validate student_id uniqueness for registration
     if (generatedStudentId && isSupabaseConfigured && supabase) {
       try {
-        const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", generatedStudentId).limit(1).single();
+        const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", generatedStudentId).limit(1).maybeSingle();
         if (existingStudentId) {
           setIsLoading(false);
           throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
@@ -418,7 +421,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 : "This email address is already registered. If you previously logged in with Google, please use (Sign in with Google) on the login page."
             );
           }
-          throw new Error(`️ ${signUpErr.message}`);
+          if (rawMsg && rawMsg !== "{}" && rawMsg.trim()) {
+            throw new Error(`️ ${rawMsg}`);
+          } else {
+            throw new Error("تعذر إرسال بريد التأكيد. يرجى التحقق من إعدادات البريد في Supabase أو المحاولة لاحقاً.");
+          }
         }
 
         if (signUpData?.user?.id) {
@@ -430,11 +437,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           requiresEmailConfirmation = true;
         }
       } catch (e: any) {
-        if (e.message) {
+        setIsLoading(false);
+        if (e?.message && e.message !== "{}") {
           throw e; // rethrow formatted error
         }
-        console.warn("Supabase signUp error:", e);
+        throw new Error("حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.");
       }
+    }
+
+    if (requiresEmailConfirmation) {
+      setIsLoading(false);
+      return "requires_verification";
     }
 
     const fullStudentName = typeof window !== "undefined" && document.documentElement.dir === "rtl" ? nameAr : nameEn;
@@ -484,7 +497,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw new Error("هذا البريد الإلكتروني أو الرقم الأكاديمي مسجل بالفعل في منصة الجامعة.");
         }
       }
-      // If it's another error, we might log it but continue local state registration for demo purposes
       console.warn("Error inserting to profiles:", err);
     }
 
@@ -492,11 +504,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     savedUsers.push(newUser);
     localStorage.setItem("su_registered_users", JSON.stringify(savedUsers));
     window.dispatchEvent(new Event("su_users_updated"));
-
-    if (requiresEmailConfirmation) {
-      setIsLoading(false);
-      return "requires_verification";
-    }
 
     // Sign in active session
     setUser(newUser);
@@ -646,7 +653,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Uniqueness validation for student ID
       if (updatedUser.studentId && isSupabaseConfigured && supabase) {
         try {
-          const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", updatedUser.studentId).neq("id", user.id).limit(1).single();
+          const { data: existingStudentId } = await supabase.from("profiles").select("id").eq("student_id", updatedUser.studentId).neq("id", user.id).limit(1).maybeSingle();
           if (existingStudentId) {
             setIsLoading(false);
             throw new Error("عذراً، هذا الرقم الأكاديمي مسجل بالفعل لطالب آخر.");
