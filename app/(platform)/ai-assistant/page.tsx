@@ -5,6 +5,7 @@ import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
 import { useAcademic } from"@/context/academic-context";
 import { useLearning } from"@/context/learning-context";
+import { useAdmin } from "@/context/admin-context";
 import { getAiResponse, sleep, AiMessage, StudentContext } from"@/lib/ai-engine";
 import { cn } from"@/lib/utils";
 import { supabase, isSupabaseConfigured } from"@/lib/supabase";
@@ -204,6 +205,7 @@ export default function AiAssistantPage() {
     plannedCourses
   } = useAcademic();
   const { roadmapProgress } = useLearning();
+  const { faqs } = useAdmin();
 
   const studentContext: StudentContext = React.useMemo(() => ({
     userName: userName || user?.name,
@@ -213,8 +215,9 @@ export default function AiAssistantPage() {
     graduationPercentage,
     completedCourses,
     plannedCourses,
-    roadmapProgress
-  }), [userName, user?.name, cumulativeGpa, completedCredits, remainingCredits, graduationPercentage, completedCourses, plannedCourses, roadmapProgress]);
+    roadmapProgress,
+    faqs
+  }), [userName, user?.name, cumulativeGpa, completedCredits, remainingCredits, graduationPercentage, completedCourses, plannedCourses, roadmapProgress, faqs]);
 
   const [sessions, setSessions] = React.useState<ChatSession[]>([]);
   // Default to empty string"" so user starts on the fresh New Chat screen

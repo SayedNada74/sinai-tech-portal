@@ -423,13 +423,150 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* Users Table Card */}
-      <Card className="border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
-        {/* Mobile Swipe Hint */}
-        <div className="block sm:hidden text-[10px] text-zinc-400 p-2 text-center bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800">
-          ⟷ {t("اسحب الجدول يميناً ويساراً لعرض كافة الأعمدة والتفاصيل","Swipe table horizontally to view all columns")}
-        </div>
-        <CardContent className="p-0 overflow-x-auto touch-pan-x">
+      {/* Mobile Users Card List View (Visible on Mobile/Tablet) */}
+      <div className="block md:hidden space-y-3">
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((u) => {
+            const isSuspended = u.bio.includes("[SUSPENDED]");
+            const isSelected = selectedIds.includes(u.id);
+
+            return (
+              <Card
+                key={u.id}
+                className={`border transition-colors rounded-2xl overflow-hidden shadow-sm ${
+                  isSelected
+                    ? "border-sky-500 bg-sky-50/50 dark:bg-sky-950/20"
+                    : "border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+                }`}
+              >
+                <CardContent className="p-4 space-y-3">
+                  {/* Card Header: Checkbox + Avatar + Name & Email */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <button onClick={() => toggleSelect(u.id)} className="cursor-pointer shrink-0">
+                        {isSelected ? (
+                          <CheckSquare className="h-5 w-5 text-primary" />
+                        ) : (
+                          <Square className="h-5 w-5 text-zinc-400" />
+                        )}
+                      </button>
+
+                      <Link href={`/profile/${u.id}`} className="flex items-center gap-2.5 min-w-0">
+                        <div className="shrink-0">{getUserDisplayAvatar(u)}</div>
+                        <div className="min-w-0">
+                          <h4 className="font-extrabold text-sm text-zinc-900 dark:text-zinc-50 truncate">
+                            {getUserLocalizedName(u)}
+                          </h4>
+                          <p className="text-[11px] text-zinc-400 font-mono truncate">{u.email}</p>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Status Badge */}
+                    {isSuspended ? (
+                      <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-300 text-[9px] font-bold shrink-0">
+                        {t("موقوف","Suspended")}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300 text-[9px] font-bold shrink-0">
+                        🟢 {t("نشط","Active")}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Details Row: Student ID & Level/Dept */}
+                  <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                    <div>
+                      <span className="text-[10px] text-zinc-400 block font-semibold">{t("الرقم الأكاديمي","Student ID")}</span>
+                      <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                        {u.studentId || (u.role === "super-admin" ? "SUP-001" : u.role === "admin" ? "ADM-001" : "N/A")}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-zinc-400 block font-semibold">{t("القسم / الكادر","Dept & Year")}</span>
+                      <span className="font-bold text-zinc-700 dark:text-zinc-300 text-[11px] truncate block">
+                        {u.level || u.department}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions & Role Row */}
+                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                    {/* Role Selector */}
+                    <select
+                      value={u.role}
+                      onChange={(e) =>
+                        handleRoleChange(u.id, e.target.value as UserProfile["role"], u.role)
+                      }
+                      className="h-8 px-2 rounded-xl border border-zinc-200 bg-zinc-50 text-[11px] font-extrabold text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 cursor-pointer"
+                    >
+                      <option value="student">{t("طالب ‍🎓","Student ‍🎓")}</option>
+                      <option value="moderator">{t("منسق","Moderator")}</option>
+                      <option value="admin">{t("مسؤول ️","Admin ️")}</option>
+                      <option value="super-admin">{t("مشرف أعلى","Super Admin")}</option>
+                    </select>
+
+                    {/* Action Icon Buttons */}
+                    <div className="flex items-center gap-1">
+                      <Link
+                        href={`/profile/${u.id}`}
+                        className="p-1.5 rounded-lg text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-950/30 transition-colors"
+                        title={t("عرض الملف","View Profile")}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Link>
+
+                      <button
+                        onClick={() => openEditModal(u)}
+                        className="p-1.5 rounded-lg text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                        title={t("تعديل","Edit")}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          resetUserPassword(u.id);
+                          toast(t(` تم تصفير كلمة المرور للحساب (${u.name}) بنجاح!`, ` Password reset!`),"success");
+                        }}
+                        className="p-1.5 rounded-lg text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950/20 transition-colors cursor-pointer"
+                        title={t("تصفير كلمة المرور","Reset Password")}
+                      >
+                        <Key className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        onClick={() => suspendUser(u.id, !isSuspended)}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          isSuspended ? "text-emerald-600 hover:bg-emerald-50" : "text-amber-600 hover:bg-amber-50"
+                        }`}
+                        title={isSuspended ? t("إلغاء الإيقاف","Unsuspend") : t("إيقاف الحساب","Suspend")}
+                      >
+                        {isSuspended ? <UserCheck className="h-4 w-4" /> : <UserMinus className="h-4 w-4" />}
+                      </button>
+
+                      <button
+                        onClick={() => deleteUser(u.id)}
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
+                        title={t("حذف","Delete")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <p className="text-center py-8 text-xs text-zinc-500">{t("لا يوجد أعضاء مطبق عليهم الفلتر الحالي","No users found")}</p>
+        )}
+      </div>
+
+      {/* Users Table Card (Desktop / Wide View Only) */}
+      <Card className="hidden md:block border border-zinc-200/50 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+        <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-right text-xs min-w-[700px]">
             <thead className="bg-zinc-50 dark:bg-zinc-950/60 border-b border-zinc-200/60 dark:border-zinc-800 font-bold text-zinc-500 dark:text-zinc-400">
               <tr>

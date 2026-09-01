@@ -36,12 +36,13 @@ import {
   Settings,
   AlertTriangle,
   Bookmark,
-  ChevronLeft
+  ChevronLeft,
+  Megaphone
 } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
-  const { courses, users: adminUsers } = useAdmin();
+  const { courses, users: adminUsers, announcements } = useAdmin();
   const { t, dir, lang, userRole, userName } = useApp();
   const { reminders } = useSocial();
 
@@ -199,6 +200,10 @@ export default function DashboardPage() {
     return alerts;
   }, [plannedCourses, completedCourses, courses, t]);
 
+  const publishedAnnouncements = React.useMemo(() => {
+    return (announcements || []).filter((a) => a.published !== false);
+  }, [announcements]);
+
   if (isLoading) {
     return <DashboardSkeleton />;
   }
@@ -241,6 +246,76 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Live Admin Announcements & Official News Banner */}
+      {publishedAnnouncements.length > 0 && (
+        <Card className="border border-sky-200/80 dark:border-sky-900/60 bg-gradient-to-r from-sky-500/10 via-cyan-500/5 to-teal-500/10 dark:from-sky-950/40 dark:via-cyan-950/20 dark:to-teal-950/30 backdrop-blur-3xl shadow-sm rounded-3xl overflow-hidden">
+          <CardHeader className="p-4 sm:p-5 border-b border-sky-100 dark:border-sky-900/40 flex flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="h-9 w-9 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0">
+                <Megaphone className="h-4 w-4 animate-bounce" />
+              </div>
+              <div className="min-w-0">
+                <CardTitle className="text-sm font-black text-zinc-900 dark:text-zinc-50 flex items-center gap-2 truncate">
+                  <span>{t("الإعلانات والأخبار الرسمية الحية", "Live Announcements & Official News")}</span>
+                  <Badge className="bg-sky-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded-md shrink-0">
+                    {publishedAnnouncements.length}
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                  {t("مستجدات الكلية وتنبيهات إدارة المنصة والأكاديميا", "Official updates from faculty management and portal administration")}
+                </CardDescription>
+              </div>
+            </div>
+
+            {isAdmin && (
+              <Link href="/admin/announcements" className="shrink-0">
+                <Button size="sm" variant="ghost" className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:bg-sky-500/10 gap-1 cursor-pointer">
+                  <span>{t("إدارة الإعلانات ️", "Manage ️")}</span>
+                </Button>
+              </Link>
+            )}
+          </CardHeader>
+
+          <CardContent className="p-4 sm:p-5 divide-y divide-sky-100 dark:divide-sky-900/30">
+            {publishedAnnouncements.map((ann) => {
+              let badgeColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:bg-sky-950/40 dark:text-sky-400";
+              let catLabel = t("خبر جديد 📢", "News 📢");
+              if (ann.category === "midterms" || ann.category === "finals" || ann.category === "registration" || ann.category === "maintenance") {
+                badgeColor = "bg-rose-500/10 text-rose-600 border-rose-500/20 dark:bg-rose-950/40 dark:text-rose-400";
+                catLabel = t("تنبيه أكاديمي عاجل 🚨", "Academic Alert 🚨");
+              } else if (ann.category === "events" || ann.category === "scholarships" || ann.category === "internships") {
+                badgeColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400";
+                catLabel = t("فرص وفعاليات 🎓", "Events & Opportunities 🎓");
+              }
+
+              return (
+                <div key={ann.id} className="py-3.5 first:pt-0 last:pb-0 space-y-1.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-lg border ${badgeColor}`}>
+                        {catLabel}
+                      </span>
+                      <h4 className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100">
+                        {ann.title}
+                      </h4>
+                    </div>
+
+                    <span className="text-[10px] font-semibold text-zinc-400 flex items-center gap-1">
+                      <Calendar className="h-3 w-3 text-sky-500" />
+                      {ann.scheduledDate || ann.date || t("اليوم", "Today")}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 font-medium leading-relaxed whitespace-pre-wrap">
+                    {ann.content}
+                  </p>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Prerequisite Alert Banner */}
       {prerequisiteAlerts.length > 0 && (

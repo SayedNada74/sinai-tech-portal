@@ -15,6 +15,7 @@ export interface StudentContext {
   completedCourses?: Array<{ code: string; grade: string }>;
   plannedCourses?: string[];
   roadmapProgress?: Record<string, string[]>;
+  faqs?: Array<{ question: string; answer: string; category: string }>;
 }
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -664,7 +665,7 @@ ${statusText}`;
 /**
  * Official University Regulations Reference (Based 100% on دليل_الطالب.md)
  */
-export function handleUniversityRegulations(norm: string): string | null {
+export function handleUniversityRegulations(norm: string, studentContext?: StudentContext): string | null {
   // 1. Credit Hours / Academic Load (العبء الدراسي)
   if (matchesWords(norm, ["العبء الدراسي", "عبء", "ساعات التسجيل", "الحد الاقصي للساعات", "الحد الادني للساعات", "كم ساعه اسجل", "كم ساعة اسجل", "اقصي ساعات", "اقل ساعات"])) {
     return `###  لائحة العبء الدراسي والساعات المعتمدة (وفقاً لدليل الطالب - صفحة 14)
@@ -674,6 +675,28 @@ export function handleUniversityRegulations(norm: string): string | null {
 - **الحد الأقصى للتسجيل بالفصل الدراسي**: **21 ساعة معتمدة** (يشترط معدل تراكمي $\ge$ 3.00 أو أن يتوقف تخرجه على ذلك).
 - **العبء الاعتيادي للجامعة**: **18 ساعة معتمدة** في الفصلين الأول والثاني.
 - **الفصل الدراسي الصيفي**: الحد الأقصى **9 ساعات معتمدة**، ويسمح للطالب الخريج بتسجيل **12 ساعة معتمدة**.`;
+  }
+
+  // 0. Admin FAQs Matching (Dynamic Admin Knowledge Base)
+  if (studentContext?.faqs && studentContext.faqs.length > 0) {
+    const matchedFaq = studentContext.faqs.find((f) => {
+      const qNorm = normalizeText(f.question);
+      const tokens = norm.split(/\s+/).filter((t) => t.length > 2);
+      if (tokens.length === 0) return false;
+      const matchCount = tokens.filter((t) => qNorm.includes(t)).length;
+      return matchCount >= Math.min(2, tokens.length) || qNorm.includes(norm) || norm.includes(qNorm);
+    });
+
+    if (matchedFaq) {
+      return `### 📌 الإجابة الرسمية المعتمدة من إدارة الكلية
+
+> **السؤال**: ${matchedFaq.question}
+
+${matchedFaq.answer}
+
+---
+*💡 تم استخراج هذه الإجابة مباشرة من دليل اللوائح والأسئلة الشائعة المعين من قبل إدارة المنصة.*`;
+    }
   }
 
   // 2. Academic Warning & Probation (الإنذار الأكاديمي والفصل)
@@ -984,7 +1007,7 @@ ${listText}
   }
 
   // 11. UNIVERSITY REGULATIONS (دليل الطالب)
-  const regResponse = handleUniversityRegulations(norm);
+  const regResponse = handleUniversityRegulations(norm, studentContext);
   if (regResponse) {
     return regResponse;
   }

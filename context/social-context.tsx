@@ -184,16 +184,76 @@ const INITIAL_POSTS: CommunityPost[] = [
 // Seeded Realistic Careers & Internships (Focus on Internships & Fresh Grads)
 const INITIAL_CAREERS: CareerOpportunity[] = [
   {
-    id: "job-1",
-    title: "ITI - 9 Month Intensive Training Program",
-    company: "Information Technology Institute (ITI)",
-    location: "Ismailia / Cairo / Smart Village",
+    id: "job-depi",
+    title: "مبادرة رواد مصر الرقمية (DEPI) - دفعة 2026",
+    company: "وزارة الاتصالات وتكنولوجيا المعلومات (MCIT)",
+    location: "أونلاين / مراكز المحافظات",
     type: "training",
     experience: "entry",
     department: "all",
-    description: "The most prestigious IT training program in Egypt. Tracks include Full-Stack, AI, Data Science, and Cybersecurity. Fully funded with a monthly stipend. Perfect for fresh IT graduates from Sinai University.",
-    link: "https://iti.gov.eg/iti/intake",
-    dateAdded: "2026-08-15"
+    description: "منحة تدريبية مكثفة كاملة التمويل بحافز شهري من وزارة الاتصالات في تخصصات البرمجيات، الذكاء الاصطناعي، الأمن السيبراني، والحوسبة السحابية لطلاب وسنوات تخرج حاسبات وتكنولوجيا المعلومات.",
+    link: "https://depi.gov.eg/",
+    dateAdded: "2026-08-25"
+  },
+  {
+    id: "job-siemens",
+    title: "Siemens Healthineers - Software Engineering Intern",
+    company: "Siemens Healthineers",
+    location: "Cairo, Egypt (Smart Village)",
+    type: "internship",
+    experience: "entry",
+    department: "CS",
+    description: "3-month hands-on Software R&D internship in C++ & Java for healthcare technology systems. Open to 3rd and 4th-year Computer Science & IT undergrads.",
+    link: "https://jobs.siemens-healthineers.com/",
+    dateAdded: "2026-08-27"
+  },
+  {
+    id: "job-ibm",
+    title: "IBM AI & Data Engineering Intern",
+    company: "IBM Egypt",
+    location: "Cairo, Egypt",
+    type: "internship",
+    experience: "entry",
+    department: "IS",
+    description: "Work on real Watson AI models, data pipelines, and enterprise analytics under the mentorship of IBM senior data engineers.",
+    link: "https://www.ibm.com/careers/egypt",
+    dateAdded: "2026-08-26"
+  },
+  {
+    id: "job-paymob",
+    title: "Paymob Mobile App Developer Intern (Flutter / React Native)",
+    company: "Paymob Fintech",
+    location: "Hybrid / Remote",
+    type: "remote",
+    experience: "entry",
+    department: "IT",
+    description: "Fast-growing fintech company hiring Mobile App Interns to build digital payment SDKs and POS applications. Open for active undergraduate applicants.",
+    link: "https://paymob.com/careers",
+    dateAdded: "2026-08-29"
+  },
+  {
+    id: "job-amazon",
+    title: "Amazon Software Development Engineer (SDE) Graduate",
+    company: "Amazon Egypt",
+    location: "Cairo, Egypt",
+    type: "graduate",
+    experience: "entry",
+    department: "CS",
+    description: "Solve large-scale distributed systems problems for Souq/Amazon MENA logistics and ecommerce platforms. Excellent package for fresh IT graduates.",
+    link: "https://www.amazon.jobs/",
+    dateAdded: "2026-08-24"
+  },
+  {
+    id: "job-gsoc",
+    title: "Google Summer of Code (GSoC) Open Source Fellowship",
+    company: "Google Developers",
+    location: "Remote / Online",
+    type: "competition",
+    experience: "all",
+    department: "all",
+    description: "Global open source development fellowship with Google mentors and international stipends for university students.",
+    link: "https://summerofcode.withgoogle.com/",
+    dateAdded: "2026-08-20"
   },
   {
     id: "job-2",
@@ -205,7 +265,7 @@ const INITIAL_CAREERS: CareerOpportunity[] = [
     department: "IT",
     description: "Intensive 3-month Bootcamp on MERN Stack (MongoDB, Express, React, Node). Priority given to 3rd and 4th-year students. Great chance to get hired directly at Orange after completion.",
     link: "https://www.orangedigitalcenters.com/",
-    dateAdded: "2026-08-16"
+    dateAdded: "2026-08-28"
   },
   {
     id: "job-3",
@@ -217,7 +277,7 @@ const INITIAL_CAREERS: CareerOpportunity[] = [
     department: "CS",
     description: "Join Valeo's Embedded Systems and Automotive Software team for a 3-month Fall Internship. Required: Strong problem-solving, basics of C/C++, and Data Structures. Open to undergrads.",
     link: "https://valeo.wd3.myworkdayjobs.com/Valeo_Jobs",
-    dateAdded: "2026-08-14"
+    dateAdded: "2026-08-24"
   },
   {
     id: "job-4",

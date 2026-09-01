@@ -19,7 +19,8 @@ import {
   Award,
   ChevronLeft,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Mail
 } from"lucide-react";
 
 interface PageProps {
@@ -143,6 +144,14 @@ export default function PublicProfilePage({ params }: PageProps) {
                 initialsClassName="text-2xl font-black text-sky-700 dark:text-sky-300"
               />
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>
+              {profile.email && (
+                <div className="mt-2 flex items-center justify-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                  <Mail className="h-3.5 w-3.5 text-sky-500 shrink-0" />
+                  <span className="text-xs font-bold font-mono text-zinc-600 dark:text-zinc-300 select-all dir-ltr">
+                    {profile.email}
+                  </span>
+                </div>
+              )}
               <div className="mt-2 flex items-center justify-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <GraduationCap className="h-4 w-4" />
                 <span className="text-sm font-bold">{getLevelLabel(profile.level)} {profile.department ? ` - ${getDeptLabel(profile.department)}` :""}</span>

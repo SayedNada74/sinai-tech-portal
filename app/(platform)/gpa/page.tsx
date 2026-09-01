@@ -39,8 +39,85 @@ export default function GpaPage() {
     remainingCredits,
     targetGpa,
     setTargetGpa,
-    markCompleted
+    markCompleted,
+    completedCourses
   } = useAcademic();
+
+  // --- Automated Official Academic Transcript Semester GPA Breakdown ---
+  const autoSemesterHistory = React.useMemo(() => {
+    if (!completedCourses || completedCourses.length === 0) return [];
+
+    const periodMap = new Map<
+      string,
+      Array<{ code: string; grade: string; credits: number; arabic: string; english: string }>
+    >();
+
+    completedCourses.forEach((item) => {
+      const courseInfo = courses.find((c) => c.code === item.code);
+      if (!courseInfo) return;
+      const period = courseInfo.period || "1-1";
+      if (!periodMap.has(period)) {
+        periodMap.set(period, []);
+      }
+      periodMap.get(period)!.push({
+        code: item.code,
+        grade: item.grade,
+        credits: courseInfo.credits || 3,
+        arabic: courseInfo.arabic,
+        english: courseInfo.english
+      });
+    });
+
+    const sortedPeriods = Array.from(periodMap.keys()).sort();
+
+    let cumulativePointsRunning = 0;
+    let cumulativeCreditsRunning = 0;
+
+    const periodLabels: Record<string, { ar: string; en: string }> = {
+      "1-1": { ar: "الفرقة الأولى - الفصل الأول 🟢", en: "Year 1 - Semester 1 🟢" },
+      "1-2": { ar: "الفرقة الأولى - الفصل الثاني 🟢", en: "Year 1 - Semester 2 🟢" },
+      "2-1": { ar: "الفرقة الثانية - الفصل الأول 🔵", en: "Year 2 - Semester 1 🔵" },
+      "2-2": { ar: "الفرقة الثانية - الفصل الثاني 🔵", en: "Year 2 - Semester 2 🔵" },
+      "3-1": { ar: "الفرقة الثالثة - الفصل الأول 🟣", en: "Year 3 - Semester 1 🟣" },
+      "3-2": { ar: "الفرقة الثالثة - الفصل الثاني 🟣", en: "Year 3 - Semester 2 🟣" },
+      "4-1": { ar: "الفرقة الرابعة - الفصل الأول 🏆", en: "Year 4 - Semester 1 🏆" },
+      "4-2": { ar: "الفرقة الرابعة - الفصل الثاني 🎓", en: "Year 4 - Semester 2 🎓" }
+    };
+
+    return sortedPeriods.map((periodKey) => {
+      const items = periodMap.get(periodKey)!;
+      let semPoints = 0;
+      let semCredits = 0;
+
+      items.forEach((c) => {
+        const pts = GRADE_POINTS[c.grade] ?? 0;
+        semPoints += pts * c.credits;
+        semCredits += c.credits;
+      });
+
+      const semGpa = semCredits > 0 ? Math.round((semPoints / semCredits) * 100) / 100 : 0;
+
+      cumulativePointsRunning += semPoints;
+      cumulativeCreditsRunning += semCredits;
+
+      const cumGpaAtSemEnd = cumulativeCreditsRunning > 0
+        ? Math.round((cumulativePointsRunning / cumulativeCreditsRunning) * 100) / 100
+        : 0;
+
+      const label = periodLabels[periodKey]
+        ? t(periodLabels[periodKey].ar, periodLabels[periodKey].en)
+        : `${t("الفصل الدراسي", "Semester")} ${periodKey}`;
+
+      return {
+        periodKey,
+        label,
+        semGpa,
+        semCredits,
+        cumGpaAtSemEnd,
+        items
+      };
+    });
+  }, [completedCourses, courses, t]);
 
   const handlePrintReport = () => {
     toast(t("جاري تجهيز التقرير للطباعة والتصدير...","Preparing report for export & printing..."),"info");
@@ -54,6 +131,31 @@ export default function GpaPage() {
   // --- Semester GPA Calculator States ---
   const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
   const [savedSuccess, setSavedSuccess] = React.useState(false);
+
+  // --- Semester GPA History & Timeline Logging State ---
+  const [semesterHistory, setSemesterHistory] = useLocalStorage<
+    Array<{ id: string; name: string; gpa: number; credits: number; date: string }>
+  >("su_gpa_semester_history", []);
+
+  const handleSaveSemesterToHistory = () => {
+    if (semesterGpa === 0 || calcCourses.length === 0) {
+      toast(t("يرجى إضافة مواد وإدخال التقديرات أولاً قبل الحفظ بالسجل.", "Please add courses and grades first."), "error");
+      return;
+    }
+    const newEntry = {
+      id: Date.now().toString(),
+      name: `${t("الفصل الدراسي", "Semester")} ${semesterHistory.length + 1}`,
+      gpa: semesterGpa,
+      credits: totalSemesterCredits,
+      date: new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")
+    };
+    setSemesterHistory([...semesterHistory, newEntry]);
+    toast(t("تم حفظ المعدل الفصلي في سجل التتبع بنجاح! 📈", "Semester GPA logged to history timeline! 📈"), "success");
+  };
+
+  const removeHistoryEntry = (id: string) => {
+    setSemesterHistory(semesterHistory.filter((item) => item.id !== id));
+  };
 
   const addCalcRow = () => {
     setCalcCourses([
@@ -357,17 +459,24 @@ export default function GpaPage() {
               <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30 rounded-2xl gap-4">
                 <div>
                   <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
-                    {t("حفظ الدرجات للملف الشخصي","Save Grades to Profile")}
+                    {t("حفظ الدرجات والمعدل الفصلي","Save Grades & Semester GPA")}
                   </h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                    {t("احفظ المواد المختارة فوراً في سجلك الأكاديمي المنجز لتنعكس في إحصائيات لوحة التحكم ومخطط المواد.","Save chosen courses to your academic record to update dashboard statistics and checklist."
+                    {t("احفظ درجاتك في سجلك الأكاديمي المنجز أو في سجل تتبع المعدل التراكمي عبر الفصول الدراسية.","Save chosen courses to your academic record or add your semester GPA to your timeline history."
                     )}
                   </p>
                 </div>
-                <Button onClick={handleSaveToCompleted} className="gap-2 shrink-0 font-bold">
-                  <Save className="h-4.5 w-4.5" />
-                  {t("مزامنة المواد المنجزة","Sync Completed Courses")}
-                </Button>
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  <Button onClick={handleSaveSemesterToHistory} variant="outline" className="gap-1.5 font-bold text-xs border-sky-300 dark:border-sky-800 cursor-pointer">
+                    <TrendingUp className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                    {t("حفظ بالسجل الفصلي 📈", "Save to Semester Log 📈")}
+                  </Button>
+
+                  <Button onClick={handleSaveToCompleted} className="gap-2 font-bold text-xs cursor-pointer">
+                    <Save className="h-4 w-4" />
+                    {t("مزامنة المواد المنجزة","Sync Completed Courses")}
+                  </Button>
+                </div>
               </div>
 
               {savedSuccess && (
@@ -375,6 +484,116 @@ export default function GpaPage() {
                   <CheckCircle2 className="h-5 w-5" />
                   <span>{t("تم بنجاح تحديث ومزامنة سجلك الأكاديمي في قاعدة البيانات!","Academic record updated & synced successfully!")}</span>
                 </div>
+              )}
+
+              {/* Automated Official Transcript Semester Breakdown */}
+              {autoSemesterHistory.length > 0 && (
+                <Card className="border border-sky-200/80 dark:border-sky-900/60 bg-gradient-to-r from-sky-500/5 via-cyan-500/5 to-teal-500/5 dark:from-sky-950/30 dark:via-cyan-950/20 dark:to-teal-950/20 shadow-sm rounded-3xl overflow-hidden">
+                  <CardHeader className="p-5 border-b border-sky-100 dark:border-sky-900/40 flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base font-black flex items-center gap-2 text-zinc-900 dark:text-zinc-50">
+                        <TrendingUp className="h-5 w-5 text-sky-500 animate-pulse" />
+                        <span>{t("السجل الأكاديمي التلقائي للفصول الدراسية (Automatic Transcript GPA)", "Automatic Transcript Semester Breakdown")}</span>
+                      </CardTitle>
+                      <CardDescription className="text-xs mt-1">
+                        {t("محسوب تلقائياً من المواد والتقديرات المنجزة المسجلة في حسابك الجامعي", "Calculated automatically from your profile completed courses")}
+                      </CardDescription>
+                    </div>
+
+                    <Badge className="bg-sky-500 text-white font-mono font-bold text-xs">
+                      {`${autoSemesterHistory.length} ${t("فصول مكتملة", "Semesters Done")}`}
+                    </Badge>
+                  </CardHeader>
+
+                  <CardContent className="p-5 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {autoSemesterHistory.map((sem) => (
+                        <div
+                          key={sem.periodKey}
+                          className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-sky-100 dark:border-sky-900/40 shadow-sm space-y-3"
+                        >
+                          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
+                            <span className="font-extrabold text-xs text-zinc-900 dark:text-zinc-50">
+                              {sem.label}
+                            </span>
+                            <span className="text-[10px] font-bold text-zinc-400">
+                              {sem.items.length} {t("مواد منجزة", "courses")} ({sem.semCredits} {t("ساعة", "hrs")})
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-1">
+                            <div>
+                              <span className="text-[10px] font-bold text-zinc-400 block">{t("المعدل الفصلي (Semester GPA)", "Semester GPA")}</span>
+                              <span className="text-xl font-black text-sky-600 dark:text-sky-400 font-mono">
+                                {sem.semGpa.toFixed(2)}
+                              </span>
+                            </div>
+
+                            <div className="text-left">
+                              <span className="text-[10px] font-bold text-zinc-400 block">{t("التراكمي بنهاية الفصل", "Cumulative at Sem End")}</span>
+                              <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                                {sem.cumGpaAtSemEnd.toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                            {sem.items.map((item) => (
+                              <span
+                                key={item.code}
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700"
+                              >
+                                {item.code}: <strong className="text-sky-600 dark:text-sky-400 font-bold">{item.grade}</strong>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Semester GPA History Timeline Card */}
+              {semesterHistory.length > 0 && (
+                <Card className="border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm rounded-3xl overflow-hidden">
+                  <CardHeader className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base font-extrabold flex items-center gap-2">
+                        <TrendingUp className="h-4.5 w-4.5 text-sky-500" />
+                        <span>{t("سجل ومنحنى تتبع المعدل التراكمي (Semester GPA Timeline)", "Semester GPA History Log")}</span>
+                      </CardTitle>
+                      <CardDescription className="text-xs mt-1">
+                        {t("تتبع تطور ومسار نتائجك الفصلية عبر سنوات الدراسة في الكلية", "Track your semester GPA progress over your academic journey")}
+                      </CardDescription>
+                    </div>
+
+                    <Badge className="bg-sky-500 text-white font-mono font-bold text-xs">
+                      {`${semesterHistory.length} ${t("فصول مسجلة", "Semesters Logged")}`}
+                    </Badge>
+                  </CardHeader>
+
+                  <CardContent className="p-5 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {semesterHistory.map((item) => (
+                        <div key={item.id} className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3">
+                          <div>
+                            <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 block">{item.name}</span>
+                            <div className="flex items-baseline gap-1.5 mt-0.5">
+                              <span className="text-lg font-black text-zinc-900 dark:text-zinc-50 font-mono">{item.gpa.toFixed(2)}</span>
+                              <span className="text-[10px] text-zinc-400 font-semibold">({item.credits} {t("ساعة", "hrs")})</span>
+                            </div>
+                            <span className="text-[9px] text-zinc-400 block mt-0.5">{item.date}</span>
+                          </div>
+
+                          <button onClick={() => removeHistoryEntry(item.id)} className="text-zinc-400 hover:text-rose-500 p-1.5 rounded-lg transition-colors cursor-pointer" title={t("حذف من السجل", "Remove")}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </div>
 
