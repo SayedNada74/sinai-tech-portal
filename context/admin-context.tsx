@@ -55,6 +55,11 @@ export interface PlatformSettings {
     aiAssistant: boolean;
     courseReviews: boolean;
     resourceSharing: boolean;
+    careersPortal?: boolean;
+    freeCertificatesHub?: boolean;
+    semesterTranscript?: boolean;
+    liveAnnouncements?: boolean;
+    studentDirectory?: boolean;
   };
 }
 
@@ -151,7 +156,12 @@ const DEFAULT_SETTINGS: PlatformSettings = {
     gpaPredictor: true,
     aiAssistant: true,
     courseReviews: true,
-    resourceSharing: true
+    resourceSharing: true,
+    careersPortal: true,
+    freeCertificatesHub: true,
+    semesterTranscript: true,
+    liveAnnouncements: true,
+    studentDirectory: true
   }
 };
 

@@ -45,7 +45,7 @@ export default function CourseDetailPage({ params }: PageProps) {
   const code = decodeURIComponent(resolvedParams.code);
 
   const { user } = useAuth();
-  const { courses } = useAdmin();
+  const { courses, resources } = useAdmin();
   const course = courses.find((c) => c.code.toLowerCase() === code.toLowerCase());
 
   const {
@@ -103,8 +103,9 @@ export default function CourseDetailPage({ params }: PageProps) {
     (c) => c.department === course.department && c.code !== course.code
   ).slice(0, 3);
 
-  // Dynamic resources belonging to this specific course
-  const courseResources = RESOURCES.filter(
+  // Dynamic resources belonging to this specific course from Admin state
+  const activeResources = (resources && resources.length > 0) ? resources : RESOURCES;
+  const courseResources = activeResources.filter(
     (r) => r.courseCode.toLowerCase() === course.code.toLowerCase()
   );
 
@@ -328,12 +329,35 @@ export default function CourseDetailPage({ params }: PageProps) {
                       variant="ghost"
                       onClick={() => {
                         incrementDownload(res.id);
-                        toast(t(` جاري تحميل المستند:"${res.title}"...`, ` Downloading document:"${res.title}"...`),"info");
+                        toast(t(`جاري تحميل المستند: "${res.title}"...`, `Downloading document: "${res.title}"...`), "info");
+
+                        if (res.url && res.url.startsWith("data:")) {
+                          const a = document.createElement("a");
+                          a.href = res.url;
+                          const ext = res.url.includes("pdf") ? ".pdf" : res.url.includes("word") || res.url.includes("doc") ? ".docx" : res.url.includes("presentation") || res.url.includes("powerpoint") ? ".pptx" : "";
+                          a.download = res.title.includes(".") ? res.title : `${res.title}${ext || ".pdf"}`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                        } else if (res.url && res.url !== "#" && !res.url.includes("storage.sinai.edu.eg") && (res.url.startsWith("http://") || res.url.startsWith("https://") || res.url.startsWith("blob:"))) {
+                          window.open(res.url, "_blank", "noopener,noreferrer");
+                        } else {
+                          const fileContent = `=====================================================\nجامعة سيناء - كلية تكنولوجيا المعلومات وعلوم الحاسب\n=====================================================\nالمستند الأكاديمي: ${res.title}\nالمادة الدراسية: ${res.courseCode}\nنوع المصدر: ${res.type}\nالناشر: ${res.author}\nتاريخ الرفع: ${res.uploadDate}\n\nالوصف والملاحظات:\n${res.description}\n\n=====================================================\nتم تنزيل هذا المستند من بوابة حاسبات ومعلومات سيناء.\n`;
+                          const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+                          const blobUrl = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = blobUrl;
+                          a.download = `${res.title.replace(/[/\\?%*:|"<>]/g, "_")}.txt`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(blobUrl);
+                        }
                       }}
-                      className="h-8 gap-1.5 text-[10px] text-zinc-500 hover:text-sky-600 dark:hover:text-sky-400"
+                      className="h-8 gap-1.5 text-[10px] text-zinc-500 hover:text-sky-600 dark:hover:text-sky-400 cursor-pointer"
                     >
                       <Download className="h-3.5 w-3.5" />
-                      {t("تحميل","Download")}
+                      {t("تحميل", "Download")}
                     </Button>
                   </div>
                 ))

@@ -49,7 +49,7 @@ export default function CoursesPage() {
   const [selectedLevel, setSelectedLevel] = React.useState<string>("ALL");
   const [selectedDiff, setSelectedDiff] = React.useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = React.useState<string>("ALL");
-  const [sortBy, setSortBy] = React.useState<string>("CODE_ASC");
+  const [sortBy, setSortBy] = React.useState<string>("ACADEMIC");
   const [showFilters, setShowFilters] = React.useState(false);
 
   // Departments list helper
