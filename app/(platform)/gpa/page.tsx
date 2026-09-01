@@ -10,7 +10,7 @@ import { Input } from"@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Badge } from"@/components/ui/badge";
 import { SpotlightCard } from"@/components/ui/spotlight-card";
-import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft } from"lucide-react";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft, ChevronDown } from"lucide-react";
 import Link from"next/link";
 import { useToast } from"@/components/ui/toast";
 import { motion, AnimatePresence } from"framer-motion";
@@ -74,14 +74,14 @@ export default function GpaPage() {
     let cumulativeCreditsRunning = 0;
 
     const periodLabels: Record<string, { ar: string; en: string }> = {
-      "1-1": { ar: "الفرقة الأولى - الفصل الأول 🟢", en: "Year 1 - Semester 1 🟢" },
-      "1-2": { ar: "الفرقة الأولى - الفصل الثاني 🟢", en: "Year 1 - Semester 2 🟢" },
-      "2-1": { ar: "الفرقة الثانية - الفصل الأول 🔵", en: "Year 2 - Semester 1 🔵" },
-      "2-2": { ar: "الفرقة الثانية - الفصل الثاني 🔵", en: "Year 2 - Semester 2 🔵" },
-      "3-1": { ar: "الفرقة الثالثة - الفصل الأول 🟣", en: "Year 3 - Semester 1 🟣" },
-      "3-2": { ar: "الفرقة الثالثة - الفصل الثاني 🟣", en: "Year 3 - Semester 2 🟣" },
-      "4-1": { ar: "الفرقة الرابعة - الفصل الأول 🏆", en: "Year 4 - Semester 1 🏆" },
-      "4-2": { ar: "الفرقة الرابعة - الفصل الثاني 🎓", en: "Year 4 - Semester 2 🎓" }
+      "1-1": { ar: "الفرقة الأولى - الفصل الأول", en: "Year 1 - Semester 1" },
+      "1-2": { ar: "الفرقة الأولى - الفصل الثاني", en: "Year 1 - Semester 2" },
+      "2-1": { ar: "الفرقة الثانية - الفصل الأول", en: "Year 2 - Semester 1" },
+      "2-2": { ar: "الفرقة الثانية - الفصل الثاني", en: "Year 2 - Semester 2" },
+      "3-1": { ar: "الفرقة الثالثة - الفصل الأول", en: "Year 3 - Semester 1" },
+      "3-2": { ar: "الفرقة الثالثة - الفصل الثاني", en: "Year 3 - Semester 2" },
+      "4-1": { ar: "الفرقة الرابعة - الفصل الأول", en: "Year 4 - Semester 1" },
+      "4-2": { ar: "الفرقة الرابعة - الفصل الثاني", en: "Year 4 - Semester 2" }
     };
 
     return sortedPeriods.map((periodKey) => {
@@ -131,6 +131,7 @@ export default function GpaPage() {
   // --- Semester GPA Calculator States ---
   const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
   const [savedSuccess, setSavedSuccess] = React.useState(false);
+  const [expandedPeriod, setExpandedPeriod] = React.useState<string | null>(null);
 
   // --- Semester GPA History & Timeline Logging State ---
   const [semesterHistory, setSemesterHistory] = useLocalStorage<
@@ -492,11 +493,11 @@ export default function GpaPage() {
                   <CardHeader className="p-5 border-b border-sky-100 dark:border-sky-900/40 flex flex-row items-center justify-between">
                     <div>
                       <CardTitle className="text-base font-black flex items-center gap-2 text-zinc-900 dark:text-zinc-50">
-                        <TrendingUp className="h-5 w-5 text-sky-500 animate-pulse" />
+                        <TrendingUp className="h-5 w-5 text-sky-500" />
                         <span>{t("السجل الأكاديمي التلقائي للفصول الدراسية (Automatic Transcript GPA)", "Automatic Transcript Semester Breakdown")}</span>
                       </CardTitle>
                       <CardDescription className="text-xs mt-1">
-                        {t("محسوب تلقائياً من المواد والتقديرات المنجزة المسجلة في حسابك الجامعي", "Calculated automatically from your profile completed courses")}
+                        {t("اضغط على أي فصل دراسي لفتح التفاصيل الكاملة وأسماء المواد والتقديرات المكتملة", "Click on any semester card to inspect full course names & details")}
                       </CardDescription>
                     </div>
 
@@ -507,48 +508,121 @@ export default function GpaPage() {
 
                   <CardContent className="p-5 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {autoSemesterHistory.map((sem) => (
-                        <div
-                          key={sem.periodKey}
-                          className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-sky-100 dark:border-sky-900/40 shadow-sm space-y-3"
-                        >
-                          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
-                            <span className="font-extrabold text-xs text-zinc-900 dark:text-zinc-50">
-                              {sem.label}
-                            </span>
-                            <span className="text-[10px] font-bold text-zinc-400">
-                              {sem.items.length} {t("مواد منجزة", "courses")} ({sem.semCredits} {t("ساعة", "hrs")})
-                            </span>
-                          </div>
+                      {autoSemesterHistory.map((sem) => {
+                        const isExpanded = expandedPeriod === sem.periodKey;
 
-                          <div className="flex items-center justify-between pt-1">
-                            <div>
-                              <span className="text-[10px] font-bold text-zinc-400 block">{t("المعدل الفصلي (Semester GPA)", "Semester GPA")}</span>
-                              <span className="text-xl font-black text-sky-600 dark:text-sky-400 font-mono">
-                                {sem.semGpa.toFixed(2)}
-                              </span>
+                        return (
+                          <div
+                            key={sem.periodKey}
+                            className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                              isExpanded
+                                ? "bg-white dark:bg-zinc-900 border-sky-500 shadow-md ring-2 ring-sky-500/20"
+                                : "bg-white/80 dark:bg-zinc-900/80 border-sky-100 dark:border-sky-900/40 shadow-sm hover:border-sky-400 cursor-pointer"
+                            }`}
+                          >
+                            {/* Semester Card Header (Clickable) */}
+                            <div
+                              onClick={() => setExpandedPeriod(isExpanded ? null : sem.periodKey)}
+                              className="p-4 space-y-3 cursor-pointer select-none"
+                            >
+                              <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
+                                <span className="font-extrabold text-xs text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
+                                  {sem.label}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-bold text-zinc-400">
+                                    {sem.items.length} {t("مواد", "courses")} ({sem.semCredits} {t("ساعة", "hrs")})
+                                  </span>
+                                  <ChevronDown className={`h-4 w-4 text-sky-500 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-1">
+                                <div>
+                                  <span className="text-[10px] font-bold text-zinc-400 block">{t("المعدل الفصلي (Semester GPA)", "Semester GPA")}</span>
+                                  <span className="text-xl font-black text-sky-600 dark:text-sky-400 font-mono">
+                                    {sem.semGpa.toFixed(2)}
+                                  </span>
+                                </div>
+
+                                <div className="text-left">
+                                  <span className="text-[10px] font-bold text-zinc-400 block">{t("التراكمي بنهاية الفصل", "Cumulative at Sem End")}</span>
+                                  <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                                    {sem.cumGpaAtSemEnd.toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {!isExpanded && (
+                                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                                  {sem.items.map((item) => (
+                                    <span
+                                      key={item.code}
+                                      className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700"
+                                    >
+                                      {item.code}: <strong className="text-sky-600 dark:text-sky-400 font-bold">{item.grade}</strong>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
 
-                            <div className="text-left">
-                              <span className="text-[10px] font-bold text-zinc-400 block">{t("التراكمي بنهاية الفصل", "Cumulative at Sem End")}</span>
-                              <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-                                {sem.cumGpaAtSemEnd.toFixed(2)}
-                              </span>
-                            </div>
-                          </div>
+                            {/* Animated Expanded Details Drawer */}
+                            <AnimatePresence>
+                              {isExpanded && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                  className="border-t border-sky-100 dark:border-sky-900/40 bg-sky-50/40 dark:bg-zinc-950/60 p-4 space-y-3"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-extrabold text-sky-700 dark:text-sky-400">
+                                      {t("تفاصيل المواد والدرجات في هذا الفصل:", "Full Course & Grade Breakdown:")}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-400 font-mono">
+                                      {sem.semCredits} {t("ساعات كليّة", "total hrs")}
+                                    </span>
+                                  </div>
 
-                          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
-                            {sem.items.map((item) => (
-                              <span
-                                key={item.code}
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700"
-                              >
-                                {item.code}: <strong className="text-sky-600 dark:text-sky-400 font-bold">{item.grade}</strong>
-                              </span>
-                            ))}
+                                  <div className="space-y-2">
+                                    {sem.items.map((c) => {
+                                      const pts = GRADE_POINTS[c.grade] ?? 0;
+                                      const courseTitle = lang === "ar" ? (c.arabic || c.english || c.code) : (c.english || c.arabic || c.code);
+
+                                      return (
+                                        <div
+                                          key={c.code}
+                                          className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-2xs"
+                                        >
+                                          <div className="space-y-0.5 min-w-0 flex-1">
+                                            <div className="flex items-center gap-2">
+                                              <Badge className="bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 text-[10px] font-mono font-bold px-1.5 py-0">
+                                                {c.code}
+                                              </Badge>
+                                              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                                                {courseTitle}
+                                              </span>
+                                            </div>
+                                            <span className="text-[10px] text-zinc-400 block font-medium">
+                                              {c.credits} {t("ساعات معتمدة", "Credit Hours")} &bull; {pts.toFixed(2)} {t("نقاط", "Points")}
+                                            </span>
+                                          </div>
+
+                                          <Badge className="bg-sky-600 text-white font-mono font-bold text-xs px-2 py-0.5 shrink-0 shadow-2xs">
+                                            {c.grade}
+                                          </Badge>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
