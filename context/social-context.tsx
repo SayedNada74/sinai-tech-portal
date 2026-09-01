@@ -681,56 +681,42 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     };
 
     const loadSharedCareers = async () => {
-      // 1. Initial load from local careers cache if present, otherwise default to INITIAL_CAREERS
+      let localList: CareerOpportunity[] = INITIAL_CAREERS;
       const cached = localStorage.getItem("su_careers_cache");
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            const valid = parsed.filter((c: any) => !c.id?.startsWith("hack-") && !c.title?.toLowerCase().includes("malicious") && !c.company?.toLowerCase().includes("exploit") && !c.description?.toLowerCase().includes("hacked"));
-            if (valid.length > 0) {
-              setCareers(valid);
-            } else {
-              setCareers(INITIAL_CAREERS);
-              localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
-            }
-          } else {
-            setCareers(INITIAL_CAREERS);
-            localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+            localList = parsed;
           }
-        } catch (e) {
-          setCareers(INITIAL_CAREERS);
-        }
-      } else {
-        setCareers(INITIAL_CAREERS);
-        localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
+        } catch (e) {}
       }
+      setCareers(localList);
 
-      // 2. Fetch authoritative cloud careers from Supabase
       if (isSupabaseConfigured && supabase) {
         try {
           const { data, error } = await supabase.from("careers").select("*").order("created_at", { ascending: false });
           if (!error && data && data.length > 0) {
-            const valid = data.filter((c: any) => !c.id?.startsWith("hack-") && !c.title?.toLowerCase().includes("malicious") && !c.company?.toLowerCase().includes("exploit") && !c.description?.toLowerCase().includes("hacked"));
-            if (valid.length > 0) {
-              const mappedCareers: CareerOpportunity[] = valid.map((c: any) => ({
-                id: c.id,
-                title: c.title,
-                company: c.company,
-                location: c.location || "مصر",
-                type: c.type || "internship",
-                experience: c.experience || "entry",
-                department: c.department || "all",
-                description: c.description || "",
-                link: c.link || "#",
-                dateAdded: c.date_added ? c.date_added.split("T")[0] : new Date().toISOString().split("T")[0]
-              }));
-              setCareers(mappedCareers);
-              localStorage.setItem("su_careers_cache", JSON.stringify(mappedCareers));
-            } else {
-              setCareers(INITIAL_CAREERS);
-              localStorage.setItem("su_careers_cache", JSON.stringify(INITIAL_CAREERS));
-            }
+            const mappedCareers: CareerOpportunity[] = data.map((c: any) => ({
+              id: c.id,
+              title: c.title,
+              company: c.company,
+              location: c.location || "مصر",
+              type: c.type || "internship",
+              experience: c.experience || "entry",
+              department: c.department || "all",
+              description: c.description || "",
+              link: c.link || "#",
+              dateAdded: c.date_added ? c.date_added.split("T")[0] : new Date().toISOString().split("T")[0]
+            }));
+
+            const map = new Map<string, CareerOpportunity>();
+            localList.forEach(item => map.set(item.id, item));
+            mappedCareers.forEach(item => map.set(item.id, item));
+            const merged = Array.from(map.values());
+
+            setCareers(merged);
+            localStorage.setItem("su_careers_cache", JSON.stringify(merged));
           }
         } catch (e) {
           console.warn("[Careers Cloud Sync] Fetch error:", e);
@@ -738,8 +724,56 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    const loadSharedFreeCertificates = async () => {
+      let localList: FreeCertificateItem[] = INITIAL_FREE_CERTIFICATES;
+      const cached = localStorage.getItem("su_free_certificates_cache");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            localList = parsed;
+          }
+        } catch (e) {}
+      }
+      setFreeCertificates(localList);
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("free_certificates").select("*");
+          if (!error && data && data.length > 0) {
+            const mappedCerts: FreeCertificateItem[] = data.map((c: any) => ({
+              id: c.id,
+              titleAr: c.title_ar || c.titleAr,
+              titleEn: c.title_en || c.titleEn,
+              provider: c.provider,
+              category: c.category || "ai_data",
+              categoryAr: c.category_ar || c.categoryAr || "الذكاء الاصطناعي",
+              categoryEn: c.category_en || c.categoryEn || "AI",
+              duration: c.duration,
+              language: c.language,
+              descAr: c.desc_ar || c.descAr,
+              descEn: c.desc_en || c.descEn,
+              skills: Array.isArray(c.skills) ? c.skills : [],
+              link: c.link
+            }));
+
+            const map = new Map<string, FreeCertificateItem>();
+            localList.forEach(item => map.set(item.id, item));
+            mappedCerts.forEach(item => map.set(item.id, item));
+            const merged = Array.from(map.values());
+
+            setFreeCertificates(merged);
+            localStorage.setItem("su_free_certificates_cache", JSON.stringify(merged));
+          }
+        } catch (e) {
+          console.warn("[Free Certs Cloud Sync] Fetch error:", e);
+        }
+      }
+    };
+
     loadSharedPosts();
     loadSharedCareers();
+    loadSharedFreeCertificates();
 
     const handleStorageEvent = (e: StorageEvent) => {
       if (e.key === "su_global_community_posts" && e.newValue) {
