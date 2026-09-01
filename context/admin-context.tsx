@@ -432,6 +432,28 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const savedFaq = localStorage.getItem("su_faqs");
     if (savedFaq) { try { setFaqs(JSON.parse(savedFaq)); } catch (e) { } }
 
+    const fetchAdminFaqsCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("faqs").select("*");
+          if (!error && data && data.length > 0) {
+            const mappedFaqs: FAQItem[] = data.map((f: any) => ({
+              id: f.id,
+              question: f.question,
+              answer: f.answer,
+              category: f.category || "التسجيل",
+              pinned: Boolean(f.pinned)
+            }));
+            setFaqs(mappedFaqs);
+            localStorage.setItem("su_faqs", JSON.stringify(mappedFaqs));
+          }
+        } catch (err) {
+          console.warn("[Admin FAQs] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminFaqsCloud();
+
     const savedAudit = localStorage.getItem("su_audit_logs");
     if (savedAudit) { try { setAuditLogs(JSON.parse(savedAudit)); } catch (e) { } }
 
@@ -440,6 +462,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     const savedAi = localStorage.getItem("su_ai_config");
     if (savedAi) { try { setAiConfig(JSON.parse(savedAi)); } catch (e) { } }
+
+    const fetchAdminAiConfigCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("settings").select("*").eq("id", "ai_config").single();
+          if (!error && data && data.value) {
+            const parsed = JSON.parse(data.value);
+            setAiConfig(parsed);
+            localStorage.setItem("su_ai_config", JSON.stringify(parsed));
+          }
+        } catch (err) {
+          console.warn("[Admin AI Config] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminAiConfigCloud();
 
     const savedIncidents = localStorage.getItem("su_incidents");
     if (savedIncidents) { try { setIncidents(JSON.parse(savedIncidents)); } catch (e) { } }
@@ -882,7 +920,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // FAQ Actions
-  const addFaq = (faq: Omit<FAQItem, "id">) => {
+  const addFaq = async (faq: Omit<FAQItem, "id">) => {
     const newFaq: FAQItem = {
       ...faq,
       id: `faq-${Date.now()}`
@@ -891,28 +929,66 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setFaqs(updated);
     saveState("su_faqs", updated);
     logAction("إضافة سؤال شائع", `سؤال: ${newFaq.question}`, "settings");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("faqs").insert([{
+          id: newFaq.id,
+          question: newFaq.question,
+          answer: newFaq.answer,
+          category: newFaq.category,
+          pinned: newFaq.pinned
+        }]);
+      } catch (e) {
+        console.warn("[Admin FAQs] Cloud insert error:", e);
+      }
+    }
   };
 
-  const updateFaq = (id: string, updatedFields: Partial<FAQItem>) => {
+  const updateFaq = async (id: string, updatedFields: Partial<FAQItem>) => {
     const updated = faqs.map(f => f.id === id ? { ...f, ...updatedFields } : f);
     setFaqs(updated);
     saveState("su_faqs", updated);
     logAction("تعديل سؤال شائع", `المعرف: ${id}`, "settings");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("faqs").update(updatedFields).eq("id", id);
+      } catch (e) {
+        console.warn("[Admin FAQs] Cloud update error:", e);
+      }
+    }
   };
 
-  const deleteFaq = (id: string) => {
+  const deleteFaq = async (id: string) => {
     const updated = faqs.filter(f => f.id !== id);
     setFaqs(updated);
     saveState("su_faqs", updated);
     logAction("حذف سؤال شائع", `المعرف الاستدلالي: ${id}`, "settings");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("faqs").delete().eq("id", id);
+      } catch (e) {
+        console.warn("[Admin FAQs] Cloud delete error:", e);
+      }
+    }
   };
 
   // AI Knowledge Base configuration
-  const updateAiConfig = (updatedFields: Partial<AdminContextType["aiConfig"]>) => {
+  const updateAiConfig = async (updatedFields: Partial<AdminContextType["aiConfig"]>) => {
     const updated = { ...aiConfig, ...updatedFields };
     setAiConfig(updated);
     saveState("su_ai_config", updated);
     logAction("تحديث نموذج الذكاء الاصطناعي", "تم تعديل الملقنات المقترحة وصياغة الملقن الأساسي للمنصة.", "settings");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("settings").upsert([{ id: "ai_config", value: JSON.stringify(updated) }]);
+      } catch (e) {
+        console.warn("[Admin AI Config] Cloud update error:", e);
+      }
+    }
   };
 
   // Settings Actions

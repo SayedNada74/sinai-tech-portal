@@ -215,7 +215,7 @@ export const FREE_CERTIFICATES: FreeCertificateItem[] = [
 
 export default function CareersPage() {
   const { t, lang, dir } = useApp();
-  const { careers, toggleSaveJob, isJobSaved } = useSocial();
+  const { careers, freeCertificates, toggleSaveJob, isJobSaved } = useSocial();
 
   const [search, setSearch] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<string>("all");
@@ -265,8 +265,10 @@ export default function CareersPage() {
     return matchesSearch && matchesType && matchesExp && matchesDept;
   });
 
+  const activeCerts = (freeCertificates && freeCertificates.length > 0) ? freeCertificates : FREE_CERTIFICATES;
+
   const filteredCertificates = React.useMemo(() => {
-    return FREE_CERTIFICATES.filter((cert) => {
+    return activeCerts.filter((cert) => {
       const matchesCat = certCatFilter === "all" || cert.category === certCatFilter;
       const query = search.toLowerCase().trim();
       const matchesSearch =
@@ -279,7 +281,7 @@ export default function CareersPage() {
 
       return matchesCat && matchesSearch;
     });
-  }, [certCatFilter, search]);
+  }, [activeCerts, certCatFilter, search]);
 
   const isRtl = dir ==="rtl";
 

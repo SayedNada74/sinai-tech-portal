@@ -55,6 +55,23 @@ export interface CareerOpportunity {
   dateAdded: string;
 }
 
+// Free Certificate Interface
+export interface FreeCertificateItem {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  provider: string;
+  category: "ai_data" | "web_software" | "cybersecurity_networks" | "cloud_tech";
+  categoryAr: string;
+  categoryEn: string;
+  duration: string;
+  language: string;
+  descAr: string;
+  descEn: string;
+  skills: string[];
+  link: string;
+}
+
 // Event Interfaces
 export interface EventItem {
   id: string;
@@ -117,6 +134,12 @@ interface SocialContextType {
   deleteCareer: (id: string) => Promise<boolean>;
   toggleSaveJob: (id: string) => void;
   isJobSaved: (id: string) => boolean;
+
+  // Free Certificate Actions
+  freeCertificates: FreeCertificateItem[];
+  addFreeCertificate: (cert: Omit<FreeCertificateItem, "id">) => Promise<boolean>;
+  editFreeCertificate: (id: string, cert: Partial<FreeCertificateItem>) => Promise<boolean>;
+  deleteFreeCertificate: (id: string) => Promise<boolean>;
 
   // Event Actions
   addEvent: (event: Omit<EventItem, "id">) => void;
@@ -377,6 +400,175 @@ const INITIAL_CAREERS: CareerOpportunity[] = [
   }
 ];
 
+// Seeded Free Certificates Dataset
+const INITIAL_FREE_CERTIFICATES: FreeCertificateItem[] = [
+  {
+    id: "cert-1",
+    titleAr: "شهادة أساسيات الذكاء الاصطناعي التوليدي",
+    titleEn: "Generative AI Fundamentals Certificate",
+    provider: "MaharaTech (ITI - معهد تكنولوجيا المعلومات)",
+    category: "ai_data",
+    categoryAr: "الذكاء الاصطناعي وعلوم البيانات",
+    categoryEn: "AI & Data Science",
+    duration: "15 ساعة تدريبية",
+    language: "العربية / الإنجليزية",
+    descAr: "تمنحك الشهادة فهمًا عمليًا لبناء ونشر نماذج الذكاء الاصطناعي التوليدي، مع التعامل مع الهندسة الفورية (Prompt Engineering) وتطبيقات الـ Large Language Models (LLMs).",
+    descEn: "Provides practical hands-on understanding of building Generative AI applications and Prompt Engineering.",
+    skills: ["Prompt Engineering", "Generative AI", "LLMs", "Python"],
+    link: "https://maharatech.gov.eg/course/index.php?categoryid=40"
+  },
+  {
+    id: "cert-2",
+    titleAr: "شهادة تحليل البيانات المعتمدة من جوجل",
+    titleEn: "Google Data Analytics Professional Certificate",
+    provider: "Google (عبر Coursera - مع دعم مالي مجاني 100%)",
+    category: "ai_data",
+    categoryAr: "الذكاء الاصطناعي وعلوم البيانات",
+    categoryEn: "AI & Data Science",
+    duration: "180 ساعة (مرنة)",
+    language: "الإنجليزية (مترجمة للعربية)",
+    descAr: "شهادة احترافية من Google تؤهلك للعمل كمحلل بيانات. تشمل تنظيف البيانات تحليلها باستخدام SQL و R و Tableau وإعداد التقارير التفاعلية.",
+    descEn: "Official Google certificate equipping you with SQL, R programming, Tableau visualization, and data cleaning skills.",
+    skills: ["SQL", "R Language", "Tableau", "Data Analysis", "Spreadsheets"],
+    link: "https://www.coursera.org/professional-certificates/google-data-analytics"
+  },
+  {
+    id: "cert-3",
+    titleAr: "شهادة تعلّم الآلة وتجهيز البيانات بالـ Python",
+    titleEn: "Python & Machine Learning Certificate",
+    provider: "Kaggle Learn (Google)",
+    category: "ai_data",
+    categoryAr: "الذكاء الاصطناعي وعلوم البيانات",
+    categoryEn: "AI & Data Science",
+    duration: "10 ساعات عمليّة",
+    language: "الإنجليزية",
+    descAr: "شهادة معتمدة فورية من مجتمع Kaggle العالمي تضمن إتقان مكتبات Pandas و Scikit-Learn لبناء نماذج التنبؤ وتخفيض أبعاد البيانات.",
+    descEn: "Hands-on certificate for mastering Pandas, Scikit-Learn, and building predictive Machine Learning models.",
+    skills: ["Pandas", "Scikit-Learn", "Machine Learning", "Data Visualization"],
+    link: "https://www.kaggle.com/learn/python"
+  },
+  {
+    id: "cert-4",
+    titleAr: "شهادة تعلم الآلة والعميق IBM Cognitive Class",
+    titleEn: "IBM Deep Learning & AI Digital Badge Certificate",
+    provider: "Cognitive Class by IBM",
+    category: "ai_data",
+    categoryAr: "الذكاء الاصطناعي وعلوم البيانات",
+    categoryEn: "AI & Data Science",
+    duration: "25 ساعة تدريبية",
+    language: "الإنجليزية",
+    descAr: "تمنحك شارات رقمية موثقة على منصة Credly العالمية من شركة IBM في مجالات الـ Neural Networks وتطبيقات TensorFlow و PyTorch.",
+    descEn: "Earn official IBM Credly digital badges in Neural Networks, TensorFlow, and PyTorch applications.",
+    skills: ["TensorFlow", "PyTorch", "Deep Learning", "Neural Networks"],
+    link: "https://cognitiveclass.ai/courses/deep-learning-with-tensorflow"
+  },
+  {
+    id: "cert-5",
+    titleAr: "شهادة علوم الحاسب والبرمجة الرسمية CS50x",
+    titleEn: "Harvard CS50x Computer Science Certificate",
+    provider: "Harvard University (جامعة هارفارد)",
+    category: "web_software",
+    categoryAr: "تطوير الويب والبرمجيات",
+    categoryEn: "Web & Software Dev",
+    duration: "120 ساعة مكثفة",
+    language: "الإنجليزية (مترجمة للعربية)",
+    descAr: "أشهر شهادة علوم حاسب في العالم مجاناً من هارفارد! تمنحك إتقان خوارزميات الـ C و Python وبناء تطبيقات الويب والهياكل البرمجية المتقدمة.",
+    descEn: "World-renowned Harvard CS certificate covering algorithms, C, Python, SQL, and Web Development fundamentals.",
+    skills: ["C Programming", "Python", "Algorithms", "Data Structures", "SQL"],
+    link: "https://cs50.harvard.edu/x/"
+  },
+  {
+    id: "cert-6",
+    titleAr: "شهادة تطوير واجهات الويب والشاشات Responsive Web Design",
+    titleEn: "Responsive Web Design Developer Certificate (300 Hours)",
+    provider: "FreeCodeCamp",
+    category: "web_software",
+    categoryAr: "تطوير الويب والبرمجيات",
+    categoryEn: "Web & Software Dev",
+    duration: "300 ساعة تطبيقية",
+    language: "الإنجليزية / العربية",
+    descAr: "شهادة عمليّة 100% تتطلب بناء 5 مشاريع مواقع حقيقية واجتياز اختبارات HTML5, CSS3, Flexbox, Grid وبناء تصميمات متجاوبة مع الموبايل.",
+    descEn: "Comprehensive 300-hour verified certificate requiring building 5 real projects using HTML5, CSS3, Flexbox, and Grid.",
+    skills: ["HTML5", "CSS3", "Flexbox", "CSS Grid", "Responsive Design"],
+    link: "https://www.freecodecamp.org/learn/2022/responsive-web-design/"
+  },
+  {
+    id: "cert-7",
+    titleAr: "شهادة مطور الويب MERN Stack من مهارة تك",
+    titleEn: "MaharaTech Full-Stack MERN Web Certificate",
+    provider: "MaharaTech (ITI)",
+    category: "web_software",
+    categoryAr: "تطوير الويب والبرمجيات",
+    categoryEn: "Web & Software Dev",
+    duration: "60 ساعة تدريبية",
+    language: "العربية / الإنجليزية",
+    descAr: "شهادة معتمدة من معهد ITI في بناء تطبيقات الويب المتكاملة باستخدام React.js وخوادم Node.js وقواعد بيانات MongoDB.",
+    descEn: "Verified ITI certificate for building full-stack web applications with React.js, Node.js, and MongoDB.",
+    skills: ["React.js", "Node.js", "Express.js", "MongoDB", "REST APIs"],
+    link: "https://maharatech.gov.eg/course/index.php?categoryid=11"
+  },
+  {
+    id: "cert-8",
+    titleAr: "شهادة أساسيات الأمن السيبراني Cisco Cybersecurity Essentials",
+    titleEn: "Cisco Cybersecurity Essentials Badge & Certificate",
+    provider: "Cisco Networking Academy",
+    category: "cybersecurity_networks",
+    categoryAr: "الأمن السيبراني والشبكات",
+    categoryEn: "Cybersecurity & Networks",
+    duration: "30 ساعة تدريبية",
+    language: "العربية / الإنجليزية",
+    descAr: "شهادة وشارة معتمدة رسمياً من شركة Cisco تمنحك إتقان التشفير، الدفاع عن الشبكات الأكاديمية، والتعامل مع الثغرات الأمنية والـ Firewalls.",
+    descEn: "Official Cisco certificate and digital badge covering cryptography, network defense, Firewalls, and threat management.",
+    skills: ["Network Security", "Cryptography", "Firewalls", "Threat Defense"],
+    link: "https://www.netacad.com/courses/cybersecurity/cybersecurity-essentials"
+  },
+  {
+    id: "cert-9",
+    titleAr: "شهادة البرمجة بلغة بايثون للشبكات Cisco Python Essentials",
+    titleEn: "Cisco Certified Python Essentials",
+    provider: "Cisco Networking Academy",
+    category: "cybersecurity_networks",
+    categoryAr: "الأمن السيبراني والشبكات",
+    categoryEn: "Cybersecurity & Networks",
+    duration: "40 ساعة تدريبية",
+    language: "الإنجليزية",
+    descAr: "شهادة معتمدة من Cisco في استخدام Python لأتمتة فحص الشبكات وبناء أدوات الأمان وفحص المنافذ والحزم الأكاديمية.",
+    descEn: "Official Cisco certificate for Python programming focused on network automation and security scripting.",
+    skills: ["Python Scripting", "Network Automation", "Socket Programming", "OOP"],
+    link: "https://www.netacad.com/courses/programming/pcap-programming-essentials-python"
+  },
+  {
+    id: "cert-10",
+    titleAr: "شهادة أساسيات الحوسبة السحابية Azure Fundamentals AZ-900",
+    titleEn: "Microsoft Azure Cloud Fundamentals Learning Certificate",
+    provider: "Microsoft Learn",
+    category: "cloud_tech",
+    categoryAr: "الحوسبة السحابية والإدارة",
+    categoryEn: "Cloud & Tech Management",
+    duration: "20 ساعة تدريبية",
+    language: "العربية / الإنجليزية",
+    descAr: "شهادة ومسار تعلم رسمي مجاني من مايكروسوفت للتأهل لاختبار AZ-900 وفهم الخدمات السحابية والأمان والأجهزة الافتراضية Virtual Machines.",
+    descEn: "Official Microsoft learning path preparing you for Azure AZ-900 cloud architecture, security, and virtual machines.",
+    skills: ["Azure Cloud", "Cloud Computing", "Virtual Machines", "Cloud Security"],
+    link: "https://learn.microsoft.com/en-us/credentials/certifications/azure-fundamentals/"
+  },
+  {
+    id: "cert-11",
+    titleAr: "شهادة إدارة المشاريع التقنية الاحترافية من جوجل",
+    titleEn: "Google Project Management Professional Certificate",
+    provider: "Google (عبر Coursera - دعم مالي 100%)",
+    category: "cloud_tech",
+    categoryAr: "الحوسبة السحابية والإدارة",
+    categoryEn: "Cloud & Tech Management",
+    duration: "140 ساعة (مرنة)",
+    language: "الإسبانية / الإنجليزية (مترجمة للعربية)",
+    descAr: "شهادة احترافية معتمدة من جوجل في إدارة الفرق والأنظمة البرمجية باستخدام منهجية الإدارات المرنة Agile والـ Scrum وبناء الخطط الموثوقة.",
+    descEn: "Google certified credential covering Agile project management, Scrum framework, documentation, and team leadership.",
+    skills: ["Agile Management", "Scrum", "Project Planning", "Documentation", "Risk Management"],
+    link: "https://www.coursera.org/professional-certificates/google-project-management"
+  }
+];
+
 // Clean Live Events
 const INITIAL_EVENTS: EventItem[] = [];
 
@@ -391,6 +583,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
 
   const [posts, setPosts] = React.useState<CommunityPost[]>(INITIAL_POSTS);
   const [careers, setCareers] = React.useState<CareerOpportunity[]>(INITIAL_CAREERS);
+  const [freeCertificates, setFreeCertificates] = React.useState<FreeCertificateItem[]>(INITIAL_FREE_CERTIFICATES);
   const [events, setEvents] = React.useState<EventItem[]>(INITIAL_EVENTS);
   const [reminders, setReminders] = React.useState<CalendarReminder[]>(INITIAL_REMINDERS);
   const [notifications, setNotifications] = React.useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
@@ -1200,6 +1393,73 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Free Certificate Actions
+  const addFreeCertificate = async (certData: Omit<FreeCertificateItem, "id">): Promise<boolean> => {
+    const newCert: FreeCertificateItem = {
+      ...certData,
+      id: `cert-${Date.now()}`
+    };
+    const updated = [newCert, ...freeCertificates];
+    setFreeCertificates(updated);
+    localStorage.setItem("su_free_certificates_cache", JSON.stringify(updated));
+
+    try {
+      if (isSupabaseConfigured && supabase) {
+        await supabase.from("free_certificates").insert([{
+          id: newCert.id,
+          title_ar: newCert.titleAr,
+          title_en: newCert.titleEn,
+          provider: newCert.provider,
+          category: newCert.category,
+          category_ar: newCert.categoryAr,
+          category_en: newCert.categoryEn,
+          duration: newCert.duration,
+          language: newCert.language,
+          desc_ar: newCert.descAr,
+          desc_en: newCert.descEn,
+          skills: newCert.skills,
+          link: newCert.link
+        }]);
+      }
+      return true;
+    } catch (e) {
+      console.warn("[Free Certs Sync] Insert warning:", e);
+      return false;
+    }
+  };
+
+  const editFreeCertificate = async (id: string, certData: Partial<FreeCertificateItem>): Promise<boolean> => {
+    const updated = freeCertificates.map(c => c.id === id ? { ...c, ...certData } : c);
+    setFreeCertificates(updated);
+    localStorage.setItem("su_free_certificates_cache", JSON.stringify(updated));
+
+    try {
+      if (isSupabaseConfigured && supabase) {
+        await supabase.from("free_certificates").update(certData).eq("id", id);
+      }
+      return true;
+    } catch (e) {
+      console.warn("[Free Certs Sync] Update warning:", e);
+      return false;
+    }
+  };
+
+  const deleteFreeCertificate = async (id: string): Promise<boolean> => {
+    const updated = freeCertificates.filter(c => c.id !== id);
+    setFreeCertificates(updated);
+    localStorage.setItem("su_free_certificates_cache", JSON.stringify(updated));
+
+    try {
+      if (isSupabaseConfigured && supabase) {
+        await supabase.from("free_certificates").delete().eq("id", id);
+      }
+      return true;
+    } catch (e) {
+      console.warn("[Free Certs Sync] Delete warning:", e);
+      return false;
+    }
+  };
+
   // Events bookmarks
   const toggleSaveEvent = (id: string) => {
     const updated = savedEvents.includes(id) ? savedEvents.filter(e => e !== id) : Array.from(new Set([...savedEvents, id]));
@@ -1351,6 +1611,10 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
     addCareer,
     editCareer,
     deleteCareer,
+    freeCertificates,
+    addFreeCertificate,
+    editFreeCertificate,
+    deleteFreeCertificate,
     toggleSaveEvent,
     isEventSaved,
     addEvent,
@@ -1367,6 +1631,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
   }), [
     posts,
     careers,
+    freeCertificates,
     events,
     reminders,
     notifications,
