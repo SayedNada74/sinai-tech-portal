@@ -111,6 +111,10 @@ export function runNameResolverTests() {
   const ns2 = resolveFullName("Mosab Ashraf Abdelwahab Ali");
   assert(ns2.arabic === "مصعب أشرف عبد الوهاب علي", "New Screenshot 2: Mosab Ashraf Abdelwahab Ali", `Got '${ns2.arabic}'`);
 
+  // Phonetic Equivalence Tests (Mousab, Moussab, Musab -> مصعب)
+  assert(resolveName("Mousab").arabic === "مصعب", "Mousab -> مصعب (Phonetic)", `Got '${resolveName("Mousab").arabic}'`);
+  assert(resolveName("Moussab").arabic === "مصعب", "Moussab -> مصعب (Phonetic)", `Got '${resolveName("Moussab").arabic}'`);
+
   // Radical Fallback Test Cases (No mangled Arabic!)
   assert(resolveName("Khaled").arabic === "خالد", "Khaled -> خالد (NOT خاليد)", `Got '${resolveName("Khaled").arabic}'`);
   assert(resolveName("Abdelrahman").arabic === "عبد الرحمن", "Abdelrahman -> عبد الرحمن (NOT عبد الرحمان / عبد الرهمان)", `Got '${resolveName("Abdelrahman").arabic}'`);

@@ -13,6 +13,7 @@ import {
   CanonicalNameEntry
 } from "./dictionary";
 import { resolveCompoundName } from "./compound";
+import { resolvePhoneticName } from "./phonetic";
 import { resolveArabiziName } from "./arabizi";
 import { resolveFuzzyName } from "./fuzzy";
 import {
@@ -158,6 +159,20 @@ export function resolveName(input: string): NameResolutionResult {
       normalized: normEn,
       source: "compound",
       confidence: 0.97,
+      isKnownName: true
+    };
+  }
+
+  // 3.5 Phonetic Hash Match (Phonetic equivalence like Mousab / Moussab / Musab -> مصعب)
+  const phonetic = resolvePhoneticName(normEn);
+  if (phonetic) {
+    return {
+      input: raw,
+      arabic: phonetic.arabic,
+      english: phonetic.english,
+      normalized: normEn,
+      source: "alias",
+      confidence: 0.98,
       isKnownName: true
     };
   }
