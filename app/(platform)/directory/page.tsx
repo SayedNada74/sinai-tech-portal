@@ -48,15 +48,16 @@ export default function DirectoryPage() {
   }, [users, searchQuery, filterLevel]);
 
   const getLevelLabel = (lvl?: string) => {
-    if (!lvl) return"";
-    if (lang ==="en") {
-      if (lvl.includes("الأول") || lvl ==="Level 1" || lvl ==="Year 1") return"Level 1 (Freshman)";
-      if (lvl.includes("الثاني") || lvl ==="Level 2" || lvl ==="Year 2") return"Level 2 (Sophomore)";
-      if (lvl.includes("الثالث") || lvl ==="Level 3" || lvl ==="Year 3") return"Level 3 (Junior)";
-      if (lvl.includes("الرابع") || lvl ==="Level 4" || lvl ==="Year 4") return"Level 4 (Senior)";
-      if (lvl.includes("الكادر الإداري")) return"Administrative Staff";
-      if (lvl.includes("الإدارة العليا")) return"University Management";
-      if (lvl.includes("كادر التنسيق")) return"Student Coordination Staff";
+    if (!lvl) return "";
+    if (lang === "en") {
+      if (lvl.includes("الأول") || lvl === "Level 1" || lvl === "Year 1") return "Level 1 (Freshman)";
+      if (lvl.includes("الثاني") || lvl === "Level 2" || lvl === "Year 2") return "Level 2 (Sophomore)";
+      if (lvl.includes("الثالث") || lvl === "Level 3" || lvl === "Year 3") return "Level 3 (Junior)";
+      if (lvl.includes("الرابع") || lvl === "Level 4" || lvl === "Year 4") return "Level 4 (Senior)";
+      if (lvl.includes("خريج") || lvl.toLowerCase().includes("grad") || lvl.toLowerCase().includes("alumni")) return "Graduate (Alumni)";
+      if (lvl.includes("الكادر الإداري")) return "Administrative Staff";
+      if (lvl.includes("الإدارة العليا")) return "University Management";
+      if (lvl.includes("كادر التنسيق")) return "Student Coordination Staff";
     }
     return lvl;
   };

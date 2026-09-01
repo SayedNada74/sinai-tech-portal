@@ -201,6 +201,7 @@ export default function RegisterPage() {
                     <option value="الفرقة الثانية">{t("الفرقة الثانية (سنة ثانية)", "Year 2 (Sophomore)")}</option>
                     <option value="الفرقة الثالثة">{t("الفرقة الثالثة (سنة ثالثة)", "Year 3 (Junior)")}</option>
                     <option value="الفرقة الرابعة">{t("الفرقة الرابعة (سنة رابعة)", "Year 4 (Senior)")}</option>
+                    <option value="خريج">{t("خريج (Graduate / Alumni)", "Graduate (Alumni)")}</option>
                   </select>
                 </div>
               </div>
