@@ -8,6 +8,7 @@ import { useApp } from"@/context/app-context";
 import { Menu, X, Sun, Moon, Sparkles, GraduationCap, User, LayoutDashboard, Settings, LogOut, Globe } from"lucide-react";
 import { Button } from"@/components/ui/button";
 import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { motion, AnimatePresence, useScroll, useSpring } from"framer-motion";
 import { DeveloperCredit } from"@/components/ui/developer-credit";
 
@@ -115,13 +116,15 @@ export function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="h-10 w-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-800/30 flex items-center justify-center text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer overflow-hidden"
+                  className="rounded-xl shadow-sm hover:scale-105 transition-transform cursor-pointer overflow-hidden p-0 border-0 bg-transparent"
                 >
-                  {isImageAvatar ? (
-                    <img src={userAvatar} alt="Profile" loading="lazy" decoding="async" className="h-full w-full object-cover" />
-                  ) : (
-                    <User className="h-5 w-5 text-sky-700 dark:text-sky-300" />
-                  )}
+                  <UserAvatar
+                    src={userAvatar}
+                    name={userName}
+                    className="h-10 w-10 rounded-xl border-sky-100 dark:border-sky-800/30"
+                    iconClassName="h-5 w-5"
+                    initialsClassName="text-xs font-bold"
+                  />
                 </button>
 
                 <AnimatePresence>

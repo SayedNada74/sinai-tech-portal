@@ -12,6 +12,7 @@ import { Search, Users, GraduationCap, ChevronLeft, ArrowLeft, ArrowRight, User,
 import { motion, AnimatePresence } from "framer-motion";
 import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName, matchesUserQuery } from "@/lib/utils";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 export default function DirectoryPage() {
   const { t, lang, dir } = useApp();
@@ -174,13 +175,11 @@ export default function DirectoryPage() {
                 <Link href={`/profile/${user.id}`}>
                   <Card className="group h-full border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-sky-800/50 rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl transition-all cursor-pointer relative">
                     <CardContent className="p-5 flex flex-col items-center text-center h-full relative z-10">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-sm overflow-hidden mb-3 group-hover:scale-105 transition-transform">
-                        {isValidImageAvatar(user.avatar) ? (
-                          <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <User className="h-8 w-8 text-sky-700/50 dark:text-sky-300/50" />
-                        )}
-                      </div>
+                      <UserAvatar
+                        src={user.avatar}
+                        name={getLocalizedUserName(user, lang)}
+                        className="w-20 h-20 mb-3 group-hover:scale-105 transition-transform"
+                      />
                       
                       <h3 className="font-extrabold text-zinc-950 dark:text-zinc-50 text-base line-clamp-1">
                         {getLocalizedUserName(user, lang)}

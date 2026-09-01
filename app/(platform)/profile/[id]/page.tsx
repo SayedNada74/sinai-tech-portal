@@ -9,6 +9,7 @@ import { Badge } from"@/components/ui/badge";
 import { Button } from"@/components/ui/button";
 import Link from"next/link";
 import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   User,
   GraduationCap,
@@ -134,13 +135,13 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="col-span-1 space-y-6">
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
             <CardContent className="p-6 text-center">
-              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-tr from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-500/10 flex items-center justify-center border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden mb-4">
-                {isValidImageAvatar(profile.avatar) ? (
-                  <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="h-16 w-16 text-sky-700/50 dark:text-sky-300/50" />
-                )}
-              </div>
+              <UserAvatar
+                src={profile.avatar}
+                name={displayName}
+                className="w-32 h-32 mx-auto mb-4 shadow-xl border-4"
+                iconClassName="h-16 w-16"
+                initialsClassName="text-2xl font-black text-sky-700 dark:text-sky-300"
+              />
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>
               <div className="mt-2 flex items-center justify-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <GraduationCap className="h-4 w-4" />
