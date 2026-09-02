@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   description: "المنصة الأكاديمية التفاعلية الشاملة لطلاب تكنولوجيا المعلومات والحاسب الآلي بجامعة سيناء لتتبع خطتهم الدراسية وحساب معدلهم التراكمي.",
   keywords: ["جامعة سيناء", "تكنولوجيا المعلومات", "حاسبات ومعلومات", "معدل تراكمي", "خطة دراسية", "ساعات معتمدة", "Sinai University", "IT", "GPA Calculator", "PWA"],
   authors: [{ name: "Sayed Mahmoud" }],
+  verification: {
+    google: "QTsHdLCIiaROweR1np2PQZHdjXmjsM-IYGJTes7do-Q",
+  },
   openGraph: {
     title: "SU IT Guide - منصة طالب تكنولوجيا المعلومات",
     description: "تتبع خطتك الدراسية، احسب معدلك التراكمي، واحصل على إرشاد أكاديمي ذكي بجامعة سيناء.",
