@@ -605,8 +605,8 @@ export default function GpaPage() {
                                                 {courseTitle}
                                               </span>
                                             </div>
-                                            <span className="text-[10px] text-zinc-400 block font-medium">
-                                              {c.credits} {t("ساعات معتمدة", "Credit Hours")} &bull; {pts.toFixed(2)} {t("نقاط", "Points")}
+                                            <span className="text-[10px] text-zinc-400 block font-medium mt-0.5">
+                                              {c.credits} {t("ساعات", "hrs")} &bull; {pts.toFixed(2)} {t("نقاط", "pts")} 🟰 <strong className="text-zinc-600 dark:text-zinc-300">{(c.credits * pts).toFixed(2)} {t("إجمالي", "total")}</strong>
                                             </span>
                                           </div>
 
