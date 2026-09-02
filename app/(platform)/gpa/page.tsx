@@ -27,6 +27,18 @@ interface SemesterCourseInput {
   grade: string;
 }
 
+const GPA_PERIOD_OPTIONS: Record<string, { ar: string; en: string }> = {
+  "year-1-sem-1": { ar: "الفرقة الأولى - الفصل الأول", en: "Year 1 - Semester 1" },
+  "year-1-sem-2": { ar: "الفرقة الأولى - الفصل الثاني", en: "Year 1 - Semester 2" },
+  "year-2-sem-1": { ar: "الفرقة الثانية - الفصل الأول", en: "Year 2 - Semester 1" },
+  "year-2-sem-2": { ar: "الفرقة الثانية - الفصل الثاني", en: "Year 2 - Semester 2" },
+  "year-3-sem-1": { ar: "الفرقة الثالثة - الفصل الأول", en: "Year 3 - Semester 1" },
+  "year-3-sem-2": { ar: "الفرقة الثالثة - الفصل الثاني", en: "Year 3 - Semester 2" },
+  "year-4-sem-1": { ar: "الفرقة الرابعة - الفصل الأول", en: "Year 4 - Semester 1" },
+  "year-4-sem-2": { ar: "الفرقة الرابعة - الفصل الثاني", en: "Year 4 - Semester 2" },
+  "summer-sem": { ar: "الفصل الصيفي (Summer)", en: "Summer Semester" },
+};
+
 export default function GpaPage() {
   const { user } = useAuth();
   const isAdmin = user?.role ==="admin" || user?.role ==="super-admin";
@@ -132,6 +144,7 @@ export default function GpaPage() {
   const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
   const [savedSuccess, setSavedSuccess] = React.useState(false);
   const [expandedPeriod, setExpandedPeriod] = React.useState<string | null>(null);
+  const [targetSavePeriod, setTargetSavePeriod] = React.useState<string>("year-1-sem-1");
 
   // --- Semester GPA History & Timeline Logging State ---
   const [semesterHistory, setSemesterHistory] = useLocalStorage<
@@ -144,9 +157,12 @@ export default function GpaPage() {
       toast(t("يرجى اختيار وتحديد مواد دراسية أولاً قبل الحفظ بالسجل.", "Please select valid courses and grades first."), "error");
       return;
     }
+    const selectedOption = GPA_PERIOD_OPTIONS[targetSavePeriod];
+    const semesterName = selectedOption ? t(selectedOption.ar, selectedOption.en) : targetSavePeriod;
+
     const newEntry = {
       id: Date.now().toString(),
-      name: `${t("الفصل الدراسي", "Semester")} ${semesterHistory.length + 1}`,
+      name: semesterName,
       gpa: semesterGpa,
       credits: totalSemesterCredits,
       date: new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")
@@ -485,10 +501,22 @@ export default function GpaPage() {
                     )}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <select
+                    value={targetSavePeriod}
+                    onChange={(e) => setTargetSavePeriod(e.target.value)}
+                    className="h-9 px-3 rounded-xl border border-sky-300 dark:border-sky-800 bg-white dark:bg-zinc-950 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer shadow-2xs"
+                  >
+                    {Object.entries(GPA_PERIOD_OPTIONS).map(([key, val]) => (
+                      <option key={key} value={key}>
+                        {t(val.ar, val.en)}
+                      </option>
+                    ))}
+                  </select>
+
                   <Button onClick={handleSaveSemesterToHistory} variant="outline" className="gap-1.5 font-bold text-xs border-sky-300 dark:border-sky-800 cursor-pointer">
                     <TrendingUp className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                    {t("حفظ بالسجل الفصلي 📈", "Save to Semester Log 📈")}
+                    {t("حفظ بالسجل 📈", "Save to Log 📈")}
                   </Button>
 
                   <Button onClick={handleSaveToCompleted} className="gap-2 font-bold text-xs cursor-pointer">
