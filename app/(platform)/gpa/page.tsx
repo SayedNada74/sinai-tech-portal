@@ -397,7 +397,13 @@ export default function GpaPage() {
                               className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer"
                             >
                               <option value="">{t("-- اختر مقرر دراسي --","-- Select a course --")}</option>
-                              {courses.map((course) => (
+                              {courses
+                                .filter((course) => {
+                                  if (course.code === row.code) return true;
+                                  const comp = completedCourses.find((c) => c.code === course.code);
+                                  return !comp || comp.grade === "F";
+                                })
+                                .map((course) => (
                                 <option key={course.code} value={course.code}>
                                   {course.code} - {t(course.arabic, course.english)} ({course.credits} {t("ساعة","cr")})
                                 </option>
