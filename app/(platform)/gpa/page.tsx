@@ -873,114 +873,136 @@ export default function GpaPage() {
       </div>
 
       {/* Official Print & PDF Export Document Layout */}
-      <div className="hidden print:block text-black p-6 space-y-6 bg-white font-sans w-full leading-relaxed" dir={dir}>
-        {/* Document Header */}
-        <div className="flex justify-between items-center border-b-2 border-black pb-4">
-          <div className="space-y-1">
-            <h1 className="text-xl font-black">
-              {t("جامعة سيناء — Sinai University","Sinai University")}
-            </h1>
-            <h2 className="text-sm font-bold">
-              {t("كلية الحاسبات وتكنولوجيا المعلومات (SU IT Guide)","Faculty of Computers & Information Technology (SU IT Guide)")}
-            </h2>
-            <p className="text-xs text-gray-700 font-semibold">
-              {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)","Official Academic Transcript Summary")}
-            </p>
+      <div className="hidden print:block text-black p-8 space-y-6 bg-white font-sans w-full leading-relaxed max-w-4xl mx-auto" dir={dir}>
+        {/* Header Header Header */}
+        <div className="flex justify-between items-center border-b-2 border-black pb-5">
+          <div className="flex items-center gap-4">
+            {/* Logo */}
+            <img src="/uni-logo.jpeg" alt="Sinai University Logo" className="h-16 w-16 object-contain rounded-lg border border-black/20 p-1" />
+            <div className="space-y-0.5">
+              <h1 className="text-xl font-black text-black tracking-tight">
+                {t("جامعة سيناء — Sinai University","Sinai University")}
+              </h1>
+              <h2 className="text-xs font-bold text-gray-800">
+                {t("كلية تكنولوجيا المعلومات وعلوم الحاسب — بوابة الطلاب الأكاديمية","Faculty of Information Technology & Computer Science")}
+              </h2>
+              <p className="text-[11px] font-bold text-sky-950">
+                {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)","Official Academic Transcript Summary")}
+              </p>
+            </div>
           </div>
-          <div className={`${isRtl ?"text-left" :"text-right"} text-xs space-y-1 font-bold`}>
-            <p>{t("تاريخ التصدير:","Export Date:")} {new Date().toLocaleDateString(lang ==="ar" ?"ar-EG" :"en-US")}</p>
-            <p className="text-gray-600">
-              {t("نوع المستند: التقرير الفصلي والتراكمي","Document Type: Semester & Cumulative Report")}
+          <div className={`${isRtl ? "text-left" : "text-right"} text-xs space-y-1 font-bold border-r-2 border-black/20 pr-4 rtl:border-r-0 rtl:border-l-2 rtl:pl-4`}>
+            <p className="text-gray-900">{t("تاريخ التصدير:","Export Date:")} <span className="font-mono font-black">{new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")}</span></p>
+            <p className="text-gray-600 text-[10px]">
+              {t("مستند رسمي استرشادي موثق آلياً","Automated Official Guidance Record")}
             </p>
           </div>
         </div>
 
-        {/* Student Metadata Box */}
-        <div className="grid grid-cols-2 gap-4 border border-black p-4 rounded-xl text-xs bg-gray-50">
-          <div>
-            <span className="font-bold text-gray-700">{t("اسم الطالب:","Student Name:")} </span>
-            <span className="font-black text-black">{user ? getLocalizedUserName(user, lang) : t("طالب زائر (تقرير تجريبي)","Guest Student (Trial Report)")}</span>
+        {/* Student Metadata Card Box */}
+        <div className="grid grid-cols-2 gap-3 border-2 border-black/80 p-4 rounded-xl text-xs bg-gray-50/80">
+          <div className="space-y-1">
+            <span className="font-bold text-gray-600 text-[11px]">{t("اسم الطالب:","Student Name:")} </span>
+            <span className="font-black text-black text-xs block">{user ? getLocalizedUserName(user, lang) : t("طالب زائر (تقرير استرشادي)","Guest Student (Guidance Report)")}</span>
           </div>
-          <div>
-            <span className="font-bold text-gray-700">{t("الرقم الجامعي (ID):","Student ID:")} </span>
-            <span className="font-black text-black">{user?.studentId || t("غير مسجل (حساب زائر)","Unregistered (Guest)")}</span>
+          <div className="space-y-1">
+            <span className="font-bold text-gray-600 text-[11px]">{t("الرقم الجامعي (ID):","Student ID:")} </span>
+            <span className="font-black text-black font-mono text-xs block">{user?.studentId || t("غير مسجل (حساب زائر)","Unregistered (Guest)")}</span>
           </div>
-          <div>
-            <span className="font-bold text-gray-700">{t("التخصص / القسم الأكاديمي:","Department / Major:")} </span>
-            <span className="font-black text-black">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)","Information Technology & CS")}</span>
+          <div className="space-y-1 pt-1 border-t border-gray-200">
+            <span className="font-bold text-gray-600 text-[11px]">{t("التخصص / القسم الأكاديمي:","Department / Major:")} </span>
+            <span className="font-black text-black text-xs block">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)","Information Technology & CS")}</span>
           </div>
-          <div>
-            <span className="font-bold text-gray-700">{t("المستوى:","Level / Year:")} </span>
-            <span className="font-black text-black">{user?.level || t("تقرير استرشادي فصلي","Guidance & Simulation Report")}</span>
+          <div className="space-y-1 pt-1 border-t border-gray-200">
+            <span className="font-bold text-gray-600 text-[11px]">{t("المستوى الأكاديمي:","Academic Level:")} </span>
+            <span className="font-black text-black text-xs block">{user?.level || t("تقرير كشف التقديرات الفصلي","Semester Transcript Breakdown")}</span>
           </div>
         </div>
 
         {/* Academic Stats Box */}
         <div className="grid grid-cols-4 gap-3 text-center text-xs">
-          <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("المعدل التراكمي الفعلي","Cumulative GPA")}</span>
-            <span className="text-xl font-black">{cumulativeGpa.toFixed(2)}</span>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("المعدل التراكمي الفعلي","Cumulative GPA")}</span>
+            <span className="text-xl font-black font-mono text-black">{cumulativeGpa.toFixed(2)}</span>
           </div>
-          <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المستكملة","Completed Credits")}</span>
-            <span className="text-xl font-black">{completedCredits} / 144</span>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("الساعات المستكملة","Completed Credits")}</span>
+            <span className="text-xl font-black font-mono text-black">{completedCredits} / 144</span>
           </div>
-          <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("الساعات المتبقية","Remaining Credits")}</span>
-            <span className="text-xl font-black">{remainingCredits} {t("ساعة","cr")}</span>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("الساعات المتبقية","Remaining Credits")}</span>
+            <span className="text-xl font-black font-mono text-black">{remainingCredits} {t("ساعة","cr")}</span>
           </div>
-          <div className="border border-black p-3 rounded-xl bg-gray-50">
-            <span className="block font-bold text-gray-600 mb-1">{t("المعدل الفصلي الحالي","Semester GPA")}</span>
-            <span className="text-xl font-black">{semesterGpa}</span>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("المعدل الفصلي الحالي","Semester GPA")}</span>
+            <span className="text-xl font-black font-mono text-black">{semesterGpa.toFixed(2)}</span>
           </div>
         </div>
 
         {/* Courses Grade Table */}
-        <div className="space-y-3 pt-2">
-          <h3 className="text-xs font-bold border-b border-black pb-1">
-            {t("بيان درجات ومواد التقرير الحالي:","Current Semester Course Grades:")}
-          </h3>
-          <table className={`w-full ${isRtl ?"text-right" :"text-left"} text-xs border-collapse border border-black`}>
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between border-b-2 border-black pb-1.5">
+            <h3 className="text-xs font-black text-black">
+              {t("تفاصيل درجات ومواد الفصل الدراسي الحالي:","Current Semester Course Grades Breakdown:")}
+            </h3>
+            <span className="text-[10px] font-bold text-gray-600">
+              {t(`إجمالي المواد: ${calcCourses.filter(c => !!c.code).length} مواد`, `Total Courses: ${calcCourses.filter(c => !!c.code).length}`)}
+            </span>
+          </div>
+
+          <table className={`w-full ${isRtl ? "text-right" : "text-left"} text-xs border-collapse border-2 border-black`}>
             <thead>
-              <tr className="bg-gray-100 border-b border-black font-bold">
-                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>#</th>
-                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("رمز المقرر","Course Code")}</th>
-                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("اسم المادة الدراسية","Course Name")}</th>
-                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("الساعات","Credits")}</th>
-                <th className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black`}>{t("التقدير المتوقع","Grade")}</th>
-                <th className="p-2.5">{t("النقاط المكتسبة","Quality Points")}</th>
+              <tr className="bg-gray-100 border-b-2 border-black font-extrabold text-black">
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black w-10 text-center`}>#</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black w-24`}>{t("رمز المقرر","Course Code")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("اسم المادة الدراسية","Course Name")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black text-center w-20`}>{t("الساعات","Credits")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black text-center w-24`}>{t("التقدير","Grade")}</th>
+                <th className="p-2.5 text-center w-28">{t("إجمالي النقاط","Quality Points")}</th>
               </tr>
             </thead>
             <tbody>
-              {calcCourses.map((c, idx) => {
-                const found = courses.find((co) => co.code === c.code);
-                const pts = (GRADE_POINTS[c.grade] || 0) * (c.credits || 0);
-                return (
-                  <tr key={c.id} className="border-b border-black">
-                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-bold`}>{idx + 1}</td>
-                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-black`}>{c.code || t("مقرر فصلي","Semester Course")}</td>
-                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-semibold`}>{found ? t(found.arabic, found.english) : t("مقرر اختياري/إجباري","Elective/Core Course")}</td>
-                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-bold`}>{c.credits}</td>
-                    <td className={`p-2.5 ${isRtl ?"border-l" :"border-r"} border-black font-black`}>{c.grade} ({GRADE_LABELS[c.grade] ||""})</td>
-                    <td className="p-2.5 font-black">{pts.toFixed(1)}</td>
-                  </tr>
-                );
-              })}
+              {calcCourses.filter(c => !!c.code).length > 0 ? (
+                calcCourses.filter(c => !!c.code).map((c, idx) => {
+                  const found = courses.find((co) => co.code === c.code);
+                  const gradePt = GRADE_POINTS[c.grade] || 0;
+                  const pts = gradePt * (c.credits || 0);
+                  return (
+                    <tr key={c.id} className="border-b border-black hover:bg-gray-50/50">
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold text-center`}>{idx + 1}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black font-mono`}>{c.code}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{found ? t(found.arabic, found.english) : c.code}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold text-center`}>{c.credits}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black text-center`}>
+                        {c.grade} <span className="text-[9px] font-normal text-gray-600">({gradePt.toFixed(2)})</span>
+                      </td>
+                      <td className="p-2.5 font-black text-center font-mono">{pts.toFixed(2)}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-gray-500 font-bold">
+                    {t("لم يتم اختيار أي مواد فصلية بعد في الحسابات","No current semester courses selected for calculation")}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Sign-off Verification Footer */}
-        <div className="pt-8 border-t border-black flex justify-between items-end text-[10px] text-gray-700">
-          <div>
-            <p className="font-bold">{t("تنبيه رسمي:","Official Notice:")}</p>
-            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر دليل ومرشد طلاب الحاسبات (SU IT Guide).","This official transcript summary is automatically generated and verified via SU IT Guide.")}</p>
-            <p>Verification URL: su-it-guide.vercel.app</p>
+        <div className="pt-6 border-t-2 border-black flex justify-between items-end text-[10px] text-gray-800">
+          <div className="space-y-1">
+            <p className="font-extrabold text-black">{t("تنبيه رسمي وتوثيق إلكتروني:","Official Verification Notice:")}</p>
+            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر بوابة تكنولوجيا المعلومات بجامعة سيناء (SU IT Guide).","This official transcript summary is automatically generated and verified via Sinai Tech Portal.")}</p>
+            <p className="font-mono text-gray-600 font-bold">Verification URL: https://sinai-tech-portal.vercel.app</p>
           </div>
-          <div className="text-center space-y-1">
-            <p className="font-bold">{t("اعتماد وتوثيق النظام الأكاديمي","Academic System Verification & Endorsement")}</p>
-            <div className="w-32 h-12 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center font-bold text-[9px] text-gray-500">
-              {t("[ ختم التوثيق الإلكتروني ]","[ Digital Seal & Verification ]")}
+          <div className="text-center space-y-1.5 shrink-0">
+            <p className="font-bold text-black">{t("اعتماد التوثيق الإلكتروني للنظام","System Verification Seal")}</p>
+            <div className="w-36 h-14 border-2 border-dashed border-black rounded-xl flex flex-col items-center justify-center font-bold text-[9px] text-gray-700 bg-gray-50/50">
+              <span className="font-black text-black">{t("SU IT GUIDE","SU IT GUIDE")}</span>
+              <span className="text-[8px] text-gray-500">{t("موثق إلكترونياً ✔️","Digitally Verified ✔️")}</span>
             </div>
           </div>
         </div>
