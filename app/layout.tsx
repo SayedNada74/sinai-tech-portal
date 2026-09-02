@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SU IT Guide - منصة طالب تكنولوجيا المعلومات",
     description: "تتبع خطتك الدراسية، احسب معدلك التراكمي، واحصل على إرشاد أكاديمي ذكي بجامعة سيناء.",
-    url: "https://su-it-guide.vercel.app",
+    url: "https://sinai-tech-portal.vercel.app",
     siteName: "SU IT Guide",
     locale: "ar_EG",
     type: "website",

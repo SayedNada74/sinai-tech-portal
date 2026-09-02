@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { COURSES } from '@/lib/courses-data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://su-it-guide.vercel.app';
+  const baseUrl = 'https://sinai-tech-portal.vercel.app';
 
   // Base routes
   const routes = [

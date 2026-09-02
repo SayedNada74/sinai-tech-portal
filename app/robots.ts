@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/private/'],
     },
-    sitemap: 'https://su-it-guide.vercel.app/sitemap.xml',
+    sitemap: 'https://sinai-tech-portal.vercel.app/sitemap.xml',
   };
 }
