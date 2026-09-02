@@ -139,8 +139,9 @@ export default function GpaPage() {
   >("su_gpa_semester_history", []);
 
   const handleSaveSemesterToHistory = () => {
-    if (semesterGpa === 0 || calcCourses.length === 0) {
-      toast(t("يرجى إضافة مواد وإدخال التقديرات أولاً قبل الحفظ بالسجل.", "Please add courses and grades first."), "error");
+    const validCourses = calcCourses.filter((c) => !!c.code);
+    if (semesterGpa === 0 || validCourses.length === 0) {
+      toast(t("يرجى اختيار وتحديد مواد دراسية أولاً قبل الحفظ بالسجل.", "Please select valid courses and grades first."), "error");
       return;
     }
     const newEntry = {
@@ -159,9 +160,19 @@ export default function GpaPage() {
   };
 
   const addCalcRow = () => {
+    const availableCourses = courses.filter((course) => {
+      const comp = completedCourses.find((c) => c.code === course.code);
+      return !comp || comp.grade === "F";
+    });
+
+    if (availableCourses.length === 0) {
+      toast(t("لقد أتممت بالفعل جميع المقررات الدراسية المتاحة في الكلية! 🎓", "You have already completed all available curriculum courses! 🎓"), "info");
+      return;
+    }
+
     setCalcCourses([
       ...calcCourses,
-      { id: Math.random().toString(36).substring(2, 9), code:"", credits: 3, grade:"B" }
+      { id: Math.random().toString(36).substring(2, 9), code: "", credits: 3, grade: "B" }
     ]);
   };
 
@@ -174,7 +185,7 @@ export default function GpaPage() {
       calcCourses.map((row) => {
         if (row.id === id) {
           const updated = { ...row, [field]: value };
-          if (field ==="code" && value) {
+          if (field === "code" && value) {
             const course = courses.find((c) => c.code === value);
             if (course) {
               updated.credits = course.credits;
@@ -191,6 +202,7 @@ export default function GpaPage() {
     let totalPoints = 0;
     let totalCredits = 0;
     calcCourses.forEach((c) => {
+      if (!c.code) return;
       const pts = GRADE_POINTS[c.grade] ?? 0;
       totalPoints += pts * c.credits;
       totalCredits += c.credits;
@@ -200,7 +212,7 @@ export default function GpaPage() {
   }, [calcCourses]);
 
   const totalSemesterCredits = React.useMemo(() => {
-    return calcCourses.reduce((sum, c) => sum + c.credits, 0);
+    return calcCourses.reduce((sum, c) => sum + (c.code ? c.credits : 0), 0);
   }, [calcCourses]);
 
   const handleSaveToCompleted = () => {
