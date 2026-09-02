@@ -62,7 +62,7 @@ export default function GpaPage() {
       periodMap.get(period)!.push({
         code: item.code,
         grade: item.grade,
-        credits: courseInfo.credits || 3,
+        credits: courseInfo.credits ?? 3,
         arabic: courseInfo.arabic,
         english: courseInfo.english
       });
