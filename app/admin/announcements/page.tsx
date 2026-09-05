@@ -89,7 +89,7 @@ export default function AnnouncementCMSPage() {
     if (isSubmitting) return;
 
     if (!formTitle || !formContent) {
-      toast(t("️ يرجى إدخال عنوان الإعلان ونصه التفصيلي.","️ Please enter announcement title and detailed content."),"error");
+      toast(t(" يرجى إدخال عنوان الإعلان ونصه التفصيلي."," Please enter announcement title and detailed content."),"error");
       return;
     }
 
@@ -164,7 +164,7 @@ export default function AnnouncementCMSPage() {
             <option value="ALL">{t("جميع التصنيفات","All Categories")}</option>
             <option value="news">{t("أخبار عامة","General News")}</option>
             <option value="registration">{t("جدول التسجيل","Registration")}</option>
-            <option value="midterms">{t("امتحانات ميدتيرم ⏱️","Midterms ⏱️")}</option>
+            <option value="midterms">{t("امتحانات ميدتيرم ⏱","Midterms ⏱")}</option>
             <option value="finals">{t("امتحانات نهائية 🎓","Finals 🎓")}</option>
           </select>
         </CardContent>
@@ -247,7 +247,7 @@ export default function AnnouncementCMSPage() {
                   <select value={formCategory} onChange={(e) => setFormCategory(e.target.value as any)} className="w-full h-10 px-3 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 cursor-pointer">
                     <option value="news">{t("أخبار عامة","General News")}</option>
                     <option value="registration">{t("جدول التسجيل","Registration")}</option>
-                    <option value="midterms">{t("امتحانات ميدتيرم ⏱️","Midterms ⏱️")}</option>
+                    <option value="midterms">{t("امتحانات ميدتيرم ⏱","Midterms ⏱")}</option>
                     <option value="finals">{t("امتحانات نهائية 🎓","Finals 🎓")}</option>
                   </select>
                 </div>

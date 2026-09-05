@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useApp } from "@/context/app-context";
+import { useAuth } from "@/context/auth-context";
 import { useAdmin } from "@/context/admin-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,12 +17,27 @@ import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { UserAvatar } from "@/components/ui/user-avatar";
 
 export default function DirectoryPage() {
+  const router = useRouter();
+  const { user } = useAuth();
   const { t, lang, dir } = useApp();
-  const { users } = useAdmin();
-  
+  const { users, settings } = useAdmin();
+
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+  const directoryStatus = settings?.featureAccess?.studentDirectory || "ALL";
+
+  React.useEffect(() => {
+    if (directoryStatus === "DISABLED" || (directoryStatus === "ADMIN_ONLY" && !isAdmin)) {
+      router.replace("/dashboard");
+    }
+  }, [directoryStatus, isAdmin, router]);
+
   // Persist search query and level filter across navigation
   const [searchQuery, setSearchQuery] = useLocalStorage<string>("su_directory_search_query", "");
   const [filterLevel, setFilterLevel] = useLocalStorage<string>("su_directory_filter_level", "all");
+
+  if (directoryStatus === "DISABLED" || (directoryStatus === "ADMIN_ONLY" && !isAdmin)) {
+    return null;
+  }
   
   const isRtl = dir === "rtl";
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;

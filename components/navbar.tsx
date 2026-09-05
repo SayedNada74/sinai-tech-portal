@@ -78,7 +78,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-zinc-600 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors duration-200"
+                className="text-[15px] font-semibold text-zinc-600 hover:text-sky-600 dark:text-zinc-400 dark:hover:text-sky-400 transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -101,7 +101,7 @@ export function Navbar() {
             {/* Language Switcher */}
             <button
               onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
-              className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer text-xs font-bold flex items-center gap-1.5"
+              className="p-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors cursor-pointer text-[13px] font-extrabold flex items-center gap-1.5"
               title={t("تغيير لغة المنصة","Change Language")}
             >
               <Globe className="h-4 w-4 text-foreground dark:text-sky-400" />

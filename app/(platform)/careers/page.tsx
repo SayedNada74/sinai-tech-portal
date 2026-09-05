@@ -1,8 +1,11 @@
 "use client";
 
-import * as React from"react";
-import { useApp } from"@/context/app-context";
-import { useSocial, CareerOpportunity } from"@/context/social-context";
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/app-context";
+import { useAuth } from "@/context/auth-context";
+import { useAdmin } from "@/context/admin-context";
+import { useSocial, CareerOpportunity } from "@/context/social-context";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Button } from"@/components/ui/button";
 import { Input } from"@/components/ui/input";
@@ -214,8 +217,20 @@ export const FREE_CERTIFICATES: FreeCertificateItem[] = [
 ];
 
 export default function CareersPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { settings } = useAdmin();
   const { t, lang, dir } = useApp();
   const { careers, freeCertificates, toggleSaveJob, isJobSaved } = useSocial();
+
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+  const careersStatus = settings?.featureAccess?.careers || "ALL";
+
+  React.useEffect(() => {
+    if (careersStatus === "DISABLED" || (careersStatus === "ADMIN_ONLY" && !isAdmin)) {
+      router.replace("/dashboard");
+    }
+  }, [careersStatus, isAdmin, router]);
 
   const [search, setSearch] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<string>("all");
@@ -284,6 +299,10 @@ export default function CareersPage() {
   }, [activeCerts, certCatFilter, search]);
 
   const isRtl = dir ==="rtl";
+
+  if (careersStatus === "DISABLED" || (careersStatus === "ADMIN_ONLY" && !isAdmin)) {
+    return null;
+  }
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto" dir={dir}>

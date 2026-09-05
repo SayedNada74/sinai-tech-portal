@@ -33,13 +33,13 @@ export default function RegisterPage() {
     if (!nameAr.trim() || !nameEn.trim() || !email.trim() || !password.trim()) {
       const errMsg = t("الرجاء ملء جميع الحقول المطلوبة (الاسم باللغتين والبريد وكلمة المرور).","Please fill in all required fields (Both names, Email, Password).");
       setError(errMsg);
-      toast(`️ ${errMsg}`,"error");
+      toast(` ${errMsg}`,"error");
       return;
     }
 
     const lowerEmail = email.trim().toLowerCase();
     if (!lowerEmail.endsWith("@su.edu.eg") && !lowerEmail.endsWith("@sinai.edu.eg")) {
-      const errMsg = t("️ يجب استخدام البريد الإلكتروني الجامعي الرسمي المعتمد لجامعة سيناء (username@su.edu.eg).","️ Must use official Sinai University email ending with @su.edu.eg.");
+      const errMsg = t(" يجب استخدام البريد الإلكتروني الجامعي الرسمي المعتمد لجامعة سيناء (username@su.edu.eg)."," Must use official Sinai University email ending with @su.edu.eg.");
       setError(errMsg);
       toast(errMsg,"error");
       return;
@@ -51,7 +51,7 @@ export default function RegisterPage() {
     const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
 
     if (!hasMinLen || !hasLetter || !hasNum || !hasSpecial) {
-      const errMsg = t("️ كلمة المرور ضعيفة. يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$).","️ Weak password. Must be at least 8 characters and include letters, numbers, and symbols.");
+      const errMsg = t(" كلمة المرور ضعيفة. يجب أن تتكون من 8 خانات على الأقل وتتضمن حروفاً وأرقاماً ورموزاً مميزة (مثل !@#$)."," Weak password. Must be at least 8 characters and include letters, numbers, and symbols.");
       setError(errMsg);
       toast(errMsg,"error");
       return;
@@ -68,7 +68,7 @@ export default function RegisterPage() {
         toast(t(" تم إنشاء حسابك الجامعي بنجاح! مرحباً بك في منصة جامعة سيناء."," Account created successfully! Welcome to Sinai University Portal."),"success");
         router.push("/dashboard");
       } else {
-        const errMsg = t("️ البريد الإلكتروني مسجل مسبقاً في منصة الجامعة. يرجى تسجيل الدخول إلى حسابك الحالي.","️ Email is already registered. Please sign in to your existing account.");
+        const errMsg = t(" البريد الإلكتروني مسجل مسبقاً في منصة الجامعة. يرجى تسجيل الدخول إلى حسابك الحالي."," Email is already registered. Please sign in to your existing account.");
         setError(errMsg);
         toast(errMsg,"error");
       }

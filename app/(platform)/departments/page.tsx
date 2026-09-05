@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { CountUp } from "@/components/ui/count-up";
-import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle, Lock } from "lucide-react";
+import { BookOpen, GraduationCap, Award, CheckSquare, Square, Star, Bookmark, Info, HelpCircle, Lock, Shield } from "lucide-react";
 import { GuestNoticeBanner } from "@/components/guest-notice-banner";
 import { AuthRequirementModal } from "@/components/auth-requirement-modal";
 
@@ -85,7 +85,7 @@ export default function CurriculumProgressChecklist() {
       {isAdmin && (
         <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">
           <div className="flex items-center gap-2">
-            <span>⚙️</span>
+            <Shield className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
             <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): هذه معاينة لخطة المقررات الخاصة بالطلاب.", "Admin View Mode: This is a preview of the student curriculum checklist.")}</span>
           </div>
           <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
@@ -118,7 +118,7 @@ export default function CurriculumProgressChecklist() {
       {/* Dynamic Summary Cards with ReactBits SpotlightCard & CountUp */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* GPA Box */}
-        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(139, 92, 246, 0.15)">
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(6, 182, 212, 0.25)">
           <div className="p-6">
             <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("المعدل التراكمي الحالي (GPA)", "Current Cumulative GPA")}
@@ -130,24 +130,24 @@ export default function CurriculumProgressChecklist() {
                 "0.00"
               )}
             </div>
-            <Badge variant="outline" className="mt-2.5 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/80 dark:bg-zinc-800/40 text-[9px] font-bold py-0.5 px-2">
+            <Badge variant="outline" className="mt-2.5 border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/80 dark:bg-zinc-800/40 text-[10px] font-bold py-0.5 px-2">
               {cumulativeGpa === 0
-                ? t("طالب جديد 🌱", "New Student 🌱")
+                ? t("طالب جديد", "New Student")
                 : cumulativeGpa >= 3.6
-                  ? t("امتياز 🏆", "Excellent 🏆")
+                  ? t("مرتبة شرف / ممتاز", "Excellent / Honors")
                   : cumulativeGpa >= 3.0
-                    ? t("جيد جداً 🌟", "Very Good 🌟")
+                    ? t("جيد جداً", "Very Good")
                     : cumulativeGpa >= 2.4
-                      ? t("جيد 👍", "Good 👍")
+                      ? t("جيد", "Good")
                       : cumulativeGpa >= 2.0
-                        ? t("مقبول ✅", "Satisfactory ✅")
-                        : t("ضعيف ⚠️", "Poor ⚠️")}
+                        ? t("مقبول", "Satisfactory")
+                        : t("تحت الملاحظة الأكاديمية", "Academic Probation")}
             </Badge>
           </div>
         </SpotlightCard>
 
         {/* Credits Hours Completed */}
-        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(99, 102, 241, 0.15)">
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.25)">
           <div className="p-6">
             <span className="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-wider block">
               {t("الساعات المنجزة بنجاح", "Completed Credit Hours")}
@@ -162,7 +162,7 @@ export default function CurriculumProgressChecklist() {
         </SpotlightCard>
 
         {/* Graduation Percent Tracker */}
-        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm flex flex-col justify-center" spotlightColor="rgba(16, 185, 129, 0.15)">
+        <SpotlightCard className="card border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm flex flex-col justify-center" spotlightColor="rgba(16, 185, 129, 0.25)">
           <div className="px-6 py-6 flex flex-col justify-center h-full">
             <div className="flex justify-between items-center mb-2.5 text-xs font-bold">
               <span className="text-zinc-900 dark:text-white font-bold">{t("التقدم الإجمالي للتخرج", "Overall Graduation Progress")}</span>
@@ -171,7 +171,7 @@ export default function CurriculumProgressChecklist() {
               </span>
             </div>
             <Progress value={graduationPercentage} className="h-2 bg-zinc-150 dark:bg-zinc-800" />
-            <span className="text-[9px] text-zinc-700 dark:text-zinc-300 mt-2 leading-tight font-medium">
+            <span className="text-[10px] text-zinc-700 dark:text-zinc-300 mt-2 leading-tight font-medium">
               {t("النسبة المحسوبة بناءً على الساعات المسجلة في الخطة المنجزة.", "Percentage calculated from completed credit hours.")}
             </span>
           </div>

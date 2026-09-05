@@ -39,17 +39,17 @@ export function CompleteProfileModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast(t("️ يرجى إدخال اسمك الكامل.", "️ Please enter your full name."), "error");
+      toast(t(" يرجى إدخال اسمك الكامل.", " Please enter your full name."), "error");
       return;
     }
 
     if (!level.trim()) {
-      toast(t("️ يرجى اختيار وتحديد الفرقة الدراسية.", "️ Please select your academic year."), "error");
+      toast(t(" يرجى اختيار وتحديد الفرقة الدراسية.", " Please select your academic year."), "error");
       return;
     }
 
     if (!studentId.trim()) {
-      toast(t("️ يرجى إدخال رقمك الجامعي الأكاديمي.", "️ Please enter your Academic Student ID."), "error");
+      toast(t(" يرجى إدخال رقمك الجامعي الأكاديمي.", " Please enter your Academic Student ID."), "error");
       return;
     }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Lexend } from "next/font/google";
 import { AuthProvider } from "@/context/auth-context";
 import { AppProvider } from "@/context/app-context";
 import { AcademicProvider } from "@/context/academic-context";
@@ -18,10 +18,10 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const lexend = Lexend({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-jakarta",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-lexend",
   display: "swap",
 });
 
@@ -74,7 +74,7 @@ export default function RootLayout({
     <html
       lang="ar"
       data-scroll-behavior="smooth"
-      className={`${ibmPlexArabic.variable} ${jakarta.variable} font-sans h-full antialiased`}
+      className={`${ibmPlexArabic.variable} ${lexend.variable} font-sans h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

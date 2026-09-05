@@ -4,6 +4,7 @@ import * as React from"react";
 import Link from"next/link";
 import { usePathname } from"next/navigation";
 import { useApp } from"@/context/app-context";
+import { useAdmin } from "@/context/admin-context";
 import { useAnimationProps } from"@/lib/motion";
 import { motion } from"framer-motion";
 import {
@@ -16,19 +17,32 @@ import {
 
 export function MobileTaskbar() {
   const pathname = usePathname();
-  const { t, isLoggedIn } = useApp();
+  const { t, isLoggedIn, userRole } = useApp();
   const { shouldAnimate } = useAnimationProps();
+  const { settings } = useAdmin();
 
   // Hide mobile taskbar if not logged in or on landing/login pages
   if (!isLoggedIn || pathname ==="/" || pathname ==="/login") return null;
 
-  const items = [
+  const rawItems = [
     { labelAr:"الرئيسية", labelEn:"Home", href:"/dashboard", icon: LayoutDashboard },
     { labelAr:"الخطة", labelEn:"Plan", href:"/departments", icon: CheckCircle },
-    { labelAr:"المسار", labelEn:"Path", href:"/planner", icon: Compass },
+    { labelAr: "المخطط", labelEn: "Planner", href: "/planner", icon: Compass },
     { labelAr:"المعدل", labelEn:"GPA", href:"/gpa", icon: Calculator },
     { labelAr:"الملف", labelEn:"Profile", href:"/profile", icon: User }
   ];
+
+  const items = rawItems.filter(item => {
+    const hrefToAccess: Record<string, string> = { "/planner": "planner" };
+    const accessKey = hrefToAccess[item.href];
+    if (accessKey) {
+      const fa = settings?.featureAccess;
+      const status = fa ? (fa as any)[accessKey] : "ALL";
+      const isAdmin = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
+      return status === "ALL" || (status === "ADMIN_ONLY" && isAdmin);
+    }
+    return true;
+  });
 
   return (
     <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-100/95 dark:bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-250 dark:border-zinc-850/80 px-1 pt-1.5 pb-2.5 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_-4px_15px_rgba(0,0,0,0.4)]">

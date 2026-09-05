@@ -14,6 +14,7 @@ import { MobileSidebar } from"@/components/MobileSidebar";
 import { MobileTaskbar } from"@/components/MobileTaskbar";
 import { GlobalSearchBar } from"@/components/GlobalSearchBar";
 import { CompleteProfileModal } from"@/components/complete-profile-modal";
+import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { PageTransitionWrapper } from"@/components/page-transition-wrapper";
 import { Button } from"@/components/ui/button";
 import { cn } from"@/lib/utils";
@@ -37,7 +38,7 @@ import { motion, AnimatePresence } from"framer-motion";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const { notifications, markAsRead, markAllAsRead, clearNotifications } = useSocial();
   const { theme, setTheme, dir, t, lang, setLang, userName } = useApp();
   const { settings } = useAdmin();
@@ -45,6 +46,9 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
   const [isNotifOpen, setIsNotifOpen] = React.useState(false);
   const [showProfilePrompt, setShowProfilePrompt] = React.useState(false);
+
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+  const isMaintenanceActive = Boolean(settings?.maintenanceMode);
 
   React.useEffect(() => {
     const checkPrompt = () => {
@@ -63,13 +67,28 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
     };
   }, []);
 
+  // Full Maintenance Mode Guard: Block non-admin students immediately
+  if (isMaintenanceActive && !isAdmin) {
+    return (
+      <MaintenanceScreen
+        siteName={settings?.siteName}
+        contactEmail={settings?.contactEmail}
+        isAuthenticated={isAuthenticated}
+        onLogout={logout}
+      />
+    );
+  }
+
   const unreadNotifs = notifications.filter(n => !n.read);
   const isRtl = dir === "rtl";
 
   return (
     <ProtectedRoute>
       <div
-        className="min-h-[calc(100vh+30px)] w-full max-w-full min-w-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans"
+        className={cn(
+          "min-h-[calc(100vh+30px)] w-full max-w-full min-w-0 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row pb-[72px] sm:pb-0 font-sans",
+          isMaintenanceActive && isAdmin && "pt-12 sm:pt-11"
+        )}
         dir={dir}
       >
         {/* Global Search Dialog Triggered by Ctrl+K */}
@@ -79,14 +98,23 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <DesktopSidebar />
         <MobileSidebar isOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
 
-        {/* Live Maintenance Mode Banner (Controlled by Admin Settings) */}
-        {settings?.maintenanceMode && (
-          <div className="fixed top-0 inset-x-0 z-[100] bg-amber-600 text-white font-extrabold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 shadow-lg border-b border-amber-500">
-            <AlertTriangle className="h-4 w-4 animate-bounce shrink-0" />
-            <span>
-              {t("️ إشعار الصيانة: ميزّة وضع الصيانة المؤقتة مفعّلة حالياً بالكامل على كافة أرجاء المنصة من قِبل إدارة النظام.","️ Maintenance Alert: Live maintenance mode is currently activated across the entire platform by System Administration."
-              )}
-            </span>
+        {/* Live Maintenance Mode Banner for Admins */}
+        {isMaintenanceActive && isAdmin && (
+          <div className="fixed top-0 inset-x-0 z-[100] bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white font-extrabold text-xs py-2.5 px-4 flex flex-wrap items-center justify-between gap-2 shadow-lg border-b border-amber-500/50">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 animate-bounce shrink-0 text-amber-200" />
+              <span>
+                {t(
+                  "⚠️ وضع الصيانة مفعّل حالياً — الطلاب محجوبون عن المنصة وتظهر لهم صفحة الصيانة. أنت تتصفح بصفتك مسؤولاً.",
+                  "⚠️ Maintenance Mode is ACTIVE — Students are blocked and see the maintenance page. You are browsing as an admin."
+                )}
+              </span>
+            </div>
+            <Link href="/admin/settings">
+              <Button size="sm" variant="secondary" className="h-7 text-[11px] font-bold bg-white text-zinc-900 hover:bg-zinc-100 border-none shadow-sm cursor-pointer">
+                {t("إعدادات الصيانة", "Maintenance Settings")}
+              </Button>
+            </Link>
           </div>
         )}
 
@@ -170,7 +198,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
               <>
                 {/* Left/Right depending on dir: Global search advice and trigger button */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base md:text-lg font-black text-zinc-900 dark:text-zinc-50 tracking-tight truncate max-w-[150px] sm:max-w-none">
+                  <span className="text-sm sm:text-base md:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight sm:tracking-normal truncate max-w-[150px] sm:max-w-none">
                     {lang === "ar"
                       ? `أهلاً بك، ${userName.split(" ")[0] || "طالب"} 👋`
                       : `Welcome, ${userName.split(" ")[0] || "Student"} 👋`}
@@ -186,11 +214,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
                       });
                       window.dispatchEvent(event);
                     }}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors text-xs font-semibold cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors text-[13px] font-medium cursor-pointer"
                   >
-                    <Search className="h-3.5 w-3.5" />
+                    <Search className="h-4 w-4" />
                     <span className="hidden md:inline">{t("ابحث عن مواد أو صفحات...", "Search courses or pages...")}</span>
-                    <span className="md:hidden text-xs">{t("بحث...", "Search...")}</span>
+                    <span className="md:hidden">{t("بحث...", "Search...")}</span>
                   </button>
                 </div>
 

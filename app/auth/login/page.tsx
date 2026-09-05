@@ -32,7 +32,7 @@ export default function LoginPage() {
     if (!email.trim() || !password.trim()) {
       const errMsg = t("الرجاء إدخال البريد الإلكتروني وكلمة المرور.", "Please enter your email and password.");
       setError(errMsg);
-      toast(`️ ${errMsg}`, "error");
+      toast(` ${errMsg}`, "error");
       return;
     }
 

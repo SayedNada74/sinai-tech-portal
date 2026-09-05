@@ -7,6 +7,7 @@
     opacity: 0;
     transform: translateY(2px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -27,7 +28,7 @@
   --color-zinc-650: #42444e;
   --color-zinc-850: #1b1c22;
   --font-arabic: var(--font-ibm-plex-arabic), "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Lexend", "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root {
@@ -170,7 +171,8 @@ html {
   scrollbar-gutter: stable;
 }
 
-body, html {
+body,
+html {
   background-color: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
@@ -187,6 +189,7 @@ body {
 }
 
 /* RTL (Arabic) Typography Rules - Preserved IBM Plex Sans Arabic */
+html[dir="rtl"],
 html[dir="rtl"] body,
 html[dir="rtl"] input,
 html[dir="rtl"] button,
@@ -196,20 +199,31 @@ html[dir="rtl"] textarea,
   font-family: var(--font-ibm-plex-arabic), "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* LTR (English) Typography Rules - Original System/SF Pro stack */
+/* LTR (English) Typography Rules - Inter for English with IBM Plex Arabic for Arabic content */
+html[dir="ltr"],
 html[dir="ltr"] body,
 html[dir="ltr"] input,
 html[dir="ltr"] button,
 html[dir="ltr"] select,
 html[dir="ltr"] textarea,
 [dir="ltr"] {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif !important;
+  font-family: "Lexend", "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* Arabic Text Elements & Explicit Arabic Containers */
+:lang(ar),
+[lang="ar"],
+.font-arabic {
+  font-family: var(--font-ibm-plex-arabic), "IBM Plex Sans Arabic", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 /* Arabic Text Readability Enhancements */
 [dir="rtl"] p,
 [dir="rtl"] .prose,
-[dir="rtl"] article {
+[dir="rtl"] article,
+:lang(ar) p,
+:lang(ar) .prose,
+:lang(ar) article {
   line-height: 1.65;
 }
 
@@ -243,6 +257,7 @@ html[dir="ltr"] textarea,
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(-100%);
   }
@@ -252,6 +267,7 @@ html[dir="ltr"] textarea,
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -306,6 +322,7 @@ html[dir="ltr"] textarea,
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -641,6 +658,7 @@ html {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -658,25 +676,21 @@ html {
   bottom: 0;
   left: 0;
   transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.06) 20%,
-    rgba(255, 255, 255, 0.15) 60%,
-    rgba(255, 255, 255, 0)
-  );
+  background-image: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.06) 20%,
+      rgba(255, 255, 255, 0.15) 60%,
+      rgba(255, 255, 255, 0));
   animation: shimmerWave 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
   content: "";
 }
 
 .light-mode .shimmer-wave::after {
-  background-image: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0.03) 20%,
-    rgba(0, 0, 0, 0.07) 60%,
-    rgba(0, 0, 0, 0)
-  );
+  background-image: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0.03) 20%,
+      rgba(0, 0, 0, 0.07) 60%,
+      rgba(0, 0, 0, 0));
 }
 
 .animate-float {

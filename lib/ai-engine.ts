@@ -388,13 +388,13 @@ export function formatCourseResponse(c: Course, studentContext?: StudentContext)
     } else if (isPlanned) {
       studentStatusNotice = `\n\n>  **حالتك الشخصية في هذه المادة**: هذه المادة مضافة في قائمة **المواد المخططة للتسجيل** لديك.`;
     } else {
-      studentStatusNotice = `\n\n> ℹ️ **حالتك الشخصية في هذه المادة**: لم تقم بتسجيل أو اجتياز هذا المقرر بعد في سجلك الأكاديمي.`;
+      studentStatusNotice = `\n\n> ℹ **حالتك الشخصية في هذه المادة**: لم تقم بتسجيل أو اجتياز هذا المقرر بعد في سجلك الأكاديمي.`;
     }
   }
 
   return `###  [${c.code}] ${c.arabic} (${c.english})
 
-- ⏱️ **عدد الساعات المعتمدة**: **${c.credits} ساعات**
+- ⏱ **عدد الساعات المعتمدة**: **${c.credits} ساعات**
 -  **المستوى الأكاديمي**: **${periodLabel}**
 -  **المتطلبات المسبقة**: ${prereqsText}
 -  **مستوى الصعوبة**: ${diffEmoji}${studentStatusNotice}
@@ -502,17 +502,17 @@ ${semesterCourses.map((c) => `- **[${c.code}] ${c.arabic}** (${c.credits} ساع
   const semesterGpa = totalCredits > 0 ? (totalQualityPoints / totalCredits) : 0;
 
   let gpaBadge = "ممتاز مرتفع ";
-  if (semesterGpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة للتحسين ️";
-  else if (semesterGpa < 2.5) gpaBadge = "مقبول ️";
+  if (semesterGpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة للتحسين ";
+  else if (semesterGpa < 2.5) gpaBadge = "مقبول ";
   else if (semesterGpa < 3.0) gpaBadge = "جيد ";
   else if (semesterGpa < 3.6) gpaBadge = "جيد جداً ";
 
   let missingNote = "";
   if (missingGradeCourses.length > 0) {
-    missingNote += `\n\n> ️ **ملاحظة**: توجد مواد مسجلة ولكن بدون رصد تقدير: ${missingGradeCourses.map((c) => c.code).join(", ")}.`;
+    missingNote += `\n\n>  **ملاحظة**: توجد مواد مسجلة ولكن بدون رصد تقدير: ${missingGradeCourses.map((c) => c.code).join(", ")}.`;
   }
   if (uncompletedCourses.length > 0) {
-    missingNote += `\n\n> ℹ️ **مواد متبقية في هذا الفصل**: ${uncompletedCourses.map((c) => `[${c.code}] ${c.arabic}`).join(", ")}.`;
+    missingNote += `\n\n> ℹ **مواد متبقية في هذا الفصل**: ${uncompletedCourses.map((c) => `[${c.code}] ${c.arabic}`).join(", ")}.`;
   }
 
   return `###  المعدل الفصلي الحسابي الدقيق (Semester GPA)
@@ -523,7 +523,7 @@ ${semesterCourses.map((c) => `- **[${c.code}] ${c.arabic}** (${c.credits} ساع
 ${courseBreakdown}
 
 -  **المعدل الفصلي لهذا الترم (Semester GPA)**: **${semesterGpa.toFixed(2)} / 4.00** (${gpaBadge})
-- ⏱️ **إجمالي الساعات المحسوبة**: **${totalCredits}** ساعة معتمدة.
+- ⏱ **إجمالي الساعات المحسوبة**: **${totalCredits}** ساعة معتمدة.
 -  **طريقة الحساب**: (مجموع النقاط: ${totalQualityPoints.toFixed(1)}) ÷ (إجمالي الساعات: ${totalCredits}) = **${semesterGpa.toFixed(2)}**${missingNote}`;
 }
 
@@ -554,7 +554,7 @@ export function handleWhatIfQuery(norm: string, studentContext?: StudentContext)
 
 - معدلك التراكمي الحالي: **${currentGpa.toFixed(2)}** (منجز **${completedCredits}** ساعة).
 - بافتراض تسجيلك لـ **15 ساعة** في الفصل القادم:
-- ️ **النتيجة**: لا يمكن الوصول إلى معدل **${targetGpa.toFixed(2)}** في فصل دراسي واحد فقط، لأنك ستحتاج إلى معدل فصلي قدره **${requiredSemesterGpa.toFixed(2)}** (والحد الأقصى للنظام هو 4.00).
+-  **النتيجة**: لا يمكن الوصول إلى معدل **${targetGpa.toFixed(2)}** في فصل دراسي واحد فقط، لأنك ستحتاج إلى معدل فصلي قدره **${requiredSemesterGpa.toFixed(2)}** (والحد الأقصى للنظام هو 4.00).
 -  **التوصية**: ستحتاج إلى فصلين دراسيين بمعدلات تتراوح بين **A و A+** للوصول إلى هذا المعدل تدريجياً.`;
     }
 
@@ -568,7 +568,7 @@ export function handleWhatIfQuery(norm: string, studentContext?: StudentContext)
     return `###  محاكاة الوصول للمعدل المستهدف: ${targetGpa.toFixed(2)}
 
 -  **معدلك الحالي**: **${currentGpa.toFixed(2)}** (إجمالي **${completedCredits}** ساعة).
-- ⏱️ **العبء المفترض**: **${assumedNextSemesterCredits} ساعة** (5 مواد تقريباً).
+- ⏱ **العبء المفترض**: **${assumedNextSemesterCredits} ساعة** (5 مواد تقريباً).
 -  **المعدل الفصلي المطلوب تحقيقه الترم القادم**: **${Math.max(0, requiredSemesterGpa).toFixed(2)} / 4.00**
 -  **التقدير المستهدف في المواد القادمة**: بمتوسط تقديرات لا تقل عن **${neededGradeDesc}**.
 
@@ -649,7 +649,7 @@ export function handleRoadmapQuery(norm: string, studentContext?: StudentContext
 
     statusText = `-  **نسبة إنجازك الفعلية في المسار**: **${percentage}%** (${completedCount} من أصل ${totalNodesCount} مراحل مكتملة).
 -  **خطوتك القادمة الموصى بها**: مرحلة **"${nextNode.label}"**
-- ⏱️ **المدة الزمنية المقترحة**: **${nextNode.duration}**
+- ⏱ **المدة الزمنية المقترحة**: **${nextNode.duration}**
 -  **الهدف من هذه الخطوة**: ${nextNode.description}${relatedCoursesText}
 
 >  يمكنك التوجه لصفحة **مسارات خارطة الطريق (Roadmaps)** لتحديث تقدمك ومشاهدة مصادر التعلم وروابط الدورات المعتمدة لهذه المرحلة!`;
@@ -657,7 +657,7 @@ export function handleRoadmapQuery(norm: string, studentContext?: StudentContext
     statusText = `لديك نسبة تقدم **${percentage}%** في مسار **${roadmap.title}**.`;
   }
 
-  return `### ️ مسار التعلم الأكاديمي والمهني: ${roadmap.title}
+  return `###  مسار التعلم الأكاديمي والمهني: ${roadmap.title}
 
 ${statusText}`;
 }
@@ -844,9 +844,9 @@ export function getAiResponse(
       }
       const isPlan = studentContext?.plannedCourses?.includes(followUpCourse.code);
       if (isPlan) {
-        return `ℹ️ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** مضاف في خطتك للتسجيل، ولكن **لا يوجد تقدير مسجل له حتى الآن**.`;
+        return `ℹ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** مضاف في خطتك للتسجيل، ولكن **لا يوجد تقدير مسجل له حتى الآن**.`;
       }
-      return `️ مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** غير مسجل في خطتك أو سجلك الأكاديمي الحالي.`;
+      return ` مقرر **[${followUpCourse.code}] ${followUpCourse.arabic}** غير مسجل في خطتك أو سجلك الأكاديمي الحالي.`;
     }
 
     // Otherwise show details of the follow-up course
@@ -874,8 +874,8 @@ export function getAiResponse(
 
     let gpaBadge = "ممتاز مرتفع ";
     if (gpa === 0) gpaBadge = "لم يتم احتساب درجات بعد";
-    else if (gpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة لرفع المعدل ️";
-    else if (gpa < 2.5) gpaBadge = "مقبول ️";
+    else if (gpa < 2.0) gpaBadge = "إنذار أكاديمي / بحاجة لرفع المعدل ";
+    else if (gpa < 2.5) gpaBadge = "مقبول ";
     else if (gpa < 3.0) gpaBadge = "جيد ";
     else if (gpa < 3.6) gpaBadge = "جيد جداً ";
 
@@ -884,7 +884,7 @@ export function getAiResponse(
 أهلاً بك ${name}! بناءً على السجل الأكاديمي الفعلي لحسابك بالمنصة:
 
 -  **المعدل التراكمي الحالي (Cumulative GPA)**: **${gpa > 0 ? gpa.toFixed(2) : "0.00"} / 4.00** (${gpaBadge})
-- ⏱️ **الساعات المنجزة بنجاح**: **${completedCredits}** من أصل **144** ساعة معتمدة.
+- ⏱ **الساعات المنجزة بنجاح**: **${completedCredits}** من أصل **144** ساعة معتمدة.
 - 🎓 **نسبة الإنجاز للتخرج**: **${progress}%** (يتبقى لك **${remainingCredits}** ساعة معتمدة).
 
 >  يمكنك استخدام ميزة محاكاة الـ What-If لمعرفة كيف سيرتفع معدلك إذا حصلت على تقديرات معينة الفصل القادم!`;
@@ -922,12 +922,12 @@ export function getAiResponse(
 **${targetCourse.arabic} (${targetCourse.english})**
 
 -  **التقدير المسجل لك**: **${completedRecord.grade}** (${gradeLabel})
-- ⏱️ **عدد الساعات المعتمدة للمقرر**: **${targetCourse.credits} ساعات**
+- ⏱ **عدد الساعات المعتمدة للمقرر**: **${targetCourse.credits} ساعات**
 -  **الفترة الدراسية**: ${PERIODS[targetCourse.period] || targetCourse.period}
 
 >  هذا التقدير معتمد ومحتسب ضمن معدلك التراكمي الحالي (${studentContext?.cumulativeGpa?.toFixed(2) || "0.00"}).`;
         } else {
-          return `### ℹ️ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
+          return `### ℹ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
 
 المادة مسجلة ومدرجة بالفعل في سجلك الأكاديمي، **ولكن لا يوجد تقدير مرصود لها حالياً** في قاعدة البيانات. يرجى مراجعة صفحة الخطة الدراسية لتحديث الدرجة فور إعلانها.`;
         }
@@ -936,7 +936,7 @@ export function getAiResponse(
 
 هذا المقرر مضاف حالياً إلى **مخطط التسجيل الخاص بك**، ولم يتم رصد درجات له بعد لأنك لم تجتزه في الفصول السابقة.`;
       } else {
-        return `### ️ حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
+        return `###  حالة مقرر [${targetCourse.code}] ${targetCourse.arabic}
 
 وفقاً لسجلك الأكاديمي وقاعدة البيانات المتاحة، **هذا المقرر غير موجود ضمن المواد التي قمت بتسجيلها أو دراستها في حسابك حتى الآن**.`;
       }
@@ -997,7 +997,7 @@ ${listText}
 
 أنت الآن أتممت **${completedCredits}** ساعة معتمدة، ويتبقى لك **${remainingCredits}** ساعة للحصول على درجة البكالوريوس (من أصل 144 ساعة معتمدة).
 
-> ️ لمعرفة المواد الدقيقة المتبقية لك في خطتك الأكاديمية والمقررات التي تفتحها، يرجى التوجه لصفحة **"الخطة الدراسية والتقدم"** حيث يتم فرز وعرض المواد المتبقية بشكل تفاعلي.`;
+>  لمعرفة المواد الدقيقة المتبقية لك في خطتك الأكاديمية والمقررات التي تفتحها، يرجى التوجه لصفحة **"الخطة الدراسية والتقدم"** حيث يتم فرز وعرض المواد المتبقية بشكل تفاعلي.`;
   }
 
   // 10. ROADMAP INTELLIGENCE ("خلصت Frontend أعمل إيه بعد كده؟", "نسبة إنجازي في الـ Frontend")
@@ -1072,7 +1072,7 @@ ${missingText}
 -  **بياناتك وتقديراتك الفعلية**: *"الـ GPA بتاعي كام؟"* أو *"جبت كام في الداتا ستراكشر؟"*
 -  **حساب الـ GPA الفصلي بدقة**: *"الترم الأول سنة تانية جبت كام؟"*
 -  **محاكاة الـ What-If التنبؤية**: *"لو جبت A في 3 مواد معدلي هيبقى كام؟"*
-- ️ **مسارات التعلم والخطوات القادمة**: *"خلصت Frontend أعمل إيه بعد كده؟"*
+-  **مسارات التعلم والخطوات القادمة**: *"خلصت Frontend أعمل إيه بعد كده؟"*
 -  **لوائح الجامعة المعتمدة**: *"ما هي شروط الإنذار الأكاديمي؟"* أو *"الحد الأقصى للساعات للتسجيل؟"*
 -  **شروط المقررات والأهلية**: *"أقدر أسجل شبكات الحاسب؟"*
 
@@ -1088,7 +1088,7 @@ function handleTechQuery(norm: string, rawQuery: string): string | null {
 
 تطوير الواجهات هو التخصص المسؤول عن بناء الجزء البصري التفاعلي الذي يشاهده المستخدم في المتصفح.
 
-- ️ **التقنيات الأساسية**: HTML5, CSS3, JavaScript (ES6+), React.js, Next.js, Tailwind CSS.
+-  **التقنيات الأساسية**: HTML5, CSS3, JavaScript (ES6+), React.js, Next.js, Tailwind CSS.
 - 🎓 **المواد الأكاديمية المرتبطة بجامعة سيناء**:
   - \`INT 341\` (تكنولوجيا الويب)
   - \`CSW 337\` (برمجة واجهة المستخدم)
@@ -1097,11 +1097,11 @@ function handleTechQuery(norm: string, rawQuery: string): string | null {
   }
 
   if (matchesWords(norm, ["backend", "خوادم", "باك ان", "باكاند"])) {
-    return `### ️ مجال تطوير الأنظمة الخلفية وقواعد البيانات (Backend Development)
+    return `###  مجال تطوير الأنظمة الخلفية وقواعد البيانات (Backend Development)
 
 تطوير الخوادم هو التخصص المسؤول عن منطق البرمجة (Business Logic)، أمان البيانات، وبناء الـ RESTful APIs ومعالجة قواعد البيانات.
 
-- ️ **التقنيات الأساسية**: Node.js (Express), Python (Django/FastAPI), Java (Spring Boot), PostgreSQL, MongoDB.
+-  **التقنيات الأساسية**: Node.js (Express), Python (Django/FastAPI), Java (Spring Boot), PostgreSQL, MongoDB.
 - 🎓 **المواد الأكاديمية المرتبطة**:
   - \`ISD 242\` (نظم قواعد البيانات)
   - \`CSW 221\` (هياكل البيانات)
@@ -1114,7 +1114,7 @@ function handleTechQuery(norm: string, rawQuery: string): string | null {
 
 يهدف هذا المجال لبناء نماذج برمجية ذكية قادرة على التعلم من البيانات والتنبؤ والتعرف على الأنماط والصور.
 
-- ️ **التقنيات الأساسية**: Python, NumPy, Pandas, Scikit-Learn, PyTorch, TensorFlow.
+-  **التقنيات الأساسية**: Python, NumPy, Pandas, Scikit-Learn, PyTorch, TensorFlow.
 - 🎓 **المواد الأكاديمية المرتبطة**:
   - \`Ma 110\` (الجبر الخطي)
   - \`St 120\` (الاحتمالات والإحصاء)

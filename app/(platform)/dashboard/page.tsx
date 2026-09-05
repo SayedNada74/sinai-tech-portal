@@ -42,7 +42,8 @@ import {
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
-  const { courses, users: adminUsers, announcements } = useAdmin();
+  const { courses, users: adminUsers, announcements, settings } = useAdmin();
+  const gpaStatus = settings?.featureAccess?.gpa || settings?.gpaFeatureStatus || "ALL";
   const { t, dir, lang, userRole, userName } = useApp();
   const { reminders } = useSocial();
 
@@ -62,15 +63,16 @@ export default function DashboardPage() {
   const isRtl = dir === "rtl";
 
   const gpaDescription = React.useMemo(() => {
-    if (cumulativeGpa === 0) return t("طالب جديد 🌱", "New Student 🌱");
-    if (cumulativeGpa >= 3.6) return t("امتياز 🏆", "Excellent 🏆");
-    if (cumulativeGpa >= 3.0) return t("جيد جداً 🌟", "Very Good 🌟");
-    if (cumulativeGpa >= 2.5) return t("جيد 👍", "Good 👍");
-    if (cumulativeGpa >= 2.0) return t("مقبول ✅", "Satisfactory ✅");
-    return t("ضعيف ⚠️", "Poor ⚠️");
+    if (cumulativeGpa === 0) return t("طالب جديد", "New Student");
+    if (cumulativeGpa >= 3.6) return t("مرتبة شرف / ممتاز", "Excellent / Honors");
+    if (cumulativeGpa >= 3.0) return t("جيد جداً", "Very Good");
+    if (cumulativeGpa >= 2.5) return t("جيد", "Good");
+    if (cumulativeGpa >= 2.0) return t("مقبول", "Satisfactory");
+    return t("تحت الملاحظة الأكاديمية", "Academic Probation");
   }, [cumulativeGpa, t]);
 
   const isAdmin = userRole === "admin" || userRole === "super-admin" || userRole === "moderator";
+  const showGpaFeature = gpaStatus === "ALL" || (gpaStatus === "ADMIN_ONLY" && isAdmin);
 
   const stats = isAdmin
     ? [
@@ -91,7 +93,7 @@ export default function DashboardPage() {
         {
           label: t("حالة السيرفر والخدمات الحية", "System Operational Health"),
           value: "100%",
-          description: t("🟢 جميع الخدمات متصلة", "🟢 All Systems Online"),
+          description: t("جميع الأنظمة متصلة ومستقرة", "All Systems Online & Operational"),
           icon: Activity,
           color: "text-emerald-500"
         }
@@ -220,7 +222,7 @@ export default function DashboardPage() {
                 ? `أهلاً بك، ${userName.split(" ")[0]} 👋`
                 : `Welcome, ${userName.split(" ")[0]} 👋`}
             </h1>
-            <p className="text-xs sm:text-sm text-cyan-100 max-w-xl leading-relaxed">
+            <p className="text-[13px] sm:text-[15px] text-cyan-100/90 max-w-xl leading-relaxed font-medium">
               {isAdmin
                 ? t(
                     "تصفح لوحة التحكم والرقابة الإدارية الشاملة لتفقد حالة النظام ومتابعة حركة الطلاب والتحديثات الحية.",
@@ -234,12 +236,12 @@ export default function DashboardPage() {
           </div>
           <div className="flex flex-wrap sm:flex-nowrap gap-2.5 shrink-0 w-full sm:w-auto">
             <Link href="/profile" className="flex-1 sm:flex-initial">
-              <Button size="sm" variant="secondary" className="w-full sm:w-auto bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-extrabold border-transparent shadow-md text-xs cursor-pointer">
+              <Button size="sm" variant="secondary" className="w-full sm:w-auto bg-white text-cyan-950 hover:bg-cyan-50 dark:bg-white dark:text-cyan-950 dark:hover:bg-cyan-100 font-bold border-transparent shadow-md text-[13px] cursor-pointer">
                 {t("تعديل الملف الشخصي", "Edit Profile")}
               </Button>
             </Link>
             <Link href="/settings" className="flex-1 sm:flex-initial">
-              <Button size="sm" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold text-xs cursor-pointer">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 dark:border-white/40 dark:text-white dark:hover:bg-white/10 font-bold text-[13px] cursor-pointer">
                 {t("الإعدادات", "Settings")}
               </Button>
             </Link>
@@ -271,7 +273,7 @@ export default function DashboardPage() {
             {isAdmin && (
               <Link href="/admin/announcements" className="shrink-0">
                 <Button size="sm" variant="ghost" className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:bg-sky-500/10 gap-1 cursor-pointer">
-                  <span>{t("إدارة الإعلانات ️", "Manage ️")}</span>
+                  <span>{t("إدارة الإعلانات", "Manage Announcements")}</span>
                 </Button>
               </Link>
             )}
@@ -280,13 +282,13 @@ export default function DashboardPage() {
           <CardContent className="p-4 sm:p-5 divide-y divide-sky-100 dark:divide-sky-900/30">
             {publishedAnnouncements.map((ann) => {
               let badgeColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:bg-sky-950/40 dark:text-sky-400";
-              let catLabel = t("خبر جديد 📢", "News 📢");
+              let catLabel = t("خبر جديد", "News");
               if (ann.category === "midterms" || ann.category === "finals" || ann.category === "registration" || ann.category === "maintenance") {
                 badgeColor = "bg-rose-500/10 text-rose-600 border-rose-500/20 dark:bg-rose-950/40 dark:text-rose-400";
-                catLabel = t("تنبيه أكاديمي عاجل 🚨", "Academic Alert 🚨");
+                catLabel = t("تنبيه أكاديمي عاجل", "Academic Alert");
               } else if (ann.category === "events" || ann.category === "scholarships" || ann.category === "internships") {
                 badgeColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400";
-                catLabel = t("فرص وفعاليات 🎓", "Events & Opportunities 🎓");
+                catLabel = t("فرص وفعاليات", "Events & Opportunities");
               }
 
               return (
@@ -402,25 +404,25 @@ export default function DashboardPage() {
                     <Link href="/admin/users" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-cyan-500 dark:hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(6, 182, 212, 0.35)">
                         <Shield className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة الاعضاء", "Manage Users")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("إدارة الاعضاء", "Manage Users")}</span>
                       </SpotlightCard>
                     </Link>
                     <Link href="/admin/courses" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-sky-500 dark:hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(2, 132, 199, 0.35)">
                         <BookOpen className="h-6 w-6 text-sky-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("إدارة المقررات", "Manage Courses")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("إدارة المقررات", "Manage Courses")}</span>
                       </SpotlightCard>
                     </Link>
                     <Link href="/admin/audit" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-teal-500 dark:hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(20, 184, 166, 0.35)">
                         <History className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("سجلات الأمان", "Audit Trail")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("سجلات الأمان", "Audit Trail")}</span>
                       </SpotlightCard>
                     </Link>
                     <Link href="/profile" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(245, 158, 11, 0.35)">
                         <User className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الإداري", "Admin Profile")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("الملف الإداري", "Admin Profile")}</span>
                       </SpotlightCard>
                     </Link>
                   </>
@@ -429,25 +431,27 @@ export default function DashboardPage() {
                     <Link href="/profile" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-cyan-500 dark:hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(6, 182, 212, 0.35)">
                         <User className="h-6 w-6 text-cyan-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الملف الشخصي", "Profile")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("الملف الشخصي", "Profile")}</span>
                       </SpotlightCard>
                     </Link>
                     <Link href="/settings" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-sky-500 dark:hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(2, 132, 199, 0.35)">
                         <Settings className="h-6 w-6 text-sky-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("الإعدادات", "Settings")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("الإعدادات", "Settings")}</span>
                       </SpotlightCard>
                     </Link>
-                    <Link href="/gpa" className="block">
-                      <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-teal-500 dark:hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(20, 184, 166, 0.35)">
-                        <Calculator className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("حاسبة المعدل", "GPA Calc")}</span>
-                      </SpotlightCard>
-                    </Link>
+                    {showGpaFeature && (
+                      <Link href="/gpa" className="block">
+                        <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-teal-500 dark:hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(20, 184, 166, 0.35)">
+                          <Calculator className="h-6 w-6 text-teal-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                          <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("حاسبة المعدل", "GPA Calc")}</span>
+                        </SpotlightCard>
+                      </Link>
+                    )}
                     <a href="https://kmoodle.su.edu.eg/" target="_blank" rel="noopener noreferrer" className="block">
                       <SpotlightCard className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 text-center hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer group" spotlightColor="rgba(245, 158, 11, 0.35)">
                         <ExternalLink className="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-zinc-700 dark:text-white">{t("مودل سيناء", "SU Moodle")}</span>
+                        <span className="text-[13px] font-semibold text-zinc-700 dark:text-white">{t("مودل سيناء", "SU Moodle")}</span>
                       </SpotlightCard>
                     </a>
                   </>

@@ -104,7 +104,7 @@ export default function CourseManagementPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formCode || !formEnglish || !formArabic) {
-      toast(t("️ يرجى ملء الكود، والاسم بالإنجليزية، والاسم بالعربية.","️ Please fill in code, English name, and Arabic name."),"error");
+      toast(t(" يرجى ملء الكود، والاسم بالإنجليزية، والاسم بالعربية."," Please fill in code, English name, and Arabic name."),"error");
       return;
     }
 

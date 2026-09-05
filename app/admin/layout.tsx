@@ -43,16 +43,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const allMenuItems = [
     { nameAr:"لوحة التحكم والتحليلات", nameEn:"Dashboard & Analytics", path:"/admin", icon: LayoutDashboard, roles: ["moderator","admin","super-admin"] },
-    { nameAr:"إدارة المستخدمين والصلاحيات", nameEn:"Users & Roles Management", path:"/admin/users", icon: Users, roles: ["super-admin"] },
-    { nameAr:"إدارة المساقات والخطط", nameEn:"Courses & Curricula", path:"/admin/courses", icon: BookOpen, roles: ["admin","super-admin"] },
-    { nameAr:"إدارة الملفات والمصادر", nameEn:"Files & Resources", path:"/admin/resources", icon: FileSpreadsheet, roles: ["admin","super-admin"] },
-    { nameAr:"بوابة التدريب والتوظيف", nameEn:"Careers & Internships", path:"/admin/careers", icon: Briefcase, roles: ["admin","super-admin"] },
-    { nameAr:"خارطة مسارات التعلّم", nameEn:"Career Roadmaps", path:"/admin/roadmaps", icon: Compass, roles: ["admin","super-admin"] },
+    { nameAr:"إدارة المستخدمين والصلاحيات", nameEn:"Users & Roles Management", path:"/admin/users", icon: Users, roles: ["moderator","admin","super-admin"] },
+    { nameAr:"إدارة المساقات والخطط", nameEn:"Courses & Curricula", path:"/admin/courses", icon: BookOpen, roles: ["moderator","admin","super-admin"] },
+    { nameAr:"إدارة الملفات والمصادر", nameEn:"Files & Resources", path:"/admin/resources", icon: FileSpreadsheet, roles: ["moderator","admin","super-admin"] },
+    { nameAr:"بوابة التدريب والتوظيف", nameEn:"Careers & Internships", path:"/admin/careers", icon: Briefcase, roles: ["moderator","admin","super-admin"] },
+    { nameAr:"خارطة مسارات التعلّم", nameEn:"Career Roadmaps", path:"/admin/roadmaps", icon: Compass, roles: ["moderator","admin","super-admin"] },
     { nameAr:"مراجعة وتقييمات الطلاب", nameEn:"Student Reviews & Audits", path:"/admin/reviews", icon: MessageSquare, roles: ["moderator","admin","super-admin"] },
     { nameAr:"مركز نشر الإعلانات", nameEn:"Announcements Center", path:"/admin/announcements", icon: Megaphone, roles: ["moderator","admin","super-admin"] },
     { nameAr:"قاعدة المعرفة والذكاء الاصطناعي", nameEn:"Knowledge & AI Base", path:"/admin/faq", icon: HelpCircle, roles: ["moderator","admin","super-admin"] },
-    { nameAr:"سجلات النظام والرقابة", nameEn:"Audit & Log Inspection", path:"/admin/audit", icon: ShieldCheck, roles: ["super-admin"] },
-    { nameAr:"إعدادات المنصة الأساسية", nameEn:"Core System Settings", path:"/admin/settings", icon: Settings, roles: ["super-admin"] }
+    { nameAr:"سجلات النظام والرقابة", nameEn:"Audit & Log Inspection", path:"/admin/audit", icon: ShieldCheck, roles: ["moderator","admin","super-admin"] },
+    { nameAr:"إعدادات المنصة الأساسية", nameEn:"Core System Settings", path:"/admin/settings", icon: Settings, roles: ["moderator","admin","super-admin"] }
   ];
 
   const menuItems = allMenuItems.filter(item => user && item.roles.includes(user.role as any));
@@ -73,7 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case"super-admin":
         return { label: t("مشرف أعلى","Super Admin"), color:"bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-400" };
       case"admin":
-        return { label: t("مسؤول النظام ️","System Admin ️"), color:"bg-sky-50 border-sky-200 text-sky-700 dark:bg-sky-950/20 dark:border-sky-900 dark:text-sky-400" };
+        return { label: t("مسؤول النظام ","System Admin "), color:"bg-sky-50 border-sky-200 text-sky-700 dark:bg-sky-950/20 dark:border-sky-900 dark:text-sky-400" };
       case"moderator":
         return { label: t("منسق محتوى","Content Moderator"), color:"bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400" };
       default:

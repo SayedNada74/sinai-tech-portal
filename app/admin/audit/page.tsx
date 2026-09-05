@@ -29,17 +29,19 @@ export default function SystemLogsAndErrorsPage() {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  if (user && user.role !=="super-admin") {
+  const isStaff = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+
+  if (user && !isStaff) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
         <div className="h-16 w-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-3xl">
-          
+          <ShieldAlert className="h-8 w-8 text-rose-500" />
         </div>
         <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
-          {t("هذه الصفحة مخصصة فقط للمشرف الأعلى (Super Admin)","Restricted to Super Admin only")}
+          {t("هذه الصفحة مخصصة فقط للكادر الإداري", "Restricted to Administrative Staff only")}
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-          {t("لا تملك الصلاحية الكافية لمراجعة سجلات النظام والأمان.","You do not have sufficient clearance to view system audit logs.")}
+          {t("لا تملك الصلاحية الكافية لمراجعة سجلات النظام والأمان.", "You do not have sufficient clearance to view system audit logs.")}
         </p>
       </div>
     );
@@ -73,7 +75,7 @@ export default function SystemLogsAndErrorsPage() {
 
   // Actions
   const handleClearLogs = () => {
-    if (confirm(t("️ هل أنت متأكد من مسح جميع سجلات تدقيق النظام والأمان نهائياً؟","️ Are you sure you want to clear all audit logs permanently?"))) {
+    if (confirm(t(" هل أنت متأكد من مسح جميع سجلات تدقيق النظام والأمان نهائياً؟"," Are you sure you want to clear all audit logs permanently?"))) {
       clearAuditLogs();
       toast(t(" تم مسح سجلات التدقيق بنجاح!"," Audit logs cleared successfully!"),"success");
     }

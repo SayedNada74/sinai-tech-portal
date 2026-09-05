@@ -439,7 +439,7 @@ export default function AdminCareersPage() {
                   </p>
 
                   <div className="flex items-center gap-3 text-[10px] text-zinc-400 font-bold pt-1">
-                    <span>⏱️ {cert.duration}</span>
+                    <span>⏱ {cert.duration}</span>
                     <span>🌐 {cert.language}</span>
                   </div>
                 </CardContent>

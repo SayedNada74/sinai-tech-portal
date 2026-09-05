@@ -134,7 +134,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     if (isSubmittingReview) return;
 
     if (!comment.trim() || !tips.trim()) {
-      toast(t("️ يرجى كتابة تعليقك ونصيحتك الأكاديمية لمساعدة زملائك.","️ Please write your review and study tips to help your peers."),"error");
+      toast(t("يرجى كتابة تعليقك ونصيحتك الأكاديمية لمساعدة زملائك.", "Please write your review and study tips to help your peers."), "error");
       return;
     }
 

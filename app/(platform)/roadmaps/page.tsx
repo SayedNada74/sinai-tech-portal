@@ -25,7 +25,14 @@ import {
   Sparkles,
   Layers,
   Code2,
-  Check
+  Check,
+  Layout,
+  Server,
+  Bot,
+  Smartphone,
+  ShieldCheck,
+  Terminal,
+  Infinity as InfinityIcon
 } from"lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
 import { GuestNoticeBanner } from "@/components/guest-notice-banner";
@@ -41,7 +48,7 @@ interface RoadmapShTrack {
   titleAr: string;
   titleEn: string;
   category: string;
-  icon: string;
+  icon: React.ElementType;
   color: string;
   descAr: string;
   descEn: string;
@@ -57,7 +64,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"مطور واجهات الويب (Frontend Developer)",
     titleEn:"Frontend Web Developer",
     category:"Web Development",
-    icon:"🎨",
+    icon: Layout,
     color:"from-cyan-500 to-blue-600",
     descAr:"خارطة طريق كاملة لتعلم HTML, CSS, JavaScript, React, Next.js, TypeScript والتعامل مع APIs.",
     descEn:"Complete roadmap to learn HTML, CSS, JavaScript, React, Next.js, TypeScript, and API integration.",
@@ -65,11 +72,11 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/frontend",
     keyTopics: ["HTML & CSS","JavaScript ES6+","Git & GitHub","React.js","Next.js","Tailwind CSS","TypeScript"],
     subRoadmaps: [
-      { nameAr:"مسار React.js ️", nameEn:"React.js Roadmap", url:"https://roadmap.sh/react" },
-      { nameAr:"مسار Next.js ▲", nameEn:"Next.js Roadmap", url:"https://roadmap.sh/nextjs" },
-      { nameAr:"مسار TypeScript", nameEn:"TypeScript Roadmap", url:"https://roadmap.sh/typescript" },
-      { nameAr:"مسار Vue.js", nameEn:"Vue.js Roadmap", url:"https://roadmap.sh/vue" },
-      { nameAr:"مسار Angular ️", nameEn:"Angular Roadmap", url:"https://roadmap.sh/angular" }
+      { nameAr: "مسار React.js", nameEn: "React.js Roadmap", url: "https://roadmap.sh/react" },
+      { nameAr: "مسار Next.js", nameEn: "Next.js Roadmap", url: "https://roadmap.sh/nextjs" },
+      { nameAr: "مسار TypeScript", nameEn: "TypeScript Roadmap", url: "https://roadmap.sh/typescript" },
+      { nameAr: "مسار Vue.js", nameEn: "Vue.js Roadmap", url: "https://roadmap.sh/vue" },
+      { nameAr: "مسار Angular", nameEn: "Angular Roadmap", url: "https://roadmap.sh/angular" }
     ]
   },
   {
@@ -77,7 +84,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"مطور خوادم الويب (Backend Developer)",
     titleEn:"Backend Web Developer",
     category:"Web Development",
-    icon:"⚙️",
+    icon: Server,
     color:"from-emerald-500 to-teal-600",
     descAr:"تعلم خوادم Node.js, Python, PostgreSQL, REST APIs, GraphQL, الأمان، والتحكم بالحاويات Docker.",
     descEn:"Learn Node.js, Python, PostgreSQL, REST APIs, GraphQL, Security, and Docker containers.",
@@ -85,11 +92,11 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/backend",
     keyTopics: ["Node.js / Express","Python / Django","PostgreSQL & SQL","RESTful APIs","Authentication","Docker"],
     subRoadmaps: [
-      { nameAr:"مسار Node.js 🟢", nameEn:"Node.js Roadmap", url:"https://roadmap.sh/nodejs" },
-      { nameAr:"مسار Python", nameEn:"Python Roadmap", url:"https://roadmap.sh/python" },
-      { nameAr:"مسار PostgreSQL", nameEn:"PostgreSQL Roadmap", url:"https://roadmap.sh/postgresql" },
-      { nameAr:"مسار Docker", nameEn:"Docker Roadmap", url:"https://roadmap.sh/docker" },
-      { nameAr:"مسار GraphQL ️", nameEn:"GraphQL Roadmap", url:"https://roadmap.sh/graphql" }
+      { nameAr: "مسار Node.js", nameEn: "Node.js Roadmap", url: "https://roadmap.sh/nodejs" },
+      { nameAr: "مسار Python", nameEn: "Python Roadmap", url: "https://roadmap.sh/python" },
+      { nameAr: "مسار PostgreSQL", nameEn: "PostgreSQL Roadmap", url: "https://roadmap.sh/postgresql" },
+      { nameAr: "مسار Docker", nameEn: "Docker Roadmap", url: "https://roadmap.sh/docker" },
+      { nameAr: "مسار GraphQL", nameEn: "GraphQL Roadmap", url: "https://roadmap.sh/graphql" }
     ]
   },
   {
@@ -97,7 +104,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"مطور الويب الشامل (Full Stack Developer)",
     titleEn:"Full Stack Developer",
     category:"Web Development",
-    icon:"🌍",
+    icon: Globe,
     color:"from-sky-500 to-blue-600",
     descAr:"الجمع بين الواجهات الأمامية والأنظمة الخلفية لتطوير تطبيقات ويب متكاملة وقابلة للتوسع.",
     descEn:"Combine frontend and backend skills to build scalable, full-stack web applications.",
@@ -105,10 +112,10 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/full-stack",
     keyTopics: ["Frontend Mastery","Backend APIs","Database Systems","DevOps Basics","System Architecture"],
     subRoadmaps: [
-      { nameAr:"مسار Frontend", nameEn:"Frontend Roadmap", url:"https://roadmap.sh/frontend" },
-      { nameAr:"مسار Backend ️", nameEn:"Backend Roadmap", url:"https://roadmap.sh/backend" },
-      { nameAr:"مسار API Design", nameEn:"API Design Roadmap", url:"https://roadmap.sh/api-design" },
-      { nameAr:"مسار System Design ️", nameEn:"System Design", url:"https://roadmap.sh/system-design" }
+      { nameAr: "مسار Frontend", nameEn: "Frontend Roadmap", url: "https://roadmap.sh/frontend" },
+      { nameAr: "مسار Backend", nameEn: "Backend Roadmap", url: "https://roadmap.sh/backend" },
+      { nameAr: "مسار API Design", nameEn: "API Design Roadmap", url: "https://roadmap.sh/api-design" },
+      { nameAr: "مسار System Design", nameEn: "System Design", url: "https://roadmap.sh/system-design" }
     ]
   },
   {
@@ -116,7 +123,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"الذكاء الاصطناعي وعلم البيانات (AI & Data Science)",
     titleEn:"AI & Data Science",
     category:"Artificial Intelligence",
-    icon:"🤖",
+    icon: Bot,
     color:"from-amber-500 to-orange-600",
     descAr:"خارطة طريق مهارات تعلم الآلة Machine Learning, Deep Learning, Python, Pandas, TensorFlow.",
     descEn:"Roadmap for Machine Learning, Deep Learning, Python, Pandas, NumPy, and PyTorch.",
@@ -124,9 +131,9 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/ai-data-scientist",
     keyTopics: ["Python Data Stack","Mathematics & Statistics","Machine Learning","Neural Networks","LLMs & AI Prompting"],
     subRoadmaps: [
-      { nameAr:"مسار Python للذكاء الاصطناعي", nameEn:"Python AI Roadmap", url:"https://roadmap.sh/python" },
-      { nameAr:"مسار Data Analyst", nameEn:"Data Analyst Roadmap", url:"https://roadmap.sh/data-analyst" },
-      { nameAr:"مسار Prompt Engineering ️", nameEn:"Prompt Engineering", url:"https://roadmap.sh/prompt-engineering" }
+      { nameAr: "مسار Python للذكاء الاصطناعي", nameEn: "Python AI Roadmap", url: "https://roadmap.sh/python" },
+      { nameAr: "مسار Data Analyst", nameEn: "Data Analyst Roadmap", url: "https://roadmap.sh/data-analyst" },
+      { nameAr: "مسار Prompt Engineering", nameEn: "Prompt Engineering", url: "https://roadmap.sh/prompt-engineering" }
     ]
   },
   {
@@ -134,7 +141,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"تطوير تطبيقات الموبايل (Android / Flutter)",
     titleEn:"Android & Mobile Developer",
     category:"Mobile Development",
-    icon:"📱",
+    icon: Smartphone,
     color:"from-green-500 to-emerald-600",
     descAr:"بناء تطبيقات للهواتف الذكية بـ Kotlin, Flutter, Firebase, والتكامل مع خوادم الويب.",
     descEn:"Build smartphone applications using Kotlin, Flutter, Firebase, and REST APIs.",
@@ -142,10 +149,10 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/android",
     keyTopics: ["Kotlin / Dart","Flutter Framework","Mobile UI Patterns","State Management","Firebase & Push Notifs"],
     subRoadmaps: [
-      { nameAr:"مسار Flutter", nameEn:"Flutter Roadmap", url:"https://roadmap.sh/flutter" },
-      { nameAr:"مسار React Native ️", nameEn:"React Native Roadmap", url:"https://roadmap.sh/react-native" },
-      { nameAr:"مسار Android / Kotlin", nameEn:"Android Roadmap", url:"https://roadmap.sh/android" },
-      { nameAr:"مسار iOS / Swift", nameEn:"iOS Roadmap", url:"https://roadmap.sh/ios" }
+      { nameAr: "مسار Flutter", nameEn: "Flutter Roadmap", url: "https://roadmap.sh/flutter" },
+      { nameAr: "مسار React Native", nameEn: "React Native Roadmap", url: "https://roadmap.sh/react-native" },
+      { nameAr: "مسار Android / Kotlin", nameEn: "Android Roadmap", url: "https://roadmap.sh/android" },
+      { nameAr: "مسار iOS / Swift", nameEn: "iOS Roadmap", url: "https://roadmap.sh/ios" }
     ]
   },
   {
@@ -153,7 +160,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"الأمن السيبراني وحماية الشبكات (Cyber Security)",
     titleEn:"Cyber Security Specialist",
     category:"Security",
-    icon:"🛡️",
+    icon: ShieldCheck,
     color:"from-rose-500 to-red-600",
     descAr:"دليل دراسة اختراق الشبكات، التشفير، أمن المعلومات، واستجابة الحوادث السيبرانية.",
     descEn:"Study guide for penetration testing, cryptography, network security, and incident response.",
@@ -161,8 +168,8 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/cyber-security",
     keyTopics: ["Networking Protocol","Linux Administration","Ethical Hacking","Cryptography","Security Compliance"],
     subRoadmaps: [
-      { nameAr:"مسار Linux", nameEn:"Linux Roadmap", url:"https://roadmap.sh/linux" },
-      { nameAr:"مسار Cyber Security ️", nameEn:"Cyber Security", url:"https://roadmap.sh/cyber-security" }
+      { nameAr: "مسار Linux", nameEn: "Linux Roadmap", url: "https://roadmap.sh/linux" },
+      { nameAr: "مسار Cyber Security", nameEn: "Cyber Security", url: "https://roadmap.sh/cyber-security" }
     ]
   },
   {
@@ -170,7 +177,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"أساسيات علوم الحاسب (Computer Science)",
     titleEn:"Computer Science Fundamentals",
     category:"Core Academics",
-    icon:"💻",
+    icon: Terminal,
     color:"from-sky-600 to-blue-700",
     descAr:"أساسيات هياكل البيانات، الخوارزميات، نظم التشغيل، شبكات الحاسب، وتصميم الأنظمة.",
     descEn:"Core concepts of Data Structures, Algorithms, Operating Systems, Networks, and System Design.",
@@ -178,8 +185,8 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/computer-science",
     keyTopics: ["Data Structures & Algo","Operating Systems","Networking","Database Internals","System Design"],
     subRoadmaps: [
-      { nameAr:"مسار Data Structures & Algo", nameEn:"Data Structures Roadmap", url:"https://roadmap.sh/datastructures-and-algorithms" },
-      { nameAr:"مسار System Design ️", nameEn:"System Design Roadmap", url:"https://roadmap.sh/system-design" }
+      { nameAr: "مسار Data Structures & Algo", nameEn: "Data Structures Roadmap", url: "https://roadmap.sh/datastructures-and-algorithms" },
+      { nameAr: "مسار System Design", nameEn: "System Design Roadmap", url: "https://roadmap.sh/system-design" }
     ]
   },
   {
@@ -187,7 +194,7 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     titleAr:"مهندس الحوسبة والأتمتة (DevOps Engineer)",
     titleEn:"DevOps Engineer",
     category:"Cloud & Infrastructure",
-    icon:"♾️",
+    icon: InfinityIcon,
     color:"from-sky-500 to-cyan-600",
     descAr:"أتمتة البنية التحتية، Docker, Kubernetes, CI/CD Pipelines, والسحابة الإلكترونية AWS.",
     descEn:"Infrastructure automation, Docker, Kubernetes, CI/CD Pipelines, and AWS Cloud.",
@@ -195,10 +202,10 @@ const ROADMAP_SH_TRACKS: RoadmapShTrack[] = [
     embedUrl:"https://roadmap.sh/devops",
     keyTopics: ["Linux & Bash","Docker & Containers","Kubernetes","CI/CD Pipelines","AWS / Cloud Providers"],
     subRoadmaps: [
-      { nameAr:"مسار Docker", nameEn:"Docker Roadmap", url:"https://roadmap.sh/docker" },
-      { nameAr:"مسار Kubernetes ️", nameEn:"Kubernetes Roadmap", url:"https://roadmap.sh/kubernetes" },
-      { nameAr:"مسار AWS Cloud ️", nameEn:"AWS Roadmap", url:"https://roadmap.sh/aws" },
-      { nameAr:"مسار Linux", nameEn:"Linux Roadmap", url:"https://roadmap.sh/linux" }
+      { nameAr: "مسار Docker", nameEn: "Docker Roadmap", url: "https://roadmap.sh/docker" },
+      { nameAr: "مسار Kubernetes", nameEn: "Kubernetes Roadmap", url: "https://roadmap.sh/kubernetes" },
+      { nameAr: "مسار AWS Cloud", nameEn: "AWS Roadmap", url: "https://roadmap.sh/aws" },
+      { nameAr: "مسار Linux", nameEn: "Linux Roadmap", url: "https://roadmap.sh/linux" }
     ]
   }
 ];
@@ -383,7 +390,9 @@ export default function RoadmapsPage() {
                       :"border-zinc-200/70 bg-white dark:border-zinc-800/70 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-850"
                   }`}
                 >
-                  <span className="text-2xl">{track.icon}</span>
+                  <div className={`p-2.5 rounded-xl shrink-0 ${active ? "bg-cyan-500 text-white shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-cyan-600 dark:text-cyan-400"}`}>
+                    <track.icon className="h-5 w-5" />
+                  </div>
                   <div className="min-w-0 flex-1">
                     <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 block">{track.category}</span>
                     <h4 className="text-xs font-black truncate">{t(track.titleAr, track.titleEn)}</h4>
@@ -397,8 +406,8 @@ export default function RoadmapsPage() {
           <Card className="border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 shadow-md p-4 sm:p-6 md:p-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
               <div className="flex items-center gap-3.5 sm:gap-4">
-                <div className={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br ${activeGlobalTrack.color} text-white flex items-center justify-center text-2xl sm:text-3xl shadow-lg shrink-0`}>
-                  {activeGlobalTrack.icon}
+                <div className={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br ${activeGlobalTrack.color} text-white flex items-center justify-center shadow-lg shrink-0`}>
+                  <activeGlobalTrack.icon className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -591,12 +600,12 @@ export default function RoadmapsPage() {
                           <div className="flex-1 p-4.5 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-zinc-850/40 rounded-2xl space-y-3">
                             <div className="flex flex-wrap justify-between items-start gap-2.5">
                               <div>
-                                <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 block">
+                                <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 block">
                                   {t("المرحلة","Stage")} {index + 1}
                                 </span>
                                 <h4 className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{nodeLabel}</h4>
                               </div>
-                              <Badge variant="outline" className="text-[9px] py-0 font-bold">{nodeDuration}</Badge>
+                              <Badge variant="outline" className="text-[10px] py-0 font-bold">{nodeDuration}</Badge>
                             </div>
 
                             <p className="text-[11px] text-zinc-600 dark:text-zinc-350 leading-relaxed">
@@ -606,12 +615,12 @@ export default function RoadmapsPage() {
                             {/* Connected university courses */}
                             {node.courseCodes && node.courseCodes.length > 0 && (
                               <div className="flex flex-wrap items-center gap-2 border-t border-zinc-200/60 dark:border-zinc-800/60 pt-3">
-                                <span className="text-[9px] font-bold text-zinc-400">
+                                <span className="text-[10px] font-bold text-zinc-400">
                                   {t("مقررات مرتبطة في الكلية:","Related university courses:")}
                                 </span>
                                 {node.courseCodes.map((code) => (
                                   <Link href={`/courses/${code}`} key={code}>
-                                    <Badge className="bg-zinc-200/60 text-zinc-700 hover:bg-cyan-100 hover:text-cyan-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-cyan-950/40 text-[8px] py-0 cursor-pointer font-mono">
+                                    <Badge className="bg-zinc-200/60 text-zinc-700 hover:bg-cyan-100 hover:text-cyan-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-cyan-950/40 text-[10px] py-0 cursor-pointer font-mono">
                                       {code}
                                     </Badge>
                                   </Link>
@@ -621,7 +630,7 @@ export default function RoadmapsPage() {
 
                             {/* Recommended study materials */}
                             <div className="space-y-1.5 pt-2">
-                              <span className="text-[9px] font-bold text-zinc-400 block">
+                              <span className="text-[10px] font-bold text-zinc-400 block">
                                 {t("مصادر مقترحة للتعلم:","Recommended learning resources:")}
                               </span>
                               <div className="space-y-1">

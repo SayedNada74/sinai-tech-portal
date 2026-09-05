@@ -6,6 +6,7 @@ import { Navbar } from"@/components/navbar";
 import { Footer } from"@/components/footer";
 import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
+import { useAdmin } from "@/context/admin-context";
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
@@ -35,13 +36,15 @@ import {
   Smartphone,
   Download,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle
 } from"lucide-react";
 import { motion } from"framer-motion";
 
 export default function LandingPage() {
   const { t, dir, lang } = useApp();
   const { isAuthenticated } = useAuth();
+  const { settings } = useAdmin();
   const portalHref = isAuthenticated ?"/dashboard" :"/auth/login";
   const [activeTab, setActiveTab] = React.useState<"gpa" |"courses" |"ai" |"careers">("gpa");
 
@@ -160,6 +163,17 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 overflow-x-hidden selection:bg-sky-500 selection:text-white" dir={dir}>
+      {settings?.maintenanceMode && (
+        <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white font-extrabold text-xs py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-md">
+          <AlertTriangle className="h-4 w-4 animate-bounce shrink-0 text-amber-100" />
+          <span>
+            {t(
+              "تنبيه: خدمات بوابة الطلاب تخضع حالياً لأعمال الصيانة والتحديثات المجدولة لضمان جودة الأداء.",
+              "Notice: Student portal services are currently undergoing scheduled maintenance by administration."
+            )}
+          </span>
+        </div>
+      )}
       <Navbar />
 
       <main className="flex-1">
@@ -186,12 +200,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.25] max-w-4xl mx-auto"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-extrabold lg:font-black tracking-tight lg:tracking-tighter leading-[1.3] max-w-4xl mx-auto"
             >
               <span className="block text-zinc-950 dark:text-white">
                 {t("دليلك الأكاديمي والمهني لرحلة","Your Academic & Career Guide for a")}
               </span>
-              <span className="block mt-1 sm:mt-2 text-sky-600 dark:text-sky-400">
+              <span className="block mt-1 sm:mt-2 text-sky-600 dark:text-sky-400 font-black">
                 {t("تخرج ذكية وبدون عوائق","Smart Graduation Without Hurdles")}
               </span>
             </motion.h1>

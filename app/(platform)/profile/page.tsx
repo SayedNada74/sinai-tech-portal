@@ -349,7 +349,7 @@ export default function ProfilePage() {
     }
   };
 
-  const avatarOptions = ["🎓", "👨‍💻", "👩‍💻", "💻", "🖥️", "🤖", "🧠", "👾", "🚀", "⌨️"];
+  const avatarOptions = ["🎓", "👨‍💻", "👩‍💻", "💻", "🖥", "🤖", "🧠", "👾", "🚀", "⌨"];
 
   // Badge icons dictionary
   const badgeEmojis: Record<string, string> = {
@@ -418,11 +418,11 @@ export default function ProfilePage() {
 
   if (isAdminStaff) {
     const adminTitle =
-      user?.role ==="super-admin"
-        ? t(" المشرف الأعلى للمنصة (Super Admin)"," Platform Super Admin")
-        : user?.role ==="admin"
-          ? t("️ مسؤول النظام الإداري (System Admin)","️ System Admin")
-          : t(" منسق المحتوى والمنتدى (Content Moderator)"," Content Moderator");
+      user?.role === "super-admin"
+        ? t("المشرف الأعلى للمنصة (Super Admin)", "Platform Super Admin")
+        : user?.role === "admin"
+          ? t("مسؤول النظام الإداري (System Admin)", "System Admin")
+          : t("منسق المحتوى والمنتدى (Content Moderator)", "Content Moderator");
 
     const adminCode =
       user?.role ==="super-admin" ?"SUP-001" : user?.role ==="admin" ?"ADM-001" :"MOD-001";
@@ -489,7 +489,7 @@ export default function ProfilePage() {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setAvatar("️");
+                        setAvatar("🎓");
                       }}
                       className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
                       title={t("حذف الصورة","Remove Picture")}
@@ -539,7 +539,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between">
                   <span className="font-semibold text-zinc-700 dark:text-zinc-300">{t("مراقبة سجلات الأمان والتفتيش","Monitor Security & Audit Logs")}</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">{t("مكتمل ️","Complete ️")}</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">{t("مكتمل", "Complete")}</Badge>
                 </div>
               </CardContent>
             </Card>

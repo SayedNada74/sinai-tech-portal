@@ -97,7 +97,7 @@ export default function FaqAndAiSettingsPage() {
   const handleSaveFaq = (e: React.FormEvent) => {
     e.preventDefault();
     if (!faqQuestion || !faqAnswer) {
-      toast(t("️ يرجى إدخال نص السؤال والإجابة الشاملة.","️ Please enter question and detailed answer."),"error");
+      toast(t(" يرجى إدخال نص السؤال والإجابة الشاملة."," Please enter question and detailed answer."),"error");
       return;
     }
 
@@ -129,7 +129,7 @@ export default function FaqAndAiSettingsPage() {
       temperature: tempVal,
       suggestedReplies: pills
     });
-    toast(t("️ تم تحديث قواعد وإتاحة نموذج الذكاء الاصطناعي بنجاح!","️ AI model knowledge base updated successfully!"),"success");
+    toast(t(" تم تحديث قواعد وإتاحة نموذج الذكاء الاصطناعي بنجاح!"," AI model knowledge base updated successfully!"),"success");
   };
 
   return (

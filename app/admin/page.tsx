@@ -132,7 +132,7 @@ export default function AdminDashboardOverview() {
 
           {settings.maintenanceMode && (
             <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-950/20 py-1 px-3 w-full sm:w-auto justify-center">
-               {t("وضع الصيانة نشط ️","Maintenance Mode Active ️")}
+               {t("وضع الصيانة نشط ","Maintenance Mode Active ")}
             </Badge>
           )}
         </div>
@@ -482,7 +482,7 @@ export default function AdminDashboardOverview() {
                     </div>
                   </div>
                   <Badge variant="outline" className="text-[9px] font-extrabold py-0.5">
-                    {c.enrollment} {t("مراجعة ️","reviews ️")}
+                    {c.enrollment} {t("مراجعة ","reviews ")}
                   </Badge>
                 </div>
               ))}

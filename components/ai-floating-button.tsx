@@ -40,7 +40,7 @@ export function AiFloatingButton() {
     } catch (e) {
       setMessages([
         ...newMessages,
-        { role:"assistant" as const, content:"️ خطأ في الاتصال." }
+        { role:"assistant" as const, content:" خطأ في الاتصال." }
       ]);
     } finally {
       setIsLoading(false);

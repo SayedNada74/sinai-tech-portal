@@ -102,7 +102,7 @@ export default function AdminRoadmapsPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle) {
-      toast(t("️ يرجى إدخال عنوان مسار التعلم.","️ Please enter roadmap title."),"error");
+      toast(t(" يرجى إدخال عنوان مسار التعلم."," Please enter roadmap title."),"error");
       return;
     }
 

@@ -239,8 +239,8 @@ export default function CoursesPage() {
                   className="w-full h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 cursor-pointer"
                 >
                   <option value="ALL">{t("جميع مستويات الصعوبة","All Difficulty Levels")}</option>
-                  <option value="easy">{t("سهل 🟢","Easy 🟢")}</option>
-                  <option value="medium">{t("متوسط 🟡","Medium 🟡")}</option>
+                  <option value="easy">{t("سهل","Easy")}</option>
+                  <option value="medium">{t("متوسط","Medium")}</option>
                   <option value="hard">{t("صعب","Hard")}</option>
                 </select>
               </div>
@@ -301,7 +301,7 @@ export default function CoursesPage() {
                       {course.difficulty ==="easy" ? t("سهل","Easy") : course.difficulty ==="hard" ? t("صعب","Hard") : t("متوسط","Medium")}
                     </Badge>
                   </div>
-                  <CardTitle className="text-base font-bold text-zinc-900 dark:text-zinc-50 mt-3.5 line-clamp-1">
+                  <CardTitle className="text-base font-extrabold text-zinc-900 dark:text-zinc-50 mt-3.5 line-clamp-1">
                     {t(course.arabic, course.english)}
                   </CardTitle>
                   {lang ==="ar" && (
@@ -312,11 +312,11 @@ export default function CoursesPage() {
                 </CardHeader>
 
                 <CardContent className="pb-4 pt-1 flex-1 flex flex-col justify-between">
-                  <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3 mb-4.5">
+                  <p className="text-[13px] text-zinc-600 dark:text-zinc-300 leading-[1.65] line-clamp-3 mb-4.5 font-medium">
                     {lang ==="ar" ? course.description : (course.descriptionEn || course.description)}
                   </p>
 
-                  <div className="flex justify-between items-center text-[10px] font-bold text-zinc-500 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-850 pt-3">
+                  <div className="flex justify-between items-center text-[11px] font-bold text-zinc-500 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-850 pt-3">
                     <span>{course.credits} {t("ساعات معتمدة","Credit Hours")}</span>
                     <span>{lang ==="ar" ? (PERIODS[course.period] || course.period) : (PERIODS_EN[course.period] || course.period)}</span>
                   </div>
@@ -325,8 +325,8 @@ export default function CoursesPage() {
                 {/* Footer Actions */}
                 <div className="p-4 pt-0 flex gap-2 border-t border-transparent">
                   <Link href={`/courses/${course.code}`} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full text-xs font-bold gap-1.5 h-9">
-                      <Eye className="h-3.5 w-3.5" />
+                    <Button variant="outline" size="sm" className="w-full text-[13px] font-bold gap-1.5 h-9">
+                      <Eye className="h-4 w-4" />
                       {t("عرض التفاصيل","View Details")}
                     </Button>
                   </Link>

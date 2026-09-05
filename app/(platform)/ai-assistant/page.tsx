@@ -1,7 +1,8 @@
 "use client";
 
-import * as React from"react";
-import { useApp } from"@/context/app-context";
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/app-context";
 import { useAuth } from"@/context/auth-context";
 import { useAcademic } from"@/context/academic-context";
 import { useLearning } from"@/context/learning-context";
@@ -194,8 +195,20 @@ function renderMessageContent(content: string, isAssistant: boolean) {
 }
 
 export default function AiAssistantPage() {
+  const router = useRouter();
   const { t, lang, dir, userName } = useApp();
   const { user } = useAuth();
+  const { faqs, settings } = useAdmin();
+
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+  const aiStatus = settings?.featureAccess?.aiAssistant || "ALL";
+
+  React.useEffect(() => {
+    if (aiStatus === "DISABLED" || (aiStatus === "ADMIN_ONLY" && !isAdmin)) {
+      router.replace("/dashboard");
+    }
+  }, [aiStatus, isAdmin, router]);
+
   const {
     cumulativeGpa,
     completedCredits,
@@ -205,7 +218,10 @@ export default function AiAssistantPage() {
     plannedCourses
   } = useAcademic();
   const { roadmapProgress } = useLearning();
-  const { faqs } = useAdmin();
+
+  if (aiStatus === "DISABLED" || (aiStatus === "ADMIN_ONLY" && !isAdmin)) {
+    return null;
+  }
 
   const studentContext: StudentContext = React.useMemo(() => ({
     userName: userName || user?.name,
@@ -454,7 +470,9 @@ export default function AiAssistantPage() {
     } catch (e) {
       const errorMsg: AiMessage = {
         role:"assistant",
-        content: t("️ عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي. يرجى المحاولة مرة أخرى.","️ Sorry, an error occurred connecting to the AI advisor. Please try again."
+        content: t(
+          "عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي. يرجى المحاولة مرة أخرى.",
+          "Sorry, an error occurred connecting to the AI advisor. Please try again."
         )
       };
 

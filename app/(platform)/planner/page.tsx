@@ -1,11 +1,12 @@
 "use client";
 
-import * as React from"react";
-import { useApp } from"@/context/app-context";
-import { useAcademic } from"@/context/academic-context";
-import { PERIODS, Course } from"@/lib/courses-data";
-import { useAdmin } from"@/context/admin-context";
-import { useAuth } from"@/context/auth-context";
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/context/app-context";
+import { useAcademic } from "@/context/academic-context";
+import { PERIODS, Course } from "@/lib/courses-data";
+import { useAdmin } from "@/context/admin-context";
+import { useAuth } from "@/context/auth-context";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
@@ -21,17 +22,32 @@ import {
   Sparkles,
   Info,
   Check,
-} from"lucide-react";
+  Shield,
+  Plus,
+} from "lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
 
 const PERIODS_EN: Record<string, string> = {"year-1-sem-1":"Year 1 - Semester 1","year-1-sem-2":"Year 1 - Semester 2","year-2-sem-1":"Year 2 - Semester 1","year-2-sem-2":"Year 2 - Semester 2","year-3-sem-1":"Year 3 - Semester 1","year-3-sem-2":"Year 3 - Semester 2","year-4-sem-1":"Year 4 - Semester 1","year-4-sem-2":"Year 4 - Semester 2",
 };
 
 export default function PlannerPage() {
+  const router = useRouter();
   const { user } = useAuth();
-  const isAdmin = user?.role ==="admin" || user?.role ==="super-admin";
+  const { courses, settings } = useAdmin();
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
   const { t, lang, dir } = useApp();
-  const { courses } = useAdmin();
+
+  const plannerStatus = settings?.featureAccess?.planner || "ALL";
+
+  React.useEffect(() => {
+    if (plannerStatus === "DISABLED" || (plannerStatus === "ADMIN_ONLY" && !isAdmin)) {
+      router.replace("/dashboard");
+    }
+  }, [plannerStatus, isAdmin, router]);
+
+  if (plannerStatus === "DISABLED" || (plannerStatus === "ADMIN_ONLY" && !isAdmin)) {
+    return null;
+  }
   const {
     completedCourses,
     plannedCourses,
@@ -116,7 +132,7 @@ export default function PlannerPage() {
       {isAdmin && (
         <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">
           <div className="flex items-center gap-2">
-            <span>️</span>
+            <Shield className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
             <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): أنت تتصفح مخطط التسجيل لاختبار ومعاينة تجربة الطلاب.","Admin View Mode: You are viewing the registration planner to preview student experience.")}</span>
           </div>
           <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
@@ -303,23 +319,25 @@ export default function PlannerPage() {
                                   <div className="flex gap-2 shrink-0 self-stretch sm:self-center w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-150/60 dark:border-zinc-850/60">
                                     <button
                                       onClick={() => completed ? unmarkCompleted(course.code) : markCompleted(course.code,"A")}
-                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center ${
+                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center flex items-center justify-center gap-1.5 ${
                                         completed
-                                          ?"bg-green-600 border-green-600 text-white hover:bg-green-700"
+                                          ?"bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700"
                                           :"bg-transparent border-zinc-200 text-zinc-650 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
                                       }`}
                                     >
-                                      {completed ? t("منجزة ✓", "Done ✓") : t("تحديد كمنجزة ✓", "Mark Done ✓")}
+                                      {completed && <Check className="h-3.5 w-3.5" />}
+                                      <span>{completed ? t("منجزة", "Completed") : t("تحديد كمنجزة", "Mark Done")}</span>
                                     </button>
                                     <button
                                       onClick={() => planned ? unmarkPlanned(course.code) : markPlanned(course.code)}
-                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center ${
+                                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border text-center flex items-center justify-center gap-1.5 ${
                                         planned
                                           ?"bg-sky-600 border-sky-600 text-white hover:bg-sky-700"
                                           :"bg-transparent border-zinc-200 text-zinc-650 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
                                       }`}
                                     >
-                                      {planned ? t("مخططة 📌", "Planned 📌") : t("إضافة للجدول ➕", "Add to Plan ➕")}
+                                      {planned ? <Bookmark className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                                      <span>{planned ? t("مخططة", "Planned") : t("إضافة للجدول", "Add to Plan")}</span>
                                     </button>
                                   </div>
                                 </div>

@@ -5,6 +5,7 @@ import Link from"next/link";
 import { usePathname } from"next/navigation";
 import { useApp } from"@/context/app-context";
 import { useAuth } from"@/context/auth-context";
+import { useAdmin } from "@/context/admin-context";
 import { useAnimationProps } from "@/lib/motion";
 import { getLocalizedUserName } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,6 +42,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const { user, logout } = useAuth();
   const { lang, setLang, theme, setTheme, t, dir, userRole } = useApp();
   const { shouldAnimate } = useAnimationProps();
+  const { settings } = useAdmin();
 
   const isRtl = dir ==="rtl";
   const isAdminUser = userRole ==="admin" || userRole ==="super-admin" || userRole ==="moderator";
@@ -48,32 +50,36 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const userAvatar = user?.avatar ||"🎓";
   const isImageAvatar = userAvatar.startsWith("data:image/") || userAvatar.startsWith("http");
 
-  const menuItems = isAdminUser
-    ? [
-        { labelAr:"لوحة الإدارة ️", labelEn:"Admin Dashboard ️", href:"/admin", icon: Shield },
-        { labelAr:"لوحة التحكم", labelEn:"Dashboard", href:"/dashboard", icon: LayoutDashboard },
-        { labelAr:"دليل ومستكشف المواد", labelEn:"Course Explorer", href:"/courses", icon: BookOpen },
-        { labelAr:"المنتدى الطلابي", labelEn:"Student Forum", href:"/community", icon: MessageSquare },
-        { labelAr:"دليل الطلاب", labelEn:"Student Directory", href:"/directory", icon: Users },
-        { labelAr:"الفرص والتوظيف", labelEn:"Careers & Jobs", href:"/careers", icon: Briefcase },
-        { labelAr:"مسارات خارطة الطريق", labelEn:"Career Roadmaps", href:"/roadmaps", icon: Layers },
-        { labelAr:"الملف الشخصي", labelEn:"Admin Profile", href:"/profile", icon: User },
-        { labelAr:"الإعدادات", labelEn:"Portal Settings", href:"/settings", icon: Settings }
-      ]
-    : [
-        { labelAr:"لوحة التحكم", labelEn:"Dashboard", href:"/dashboard", icon: LayoutDashboard },
-        { labelAr:"المرشد الذكي (AI)", labelEn:"AI Assistant", href:"/ai-assistant", icon: Bot },
-        { labelAr:"الخطة الدراسية والتقدم", labelEn:"Curriculum Checklist", href:"/departments", icon: CheckCircle },
-        { labelAr:"مخطط التسجيل الذكي", labelEn:"Registration Planner", href:"/planner", icon: Compass },
-        { labelAr:"حاسبة المعدل (GPA)", labelEn:"GPA Calculator", href:"/gpa", icon: Calculator, key:"gpa" },
-        { labelAr:"دليل ومستكشف المواد", labelEn:"Course Explorer", href:"/courses", icon: BookOpen, key:"courses" },
-        { labelAr:"المنتدى الطلابي", labelEn:"Student Forum", href:"/community", icon: MessageSquare, key:"community" },
-        { labelAr:"دليل الطلاب", labelEn:"Student Directory", href:"/directory", icon: Users, key:"directory" },
-        { labelAr:"الفرص والتوظيف", labelEn:"Careers & Jobs", href:"/careers", icon: Briefcase, key:"careers" },
-        { labelAr:"مسارات خارطة الطريق", labelEn:"Career Roadmaps", href:"/roadmaps", icon: Layers },
-        { labelAr:"الملف الشخصي", labelEn:"Student Profile", href:"/profile", icon: User },
-        { labelAr:"الإعدادات", labelEn:"Portal Settings", href:"/settings", icon: Settings }
-      ];
+  const rawMenuItems = [
+    ...(isAdminUser
+      ? [{ labelAr: "لوحة الإدارة", labelEn: "Admin Dashboard", href: "/admin", icon: Shield, key: "admin" }]
+      : []),
+    { labelAr: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
+    { labelAr: "المرشد الذكي (AI)", labelEn: "AI Assistant", href: "/ai-assistant", icon: Bot, key: "aiAssistant" },
+    { labelAr: "الخطة الدراسية والتقدم", labelEn: "Curriculum Checklist", href: "/departments", icon: CheckCircle, key: "departments" },
+    { labelAr: "مخطط التسجيل الذكي", labelEn: "Registration Planner", href: "/planner", icon: Compass, key: "planner" },
+    { labelAr: "حاسبة المعدل (GPA)", labelEn: "GPA Calculator", href: "/gpa", icon: Calculator, key: "gpa" },
+    { labelAr: "دليل ومستكشف المواد", labelEn: "Course Explorer", href: "/courses", icon: BookOpen, key: "courses" },
+    { labelAr: "المنتدى الطلابي", labelEn: "Student Forum", href: "/community", icon: MessageSquare, key: "community" },
+    { labelAr: "دليل الطلاب", labelEn: "Student Directory", href: "/directory", icon: Users, key: "directory" },
+    { labelAr: "الفرص والتوظيف", labelEn: "Careers & Jobs", href: "/careers", icon: Briefcase, key: "careers" },
+    { labelAr: "مسارات خارطة الطريق", labelEn: "Career Roadmaps", href: "/roadmaps", icon: Layers, key: "roadmaps" },
+    { labelAr: "الملف الشخصي", labelEn: isAdminUser ? "Admin Profile" : "Student Profile", href: "/profile", icon: User, key: "profile" },
+    { labelAr: "الإعدادات", labelEn: "Portal Settings", href: "/settings", icon: Settings, key: "settings" }
+  ];
+
+  const menuItems = rawMenuItems.filter(item => {
+    const featureAccessMap: Record<string, string> = {
+      aiAssistant: "aiAssistant", careers: "careers", planner: "planner", directory: "studentDirectory",
+    };
+    const accessKey = featureAccessMap[item.key || ""];
+    if (accessKey) {
+      const fa = settings?.featureAccess;
+      const status = fa ? (fa as any)[accessKey] : "ALL";
+      return status === "ALL" || (status === "ADMIN_ONLY" && isAdminUser);
+    }
+    return true;
+  });
 
   // Prevent background scrolling when mobile sidebar is open
   React.useEffect(() => {

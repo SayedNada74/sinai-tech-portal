@@ -44,6 +44,8 @@ export interface ErrorIncident {
   type: "api" | "auth" | "app" | "performance";
 }
 
+export type FeatureAccessStatus = "ALL" | "ADMIN_ONLY" | "DISABLED";
+
 export interface PlatformSettings {
   siteName: string;
   logo: string;
@@ -60,6 +62,18 @@ export interface PlatformSettings {
     semesterTranscript?: boolean;
     liveAnnouncements?: boolean;
     studentDirectory?: boolean;
+  };
+  gpaFeatureStatus: FeatureAccessStatus;
+  featureAccess: {
+    gpa?: FeatureAccessStatus;
+    gpaRegular: FeatureAccessStatus;
+    gpaFlexible: FeatureAccessStatus;
+    aiAssistant: FeatureAccessStatus;
+    careers: FeatureAccessStatus;
+    courseReviews: FeatureAccessStatus;
+    resourceSharing: FeatureAccessStatus;
+    studentDirectory: FeatureAccessStatus;
+    planner: FeatureAccessStatus;
   };
 }
 
@@ -162,6 +176,18 @@ const DEFAULT_SETTINGS: PlatformSettings = {
     semesterTranscript: true,
     liveAnnouncements: true,
     studentDirectory: true
+  },
+  gpaFeatureStatus: "ADMIN_ONLY",
+  featureAccess: {
+    gpa: "ALL",
+    gpaRegular: "ALL",
+    gpaFlexible: "ALL",
+    aiAssistant: "ALL",
+    careers: "ALL",
+    courseReviews: "ALL",
+    resourceSharing: "ALL",
+    studentDirectory: "ALL",
+    planner: "ALL"
   }
 };
 
@@ -352,8 +378,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               rating: Number(r.rating) || 5,
               url: r.url || ""
             }));
-            setResources(mappedRes);
-            localStorage.setItem("su_resources_db", JSON.stringify(mappedRes));
+            if (shouldCloudOverride("su_resources_db")) {
+              setResources(mappedRes);
+              localStorage.setItem("su_resources_db", JSON.stringify(mappedRes));
+              localStorage.setItem("su_resources_db_lastCloudSync", Date.now().toString());
+            }
           }
         } catch (err) {
           console.warn("[Admin Resources] Cloud fetch warning:", err);
@@ -429,8 +458,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               date: a.date || new Date().toISOString().split("T")[0],
               published: Boolean(a.published)
             }));
-            setAnnouncements(mappedAnn);
-            localStorage.setItem("su_announcements", JSON.stringify(mappedAnn));
+            if (shouldCloudOverride("su_announcements")) {
+              setAnnouncements(mappedAnn);
+              localStorage.setItem("su_announcements", JSON.stringify(mappedAnn));
+              localStorage.setItem("su_announcements_lastCloudSync", Date.now().toString());
+            }
           }
         } catch (err) {
           console.warn("[Admin Announcements] Cloud fetch warning:", err);
@@ -454,8 +486,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               category: f.category || "التسجيل",
               pinned: Boolean(f.pinned)
             }));
-            setFaqs(mappedFaqs);
-            localStorage.setItem("su_faqs", JSON.stringify(mappedFaqs));
+            if (shouldCloudOverride("su_faqs")) {
+              setFaqs(mappedFaqs);
+              localStorage.setItem("su_faqs", JSON.stringify(mappedFaqs));
+              localStorage.setItem("su_faqs_lastCloudSync", Date.now().toString());
+            }
           }
         } catch (err) {
           console.warn("[Admin FAQs] Cloud fetch warning:", err);
@@ -468,7 +503,26 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (savedAudit) { try { setAuditLogs(JSON.parse(savedAudit)); } catch (e) { } }
 
     const savedSettings = localStorage.getItem("su_settings");
-    if (savedSettings) { try { setSettings(JSON.parse(savedSettings)); } catch (e) { } }
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...parsed,
+          featureFlags: {
+            ...DEFAULT_SETTINGS.featureFlags,
+            ...(parsed.featureFlags || {}),
+          },
+          featureAccess: {
+            ...DEFAULT_SETTINGS.featureAccess,
+            ...(parsed.featureAccess || {}),
+            gpaRegular: parsed.featureAccess?.gpaRegular || parsed.featureAccess?.gpa || parsed.gpaFeatureStatus || "ALL",
+            gpaFlexible: parsed.featureAccess?.gpaFlexible || parsed.featureAccess?.gpa || parsed.gpaFeatureStatus || "ALL",
+            ...(parsed.gpaFeatureStatus ? { gpa: parsed.gpaFeatureStatus } : {})
+          }
+        });
+      } catch (e) { }
+    }
 
     const savedAi = localStorage.getItem("su_ai_config");
     if (savedAi) { try { setAiConfig(JSON.parse(savedAi)); } catch (e) { } }
@@ -479,8 +533,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           const { data, error } = await supabase.from("settings").select("*").eq("id", "ai_config").single();
           if (!error && data && data.value) {
             const parsed = JSON.parse(data.value);
-            setAiConfig(parsed);
-            localStorage.setItem("su_ai_config", JSON.stringify(parsed));
+            if (shouldCloudOverride("su_ai_config")) {
+              setAiConfig(parsed);
+              localStorage.setItem("su_ai_config", JSON.stringify(parsed));
+              localStorage.setItem("su_ai_config_lastCloudSync", Date.now().toString());
+            }
           }
         } catch (err) {
           console.warn("[Admin AI Config] Cloud fetch warning:", err);
@@ -498,9 +555,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Save changes wrapper helper
+  // Save changes wrapper helper — writes data AND a modification timestamp
+  // so cloud fetches won't overwrite newer local edits.
   const saveState = (key: string, data: any) => {
     localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(`${key}_lastModified`, Date.now().toString());
+  };
+
+  // Decides whether a Supabase cloud fetch should overwrite local state.
+  // Returns false when the admin made a local edit after the last cloud sync,
+  // preventing the cloud from reverting those changes.
+  const shouldCloudOverride = (localStorageKey: string): boolean => {
+    const lastLocalMod = localStorage.getItem(`${localStorageKey}_lastModified`);
+    // No local modifications recorded → safe to use cloud data
+    if (!lastLocalMod) return true;
+    const lastCloudSync = localStorage.getItem(`${localStorageKey}_lastCloudSync`);
+    // Local was modified but we never synced from cloud before → keep local
+    if (!lastCloudSync) return false;
+    // Local was modified AFTER the last cloud sync → keep local
+    if (Number(lastLocalMod) > Number(lastCloudSync)) return false;
+    // Cloud sync is more recent → safe to override
+    return true;
   };
 
   // Log action helper

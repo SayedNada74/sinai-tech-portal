@@ -51,17 +51,19 @@ export default function UserManagementPage() {
   } = useAdmin();
   const { user: currentUser } = useAuth();
 
-  if (currentUser && currentUser.role !=="super-admin") {
+  const isStaff = currentUser?.role === "admin" || currentUser?.role === "super-admin" || currentUser?.role === "moderator";
+
+  if (currentUser && !isStaff) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
         <div className="h-16 w-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-3xl">
-          
+          <Shield className="h-8 w-8 text-rose-500" />
         </div>
         <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
-          {t("هذه الصفحة مخصصة فقط للمشرف الأعلى (Super Admin)","Restricted to Super Admin only")}
+          {t("هذه الصفحة مخصصة فقط للكادر الإداري", "Restricted to Administrative Staff only")}
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-          {t("لا تملك الصلاحية الكافية لإدارة الحسابات والرتب الإدارية.","You do not have sufficient clearance to manage user accounts and admin roles.")}
+          {t("لا تملك الصلاحية الكافية لإدارة الحسابات والرتب الإدارية.", "You do not have sufficient clearance to manage user accounts and admin roles.")}
         </p>
       </div>
     );
@@ -82,7 +84,7 @@ export default function UserManagementPage() {
 
   const handleCreateUser = () => {
     if (!newName.trim() || !newEmail.trim()) {
-      toast(t("️ يرجى كتابة اسم الحساب والبريد الإلكتروني.","️ Please enter name and email."),"error");
+      toast(t(" يرجى كتابة اسم الحساب والبريد الإلكتروني."," Please enter name and email."),"error");
       return;
     }
     addUserAccount({
@@ -116,7 +118,7 @@ export default function UserManagementPage() {
     }
     let emoji ="‍🎓";
     if (u.role ==="super-admin") emoji ="";
-    else if (u.role ==="admin") emoji ="️";
+    else if (u.role ==="admin") emoji ="";
     else if (u.role ==="moderator") emoji ="";
     else if (u.role ==="student") {
       const lvl = u.level ||"";
@@ -183,7 +185,7 @@ export default function UserManagementPage() {
   const handleBulkRoleChange = (role: UserProfile["role"]) => {
     if (selectedIds.length === 0) return;
     if (role ==="super-admin" && currentUser?.role !=="super-admin") {
-      toast(t("️ غير مسموح لك بترقية مستخدمين لدور المشرف الأعلى.","️ You are not authorized to promote users to Super Admin."),"error");
+      toast(t(" غير مسموح لك بترقية مستخدمين لدور المشرف الأعلى."," You are not authorized to promote users to Super Admin."),"error");
       return;
     }
     bulkUpdateRoles(selectedIds, role);
@@ -196,18 +198,18 @@ export default function UserManagementPage() {
     if (confirm(t(`هل أنت متأكد من حذف ${selectedIds.length} مستخدمين نهائياً؟`, `Are you sure you want to permanently delete ${selectedIds.length} users?`))) {
       bulkDeleteUsers(selectedIds);
       setSelectedIds([]);
-      toast(t("️ تم حذف الحسابات المحددة بنجاح.","️ Selected accounts deleted successfully."),"success");
+      toast(t(" تم حذف الحسابات المحددة بنجاح."," Selected accounts deleted successfully."),"success");
     }
   };
 
   // Single Actions Guarded
   const handleRoleChange = (uid: string, targetRole: UserProfile["role"], uRole: string) => {
     if (targetRole ==="super-admin" && currentUser?.role !=="super-admin") {
-      toast(t("️ فقط المشرف الأعلى (Super Admin) يملك صلاحية تعيين مشرفين أعلى.","️ Only Super Admins can assign Super Admin role."),"error");
+      toast(t(" فقط المشرف الأعلى (Super Admin) يملك صلاحية تعيين مشرفين أعلى."," Only Super Admins can assign Super Admin role."),"error");
       return;
     }
     if (uRole ==="super-admin" && currentUser?.role !=="super-admin") {
-      toast(t("️ لا يمكنك تعديل صلاحيات المشرف الأعلى.","️ You cannot edit Super Admin permissions."),"error");
+      toast(t(" لا يمكنك تعديل صلاحيات المشرف الأعلى."," You cannot edit Super Admin permissions."),"error");
       return;
     }
     updateUserRole(uid, targetRole);
@@ -310,7 +312,7 @@ export default function UserManagementPage() {
                           {getUserLocalizedName(s)}
                         </h5>
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold shrink-0">
-                          {s.role ==="admin" || s.role ==="super-admin" ?"️ Admin" :"‍🎓 Student"}
+                          {s.role ==="admin" || s.role ==="super-admin" ?" Admin" :"‍🎓 Student"}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-500 truncate font-mono">{s.email}</p>
@@ -352,10 +354,10 @@ export default function UserManagementPage() {
               onChange={(e) => setRoleFilter(e.target.value)}
               className="h-10 px-3.5 rounded-xl border border-zinc-200 bg-white text-xs font-bold text-zinc-700 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-150 cursor-pointer w-full sm:w-auto flex-1"
             >
-              <option value="ALL">{t("جميع الصلاحيات ️","All Roles ️")}</option>
+              <option value="ALL">{t("جميع الصلاحيات ","All Roles ")}</option>
               <option value="student">{t("طلاب ‍🎓","Students ‍🎓")}</option>
               <option value="moderator">{t("منسقون محتوى","Moderators")}</option>
-              <option value="admin">{t("مسؤولون ️","Admins ️")}</option>
+              <option value="admin">{t("مسؤولون ","Admins ")}</option>
               <option value="super-admin">{t("مشرف أعلى","Super Admin")}</option>
             </select>
 
@@ -503,7 +505,7 @@ export default function UserManagementPage() {
                     >
                       <option value="student">{t("طالب ‍🎓","Student ‍🎓")}</option>
                       <option value="moderator">{t("منسق","Moderator")}</option>
-                      <option value="admin">{t("مسؤول ️","Admin ️")}</option>
+                      <option value="admin">{t("مسؤول ","Admin ")}</option>
                       <option value="super-admin">{t("مشرف أعلى","Super Admin")}</option>
                     </select>
 
@@ -664,7 +666,7 @@ export default function UserManagementPage() {
                         >
                           <option value="student">{t("طالب ‍🎓","Student ‍🎓")}</option>
                           <option value="moderator">{t("منسق محتوى","Moderator")}</option>
-                          <option value="admin">{t("مسؤول ️","Admin ️")}</option>
+                          <option value="admin">{t("مسؤول ","Admin ")}</option>
                           <option value="super-admin">{t("مشرف أعلى","Super Admin")}</option>
                         </select>
                       </td>
@@ -855,7 +857,7 @@ export default function UserManagementPage() {
                 >
                   <option value="student">{t("طالب ‍🎓","Student ‍🎓")}</option>
                   <option value="moderator">{t("منسق محتوى","Content Moderator")}</option>
-                  <option value="admin">{t("مسؤول نظام ️","System Admin ️")}</option>
+                  <option value="admin">{t("مسؤول نظام ","System Admin ")}</option>
                   <option value="super-admin">{t("مشرف أعلى","Super Admin")}</option>
                 </select>
               </div>
