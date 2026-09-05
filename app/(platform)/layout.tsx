@@ -119,70 +119,139 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         )}
 
         {/* Mobile Header */}
-        <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
-          <Logo size="sm" href={user ?"/dashboard" :"/"} />
+        <header className="sm:hidden h-16 bg-white dark:bg-zinc-900 border-b border-zinc-200/60 dark:border-zinc-800/60 px-3.5 flex items-center justify-between sticky top-0 z-40">
+          {/* Start Side: Mobile Sidebar Hamburger Trigger + Logo */}
+          <div className="flex items-center gap-2">
+            {user && (
+              <button
+                onClick={() => setIsMobileOpen(true)}
+                className="h-9 w-9 rounded-xl flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer"
+                aria-label="Open menu"
+                title={t("القائمة الجانبية", "Menu")}
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            )}
+            <Logo size="sm" href={user ? "/dashboard" : "/"} />
+          </div>
 
-          <div className="flex items-center gap-1.5">
-            {/* Search Trigger for Mobile */}
-            <button
-              onClick={() => {
-                const event = new KeyboardEvent("keydown", {
-                  key:"k",
-                  ctrlKey: true,
-                  bubbles: true
-                });
-                window.dispatchEvent(event);
-              }}
-              title={t("ابحث عن مواد أو صفحات...","Search courses or pages...")}
-              className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
-            >
-              <Search className="h-4 w-4" />
-            </button>
-
+          {/* End Side: Tools (Language, Theme, Notifications) */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Language Toggle */}
             <button
-              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
-              className="p-1.5 px-2 rounded-lg text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 cursor-pointer"
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="h-8 px-2.5 rounded-xl text-xs font-black bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-200 transition-all cursor-pointer shadow-2xs"
+              title={lang === "ar" ? "Switch to English" : "التحويل للعربية"}
             >
-              {lang ==="ar" ?"EN" :"عربي"}
+              {lang === "ar" ? "EN" : "عربي"}
             </button>
 
             {/* Theme Toggle */}
             <button
-              onClick={() => setTheme(theme ==="dark" ?"light" :"dark")}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               suppressHydrationWarning
-              className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+              className="h-8 w-8 rounded-xl flex items-center justify-center text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+              title={t("تبديل المظهر", "Toggle theme")}
             >
-              {theme ==="dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-primary" />}
+              {theme === "dark" ? <Sun className="h-4.5 w-4.5 text-amber-400" /> : <Moon className="h-4.5 w-4.5 text-primary" />}
             </button>
 
             {user ? (
-              <>
-                {/* Notifications mobile trigger */}
-                <div className="relative">
-                  <button
-                    onClick={() => setIsNotifOpen(!isNotifOpen)}
-                    className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 relative cursor-pointer"
-                  >
-                    <Bell className="h-4 w-4" />
-                    {unreadNotifs.length > 0 && (
-                      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
-                    )}
-                  </button>
-                </div>
-
-                {/* Mobile Sidebar Hamburger Trigger */}
+              /* Notifications mobile trigger with active dropdown */
+              <div className="relative">
                 <button
-                  onClick={() => setIsMobileOpen(true)}
-                  className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  className="h-8 w-8 rounded-xl flex items-center justify-center text-zinc-600 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 relative transition-all cursor-pointer"
+                  title={t("الإشعارات", "Notifications")}
+                  aria-label="Notifications"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Bell className="h-4.5 w-4.5" />
+                  {unreadNotifs.length > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                  )}
+                  {unreadNotifs.length > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
+                  )}
                 </button>
-              </>
+
+                {/* Notifications Dropdown for Mobile */}
+                <AnimatePresence>
+                  {isNotifOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)} />
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        className={`fixed inset-x-3 top-17 max-h-[75vh] rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl z-50 overflow-hidden flex flex-col`}
+                      >
+                        <div className="p-3.5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center shrink-0">
+                          <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                            <Bell className="h-4 w-4 text-primary" />
+                            {t("الإشعارات والتنبيهات", "System Alerts")}
+                          </h4>
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500">
+                            <button onClick={markAllAsRead} className="hover:text-cyan-600 transition-colors">
+                              {t("تحديد كمقروء", "Mark all read")}
+                            </button>
+                            <span>•</span>
+                            <button onClick={clearNotifications} className="hover:text-red-500 transition-colors">
+                              {t("مسح الكل", "Clear all")}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="max-h-80 overflow-y-auto divide-y divide-zinc-100 dark:divide-zinc-850">
+                          {notifications.length > 0 ? (
+                            notifications.map((notif) => (
+                              <div
+                                key={notif.id}
+                                onClick={() => {
+                                  markAsRead(notif.id);
+                                  setIsNotifOpen(false);
+                                }}
+                                className={cn("p-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors cursor-pointer text-right flex gap-3 items-start",
+                                  !notif.read && "bg-cyan-50/20 dark:bg-cyan-950/10",
+                                  !isRtl && "text-left"
+                                )}
+                                dir={dir}
+                              >
+                                <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 shrink-0">
+                                  {notif.type === "badge" ? (
+                                    <Trophy className="h-3.5 w-3.5 text-amber-500" />
+                                  ) : notif.type === "career" ? (
+                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                  ) : (
+                                    <AlertCircle className="h-3.5 w-3.5 text-cyan-500" />
+                                  )}
+                                </div>
+                                <div className="space-y-1 min-w-0 flex-1">
+                                  <h5 className={cn("text-xs font-bold text-zinc-850 dark:text-zinc-200", !notif.read && "text-cyan-600")}>
+                                    {notif.title}
+                                  </h5>
+                                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                    {notif.content}
+                                  </p>
+                                  <span className="text-[9px] text-zinc-400 block">{notif.date}</span>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="py-10 text-center text-zinc-400 dark:text-zinc-500 space-y-1">
+                              <Bell className="h-7 w-7 mx-auto text-primary" />
+                              <p className="text-xs font-bold">{t("لا توجد إشعارات جديدة", "No new alerts")}</p>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
               <Link href="/auth/login">
                 <Button size="sm" className="h-8 px-3 text-xs font-bold rounded-lg shadow-sm">
-                  {t("دخول","Sign In")}
+                  {t("دخول", "Sign In")}
                 </Button>
               </Link>
             )}

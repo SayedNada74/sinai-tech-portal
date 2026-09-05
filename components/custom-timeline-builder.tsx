@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GradeSelect } from "@/components/ui/grade-select";
+import { CourseSearchPicker, type CourseOption } from "@/components/ui/course-search-picker";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import {
   Calendar,
@@ -60,33 +61,6 @@ export function CustomTimelineBuilder({
   const [showAddSemesterModal, setShowAddSemesterModal] = React.useState(false);
   const [newSemesterTerm, setNewSemesterTerm] = React.useState<"fall" | "spring" | "summer">("fall");
   const [newSemesterYear, setNewSemesterYear] = React.useState<number>(startYear);
-
-  // Open modal and automatically select the first available (non-duplicate) year & term
-  const openAddSemesterModal = () => {
-    const candidateYears = [startYear, startYear + 1, startYear + 2, startYear + 3, startYear + 4, startYear + 5];
-    const candidateTerms: Array<"fall" | "spring" | "summer"> = ["fall", "spring", "summer"];
-
-    let chosenYear = startYear;
-    let chosenTerm: "fall" | "spring" | "summer" = "fall";
-    let foundNonDuplicate = false;
-
-    for (const yr of candidateYears) {
-      for (const tm of candidateTerms) {
-        const pid = tm === "fall" ? `fall-${yr}` : `${tm}-${yr + 1}`;
-        if (!customSemesters.some((s) => s.periodId === pid)) {
-          chosenYear = yr;
-          chosenTerm = tm;
-          foundNonDuplicate = true;
-          break;
-        }
-      }
-      if (foundNonDuplicate) break;
-    }
-
-    setNewSemesterYear(chosenYear);
-    setNewSemesterTerm(chosenTerm);
-    setShowAddSemesterModal(true);
-  };
 
   // Default initial semesters (First year: Fall, Spring, and Summer) based on student ID start year
   const defaultInitialSemesters = React.useMemo<CustomSemesterData[]>(() => {
@@ -192,8 +166,152 @@ export function CustomTimelineBuilder({
     return counts;
   }, [customSemesters]);
 
+  // Build a map of all courses used across all semesters (code → { semId, courseId, grade }[]) for duplicate filtering
+  const allUsedCoursesMap = React.useMemo(() => {
+    const map = new Map<string, Array<{ semId: string; courseId: string; grade: string }>>();
+    customSemesters.forEach((sem) => {
+      sem.courses.forEach((c) => {
+        if (!c.code) return;
+        if (!map.has(c.code)) map.set(c.code, []);
+        map.get(c.code)!.push({ semId: sem.id, courseId: c.id, grade: c.grade });
+      });
+    });
+    return map;
+  }, [customSemesters]);
+
+  // Build filtered course options for a specific row in a specific semester
+  const getFilteredCourseOptions = React.useCallback(
+    (currentSemId: string, currentCourseId: string): CourseOption[] => {
+      return courses
+        .filter((catalogCourse) => {
+          // Always show the currently selected course for this row
+          const usages = allUsedCoursesMap.get(catalogCourse.code);
+          if (!usages) return true; // Not used anywhere, show it
+
+          // Check if this course is the one currently selected in THIS row
+          const isCurrentRow = usages.some(
+            (u) => u.semId === currentSemId && u.courseId === currentCourseId
+          );
+          if (isCurrentRow && usages.length === 1) return true; // Only used in this row
+
+          // Check if it's used in OTHER rows
+          const usedElsewhere = usages.filter(
+            (u) => !(u.semId === currentSemId && u.courseId === currentCourseId)
+          );
+
+          if (usedElsewhere.length === 0) return true; // Not used elsewhere
+
+          // If it's used elsewhere, only show it if the latest grade elsewhere is F (retake allowed)
+          // Get the last usage (latest semester) grade
+          const lastUsage = usedElsewhere[usedElsewhere.length - 1];
+          return lastUsage.grade === "F";
+        })
+        .map((catalogCourse) => {
+          const usages = allUsedCoursesMap.get(catalogCourse.code);
+          const isRetake = usages
+            ? usages.some(
+                (u) =>
+                  !(u.semId === currentSemId && u.courseId === currentCourseId) &&
+                  u.grade === "F"
+              )
+            : false;
+
+          return {
+            code: catalogCourse.code,
+            arabic: catalogCourse.arabic,
+            english: catalogCourse.english,
+            credits: catalogCourse.credits,
+            isRetake,
+          };
+        });
+    },
+    [courses, allUsedCoursesMap]
+  );
+
+  // Check whether all courses in the curriculum have been completed
+  const isAllCoursesCompleted = React.useMemo(() => {
+    if (!courses || courses.length === 0) return false;
+
+    // A student has completed all courses if:
+    // 1) Every course in the catalog has been taken and passed (latest attempt is not F)
+    const allCatalogPassed = courses.every((course) => {
+      const usages = allUsedCoursesMap.get(course.code);
+      if (!usages || usages.length === 0) return false;
+      const lastUsage = usages[usages.length - 1];
+      return lastUsage.grade && lastUsage.grade !== "F";
+    });
+
+    if (allCatalogPassed) return true;
+
+    // 2) Or total unique passed credits reached graduation threshold (144 credits) and no active unresolved F
+    let passedCredits = 0;
+    let hasUnresolvedF = false;
+
+    allUsedCoursesMap.forEach((usages, code) => {
+      const lastUsage = usages[usages.length - 1];
+      if (lastUsage.grade === "F") {
+        hasUnresolvedF = true;
+      } else {
+        const catCourse = courses.find((c) => c.code === code);
+        passedCredits += catCourse ? catCourse.credits : 3;
+      }
+    });
+
+    return (passedCredits >= 144 && !hasUnresolvedF);
+  }, [courses, allUsedCoursesMap]);
+
+  // Open modal and automatically select the first available (non-duplicate) year & term
+  const openAddSemesterModal = () => {
+    if (isAllCoursesCompleted) {
+      toast(
+        t(
+          "تهانينا! لقد أتممت جميع المقررات الدراسية في خطتك بنجاح (144 ساعة) ولا توجد مواد متبقية للتسجيل، لذا لا يمكن إضافة فصول دراسية جديدة.",
+          "Congratulations! You have completed all courses in your academic curriculum (144 credits) and have no remaining courses to take. New semesters cannot be added."
+        ),
+        "info"
+      );
+      return;
+    }
+
+    const candidateYears = [startYear, startYear + 1, startYear + 2, startYear + 3, startYear + 4, startYear + 5];
+    const candidateTerms: Array<"fall" | "spring" | "summer"> = ["fall", "spring", "summer"];
+
+    let chosenYear = startYear;
+    let chosenTerm: "fall" | "spring" | "summer" = "fall";
+    let foundNonDuplicate = false;
+
+    for (const yr of candidateYears) {
+      for (const tm of candidateTerms) {
+        const pid = tm === "fall" ? `fall-${yr}` : `${tm}-${yr + 1}`;
+        if (!customSemesters.some((s) => s.periodId === pid)) {
+          chosenYear = yr;
+          chosenTerm = tm;
+          foundNonDuplicate = true;
+          break;
+        }
+      }
+      if (foundNonDuplicate) break;
+    }
+
+    setNewSemesterYear(chosenYear);
+    setNewSemesterTerm(chosenTerm);
+    setShowAddSemesterModal(true);
+  };
+
   // Add chosen semester (Fall, Spring, or Summer) with strict duplicate prevention
   const handleAddNewSemester = () => {
+    if (isAllCoursesCompleted) {
+      toast(
+        t(
+          "تهانينا! لقد أتممت جميع المقررات الدراسية في خطتك بنجاح (144 ساعة) ولا توجد مواد متبقية للتسجيل، لذا لا يمكن إضافة فصول دراسية جديدة.",
+          "Congratulations! You have completed all courses in your academic curriculum (144 credits) and have no remaining courses to take. New semesters cannot be added."
+        ),
+        "info"
+      );
+      setShowAddSemesterModal(false);
+      return;
+    }
+
     const targetPeriodId = newSemesterTerm === "fall" ? `fall-${newSemesterYear}` : `${newSemesterTerm}-${newSemesterYear + 1}`;
     const alreadyExists = customSemesters.some((s) => s.periodId === targetPeriodId);
 
@@ -216,6 +334,17 @@ export function CustomTimelineBuilder({
 
   // Quick helper to append next sequential semester
   const handleAddNextStandardSemester = () => {
+    if (isAllCoursesCompleted) {
+      toast(
+        t(
+          "تهانينا! لقد أتممت جميع المقررات الدراسية في خطتك بنجاح (144 ساعة) ولا توجد مواد متبقية للتسجيل، لذا لا يمكن إضافة فصول دراسية جديدة.",
+          "Congratulations! You have completed all courses in your academic curriculum (144 credits) and have no remaining courses to take. New semesters cannot be added."
+        ),
+        "info"
+      );
+      return;
+    }
+
     const standard = generateStudentSemesters(startYear, 5);
     const existingPeriodIds = new Set(customSemesters.map((s) => s.periodId));
     const nextUnadded = standard.find((s) => !existingPeriodIds.has(s.id));
@@ -365,16 +494,19 @@ export function CustomTimelineBuilder({
   };
 
   // Calculate stats for each semester (Credits, GPA, Quality Points, Bylaw credit caps)
+  // Uses Best-Grade Policy: when a course is retaken, the cumulative GPA only counts the highest grade
   const semesterCalculations = React.useMemo(() => {
-    let runningTotalPoints = 0;
-    let runningTotalCredits = 0;
+    // Track best grade seen so far for each course (for cumulative GPA grade-replacement)
+    const bestGradeMap = new Map<string, { points: number; credits: number }>();
+    let runningCumPoints = 0;
+    let runningCumCredits = 0;
 
     const priorAttemptsSeen = new Map<string, number>();
 
     return customSemesters.map((sem) => {
       // Prior cumulative GPA before this semester begins
-      const priorCumGpa = runningTotalCredits > 0
-        ? Math.round((runningTotalPoints / runningTotalCredits) * 100) / 100
+      const priorCumGpa = runningCumCredits > 0
+        ? Math.round((runningCumPoints / runningCumCredits) * 100) / 100
         : null;
 
       let semPoints = 0;
@@ -396,8 +528,27 @@ export function CustomTimelineBuilder({
           effectiveGradePoints = Math.min(effectiveGradePoints, GRADE_POINTS["D"] || 2.0);
         }
 
+        // Semester GPA: count this course normally for the semester it belongs to
         semPoints += effectiveGradePoints * credits;
         semCredits += credits;
+
+        // Cumulative GPA: Best-Grade Replacement Policy
+        const prevBest = bestGradeMap.get(c.code);
+        if (prevBest) {
+          // Course was seen before — check if new grade is higher
+          const newQualityPoints = effectiveGradePoints * credits;
+          if (newQualityPoints > prevBest.points) {
+            // Replace: remove old points, add new points (credits stay the same since same course)
+            runningCumPoints = runningCumPoints - prevBest.points + newQualityPoints;
+            bestGradeMap.set(c.code, { points: newQualityPoints, credits });
+          }
+          // If new grade is lower or equal, keep the old best — don't add to cumulative
+        } else {
+          // First time seeing this course
+          runningCumPoints += effectiveGradePoints * credits;
+          runningCumCredits += credits;
+          bestGradeMap.set(c.code, { points: effectiveGradePoints * credits, credits });
+        }
 
         priorAttemptsSeen.set(c.code, priorCount + 1);
       });
@@ -421,10 +572,7 @@ export function CustomTimelineBuilder({
 
       const isExceeded = semCredits > limitRule.maxCredits;
 
-      // Update running totals for subsequent semesters
-      runningTotalPoints += semPoints;
-      runningTotalCredits += semCredits;
-      const cumGpa = runningTotalCredits > 0 ? Math.round((runningTotalPoints / runningTotalCredits) * 100) / 100 : 0;
+      const cumGpa = runningCumCredits > 0 ? Math.round((runningCumPoints / runningCumCredits) * 100) / 100 : 0;
 
       return {
         semId: sem.id,
@@ -441,24 +589,35 @@ export function CustomTimelineBuilder({
   }, [customSemesters, courses, startYear]);
 
 
-  // Overall Totals
+  // Overall Totals — Best-Grade Deduplication: each course counted once with its highest grade
   const overallStats = React.useMemo(() => {
-    let totalCredits = 0;
-    let totalPoints = 0;
+    // Deduplicate: for each course code, keep only the best grade
+    const bestGrades = new Map<string, { credits: number; points: number }>();
     let totalCoursesCount = 0;
 
     customSemesters.forEach((sem) => {
       sem.courses.forEach((c) => {
         if (!c.code) return;
-        const pts = GRADE_POINTS[c.grade] ?? 0;
-        totalCredits += c.credits;
-        totalPoints += pts * c.credits;
         totalCoursesCount += 1;
+        const pts = GRADE_POINTS[c.grade] ?? 0;
+        const qualityPoints = pts * c.credits;
+        const prev = bestGrades.get(c.code);
+        if (!prev || qualityPoints > prev.points) {
+          bestGrades.set(c.code, { credits: c.credits, points: qualityPoints });
+        }
       });
     });
 
+    let totalCredits = 0;
+    let totalPoints = 0;
+    bestGrades.forEach((entry) => {
+      totalCredits += entry.credits;
+      totalPoints += entry.points;
+    });
+
     const cumGpa = totalCredits > 0 ? Math.round((totalPoints / totalCredits) * 100) / 100 : 0;
-    return { totalCredits, cumGpa, totalCoursesCount };
+    const uniqueCoursesCount = bestGrades.size;
+    return { totalCredits, cumGpa, totalCoursesCount, uniqueCoursesCount };
   }, [customSemesters]);
 
   // Sync to global AcademicContext
@@ -879,20 +1038,14 @@ export function CustomTimelineBuilder({
                           key={c.id}
                           className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center p-2.5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-950/60 border border-zinc-200/60 dark:border-zinc-800/80"
                         >
-                          {/* Course select */}
+                          {/* Course select — Premium Searchable Picker with duplicate filtering */}
                           <div className="col-span-12 sm:col-span-6 space-y-1">
-                            <select
+                            <CourseSearchPicker
                               value={c.code}
-                              onChange={(e) => updateCourseInSemester(semester.id, c.id, "code", e.target.value)}
-                              className="w-full h-10 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer"
-                            >
-                              <option value="">{t("-- اختر المقرر الدراسي --", "-- Select course --")}</option>
-                              {courses.map((co) => (
-                                <option key={co.code} value={co.code}>
-                                  {co.code} - {t(co.arabic, co.english)} ({co.credits} {t("ساعة", "cr")})
-                                </option>
-                              ))}
-                            </select>
+                              onChange={(code) => updateCourseInSemester(semester.id, c.id, "code", code)}
+                              options={getFilteredCourseOptions(semester.id, c.id)}
+                              className="w-full"
+                            />
 
                             {isThirdAttempt && c.code && (
                               <div className="flex items-center gap-1.5 text-[10px] text-amber-600 dark:text-amber-400 font-bold px-1">
@@ -964,25 +1117,71 @@ export function CustomTimelineBuilder({
         })}
       </div>
 
+      {/* All Courses Completed Graduation Banner */}
+      {isAllCoursesCompleted && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-sky-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="h-10 w-10 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-black flex items-center gap-2">
+                <span>{t("ألف مبروك! أتممت جميع مقررات الخطة الدراسية بنجاح 🎓", "Congratulations! All Curriculum Courses Completed 🎓")}</span>
+                <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                  144 / 144
+                </span>
+              </h4>
+              <p className="text-[11px] text-emerald-800/80 dark:text-emerald-300/80 mt-1 leading-relaxed">
+                {t(
+                  "لقد استوفيت كافة المقررات والساعات المطلوبة للتخرج بنجاح ولا توجد مقررات متبقية. تم قفل إضافة فصول دراسية جديدة تلقائياً.",
+                  "All graduation requirements & credit hours are completed with passing grades. Adding new semesters is now locked."
+                )}
+              </p>
+            </div>
+          </div>
+          <Badge className="bg-emerald-600 text-white font-bold text-xs py-1 px-3 shrink-0">
+            {t("خطة مكتملة بالكامل", "Curriculum 100% Done")}
+          </Badge>
+        </div>
+      )}
+
       {/* Bottom Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           <Button
             onClick={handleAddNextStandardSemester}
             variant="outline"
-            className="gap-1.5 text-xs font-bold rounded-2xl h-10 border-sky-300 dark:border-sky-800 text-sky-700 dark:text-sky-300 cursor-pointer"
+            className={`gap-1.5 text-xs font-bold rounded-2xl h-10 transition-all ${
+              isAllCoursesCompleted
+                ? "opacity-60 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 cursor-pointer"
+                : "border-sky-300 dark:border-sky-800 text-sky-700 dark:text-sky-300 cursor-pointer"
+            }`}
           >
             <Plus className="h-4 w-4" />
             <span>{t("إضافة الفصل التالي", "Add Next Semester")}</span>
+            {isAllCoursesCompleted && (
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                {t("مكتمل", "Done")}
+              </span>
+            )}
           </Button>
 
           <Button
             onClick={openAddSemesterModal}
             variant="outline"
-            className="gap-1.5 text-xs font-bold rounded-2xl h-10 cursor-pointer"
+            className={`gap-1.5 text-xs font-bold rounded-2xl h-10 transition-all ${
+              isAllCoursesCompleted
+                ? "opacity-60 border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-300 cursor-pointer"
+                : "cursor-pointer"
+            }`}
           >
             <Calendar className="h-4 w-4 text-sky-500" />
             <span>{t("إضافة فصل دراسي", "Add Semester")}</span>
+            {isAllCoursesCompleted && (
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                {t("مكتمل", "Done")}
+              </span>
+            )}
           </Button>
 
           <Button
@@ -1323,14 +1522,19 @@ export function CustomTimelineBuilder({
                   <Button
                     size="sm"
                     onClick={handleAddNewSemester}
-                    disabled={isDuplicate}
+                    disabled={isDuplicate || isAllCoursesCompleted}
                     className={`rounded-xl text-xs font-bold transition-all px-4 ${
-                      isDuplicate
+                      isDuplicate || isAllCoursesCompleted
                         ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 cursor-not-allowed border-0 shadow-none"
                         : "bg-sky-600 hover:bg-sky-700 text-white dark:text-white cursor-pointer shadow-md"
                     }`}
                   >
-                    {isDuplicate ? (
+                    {isAllCoursesCompleted ? (
+                      <span className="flex items-center gap-1.5">
+                        <GraduationCap className="h-4 w-4 text-emerald-500" />
+                        <span>{t("اكتملت جميع المواد (144 ساعة)", "All Courses Completed")}</span>
+                      </span>
+                    ) : isDuplicate ? (
                       <span className="flex items-center gap-1.5">
                         <AlertTriangle className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />
                         <span>{t("الترم مضاف مسبقاً (ممنوع التكرار)", "Already Added (No Duplicates)")}</span>

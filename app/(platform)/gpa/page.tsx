@@ -556,10 +556,10 @@ export default function GpaPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.2 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
           >
-            {/* Input Section */}
-            <div className="lg:col-span-2 space-y-6">
+            {/* Calculator Card — order-1 on mobile, left 2 columns on desktop */}
+            <div className="lg:col-span-2 order-1">
               <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
                 <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-800/60 mb-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -668,10 +668,57 @@ export default function GpaPage() {
                   )}
                 </CardContent>
               </Card>
+            </div>
 
-              {showRegularTrack && (
-                <>
-                  {/* Save widget */}
+            {/* Results Sidebar with ReactBits SpotlightCard — order-2 on mobile (directly under calculator), right column on desktop */}
+            <div className="lg:col-span-1 lg:row-span-2 order-2 lg:order-2">
+              <div className="sticky top-6">
+                <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.22)">
+                  <div className="pt-8 pb-6 px-6">
+                    <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
+                      {t("المعدل الفصلي المتوقع","Expected Semester GPA")}
+                    </h3>
+                    <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
+                      <AnimatedNumber value={semesterGpa} decimals={2} />
+                    </div>
+                    <Badge className="mt-3 bg-zinc-100 text-zinc-900 border-zinc-300 text-xs py-1 px-3 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700">
+                      {semesterGpa >= 3.4
+                        ? t("جيد جداً مرتفع","High Distinction")
+                        : semesterGpa >= 2.8
+                        ? t("جيد جداً","Very Good")
+                        : t("مقبول","Passing")}
+                    </Badge>
+
+                    <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"}`}>
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات","Total Credits")}</span>
+                        <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة","Hours")}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة","Quality Points")}</span>
+                        <span className="text-base font-bold text-zinc-950 dark:text-white">
+                          {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {completedCredits > 0 && semesterGpa > 0 && (
+                      <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-850 flex justify-between items-center text-xs">
+                        <span className="text-zinc-500 dark:text-zinc-400 font-bold">{t("المعدل التراكمي الجديد:","New Cumulative GPA:")}</span>
+                        <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                          {(((cumulativeGpa * completedCredits) + (calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0))) / (completedCredits + totalSemesterCredits)).toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </SpotlightCard>
+              </div>
+            </div>
+
+            {/* Regular Track Content — order-3 on mobile, left 2 columns on desktop */}
+            {showRegularTrack && (
+              <div className="lg:col-span-2 order-3 lg:order-3 space-y-6">
+                {/* Save widget */}
                   <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30 rounded-2xl gap-4">
                     <div>
                       <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
@@ -908,52 +955,8 @@ export default function GpaPage() {
                       </CardContent>
                     </Card>
                   )}
-                </>
-              )}
-            </div>
-
-            {/* Results Sidebar with ReactBits SpotlightCard */}
-            <div>
-              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.22)">
-                <div className="pt-8 pb-6 px-6">
-                  <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
-                    {t("المعدل الفصلي المتوقع","Expected Semester GPA")}
-                  </h3>
-                  <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
-                    <AnimatedNumber value={semesterGpa} decimals={2} />
-                  </div>
-                  <Badge className="mt-3 bg-zinc-100 text-zinc-900 border-zinc-300 text-xs py-1 px-3 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700">
-                    {semesterGpa >= 3.4
-                      ? t("جيد جداً مرتفع","High Distinction")
-                      : semesterGpa >= 2.8
-                      ? t("جيد جداً","Very Good")
-                      : t("مقبول","Passing")}
-                  </Badge>
-
-                  <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"}`}>
-                    <div>
-                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات","Total Credits")}</span>
-                      <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة","Hours")}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة","Quality Points")}</span>
-                      <span className="text-base font-bold text-zinc-950 dark:text-white">
-                        {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {completedCredits > 0 && semesterGpa > 0 && (
-                    <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-850 flex justify-between items-center text-xs">
-                      <span className="text-zinc-500 dark:text-zinc-400 font-bold">{t("المعدل التراكمي الجديد:","New Cumulative GPA:")}</span>
-                      <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono text-sm">
-                        {(((cumulativeGpa * completedCredits) + (calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0))) / (completedCredits + totalSemesterCredits)).toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </SpotlightCard>
-            </div>
+              </div>
+            )}
           </motion.div>
         ) : activeTab === "custom-timeline" && showFlexibleTrack ? (
           <motion.div
