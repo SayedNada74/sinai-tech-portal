@@ -198,7 +198,7 @@ export default function AiAssistantPage() {
   const router = useRouter();
   const { t, lang, dir, userName } = useApp();
   const { user } = useAuth();
-  const { faqs, settings } = useAdmin();
+  const { faqs, settings, aiConfig } = useAdmin();
 
   const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
   const aiStatus = settings?.featureAccess?.aiAssistant || "ALL";
@@ -722,6 +722,21 @@ export default function AiAssistantPage() {
                   );
                 })}
               </div>
+
+              {/* Admin-Configured Suggested Replies & Prompt Pills */}
+              {aiConfig?.suggestedReplies && aiConfig.suggestedReplies.length > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-2xl pt-1">
+                  {aiConfig.suggestedReplies.map((pill, pIdx) => (
+                    <button
+                      key={pIdx}
+                      onClick={() => handleSendMessage(pill)}
+                      className="px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-zinc-100 hover:bg-sky-50 dark:bg-zinc-800/80 dark:hover:bg-sky-950/40 text-zinc-700 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 border border-zinc-200/80 hover:border-sky-300 dark:border-zinc-750 dark:hover:border-sky-700 transition-all cursor-pointer shadow-2xs"
+                    >
+                      💡 {pill}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             /* SCREEN 2: ACTIVE CHAT MESSAGES STREAM */

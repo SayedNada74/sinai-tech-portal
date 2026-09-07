@@ -89,48 +89,52 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 flex flex-col md:flex-row w-full max-w-full overflow-x-hidden" dir={dir}>
         {/* Mobile Header */}
         <header className="sticky top-0 flex md:hidden items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-xs z-50">
-          <Link
-            href="/admin"
-            onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity min-w-0"
-            title={t("العودة للرئيسية الإدارية","Go to Admin Dashboard")}
-          >
-            <div className="h-8 w-8 rounded-lg bg-sky-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-              <GraduationCap className="h-4.5 w-4.5" />
-            </div>
-            <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-50 truncate">
-              {t("لوحة الإشراف والتنظيم","Admin Portal")}
-            </span>
-          </Link>
+          {/* Start Side: Mobile Sidebar Menu Toggle + Brand/Title */}
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="h-9 w-9 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer shrink-0"
+              aria-label="Toggle sidebar menu"
+              title={t("القائمة الجانبية للإدارة", "Admin Menu")}
+            >
+              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+            <Link
+              href="/admin"
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity min-w-0"
+              title={t("العودة للرئيسية الإدارية", "Go to Admin Dashboard")}
+            >
+              <div className="h-8 w-8 rounded-lg bg-sky-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                <GraduationCap className="h-4.5 w-4.5" />
+              </div>
+              <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-50 truncate">
+                {t("لوحة الإشراف والتنظيم", "Admin Portal")}
+              </span>
+            </Link>
+          </div>
+
+          {/* End Side: Language & Theme */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Quick Language Toggle Mobile */}
             <button
-              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
-              className="px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title={t("تغيير اللغة","Change Language")}
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="h-8 px-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-black text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer shadow-2xs"
+              title={lang === "ar" ? "Switch to English" : "التحويل للعربية"}
             >
-              {lang ==="ar" ?"EN" :"عربي"}
+              {lang === "ar" ? "EN" : "عربي"}
             </button>
 
             {/* Quick Theme Toggle Mobile */}
             <button
-              onClick={() => setTheme(theme ==="dark" ?"light" :"dark")}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               suppressHydrationWarning
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title={t("تبديل المظهر","Toggle Theme")}
+              className="h-8 w-8 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer"
+              title={t("تبديل المظهر", "Toggle Theme")}
               aria-label="Toggle theme"
             >
-              {theme ==="dark" ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-primary" />}
-            </button>
-
-            {/* Mobile Menu Toggle Button */}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              aria-label="Toggle sidebar menu"
-            >
-              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {theme === "dark" ? <Sun className="h-4.5 w-4.5 text-amber-400" /> : <Moon className="h-4.5 w-4.5 text-primary" />}
             </button>
           </div>
         </header>
@@ -139,19 +143,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {sidebarOpen && (
           <div
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[55] md:hidden"
           />
         )}
 
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 ${dir ==="rtl" ?"right-0 border-l" :"left-0 border-r"} w-68 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 flex flex-col justify-between z-40 transition-transform duration-300 transform md:translate-x-0 md:static md:h-screen ${sidebarOpen ?"translate-x-0" : dir ==="rtl" ?"translate-x-full" :"-translate-x-full"
+          className={`fixed inset-y-0 ${dir ==="rtl" ?"right-0 border-l" :"left-0 border-r"} w-72 max-w-[85vw] bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 flex flex-col justify-between z-[60] transition-transform duration-300 transform md:translate-x-0 md:static md:h-screen md:z-auto md:w-68 ${sidebarOpen ?"translate-x-0" : dir ==="rtl" ?"translate-x-full" :"-translate-x-full"
             }`}
         >
           <div className="flex flex-col flex-1 overflow-y-auto">
-            {/* Logo Header with Quick Actions */}
-            <div className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-              <Logo size="sm" href="/admin" subtitle={t("الإشراف","Admin")} />
+            {/* Logo Header with Quick Actions & Mobile Close */}
+            <div className="h-16 px-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between shrink-0">
+              <Logo size="sm" href="/admin" subtitle={t("الإشراف","Admin")} onClick={() => setSidebarOpen(false)} />
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="md:hidden p-2 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                aria-label="Close sidebar"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
             {/* Profile Info */}

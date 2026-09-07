@@ -633,44 +633,44 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
             author: p.author,
             authorEmail: p.author_email || p.authorEmail || "student@sinai.edu.eg",
             avatar: p.avatar || "🎓",
-            likes: Array.isArray(p.likes) ? p.likes : [],
-            comments: Array.isArray(p.comments) ? p.comments : [],
+            likes: Array.isArray(p.likes) ? p.likes : (typeof p.likes === "string" ? JSON.parse(p.likes || "[]") : []),
+            comments: Array.isArray(p.comments) ? p.comments : (typeof p.comments === "string" ? JSON.parse(p.comments || "[]") : []),
             attachmentName: p.attachment_name,
             attachmentUrl: p.attachment_url,
             reported: Boolean(p.reported)
           }));
 
-        const mergedMap = new Map<string, CommunityPost>();
-        initial.forEach(p => {
-          if (!deletedSet.has(p.id)) mergedMap.set(p.id, p);
-        });
+        // Build a map of remote posts
+        const remoteMap = new Map<string, CommunityPost>();
+        mappedRemote.forEach(r => remoteMap.set(r.id, r));
 
-        mappedRemote.forEach(remote => {
-          if (deletedSet.has(remote.id)) return;
-          const local = mergedMap.get(remote.id);
-          if (local) {
-            // Merge comments intelligently so neither local nor remote comments are lost
+        // Merge any genuinely created local posts that were not yet in cloud
+        const mergedMap = new Map<string, CommunityPost>();
+        mappedRemote.forEach(r => mergedMap.set(r.id, r));
+
+        initial.forEach(p => {
+          if (deletedSet.has(p.id)) return;
+          if (!remoteMap.has(p.id)) {
+            // If it's a real custom user post (not the hardcoded mock ones), keep it
+            const isDefaultMock = p.id === "post-1" || p.id === "post-2";
+            if (!isDefaultMock) {
+              mergedMap.set(p.id, p);
+            }
+          } else {
+            // Intelligently merge comments
+            const remote = remoteMap.get(p.id)!;
             const commentMap = new Map<string, PostComment>();
-            (local.comments || []).forEach(c => commentMap.set(c.id, c));
-            (remote.comments || []).forEach(c => {
-              const existing = commentMap.get(c.id);
-              if (existing) {
-                const replyMap = new Map<string, PostReply>();
-                (existing.replies || []).forEach(r => replyMap.set(r.id, r));
-                (c.replies || []).forEach(r => replyMap.set(r.id, r));
-                commentMap.set(c.id, { ...existing, ...c, replies: Array.from(replyMap.values()) });
-              } else {
+            (remote.comments || []).forEach(c => commentMap.set(c.id, c));
+            (p.comments || []).forEach(c => {
+              if (!commentMap.has(c.id)) {
                 commentMap.set(c.id, c);
               }
             });
-            mergedMap.set(remote.id, {
+            mergedMap.set(p.id, {
               ...remote,
-              ...local,
               comments: Array.from(commentMap.values()),
-              likes: Array.from(new Set([...(local.likes || []), ...(remote.likes || [])]))
+              likes: Array.from(new Set([...(remote.likes || []), ...(p.likes || [])]))
             });
-          } else {
-            mergedMap.set(remote.id, remote);
           }
         });
 
@@ -1081,6 +1081,7 @@ export function SocialProvider({ children }: { children: React.ReactNode }) {
         avatar: newPost.avatar,
         date: newPost.date,
         likes: newPost.likes,
+        comments: newPost.comments,
         reported: false,
         attachment_name: attachmentName,
         attachment_url: attachmentUrl

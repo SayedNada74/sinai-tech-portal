@@ -69,8 +69,18 @@ export function Navbar() {
         className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-xl border-b border-zinc-200/80 dark:border-zinc-850/80 shadow-xs py-3.5"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between" dir={dir}>
-          {/* Logo */}
-          <Logo size="md" href="/" />
+          {/* Start Side: Mobile Menu Button + Logo */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden h-9 w-9 rounded-xl flex items-center justify-center border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 active:scale-95 transition-all cursor-pointer"
+              aria-label="Toggle navigation menu"
+              title={t("القائمة الرئيسية", "Menu")}
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <Logo size="md" href="/" />
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
@@ -197,28 +207,23 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Actions: Language & Theme */}
+          <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
             <button
-              onClick={() => setLang(lang ==="ar" ?"en" :"ar")}
-              className="px-2.5 py-1.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 text-xs font-bold shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="h-8 px-2.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 text-xs font-black shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 active:scale-95 transition-all cursor-pointer"
+              title={lang === "ar" ? "Switch to English" : "التحويل للعربية"}
             >
-              {lang ==="ar" ?"EN" :"عربي"}
+              {lang === "ar" ? "EN" : "عربي"}
             </button>
             <button
               onClick={toggleTheme}
               suppressHydrationWarning
-              className="p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
+              className="h-8 w-8 rounded-xl flex items-center justify-center border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 active:scale-95 transition-all cursor-pointer"
               aria-label="Toggle theme"
+              title={t("تبديل مظهر الموقع", "Toggle Theme")}
             >
-              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-foreground" />}
-            </button>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 shadow-2xs hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors cursor-pointer"
-              aria-label="Toggle navigation menu"
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isDark ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5 text-primary" />}
             </button>
           </div>
         </div>

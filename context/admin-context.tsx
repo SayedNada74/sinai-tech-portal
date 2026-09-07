@@ -348,6 +348,25 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("su_courses_db", JSON.stringify(COURSES));
     }
 
+    const fetchAdminCoursesCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("settings").select("*").eq("id", "custom_courses").maybeSingle();
+          if (!error && data && data.value) {
+            const parsed: Course[] = JSON.parse(data.value);
+            if (Array.isArray(parsed) && parsed.length > 0 && shouldCloudOverride("su_courses_db")) {
+              setCourses(parsed);
+              localStorage.setItem("su_courses_db", JSON.stringify(parsed));
+              localStorage.setItem("su_courses_db_lastCloudSync", Date.now().toString());
+            }
+          }
+        } catch (err) {
+          console.warn("[Admin Courses] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminCoursesCloud();
+
     // 3. Resources setup (Hydrate from cache immediately, then authoritative fetch from Supabase)
     const savedResources = localStorage.getItem("su_resources_db");
     if (savedResources) {
@@ -437,6 +456,42 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("su_roadmaps_db", JSON.stringify(ROADMAPS));
     }
 
+    const fetchAdminRoadmapsCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("roadmaps").select("*");
+          if (!error && data && data.length > 0) {
+            const mappedRoadmaps: Roadmap[] = data.map((r: any) => ({
+              id: r.id,
+              title: r.title,
+              titleEn: r.title_en || r.titleEn,
+              description: r.description,
+              descriptionEn: r.description_en || r.descriptionEn,
+              duration: r.duration,
+              durationEn: r.duration_en || r.durationEn,
+              nodes: Array.isArray(r.nodes) ? r.nodes : (typeof r.nodes === "string" ? JSON.parse(r.nodes || "[]") : [])
+            }));
+
+            if (shouldCloudOverride("su_roadmaps_db")) {
+              const map = new Map<string, Roadmap>();
+              ROADMAPS.forEach(dr => map.set(dr.id, dr));
+              mappedRoadmaps.forEach(mr => {
+                const existing = map.get(mr.id);
+                map.set(mr.id, { ...existing, ...mr });
+              });
+              const merged = Array.from(map.values());
+              setRoadmaps(merged);
+              localStorage.setItem("su_roadmaps_db", JSON.stringify(merged));
+              localStorage.setItem("su_roadmaps_db_lastCloudSync", Date.now().toString());
+            }
+          }
+        } catch (err) {
+          console.warn("[Admin Roadmaps] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminRoadmapsCloud();
+
     // 5. CMS items: Announcements (Hydrate from cache, then authoritative fetch from Supabase)
     const savedAnn = localStorage.getItem("su_announcements");
     if (savedAnn) { try { setAnnouncements(JSON.parse(savedAnn)); } catch (e) { } }
@@ -524,6 +579,39 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       } catch (e) { }
     }
 
+    const fetchAdminSettingsCloud = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from("settings").select("*").eq("id", "platform_settings").maybeSingle();
+          if (!error && data && data.value) {
+            const parsed = JSON.parse(data.value);
+            if (shouldCloudOverride("su_settings")) {
+              setSettings((prev) => ({
+                ...DEFAULT_SETTINGS,
+                ...prev,
+                ...parsed,
+                featureFlags: {
+                  ...DEFAULT_SETTINGS.featureFlags,
+                  ...(parsed.featureFlags || {}),
+                },
+                featureAccess: {
+                  ...DEFAULT_SETTINGS.featureAccess,
+                  ...(parsed.featureAccess || {}),
+                  gpaRegular: parsed.featureAccess?.gpaRegular || parsed.featureAccess?.gpa || prev?.featureAccess?.gpa || "ALL",
+                  gpaFlexible: parsed.featureAccess?.gpaFlexible || parsed.featureAccess?.gpa || prev?.featureAccess?.gpa || "ALL"
+                }
+              }));
+              localStorage.setItem("su_settings", JSON.stringify(parsed));
+              localStorage.setItem("su_settings_lastCloudSync", Date.now().toString());
+            }
+          }
+        } catch (err) {
+          console.warn("[Admin Settings] Cloud fetch warning:", err);
+        }
+      }
+    };
+    fetchAdminSettingsCloud();
+
     const savedAi = localStorage.getItem("su_ai_config");
     if (savedAi) { try { setAiConfig(JSON.parse(savedAi)); } catch (e) { } }
 
@@ -563,17 +651,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Decides whether a Supabase cloud fetch should overwrite local state.
-  // Returns false when the admin made a local edit after the last cloud sync,
-  // preventing the cloud from reverting those changes.
+  // Returns false only when the admin made a recent local edit after the last cloud sync.
   const shouldCloudOverride = (localStorageKey: string): boolean => {
     const lastLocalMod = localStorage.getItem(`${localStorageKey}_lastModified`);
     // No local modifications recorded → safe to use cloud data
     if (!lastLocalMod) return true;
     const lastCloudSync = localStorage.getItem(`${localStorageKey}_lastCloudSync`);
-    // Local was modified but we never synced from cloud before → keep local
-    if (!lastCloudSync) return false;
-    // Local was modified AFTER the last cloud sync → keep local
-    if (Number(lastLocalMod) > Number(lastCloudSync)) return false;
+    // If local was never synced from cloud before, cloud is safe to load on mount
+    if (!lastCloudSync) return true;
+    // Local was modified AFTER the last cloud sync (by more than 5s) → keep local in-flight
+    if (Number(lastLocalMod) > Number(lastCloudSync) + 5000) return false;
     // Cloud sync is more recent → safe to override
     return true;
   };
@@ -719,32 +806,76 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Course Actions
-  const addCourse = (course: Course) => {
+  const addCourse = async (course: Course) => {
     const updated = [course, ...courses];
     setCourses(updated);
     saveState("su_courses_db", updated);
     logAction("إضافة مقرر دراسي جديد", `تم إدراج المقرر [${course.code} - ${course.arabic}] بنجاح.`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("settings").upsert([{ id: "custom_courses", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_courses_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Courses] Cloud sync error:", e);
+      }
+    }
   };
 
-  const updateCourse = (code: string, updatedCourse: Course) => {
+  const updateCourse = async (code: string, updatedCourse: Course) => {
     const updated = courses.map(c => c.code.toLowerCase() === code.toLowerCase() ? updatedCourse : c);
     setCourses(updated);
     saveState("su_courses_db", updated);
     logAction("تعديل مقرر دراسي", `تم تحديث حقول المقرر: ${code}`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("settings").upsert([{ id: "custom_courses", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_courses_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Courses] Cloud sync error:", e);
+      }
+    }
   };
 
-  const deleteCourse = (code: string) => {
+  const deleteCourse = async (code: string) => {
     const updated = courses.filter(c => c.code.toLowerCase() !== code.toLowerCase());
     setCourses(updated);
     saveState("su_courses_db", updated);
     logAction("حذف مقرر دراسي", `تم إزالة المقرر: ${code} تماماً من خطة الأقسام.`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("settings").upsert([{ id: "custom_courses", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_courses_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Courses] Cloud sync error:", e);
+      }
+    }
   };
 
-  const archiveCourse = (code: string, archive: boolean) => {
+  const archiveCourse = async (code: string, archive: boolean) => {
     const updated = courses.map(c => c.code.toLowerCase() === code.toLowerCase() ? { ...c, type: archive ? "elective" as const : "required" as const } : c);
     setCourses(updated);
     saveState("su_courses_db", updated);
     logAction(archive ? "أرشفة مقرر" : "إعادة تفعيل مقرر مؤرشف", `المقرر المستهدف: ${code}`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("settings").upsert([{ id: "custom_courses", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_courses_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Courses] Cloud sync error:", e);
+      }
+    }
   };
 
   // Resource Actions (with In-Flight Mutex Locks)
@@ -1017,13 +1148,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("faqs").insert([{
+        const { error } = await supabase.from("faqs").insert([{
           id: newFaq.id,
           question: newFaq.question,
           answer: newFaq.answer,
           category: newFaq.category,
           pinned: newFaq.pinned
         }]);
+        if (!error) {
+          localStorage.setItem("su_faqs_lastCloudSync", Date.now().toString());
+        }
       } catch (e) {
         console.warn("[Admin FAQs] Cloud insert error:", e);
       }
@@ -1038,7 +1172,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("faqs").update(updatedFields).eq("id", id);
+        const { error } = await supabase.from("faqs").update(updatedFields).eq("id", id);
+        if (!error) {
+          localStorage.setItem("su_faqs_lastCloudSync", Date.now().toString());
+        }
       } catch (e) {
         console.warn("[Admin FAQs] Cloud update error:", e);
       }
@@ -1053,7 +1190,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("faqs").delete().eq("id", id);
+        const { error } = await supabase.from("faqs").delete().eq("id", id);
+        if (!error) {
+          localStorage.setItem("su_faqs_lastCloudSync", Date.now().toString());
+        }
       } catch (e) {
         console.warn("[Admin FAQs] Cloud delete error:", e);
       }
@@ -1069,7 +1209,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("settings").upsert([{ id: "ai_config", value: JSON.stringify(updated) }]);
+        const { error } = await supabase.from("settings").upsert([{ id: "ai_config", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_ai_config_lastCloudSync", Date.now().toString());
+        }
       } catch (e) {
         console.warn("[Admin AI Config] Cloud update error:", e);
       }
@@ -1077,11 +1220,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Settings Actions
-  const updateSettings = (updatedFields: Partial<PlatformSettings>) => {
+  const updateSettings = async (updatedFields: Partial<PlatformSettings>) => {
     const updated = { ...settings, ...updatedFields };
     setSettings(updated);
     saveState("su_settings", updated);
     logAction("تحديث إعدادات المنصة", "تغيير إعدادات المنصة الأساسية أو تفعيل وضع الصيانة.", "settings");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("settings").upsert([{ id: "platform_settings", value: JSON.stringify(updated), updated_at: new Date().toISOString() }]);
+        if (!error) {
+          localStorage.setItem("su_settings_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Settings] Cloud update error:", e);
+      }
+    }
   };
 
   const clearAuditLogs = () => {
@@ -1104,7 +1258,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Roadmap Actions
-  const addRoadmap = (roadmapData: Omit<Roadmap, "id">) => {
+  const addRoadmap = async (roadmapData: Omit<Roadmap, "id">) => {
     const newRoadmap: Roadmap = {
       ...roadmapData,
       id: `roadmap-${Date.now()}`
@@ -1113,20 +1267,71 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setRoadmaps(updated);
     saveState("su_roadmaps_db", updated);
     logAction("إضافة مسار تعلم", `تمت إضافة مسار التعلم: ${newRoadmap.title}`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("roadmaps").insert([{
+          id: newRoadmap.id,
+          title: newRoadmap.title,
+          title_en: newRoadmap.titleEn,
+          description: newRoadmap.description,
+          description_en: newRoadmap.descriptionEn,
+          duration: newRoadmap.duration,
+          duration_en: newRoadmap.durationEn,
+          nodes: newRoadmap.nodes
+        }]);
+        if (!error) {
+          localStorage.setItem("su_roadmaps_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Roadmaps] Cloud insert warning:", e);
+      }
+    }
   };
 
-  const updateRoadmap = (id: string, updatedFields: Partial<Roadmap>) => {
+  const updateRoadmap = async (id: string, updatedFields: Partial<Roadmap>) => {
     const updated = roadmaps.map((r) => (r.id === id ? { ...r, ...updatedFields } : r));
     setRoadmaps(updated);
     saveState("su_roadmaps_db", updated);
     logAction("تحديث مسار تعلم", `تم تعديل مسار التعلم مع المعرف ${id}`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload: Record<string, any> = {};
+        if (updatedFields.title !== undefined) payload.title = updatedFields.title;
+        if (updatedFields.titleEn !== undefined) payload.title_en = updatedFields.titleEn;
+        if (updatedFields.description !== undefined) payload.description = updatedFields.description;
+        if (updatedFields.descriptionEn !== undefined) payload.description_en = updatedFields.descriptionEn;
+        if (updatedFields.duration !== undefined) payload.duration = updatedFields.duration;
+        if (updatedFields.durationEn !== undefined) payload.duration_en = updatedFields.durationEn;
+        if (updatedFields.nodes !== undefined) payload.nodes = updatedFields.nodes;
+
+        const { error } = await supabase.from("roadmaps").update(payload).eq("id", id);
+        if (!error) {
+          localStorage.setItem("su_roadmaps_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Roadmaps] Cloud update warning:", e);
+      }
+    }
   };
 
-  const deleteRoadmap = (id: string) => {
+  const deleteRoadmap = async (id: string) => {
     const updated = roadmaps.filter((r) => r.id !== id);
     setRoadmaps(updated);
     saveState("su_roadmaps_db", updated);
     logAction("حذف مسار تعلم", `تم حذف مسار التعلم مع المعرف ${id}`, "course");
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from("roadmaps").delete().eq("id", id);
+        if (!error) {
+          localStorage.setItem("su_roadmaps_db_lastCloudSync", Date.now().toString());
+        }
+      } catch (e) {
+        console.warn("[Admin Roadmaps] Cloud delete warning:", e);
+      }
+    }
   };
 
   const contextValue = React.useMemo<AdminContextType>(() => ({

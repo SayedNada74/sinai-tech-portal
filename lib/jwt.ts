@@ -1,9 +1,11 @@
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 
-// SECURITY: In production, JWT_SECRET MUST be set as an environment variable.
-// The development fallback key is ONLY used when NODE_ENV !== 'production'.
+// SECURITY: In production runtime, JWT_SECRET MUST be set as an environment variable.
+// The fallback key is ONLY used during development and production build phase.
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || process.env.npm_lifecycle_event === 'build';
+
 const JWT_SECRET = process.env.JWT_SECRET || (
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'production' && !isBuildPhase
     ? (() => { throw new Error('FATAL: JWT_SECRET environment variable is not set. Refusing to start in production with default key.'); })()
     : 'super-secret-development-key-change-me'
 );

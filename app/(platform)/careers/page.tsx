@@ -32,7 +32,7 @@ import {
 } from"lucide-react";
 import { motion, AnimatePresence } from"framer-motion";
 
-export interface FreeCertificateItem {
+interface FreeCertificateItem {
   id: string;
   titleAr: string;
   titleEn: string;
@@ -48,7 +48,7 @@ export interface FreeCertificateItem {
   link: string;
 }
 
-export const FREE_CERTIFICATES: FreeCertificateItem[] = [
+const FREE_CERTIFICATES: FreeCertificateItem[] = [
   {
     id: "cert-1",
     titleAr: "شهادة أساسيات الذكاء الاصطناعي التوليدي",

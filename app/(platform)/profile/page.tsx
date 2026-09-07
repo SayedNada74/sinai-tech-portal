@@ -24,8 +24,10 @@ import {
   Trash2,
   X,
   Camera,
-  Upload
-} from"lucide-react";
+  Upload,
+  Crop
+} from "lucide-react";
+import { AvatarCropModal } from "@/components/ui/avatar-crop-modal";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
 
@@ -60,6 +62,10 @@ export default function ProfilePage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [isUploadingImage, setIsUploadingImage] = React.useState(false);
   const isUploadingImageRef = React.useRef(false);
+
+  // Avatar Cropping & Zoom Modal State
+  const [cropModalOpen, setCropModalOpen] = React.useState(false);
+  const [cropImageSrc, setCropImageSrc] = React.useState<string | null>(null);
 
   // Privacy Settings
   const [publicSkills, setPublicSkills] = React.useState(true);
@@ -174,76 +180,43 @@ export default function ProfilePage() {
     return score;
   }, [name, email, studentId, bio, skills, github, linkedin, cvUrl, projects]);
 
-  // Handle custom image file upload
+  // Handle custom image file upload - opens the interactive cropping & zoom modal
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    if (isUploadingImageRef.current) return;
-    isUploadingImageRef.current = true;
-    setIsUploadingImage(true);
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 8 * 1024 * 1024) {
       setMessage({
-        type:"error",
-        text: t("حجم الصورة كبير جداً. يرجى اختيار صورة أقل من 5 ميجابايت.","Image size too large. Please select an image under 5MB.")
+        type: "error",
+        text: t("حجم الصورة كبير جداً. يرجى اختيار صورة أقل من 8 ميجابايت.", "Image size too large. Please select an image under 8MB.")
       });
-      isUploadingImageRef.current = false;
-      setIsUploadingImage(false);
       return;
     }
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      try {
-        if (typeof reader.result ==="string") {
-          // Compress image using Canvas to ensure it easily fits in Supabase TEXT column and localStorage
-          const img = new Image();
-          img.onload = () => {
-            try {
-              const canvas = document.createElement("canvas");
-              const MAX_SIZE = 256;
-              let width = img.width;
-              let height = img.height;
-
-              if (width > height && width > MAX_SIZE) {
-                height *= MAX_SIZE / width;
-                width = MAX_SIZE;
-              } else if (height > MAX_SIZE) {
-                width *= MAX_SIZE / height;
-                height = MAX_SIZE;
-              }
-
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext("2d");
-              if (ctx) {
-                ctx.drawImage(img, 0, 0, width, height);
-                const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-                setAvatar(compressedBase64);
-              } else {
-                setAvatar(reader.result as string); // fallback
-              }
-            } finally {
-              isUploadingImageRef.current = false;
-              setIsUploadingImage(false);
-            }
-          };
-          img.onerror = () => {
-            isUploadingImageRef.current = false;
-            setIsUploadingImage(false);
-          };
-          img.src = reader.result;
-        }
-      } catch {
-        isUploadingImageRef.current = false;
-        setIsUploadingImage(false);
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setCropImageSrc(reader.result);
+        setCropModalOpen(true);
       }
     };
     reader.onerror = () => {
-      isUploadingImageRef.current = false;
-      setIsUploadingImage(false);
+      setMessage({
+        type: "error",
+        text: t("تعذر قراءة ملف الصورة. حاول مجدداً.", "Failed to read image file. Please try again.")
+      });
     };
     reader.readAsDataURL(file);
+  };
+
+  // Called when user finishes cropping and confirms in the modal
+  const handleCropComplete = (croppedBase64: string) => {
+    setAvatar(croppedBase64);
+    setMessage({
+      type: "success",
+      text: t("تم قص وتحديد أبعاد الصورة بنجاح! اضغط على 'حفظ التعديلات' لاعتمادها بشكل دائم.", "Avatar cropped and adjusted successfully! Click 'Save Changes' to persist permanently.")
+    });
   };
 
   const handleAddSkill = (e: React.KeyboardEvent) => {
@@ -485,17 +458,31 @@ export default function ProfilePage() {
                     <span>{t("تغيير الصورة","Change Avatar")}</span>
                   </button>
                   {avatar.length > 10 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setAvatar("🎓");
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                      title={t("حذف الصورة","Remove Picture")}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCropImageSrc(avatar);
+                          setCropModalOpen(true);
+                        }}
+                        className="absolute top-2 left-2 bg-cyan-600 hover:bg-cyan-700 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
+                        title={t("إعادة ضبط الأبعاد والقص", "Adjust Crop & Zoom")}
+                      >
+                        <Crop className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAvatar("🎓");
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
+                        title={t("حذف الصورة","Remove Picture")}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </>
                   )}
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </div>
@@ -590,6 +577,17 @@ export default function ProfilePage() {
             </Card>
           </div>
         </form>
+
+        {/* Avatar Cropping & Zoom Modal for Admin */}
+        <AvatarCropModal
+          isOpen={cropModalOpen}
+          imageSrc={cropImageSrc}
+          onClose={() => {
+            setCropModalOpen(false);
+            setCropImageSrc(null);
+          }}
+          onCropComplete={handleCropComplete}
+        />
       </div>
     );
   }
@@ -672,24 +670,42 @@ export default function ProfilePage() {
                   className="hidden"
                 />
 
-                <div className="flex justify-center gap-2 mb-4">
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1 min-w-0"
+                    className="text-xs gap-1.5 h-8 font-bold border-dashed flex-1 min-w-0 cursor-pointer"
                   >
                     <Upload className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{t("رفع صورة من الجهاز","Upload Custom Picture")}</span>
                   </Button>
+
+                  {isValidImageAvatar(avatar) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setCropImageSrc(avatar);
+                        setCropModalOpen(true);
+                      }}
+                      className="text-xs gap-1.5 h-8 font-bold border-dashed shrink-0 cursor-pointer text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950/30"
+                      title={t("إعادة ضبط الأبعاد والتكبير", "Adjust Crop & Zoom")}
+                    >
+                      <Crop className="h-3.5 w-3.5" />
+                      <span>{t("ضبط الأبعاد والزووم", "Crop & Zoom")}</span>
+                    </Button>
+                  )}
+
                   {avatar.length > 10 && (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => setAvatar("🎓")}
-                      className="text-xs h-8 font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/50 dark:hover:bg-red-900/20"
+                      className="text-xs h-8 font-bold border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-900/50 dark:hover:bg-red-900/20 cursor-pointer shrink-0"
                       title={t("حذف الصورة","Remove Picture")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -1292,6 +1308,17 @@ export default function ProfilePage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Avatar Cropping & Zoom Modal for Student */}
+      <AvatarCropModal
+        isOpen={cropModalOpen}
+        imageSrc={cropImageSrc}
+        onClose={() => {
+          setCropModalOpen(false);
+          setCropImageSrc(null);
+        }}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 }
