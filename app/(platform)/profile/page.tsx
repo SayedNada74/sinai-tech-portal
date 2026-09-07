@@ -25,9 +25,11 @@ import {
   X,
   Camera,
   Upload,
-  Crop
+  Crop,
+  Eye
 } from "lucide-react";
 import { AvatarCropModal } from "@/components/ui/avatar-crop-modal";
+import { AvatarLightboxModal } from "@/components/ui/avatar-lightbox-modal";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn, getAvatarFallback, isValidImageAvatar, getLocalizedUserName } from "@/lib/utils";
 
@@ -66,6 +68,7 @@ export default function ProfilePage() {
   // Avatar Cropping & Zoom Modal State
   const [cropModalOpen, setCropModalOpen] = React.useState(false);
   const [cropImageSrc, setCropImageSrc] = React.useState<string | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
   // Privacy Settings
   const [publicSkills, setPublicSkills] = React.useState(true);
@@ -475,6 +478,17 @@ export default function ProfilePage() {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
+                          setIsLightboxOpen(true);
+                        }}
+                        className="absolute bottom-2 left-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
+                        title={t("عرض الصورة بالحجم الكامل", "View Full Photo")}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setAvatar("🎓");
                         }}
                         className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
@@ -588,6 +602,14 @@ export default function ProfilePage() {
           }}
           onCropComplete={handleCropComplete}
         />
+
+        {/* Fullscreen Avatar Lightbox for Admin */}
+        <AvatarLightboxModal
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          src={avatar}
+          name={getLocalizedUserName({ nameAr, nameEn, name: user?.name }, lang) || "Admin"}
+        />
       </div>
     );
   }
@@ -683,20 +705,34 @@ export default function ProfilePage() {
                   </Button>
 
                   {isValidImageAvatar(avatar) && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setCropImageSrc(avatar);
-                        setCropModalOpen(true);
-                      }}
-                      className="text-xs gap-1.5 h-8 font-bold border-dashed shrink-0 cursor-pointer text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950/30"
-                      title={t("إعادة ضبط الأبعاد والتكبير", "Adjust Crop & Zoom")}
-                    >
-                      <Crop className="h-3.5 w-3.5" />
-                      <span>{t("ضبط الأبعاد والزووم", "Crop & Zoom")}</span>
-                    </Button>
+                    <>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsLightboxOpen(true)}
+                        className="text-xs gap-1.5 h-8 font-bold border-dashed shrink-0 cursor-pointer"
+                        title={t("عرض الصورة بالحجم الكامل", "View Full Photo")}
+                      >
+                        <Eye className="h-3.5 w-3.5 text-zinc-500" />
+                        <span>{t("عرض", "View")}</span>
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCropImageSrc(avatar);
+                          setCropModalOpen(true);
+                        }}
+                        className="text-xs gap-1.5 h-8 font-bold border-dashed shrink-0 cursor-pointer text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950/30"
+                        title={t("إعادة ضبط الأبعاد والتكبير", "Adjust Crop & Zoom")}
+                      >
+                        <Crop className="h-3.5 w-3.5" />
+                        <span>{t("ضبط الأبعاد والزووم", "Crop & Zoom")}</span>
+                      </Button>
+                    </>
                   )}
 
                   {avatar.length > 10 && (
@@ -1318,6 +1354,14 @@ export default function ProfilePage() {
           setCropImageSrc(null);
         }}
         onCropComplete={handleCropComplete}
+      />
+
+      {/* Fullscreen Avatar Lightbox for Student */}
+      <AvatarLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        src={avatar}
+        name={getLocalizedUserName({ nameAr, nameEn, name: user?.name }, lang) || t("طالب مستجد", "Freshman Student")}
       />
     </div>
   );

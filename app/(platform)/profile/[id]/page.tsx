@@ -20,8 +20,11 @@ import {
   ChevronLeft,
   ArrowRight,
   ArrowLeft,
-  Mail
-} from"lucide-react";
+  Mail,
+  Maximize2,
+  Eye
+} from "lucide-react";
+import { AvatarLightboxModal } from "@/components/ui/avatar-lightbox-modal";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,6 +35,7 @@ export default function PublicProfilePage({ params }: PageProps) {
   const { users } = useAdmin();
   const resolvedParams = React.use(params);
   const userId = decodeURIComponent(resolvedParams.id);
+  const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
   // Find user by ID
   const profile = users.find((u) => u.id === userId);
@@ -136,13 +140,42 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="col-span-1 space-y-6">
           <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl overflow-hidden bg-white/70 dark:bg-zinc-900/40 backdrop-blur-3xl">
             <CardContent className="p-6 text-center">
-              <UserAvatar
-                src={profile.avatar}
-                name={displayName}
-                className="w-32 h-32 mx-auto mb-4 shadow-xl border-4"
-                iconClassName="h-16 w-16"
-                initialsClassName="text-2xl font-black text-sky-700 dark:text-sky-300"
-              />
+              <div
+                onClick={() => setIsLightboxOpen(true)}
+                className="relative group cursor-pointer inline-block mx-auto mb-2.5 focus:outline-none"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setIsLightboxOpen(true);
+                }}
+                title={t("اضغط لعرض الصورة بحجمها الكامل", "Click to view full photo")}
+              >
+                <UserAvatar
+                  src={profile.avatar}
+                  name={displayName}
+                  className="w-32 h-32 mx-auto shadow-xl border-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-sky-500/25 group-hover:ring-4 group-hover:ring-sky-500/30"
+                  iconClassName="h-16 w-16"
+                  initialsClassName="text-2xl font-black text-sky-700 dark:text-sky-300"
+                />
+
+                {/* Modern Hover & Touch Indicator */}
+                <div className="absolute inset-0 w-32 h-32 mx-auto rounded-full bg-black/45 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-200 flex flex-col items-center justify-center text-white gap-1 pointer-events-none">
+                  <Maximize2 className="h-6 w-6 drop-shadow-md text-sky-300" />
+                  <span className="text-[10px] font-extrabold drop-shadow-md">{t("عرض الصورة", "View Photo")}</span>
+                </div>
+              </div>
+
+              {isValidImageAvatar(profile.avatar) && (
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors flex items-center justify-center gap-1 mx-auto mb-3 cursor-pointer"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>{t("عرض الصورة الشخصية", "View Profile Picture")}</span>
+                </button>
+              )}
+
               <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-50">{displayName}</h2>
               {profile.email && (
                 <div className="mt-2 flex items-center justify-center gap-1.5 text-zinc-500 dark:text-zinc-400">
@@ -288,6 +321,15 @@ export default function PublicProfilePage({ params }: PageProps) {
 
         </div>
       </div>
+
+      {/* Fullscreen Avatar Lightbox Modal */}
+      <AvatarLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        src={profile.avatar}
+        name={displayName}
+        subtitle={profile.studentId ? `${profile.studentId} · ${getLevelLabel(profile.level)}` : getLevelLabel(profile.level)}
+      />
     </div>
   );
 }
