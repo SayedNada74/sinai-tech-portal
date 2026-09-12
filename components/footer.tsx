@@ -9,7 +9,12 @@ import {
   Users,
   ExternalLink,
   ShieldCheck,
-  GraduationCap
+  GraduationCap,
+  LibraryBig,
+  ScrollText,
+  Network,
+  HelpCircle,
+  BookMarked
 } from "lucide-react";
 import { useApp } from "@/context/app-context";
 import { DeveloperCredit } from "@/components/ui/developer-credit";
@@ -71,6 +76,18 @@ export function Footer() {
                   <BookOpen className="h-4 w-4 text-zinc-400 group-hover:text-sky-500 transition-colors" />
                   <span>{t("دليل المقررات", "Courses")}</span>
                 </Link>
+                <Link href="/study-plan" className="group flex items-center gap-2 p-2 rounded-xl hover:bg-sky-500/5 dark:hover:bg-sky-500/10 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-all">
+                  <LibraryBig className="h-4 w-4 text-zinc-400 group-hover:text-sky-500 transition-colors" />
+                  <span>{t("الخطة الدراسية", "Study Plan")}</span>
+                </Link>
+                <Link href="/academic-regulations" className="group flex items-center gap-2 p-2 rounded-xl hover:bg-sky-500/5 dark:hover:bg-sky-500/10 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-all">
+                  <ScrollText className="h-4 w-4 text-zinc-400 group-hover:text-sky-500 transition-colors" />
+                  <span>{t("اللائحة الأكاديمية", "Regulations")}</span>
+                </Link>
+                <Link href="/departments" className="group flex items-center gap-2 p-2 rounded-xl hover:bg-sky-500/5 dark:hover:bg-sky-500/10 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-all">
+                  <Network className="h-4 w-4 text-zinc-400 group-hover:text-sky-500 transition-colors" />
+                  <span>{t("الأقسام العلمية", "Departments")}</span>
+                </Link>
                 <Link href="/directory" className="group flex items-center gap-2 p-2 rounded-xl hover:bg-sky-500/5 dark:hover:bg-sky-500/10 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-all">
                   <Users className="h-4 w-4 text-zinc-400 group-hover:text-sky-500 transition-colors" />
                   <span>{t("دليل الطلاب", "Directory")}</span>
@@ -98,6 +115,13 @@ export function Footer() {
                   <ExternalLink className="h-3.5 w-3.5 text-zinc-400 group-hover:text-sky-500" />
                   <span>{t("بوابة K-Moodle", "K-Moodle Portal")}</span>
                 </a>
+                <Link
+                  href="/moodle"
+                  className="group inline-flex items-center gap-1.5 p-1.5 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-colors"
+                >
+                  <BookMarked className="h-3.5 w-3.5 text-zinc-400 group-hover:text-sky-500" />
+                  <span>{t("دليل Moodle", "Moodle Guide")}</span>
+                </Link>
                 <a
                   href="http://unicodesis.su.edu.eg/login"
                   target="_blank"
@@ -107,6 +131,13 @@ export function Footer() {
                   <ExternalLink className="h-3.5 w-3.5 text-zinc-400 group-hover:text-sky-500" />
                   <span>{t("نظام Unicode (SIS)", "Unicode SIS System")}</span>
                 </a>
+                <Link
+                  href="/faq"
+                  className="group inline-flex items-center gap-1.5 p-1.5 text-zinc-600 hover:text-sky-600 dark:text-zinc-300 dark:hover:text-sky-400 transition-colors mt-2 border-t border-zinc-200 dark:border-zinc-800 pt-3"
+                >
+                  <HelpCircle className="h-3.5 w-3.5 text-zinc-400 group-hover:text-sky-500" />
+                  <span>{t("الأسئلة الشائعة (FAQ)", "Frequently Asked Questions")}</span>
+                </Link>
               </div>
             </div>
 

@@ -10,7 +10,11 @@ const PUBLIC_ROUTES = [
   "/courses",
   "/roadmaps",
   "/departments",
-  "/careers"
+  "/careers",
+  "/study-plan",
+  "/academic-regulations",
+  "/faq",
+  "/moodle"
 ];
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {

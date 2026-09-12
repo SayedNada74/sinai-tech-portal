@@ -1,0 +1,1304 @@
+"use client";
+
+import * as React from"react";
+import { useApp } from"@/context/app-context";
+import { useAcademic, GRADE_POINTS, GRADE_OPTIONS, GRADE_LABELS } from"@/context/academic-context";
+import { useAdmin } from"@/context/admin-context";
+import { useAuth } from"@/context/auth-context";
+import { Button } from"@/components/ui/button";
+import { Input } from"@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from"@/components/ui/card";
+import { Badge } from"@/components/ui/badge";
+import { SpotlightCard } from"@/components/ui/spotlight-card";
+import { Calculator, TrendingUp, Plus, Trash2, RefreshCw, Save, CheckCircle2, AlertCircle, AlertTriangle, Printer, Sparkles, ArrowRight, ArrowLeft, ChevronDown, Calendar, Shield, Sliders, Info } from"lucide-react";
+import Link from"next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from"@/components/ui/toast";
+import { motion, AnimatePresence } from"framer-motion";
+import { AnimatedNumber } from"@/components/ui/animated-number";
+import { GradeSelect } from"@/components/ui/grade-select";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { getLocalizedUserName } from "@/lib/utils";
+import { GuestNoticeBanner } from "@/components/guest-notice-banner";
+import { getEnrollmentYearFromId, generateStudentSemesters } from "@/lib/academic-calendar";
+import { CustomTimelineBuilder } from "@/components/custom-timeline-builder";
+
+interface SemesterCourseInput {
+  id: string;
+  code: string;
+  credits: number;
+  grade: string;
+}
+
+const GPA_PERIOD_OPTIONS: Record<string, { ar: string; en: string }> = {
+  "year-1-sem-1": { ar: "الفرقة الأولى - الفصل الأول", en: "Year 1 - Semester 1" },
+  "year-1-sem-2": { ar: "الفرقة الأولى - الفصل الثاني", en: "Year 1 - Semester 2" },
+  "year-2-sem-1": { ar: "الفرقة الثانية - الفصل الأول", en: "Year 2 - Semester 1" },
+  "year-2-sem-2": { ar: "الفرقة الثانية - الفصل الثاني", en: "Year 2 - Semester 2" },
+  "year-3-sem-1": { ar: "الفرقة الثالثة - الفصل الأول", en: "Year 3 - Semester 1" },
+  "year-3-sem-2": { ar: "الفرقة الثالثة - الفصل الثاني", en: "Year 3 - Semester 2" },
+  "year-4-sem-1": { ar: "الفرقة الرابعة - الفصل الأول", en: "Year 4 - Semester 1" },
+  "year-4-sem-2": { ar: "الفرقة الرابعة - الفصل الثاني", en: "Year 4 - Semester 2" },
+  "summer-sem": { ar: "الفصل الصيفي (Summer)", en: "Summer Semester" },
+};
+
+export function GpaInteractive() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "super-admin" || user?.role === "moderator";
+  const { t, lang, dir } = useApp();
+  const { toast } = useToast();
+  const { courses, settings } = useAdmin();
+  const router = useRouter();
+  const fa = settings?.featureAccess;
+  const regularStatus = fa?.gpaRegular || fa?.gpa || settings?.gpaFeatureStatus || "ALL";
+  const flexibleStatus = fa?.gpaFlexible || fa?.gpa || settings?.gpaFeatureStatus || "ALL";
+
+  const showRegularTrack = regularStatus === "ALL" || (regularStatus === "ADMIN_ONLY" && isAdmin);
+  const showFlexibleTrack = flexibleStatus === "ALL" || (flexibleStatus === "ADMIN_ONLY" && isAdmin);
+
+  const {
+    cumulativeGpa,
+    completedCredits,
+    remainingCredits,
+    targetGpa,
+    setTargetGpa,
+    markCompleted,
+    completedCourses
+  } = useAcademic();
+
+  // --- Automated Official Academic Transcript Semester GPA Breakdown ---
+  const autoSemesterHistory = React.useMemo(() => {
+    if (!completedCourses || completedCourses.length === 0) return [];
+
+    const periodMap = new Map<
+      string,
+      Array<{ code: string; grade: string; credits: number; arabic: string; english: string }>
+    >();
+
+    completedCourses.forEach((item) => {
+      const courseInfo = courses.find((c) => c.code === item.code);
+      if (!courseInfo) return;
+      const period = courseInfo.period || "1-1";
+      if (!periodMap.has(period)) {
+        periodMap.set(period, []);
+      }
+      periodMap.get(period)!.push({
+        code: item.code,
+        grade: item.grade,
+        credits: courseInfo.credits ?? 3,
+        arabic: courseInfo.arabic,
+        english: courseInfo.english
+      });
+    });
+
+    const sortedPeriods = Array.from(periodMap.keys()).sort();
+
+    let cumulativePointsRunning = 0;
+    let cumulativeCreditsRunning = 0;
+
+    const periodLabels: Record<string, { ar: string; en: string }> = {
+      "1-1": { ar: "الفرقة الأولى - الفصل الأول", en: "Year 1 - Semester 1" },
+      "1-2": { ar: "الفرقة الأولى - الفصل الثاني", en: "Year 1 - Semester 2" },
+      "2-1": { ar: "الفرقة الثانية - الفصل الأول", en: "Year 2 - Semester 1" },
+      "2-2": { ar: "الفرقة الثانية - الفصل الثاني", en: "Year 2 - Semester 2" },
+      "3-1": { ar: "الفرقة الثالثة - الفصل الأول", en: "Year 3 - Semester 1" },
+      "3-2": { ar: "الفرقة الثالثة - الفصل الثاني", en: "Year 3 - Semester 2" },
+      "4-1": { ar: "الفرقة الرابعة - الفصل الأول", en: "Year 4 - Semester 1" },
+      "4-2": { ar: "الفرقة الرابعة - الفصل الثاني", en: "Year 4 - Semester 2" }
+    };
+
+    return sortedPeriods.map((periodKey) => {
+      const items = periodMap.get(periodKey)!;
+      let semPoints = 0;
+      let semCredits = 0;
+
+      items.forEach((c) => {
+        const pts = GRADE_POINTS[c.grade] ?? 0;
+        semPoints += pts * c.credits;
+        semCredits += c.credits;
+      });
+
+      const semGpa = semCredits > 0 ? Math.round((semPoints / semCredits) * 100) / 100 : 0;
+
+      cumulativePointsRunning += semPoints;
+      cumulativeCreditsRunning += semCredits;
+
+      const cumGpaAtSemEnd = cumulativeCreditsRunning > 0
+        ? Math.round((cumulativePointsRunning / cumulativeCreditsRunning) * 100) / 100
+        : 0;
+
+      const label = periodLabels[periodKey]
+        ? t(periodLabels[periodKey].ar, periodLabels[periodKey].en)
+        : `${t("الفصل الدراسي", "Semester")} ${periodKey}`;
+
+      return {
+        periodKey,
+        label,
+        semGpa,
+        semCredits,
+        cumGpaAtSemEnd,
+        items
+      };
+    });
+  }, [completedCourses, courses, t]);
+
+  const handlePrintReport = () => {
+    toast(t("جاري تجهيز التقرير للطباعة والتصدير...","Preparing report for export & printing..."),"info");
+    setTimeout(() => {
+      window.print();
+    }, 400);
+  };
+
+  const detectedStartYear = React.useMemo(() => {
+    return getEnrollmentYearFromId(user?.studentId, 2023);
+  }, [user?.studentId]);
+
+  const [startYear, setStartYear] = useLocalStorage<number>("su_gpa_start_year", detectedStartYear);
+
+  // Keep startYear in sync when an enrolled user with valid studentId is loaded
+  React.useEffect(() => {
+    if (user?.studentId) {
+      const yr = getEnrollmentYearFromId(user.studentId, 2023);
+      setStartYear(yr);
+    }
+  }, [user?.studentId, setStartYear]);
+
+  // Generate dynamic sequence of semesters starting from student admission year (Fall Y, Spring Y+1, Summer Y+1, etc.)
+  const dynamicSemesterOptions = React.useMemo(() => {
+    return generateStudentSemesters(startYear, 5);
+  }, [startYear]);
+
+  const [activeTab, setActiveTab] = useLocalStorage<"calculator" | "custom-timeline" | "predictor">("su_gpa_active_tab", "calculator");
+
+  // Automatically adjust activeTab if the flexible track is restricted
+  React.useEffect(() => {
+    if (activeTab === "custom-timeline" && !showFlexibleTrack) {
+      setActiveTab("calculator");
+    }
+  }, [activeTab, showFlexibleTrack, setActiveTab]);
+
+  // --- Semester GPA Calculator States ---
+  const [calcCourses, setCalcCourses] = useLocalStorage<SemesterCourseInput[]>("su_gpa_calc_courses", []);
+  const [savedSuccess, setSavedSuccess] = React.useState(false);
+  const [expandedPeriod, setExpandedPeriod] = React.useState<string | null>(null);
+  const [targetSavePeriod, setTargetSavePeriod] = React.useState<string>(`fall-${detectedStartYear}`);
+
+  // Update default targetSavePeriod when startYear changes
+  React.useEffect(() => {
+    if (dynamicSemesterOptions.length > 0) {
+      setTargetSavePeriod(dynamicSemesterOptions[0].id);
+    }
+  }, [dynamicSemesterOptions]);
+
+  // --- Semester GPA History & Timeline Logging State ---
+  const [semesterHistory, setSemesterHistory] = useLocalStorage<
+    Array<{ id: string; name: string; gpa: number; credits: number; date: string }>
+  >("su_gpa_semester_history", []);
+
+  const handleSaveSemesterToHistory = () => {
+    const validCourses = calcCourses.filter((c) => !!c.code);
+    if (semesterGpa === 0 || validCourses.length === 0) {
+      toast(t("يرجى اختيار وتحديد مواد دراسية أولاً قبل الحفظ بالسجل.", "Please select valid courses and grades first."), "error");
+      return;
+    }
+
+    const selectedOption = dynamicSemesterOptions.find((o) => o.id === targetSavePeriod);
+    const legacyOption = GPA_PERIOD_OPTIONS[targetSavePeriod];
+    const semesterName = selectedOption
+      ? (lang === "ar" ? selectedOption.titleAr : selectedOption.titleEn)
+      : legacyOption
+      ? t(legacyOption.ar, legacyOption.en)
+      : targetSavePeriod;
+
+    const newEntry = {
+      id: Date.now().toString(),
+      name: semesterName,
+      gpa: semesterGpa,
+      credits: totalSemesterCredits,
+      date: new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")
+    };
+    setSemesterHistory([...semesterHistory, newEntry]);
+    toast(t("تم حفظ المعدل الفصلي في سجل التتبع بنجاح!", "Semester GPA logged to history timeline!"), "success");
+  };
+
+  const removeHistoryEntry = (id: string) => {
+    setSemesterHistory(semesterHistory.filter((item) => item.id !== id));
+  };
+
+  const addCalcRow = () => {
+    const availableCourses = courses.filter((course) => {
+      const comp = completedCourses.find((c) => c.code === course.code);
+      return !comp || comp.grade === "F";
+    });
+
+    if (availableCourses.length === 0) {
+      toast(t("لقد أتممت بالفعل جميع المقررات الدراسية المتاحة في الكلية!", "You have already completed all available curriculum courses!"), "info");
+      return;
+    }
+
+    setCalcCourses([
+      ...calcCourses,
+      { id: Math.random().toString(36).substring(2, 9), code: "", credits: 3, grade: "B" }
+    ]);
+  };
+
+  const removeCalcRow = (id: string) => {
+    setCalcCourses(calcCourses.filter((row) => row.id !== id));
+  };
+
+  const updateCalcRow = (id: string, field: keyof SemesterCourseInput, value: any) => {
+    setCalcCourses(
+      calcCourses.map((row) => {
+        if (row.id === id) {
+          const updated = { ...row, [field]: value };
+          if (field === "code" && value) {
+            const course = courses.find((c) => c.code === value);
+            if (course) {
+              updated.credits = course.credits;
+            }
+          }
+          return updated;
+        }
+        return row;
+      })
+    );
+  };
+
+  const semesterGpa = React.useMemo(() => {
+    let totalPoints = 0;
+    let totalCredits = 0;
+    calcCourses.forEach((c) => {
+      if (!c.code) return;
+      const pts = GRADE_POINTS[c.grade] ?? 0;
+      totalPoints += pts * c.credits;
+      totalCredits += c.credits;
+    });
+    if (totalCredits === 0) return 0;
+    return Math.round((totalPoints / totalCredits) * 100) / 100;
+  }, [calcCourses]);
+
+  const totalSemesterCredits = React.useMemo(() => {
+    return calcCourses.reduce((sum, c) => sum + (c.code ? c.credits : 0), 0);
+  }, [calcCourses]);
+
+  const handleSaveToCompleted = () => {
+    if (!user) {
+      toast(
+        t(" يرجى تسجيل الدخول أو إنشاء حسابك لحفظ ومزامنة درجاتك في سجلك الأكاديمي."," Please sign in or create an account to save & sync your grades to your academic profile."
+        ),"info"
+      );
+      return;
+    }
+    calcCourses.forEach((c) => {
+      if (c.code) {
+        markCompleted(c.code, c.grade);
+      }
+    });
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const resetCalculator = () => {
+    setCalcCourses([]);
+  };
+
+  // --- Predictor Simulator Calculations ---
+  const [customSimulatorMode, setCustomSimulatorMode] = React.useState(false);
+  const [customCumGpa, setCustomCumGpa] = React.useState<number>(cumulativeGpa || 3.0);
+  const [customCompletedCredits, setCustomCompletedCredits] = React.useState<number>(completedCredits || 0);
+
+  // Sync initial custom values when academic context finishes loading
+  React.useEffect(() => {
+    if (!customSimulatorMode) {
+      setCustomCumGpa(cumulativeGpa);
+      setCustomCompletedCredits(completedCredits);
+    }
+  }, [cumulativeGpa, completedCredits, customSimulatorMode]);
+
+  const effectiveCumGpa = customSimulatorMode ? customCumGpa : cumulativeGpa;
+  const effectiveCompletedCredits = customSimulatorMode ? customCompletedCredits : completedCredits;
+  const effectiveRemainingCredits = Math.max(0, 144 - effectiveCompletedCredits);
+
+  const requiredGpa = React.useMemo(() => {
+    if (effectiveRemainingCredits <= 0) return 0;
+    const totalPointsTarget = targetGpa * 144;
+    const currentPoints = effectiveCumGpa * effectiveCompletedCredits;
+    const needed = (totalPointsTarget - currentPoints) / effectiveRemainingCredits;
+    return Math.round(needed * 100) / 100;
+  }, [effectiveCumGpa, effectiveCompletedCredits, effectiveRemainingCredits, targetGpa]);
+
+  const predictorStatus = React.useMemo(() => {
+    if (effectiveRemainingCredits <= 0) {
+      return { type: "info", text: t("لقد أتممت بالفعل جميع الساعات المطلوبة للتخرج (144 ساعة)!", "You have completed all 144 required graduation credits!") };
+    }
+    if (requiredGpa > 4.0) {
+      return {
+        type: "error",
+        text: t(
+          `المعدل المطلوب هو ${requiredGpa}. من الناحية الرياضية، لا يمكنك الوصول للمعدل المستهدف (${targetGpa}) حتى لو حصلت على امتياز مرتفع A+ في جميع المواد المتبقية. جرب خفض المعدل المستهدف قليلاً.`,
+          `Required GPA is ${requiredGpa}. Mathematically impossible to reach target (${targetGpa}) even with A+ in all remaining courses. Try lowering your target slightly.`
+        )
+      };
+    }
+    if (requiredGpa < 0) {
+      return {
+        type: "success",
+        text: t(
+          `المعدل المطلوب هو 0.00! لقد حققت بالفعل أو تجاوزت متطلبات معدل التخرج المستهدف الخاص بك بمعدلك الحالي!`,
+          `Required GPA is 0.00! You have already met or exceeded your target graduation GPA!`
+        )
+      };
+    }
+    if (requiredGpa > 3.4) {
+      return {
+        type: "warning",
+        text: t(
+          `المعدل المطلوب هو ${requiredGpa}. هذا يتطلب منك مجهوداً كبيراً جداً والحصول على امتياز (A) في أغلب المواد المتبقية.`,
+          `Required GPA is ${requiredGpa}. This requires high effort and obtaining (A) in most remaining courses.`
+        )
+      };
+    }
+    return {
+      type: "success",
+      text: t(
+        `المعدل المطلوب هو ${requiredGpa}. يمكنك تحقيق هدفك بمستوى دراسي جيد جداً (متوسط درجات B+ إلى A-) في المواد المتبقية.`,
+        `Required GPA is ${requiredGpa}. You can easily achieve your goal with a solid (B+ to A-) average in remaining courses.`
+      )
+    };
+  }, [requiredGpa, targetGpa, effectiveRemainingCredits, t]);
+
+  const isRtl = dir ==="rtl";
+
+  return (
+    <>
+      <div className="space-y-8 print:hidden" dir={dir}>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2.5">
+            <Calculator className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+            {t("حساب وتوقع المعدل التراكمي (GPA)","GPA Calculator & Simulator")}
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            {t("احسب معدلك الفصلي الحالي، أو خطط وتوقع السيناريوهات المطلوبة لتحقيق معدلك المستهدف.","Calculate your semester GPA or simulate target scenarios to reach your goal."
+            )}
+          </p>
+        </div>
+
+        <Button onClick={handlePrintReport} variant="outline" className="gap-2 text-xs font-bold shadow-sm self-start sm:self-auto cursor-pointer">
+          <Printer className="h-4 w-4 text-primary dark:text-sky-400" />
+          <span>{t("تصدير / طباعة التقرير (PDF)","Export / Print PDF Report")}</span>
+        </Button>
+      </div>
+
+      {/* Guest Mode Notification Banner */}
+      <GuestNoticeBanner
+        title={t("وضع التجربة والاستخدام السريع للزوار", "Guest & Free Exploration Mode")}
+        badge={t("مفتوح بدون تسجيل", "Fully Open & Free")}
+        description={t(
+          "احسب وتوقع معدلك الفصلي والتراكمي فوراً! لحفظ ومزامنة درجاتك تلقائياً في خطتك الدراسية، يمكنك إنشاء حسابك الجامعي.",
+          "Calculate and simulate your GPA instantly! Create your university account to automatically save your curriculum record."
+        )}
+      />
+
+      {isAdmin && (
+        <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-bold text-cyan-600 dark:text-cyan-400">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+            <span>{t("معاينة بوضع مسؤول النظام (Admin View Mode): هذه حاسبة معدل افتراضية لاختبار تجربة الطلاب.","Admin View Mode: This is a preview of the GPA calculator tool for testing student experience.")}</span>
+          </div>
+          <Badge className="bg-cyan-500 text-white text-[10px] shrink-0 font-mono">وضع المشرف</Badge>
+        </div>
+      )}
+
+      {/* Unified Track & Simulator Switcher */}
+      {/* Informative Banner: ONLY shown when BOTH main tracks are disabled */}
+      {!showRegularTrack && !showFlexibleTrack && (
+        <div className="p-3.5 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 flex items-center gap-2.5 text-xs font-semibold text-sky-800 dark:text-sky-300">
+          <Sparkles className="h-4.5 w-4.5 text-sky-500 shrink-0" />
+          <span>{t("محاكي التوقع التراكمي (What-If) وحساب الـ GPA متاحان دائماً لكافة الطلاب.", "Target GPA Simulator (What-If) and GPA Calculator are permanently available to all students.")}</span>
+        </div>
+      )}
+
+      {/* Unified Track & Simulator Switcher */}
+      <div className="space-y-2.5">
+        {/* Row 1: The Curricula Tracks / GPA Calculator */}
+        <div className={`grid gap-3 ${showFlexibleTrack ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
+          {/* Button 1: Regular Track (or General GPA Calculator if Regular Track is disabled) */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("calculator")}
+            className={`p-4 rounded-2xl border text-start transition-all cursor-pointer ${
+              activeTab === "calculator"
+                ? "bg-sky-50/90 dark:bg-sky-950/40 border-sky-400 dark:border-sky-600 shadow-xs ring-2 ring-sky-500/20"
+                : "bg-white dark:bg-zinc-900/70 border-zinc-200/80 dark:border-zinc-800 hover:border-sky-300 dark:hover:border-sky-800 hover:bg-sky-50/20"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <span className={`text-xs sm:text-sm font-bold flex items-center gap-2 ${
+                activeTab === "calculator" ? "text-sky-700 dark:text-sky-300" : "text-zinc-800 dark:text-zinc-200"
+              }`}>
+                <Calculator className={`h-4 w-4 shrink-0 ${activeTab === "calculator" ? "text-sky-600 dark:text-sky-400" : "text-zinc-400"}`} />
+                {showRegularTrack
+                  ? t("المسار المنتظم (حاسبة الفصل)", "Regular Track (Semester Calc)")
+                  : t("حاسبة المعدل (GPA)", "GPA Calculator")}
+              </span>
+              <div className="flex items-center gap-1.5">
+                {showRegularTrack && regularStatus === "ADMIN_ONLY" && isAdmin && (
+                  <Badge className="bg-amber-500 text-white text-[9px] font-mono shrink-0">مشرف فقط</Badge>
+                )}
+                <Badge className={`text-[10px] font-bold shrink-0 ${
+                  activeTab === "calculator" ? "bg-sky-500 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                }`}>
+                  {showRegularTrack ? t("افتراضي", "Default") : t("حاسبة الفصل", "Semester Calc")}
+                </Badge>
+              </div>
+            </div>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              {showRegularTrack
+                ? t(
+                    "للترتيب القياسي للكلية (الفرقة 1 إلى 4)، يشمل حاسبة سريعة وسجل المقررات الافتراضي.",
+                    "Standard 4-year curriculum periods with quick single-term GPA calculator."
+                  )
+                : t(
+                    "حساب معدل الفصل والمعدل التراكمي وتجربة المواد والدرجات بحرية.",
+                    "Calculate your semester GPA and simulate grades directly."
+                  )}
+            </p>
+          </button>
+
+          {/* Button 2: Flexible Timeline Track (only shown if flexible track is enabled) */}
+          {showFlexibleTrack && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("custom-timeline")}
+              className={`p-4 rounded-2xl border text-start transition-all cursor-pointer ${
+                activeTab === "custom-timeline"
+                  ? "bg-cyan-50/90 dark:bg-cyan-950/40 border-cyan-400 dark:border-cyan-600 shadow-xs ring-2 ring-cyan-500/20"
+                  : "bg-white dark:bg-zinc-900/70 border-zinc-200/80 dark:border-zinc-800 hover:border-cyan-300 dark:hover:border-cyan-800 hover:bg-cyan-50/20"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className={`text-xs sm:text-sm font-bold flex items-center gap-2 ${
+                  activeTab === "custom-timeline" ? "text-cyan-700 dark:text-cyan-300" : "text-zinc-800 dark:text-zinc-200"
+                }`}>
+                  <Calendar className={`h-4 w-4 shrink-0 ${activeTab === "custom-timeline" ? "text-cyan-600 dark:text-cyan-400" : "text-zinc-400"}`} />
+                  {t("المسار الفصلي المرن (الساعات المعتمدة)", "Flexible Semester Timeline Track")}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {flexibleStatus === "ADMIN_ONLY" && isAdmin && (
+                    <Badge className="bg-amber-500 text-white text-[9px] font-mono shrink-0">مشرف فقط</Badge>
+                  )}
+                  <Badge className={`text-[10px] font-bold shrink-0 ${
+                    activeTab === "custom-timeline" ? "bg-cyan-600 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                  }`}>
+                    {t("تسجيل حر", "Flexible")}
+                  </Badge>
+                </div>
+              </div>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                {t(
+                  "للتسجيل الحر، السمر كورس، والإنذار (12 ساعة). بياناته مستقلة تماماً ومعزولة.",
+                  "For irregular registrations, summer terms, probation caps (12 cr), and retakes."
+                )}
+              </p>
+            </button>
+          )}
+        </div>
+
+        {/* Row 2: What-If Target Simulator (تحتهم كدا مش جمبهم) */}
+        <button
+          type="button"
+          onClick={() => setActiveTab("predictor")}
+          className={`w-full p-3 sm:p-3.5 rounded-2xl border text-start transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 ${
+            activeTab === "predictor"
+              ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 shadow-xs ring-2 ring-emerald-500/20 text-emerald-800 dark:text-emerald-200"
+              : "bg-white dark:bg-zinc-900/70 border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-800 text-zinc-700 dark:text-zinc-300 hover:bg-emerald-50/20"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl shrink-0 ${
+              activeTab === "predictor" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-zinc-100 dark:bg-zinc-800 text-emerald-500"
+            }`}>
+              <TrendingUp className="h-4.5 w-4.5" />
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-bold flex items-center gap-2">
+                <span>{t("محاكي التوقع التراكمي (What-If)", "GPA Target Simulator (What-If)")}</span>
+                <Badge className={`text-[10px] font-bold ${
+                  activeTab === "predictor"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                }`}>
+                  {t("محاكاة الهدف", "Target Sim")}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed">
+                {t("حدد المعدل التراكمي المستهدف عند التخرج ليقوم المحاكي بحساب التقديرات المطلوبة في المواد القادمة.", "Simulate target graduation GPA and calculate needed future grades.")}
+              </p>
+            </div>
+          </div>
+
+          <div className={`text-xs font-bold shrink-0 self-end sm:self-center flex items-center gap-1.5 ${
+            activeTab === "predictor" ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"
+          }`}>
+            <span>{activeTab === "predictor" ? t("الوضع النشط حالياً", "Active Mode") : t("تشغيل المحاكي", "Launch Simulator")}</span>
+            <span className="text-sm">←</span>
+          </div>
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "calculator" ? (
+          <motion.div
+            key="calculator"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
+          >
+            {/* Calculator Card — order-1 on mobile, left 2 columns on desktop */}
+            <div className="lg:col-span-2 order-1">
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+                <CardHeader className="pb-3 border-b border-zinc-150 dark:border-zinc-800/60 mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <CardTitle className="text-base font-bold">{t("مواد الفصل الدراسي", "Semester Courses")}</CardTitle>
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        {t("حفظ تلقائي", "Auto-saved")}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Button variant="outline" size="sm" onClick={resetCalculator} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        {t("إعادة تعيين","Reset")}
+                      </Button>
+                      <Button size="sm" onClick={addCalcRow} className="flex-1 sm:flex-initial gap-1 text-xs h-9">
+                        <Plus className="h-3.5 w-3.5" />
+                        {t("إضافة مادة","Add Course")}
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {calcCourses.length > 0 ? (
+                    <>
+                      <div className="hidden sm:grid grid-cols-12 gap-4 text-xs font-bold text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-850">
+                        <div className="col-span-6">{t("المادة الدراسية","Course")}</div>
+                        <div className="col-span-3 text-center">{t("الساعات","Credits")}</div>
+                        <div className="col-span-2 text-center">{t("التقدير المتوقع","Grade")}</div>
+                        <div className="col-span-1"></div>
+                      </div>
+
+                      {calcCourses.map((row) => (
+                        <div key={row.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center border-b border-zinc-100/50 dark:border-zinc-850/40 pb-3 sm:pb-0 sm:border-0">
+                          {/* Course Selection */}
+                          <div className="col-span-12 sm:col-span-6">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("المادة","Course")}</label>
+                            <select
+                              value={row.code}
+                              onChange={(e) => updateCalcRow(row.id,"code", e.target.value)}
+                              className="w-full h-11 px-3.5 rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:ring-sky-500 transition-all duration-200 cursor-pointer"
+                            >
+                              <option value="">{t("-- اختر مقرر دراسي --","-- Select a course --")}</option>
+                              {courses
+                                .filter((course) => {
+                                  if (course.code === row.code) return true;
+                                  const comp = completedCourses.find((c) => c.code === course.code);
+                                  return !comp || comp.grade === "F";
+                                })
+                                .map((course) => (
+                                <option key={course.code} value={course.code}>
+                                  {course.code} - {t(course.arabic, course.english)} ({course.credits} {t("ساعة","cr")})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Credit Hours */}
+                          <div className="col-span-6 sm:col-span-3">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("عدد الساعات","Credits")}</label>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={6}
+                              value={row.credits}
+                              onChange={(e) => updateCalcRow(row.id,"credits", parseInt(e.target.value) || 0)}
+                              className="text-center"
+                            />
+                          </div>
+
+                          {/* Grade */}
+                          <div className="col-span-6 sm:col-span-2">
+                            <label className="text-[10px] font-bold text-zinc-400 sm:hidden block mb-1">{t("التقدير","Grade")}</label>
+                            <GradeSelect
+                              value={row.grade}
+                              onChange={(val) => updateCalcRow(row.id,"grade", val)}
+                              options={GRADE_OPTIONS}
+                              className="w-full h-11"
+                            />
+                          </div>
+
+                          {/* Actions */}
+                          <div className="col-span-12 sm:col-span-1 text-center">
+                            <button
+                              onClick={() => removeCalcRow(row.id)}
+                              className="p-2.5 rounded-xl border border-zinc-200 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:border-zinc-800 dark:hover:bg-red-950/20 transition-all cursor-pointer"
+                            >
+                              <Trash2 className="h-4.5 w-4.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <div className="py-12 text-center text-zinc-400 dark:text-zinc-550 space-y-3">
+                      <Calculator className="h-9 w-9 mx-auto text-primary dark:text-zinc-700" />
+                      <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                        {t("لا توجد مواد مضافة حالياً. اضغط على'إضافة مادة' للبدء بحساب معدلك.","No courses added yet. Click'Add Course' to calculate GPA.")}
+                      </p>
+                      <Button size="sm" onClick={addCalcRow} className="gap-1.5 text-xs font-bold px-5">
+                        <Plus className="h-4 w-4" />
+                        {t("إضافة مادة جديدة","Add New Course")}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Results Sidebar with ReactBits SpotlightCard — order-2 on mobile (directly under calculator), right column on desktop */}
+            <div className="lg:col-span-1 lg:row-span-2 order-2 lg:order-2">
+              <div className="sticky top-6">
+                <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(2, 132, 199, 0.22)">
+                  <div className="pt-8 pb-6 px-6">
+                    <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
+                      {t("المعدل الفصلي المتوقع","Expected Semester GPA")}
+                    </h3>
+                    <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
+                      <AnimatedNumber value={semesterGpa} decimals={2} />
+                    </div>
+                    <Badge className="mt-3 bg-zinc-100 text-zinc-900 border-zinc-300 text-xs py-1 px-3 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700">
+                      {semesterGpa >= 3.4
+                        ? t("جيد جداً مرتفع","High Distinction")
+                        : semesterGpa >= 2.8
+                        ? t("جيد جداً","Very Good")
+                        : t("مقبول","Passing")}
+                    </Badge>
+
+                    <div className={`grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"}`}>
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("إجمالي الساعات","Total Credits")}</span>
+                        <span className="text-base font-bold text-zinc-950 dark:text-white">{totalSemesterCredits} {t("ساعة","Hours")}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-700 dark:text-white block">{t("النقاط المقدرة","Quality Points")}</span>
+                        <span className="text-base font-bold text-zinc-950 dark:text-white">
+                          {calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0).toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {completedCredits > 0 && semesterGpa > 0 && (
+                      <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-850 flex justify-between items-center text-xs">
+                        <span className="text-zinc-500 dark:text-zinc-400 font-bold">{t("المعدل التراكمي الجديد:","New Cumulative GPA:")}</span>
+                        <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                          {(((cumulativeGpa * completedCredits) + (calcCourses.reduce((sum, c) => sum + (GRADE_POINTS[c.grade] ?? 0) * c.credits, 0))) / (completedCredits + totalSemesterCredits)).toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </SpotlightCard>
+              </div>
+            </div>
+
+            {/* Regular Track Content — order-3 on mobile, left 2 columns on desktop */}
+            {showRegularTrack && (
+              <div className="lg:col-span-2 order-3 lg:order-3 space-y-6">
+                {/* Save widget */}
+                  <div className="flex flex-col sm:flex-row justify-between items-center p-5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30 rounded-2xl gap-4">
+                    <div>
+                      <h4 className="font-bold text-sm text-zinc-850 dark:text-zinc-100">
+                        {t("حفظ الدرجات والمعدل الفصلي","Save Grades & Semester GPA")}
+                      </h4>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                        {t("احفظ درجاتك في سجلك الأكاديمي المنجز أو في سجل تتبع المعدل التراكمي عبر الفصول الدراسية.","Save chosen courses to your academic record or add your semester GPA to your timeline history."
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      <select
+                        value={targetSavePeriod}
+                        onChange={(e) => setTargetSavePeriod(e.target.value)}
+                        className="h-9 px-3 rounded-xl border border-sky-300 dark:border-sky-800 bg-white dark:bg-zinc-950 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer shadow-2xs max-w-[210px] truncate"
+                      >
+                        {dynamicSemesterOptions.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {lang === "ar" ? opt.titleAr : opt.titleEn}
+                          </option>
+                        ))}
+                      </select>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setActiveTab("custom-timeline")}
+                        className="h-9 px-2 text-xs font-bold text-sky-600 dark:text-sky-400 hover:bg-sky-100/50 dark:hover:bg-sky-950/50 cursor-pointer"
+                        title={t("فتح سجل الفصول وتوزيع المواد", "Open semester course record")}
+                      >
+                        <Calendar className="h-3.5 w-3.5 mr-1 rtl:ml-1" />
+                        <span>{t("سجل الفصول", "Semester Record")}</span>
+                      </Button>
+
+                      <Button onClick={handleSaveSemesterToHistory} variant="outline" className="gap-1.5 font-bold text-xs border-sky-300 dark:border-sky-800 cursor-pointer">
+                        <TrendingUp className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                        {t("حفظ بالسجل", "Save to Log")}
+                      </Button>
+
+                      <Button onClick={handleSaveToCompleted} className="gap-2 font-bold text-xs cursor-pointer">
+                        <Save className="h-4 w-4" />
+                        {t("مزامنة المواد المنجزة","Sync Completed Courses")}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {savedSuccess && (
+                    <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 text-xs font-semibold flex items-center gap-2.5">
+                      <CheckCircle2 className="h-5 w-5" />
+                      <span>{t("تم بنجاح تحديث ومزامنة سجلك الأكاديمي في قاعدة البيانات!","Academic record updated & synced successfully!")}</span>
+                    </div>
+                  )}
+
+                  {/* Automated Official Transcript Semester Breakdown */}
+                  {autoSemesterHistory.length > 0 && (
+                    <Card className="border border-sky-200/80 dark:border-sky-900/60 bg-gradient-to-r from-sky-500/5 via-cyan-500/5 to-teal-500/5 dark:from-sky-950/30 dark:via-cyan-950/20 dark:to-teal-950/20 shadow-sm rounded-3xl overflow-hidden">
+                      <CardHeader className="p-5 border-b border-sky-100 dark:border-sky-900/40 flex flex-row items-center justify-between">
+                        <div>
+                          <CardTitle className="text-base font-black flex items-center gap-2 text-zinc-900 dark:text-zinc-50">
+                            <TrendingUp className="h-5 w-5 text-sky-500" />
+                            <span>{t("السجل الأكاديمي التلقائي للفصول الدراسية (Automatic Transcript GPA)", "Automatic Transcript Semester Breakdown")}</span>
+                          </CardTitle>
+                          <CardDescription className="text-xs mt-1">
+                            {t("اضغط على أي فصل دراسي لفتح التفاصيل الكاملة وأسماء المواد والتقديرات المكتملة", "Click on any semester card to inspect full course names & details")}
+                          </CardDescription>
+                        </div>
+
+                        <Badge className="bg-sky-500 text-white font-mono font-bold text-xs">
+                          {`${autoSemesterHistory.length} ${t("فصول مكتملة", "Semesters Done")}`}
+                        </Badge>
+                      </CardHeader>
+
+                      <CardContent className="p-5 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {autoSemesterHistory.map((sem) => {
+                            const isExpanded = expandedPeriod === sem.periodKey;
+
+                            return (
+                              <div
+                                key={sem.periodKey}
+                                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                                  isExpanded
+                                    ? "bg-white dark:bg-zinc-900 border-sky-500 shadow-md ring-2 ring-sky-500/20"
+                                    : "bg-white/80 dark:bg-zinc-900/80 border-sky-100 dark:border-sky-900/40 shadow-sm hover:border-sky-400 cursor-pointer"
+                                }`}
+                              >
+                                {/* Semester Card Header (Clickable) */}
+                                <div
+                                  onClick={() => setExpandedPeriod(isExpanded ? null : sem.periodKey)}
+                                  className="p-4 space-y-3 cursor-pointer select-none"
+                                >
+                                  <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
+                                    <span className="font-extrabold text-xs text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
+                                      {sem.label}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] font-bold text-zinc-400">
+                                        {sem.items.length} {t("مواد", "courses")} ({sem.semCredits} {t("ساعة", "hrs")})
+                                      </span>
+                                      <ChevronDown className={`h-4 w-4 text-sky-500 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center justify-between pt-1">
+                                    <div>
+                                      <span className="text-[10px] font-bold text-zinc-400 block">{t("المعدل الفصلي (Semester GPA)", "Semester GPA")}</span>
+                                      <span className="text-xl font-black text-sky-600 dark:text-sky-400 font-mono">
+                                        {sem.semGpa.toFixed(2)}
+                                      </span>
+                                    </div>
+
+                                    <div className="text-left">
+                                      <span className="text-[10px] font-bold text-zinc-400 block">{t("التراكمي بنهاية الفصل", "Cumulative at Sem End")}</span>
+                                      <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                                        {sem.cumGpaAtSemEnd.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {!isExpanded && (
+                                    <div className="flex flex-wrap gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                                      {sem.items.map((item) => (
+                                        <span
+                                          key={item.code}
+                                          className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700"
+                                        >
+                                          {item.code}: <strong className="text-sky-600 dark:text-sky-400 font-bold">{item.grade}</strong>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Animated Expanded Details Drawer */}
+                                <AnimatePresence>
+                                  {isExpanded && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                                      className="border-t border-sky-100 dark:border-sky-900/40 bg-sky-50/40 dark:bg-zinc-950/60 p-4 space-y-3"
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-extrabold text-sky-700 dark:text-sky-400">
+                                          {t("تفاصيل المواد والدرجات في هذا الفصل:", "Full Course & Grade Breakdown:")}
+                                        </span>
+                                        <span className="text-[10px] text-zinc-400 font-mono">
+                                          {sem.semCredits} {t("ساعات كليّة", "total hrs")}
+                                        </span>
+                                      </div>
+
+                                      <div className="space-y-2">
+                                        {sem.items.map((c) => {
+                                          const pts = GRADE_POINTS[c.grade] ?? 0;
+                                          const courseTitle = lang === "ar" ? (c.arabic || c.english || c.code) : (c.english || c.arabic || c.code);
+
+                                          return (
+                                            <div
+                                              key={c.code}
+                                              className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-2xs"
+                                            >
+                                              <div className="space-y-0.5 min-w-0 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                  <Badge className="bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 text-[10px] font-mono font-bold px-1.5 py-0">
+                                                    {c.code}
+                                                  </Badge>
+                                                  <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                                                    {courseTitle}
+                                                  </span>
+                                                </div>
+                                                <span className="text-[10px] text-zinc-400 block font-medium mt-0.5">
+                                                  {c.credits} {t("ساعات", "hrs")} &bull; {pts.toFixed(2)} {t("نقاط", "pts")} = <strong className="text-zinc-600 dark:text-zinc-300">{(c.credits * pts).toFixed(2)} {t("إجمالي", "total")}</strong>
+                                                </span>
+                                              </div>
+
+                                              <Badge className="bg-sky-600 text-white font-mono font-bold text-xs px-2 py-0.5 shrink-0 shadow-2xs">
+                                                {c.grade}
+                                              </Badge>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Semester GPA History Timeline Card */}
+                  {semesterHistory.length > 0 && (
+                    <Card className="border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm rounded-3xl overflow-hidden">
+                      <CardHeader className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex flex-row items-center justify-between">
+                        <div>
+                          <CardTitle className="text-base font-extrabold flex items-center gap-2">
+                            <TrendingUp className="h-4.5 w-4.5 text-sky-500" />
+                            <span>{t("سجل ومنحنى تتبع المعدل التراكمي (Semester GPA Timeline)", "Semester GPA History Log")}</span>
+                          </CardTitle>
+                          <CardDescription className="text-xs mt-1">
+                            {t("تتبع تطور ومسار نتائجك الفصلية عبر سنوات الدراسة في الكلية", "Track your semester GPA progress over your academic journey")}
+                          </CardDescription>
+                        </div>
+
+                        <Badge className="bg-sky-500 text-white font-mono font-bold text-xs">
+                          {`${semesterHistory.length} ${t("فصول مسجلة", "Semesters Logged")}`}
+                        </Badge>
+                      </CardHeader>
+
+                      <CardContent className="p-5 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {semesterHistory.map((item) => (
+                            <div key={item.id} className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3">
+                              <div>
+                                <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 block">{item.name}</span>
+                                <div className="flex items-baseline gap-1.5 mt-0.5">
+                                  <span className="text-lg font-black text-zinc-900 dark:text-zinc-50 font-mono">{item.gpa.toFixed(2)}</span>
+                                  <span className="text-[10px] text-zinc-400 font-semibold">({item.credits} {t("ساعة", "hrs")})</span>
+                                </div>
+                                <span className="text-[9px] text-zinc-400 block mt-0.5">{item.date}</span>
+                              </div>
+
+                              <button onClick={() => removeHistoryEntry(item.id)} className="text-zinc-400 hover:text-rose-500 p-1.5 rounded-lg transition-colors cursor-pointer" title={t("حذف من السجل", "Remove")}>
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+              </div>
+            )}
+          </motion.div>
+        ) : activeTab === "custom-timeline" && showFlexibleTrack ? (
+          <motion.div
+            key="custom-timeline"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+          >
+            <CustomTimelineBuilder
+              startYear={startYear}
+              onStartYearChange={setStartYear}
+              studentId={user?.studentId}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="predictor"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          >
+            {/* Simulation Controls */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Guest Warning for What-If Simulator */}
+              {!user && (
+                <div className="p-4.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
+                      <AlertTriangle className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black">
+                        {t("تنبيه: محاكي التوقع التراكمي (What-If) يحتاج إلى سجل موادك المكتملة", "Notice: What-If Simulator works best with your completed course history"
+                        )}
+                      </h4>
+                      <p className="text-xs text-amber-800/80 dark:text-amber-300/80 mt-1 leading-relaxed">
+                        {t("لكي يحسب النظام التقدير والدرجات المطلوبة للتخرج بدقة 100%، يفضّل تسجيل الدخول لكي يعرف النظام عدد الساعات والمواد التي اجتزتها بالفعل في خطتك الدراسية.","For 100% accurate graduation predictions, sign in so the system knows your exact completed credits and past grades."
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                    <Link href="/auth/login" className="flex-1 sm:flex-none">
+                      <Button size="sm" variant="outline" className="w-full sm:w-auto text-xs font-bold rounded-xl border-amber-500/40 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10">
+                        {t("تسجيل الدخول","Sign In")}
+                      </Button>
+                    </Link>
+                    <Link href="/auth/register" className="flex-1 sm:flex-none">
+                      <Button size="sm" className="w-full sm:w-auto text-xs font-bold rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-md">
+                        {t("إنشاء حساب","Register")}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              <Card className="border border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 shadow-sm">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base font-bold">{t("تحديد المعدل المستهدف","Set Target GPA")}</CardTitle>
+                      <CardDescription className="text-xs">{t("استخدم المنزلق لتحديد المعدل التراكمي (GPA) الذي تود التخرج به.","Use slider to set target graduation GPA.")}</CardDescription>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCustomSimulatorMode(!customSimulatorMode)}
+                      className="text-xs font-bold gap-1.5 h-8 border-dashed self-start sm:self-auto cursor-pointer"
+                    >
+                      <Sliders className="h-3.5 w-3.5 text-sky-500" />
+                      <span>{customSimulatorMode ? t("استخدام بيانات سجلي", "Use Profile Data") : t("محاكاة مخصصة / يدوية", "Manual Simulation")}</span>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Manual Inputs when Custom Simulator Mode is enabled */}
+                  {customSimulatorMode && (
+                    <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                          <Sliders className="h-3.5 w-3.5 text-sky-500" />
+                          {t("تخصيص المعدل الحالي والساعات للتجربة السريعة:", "Customize Current GPA & Hours for Quick Simulation:")}
+                        </span>
+                        <Badge className="bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-bold">وضع المحاكاة اليدوية</Badge>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400">
+                            {t("معدلك التراكمي الحالي (Current GPA):", "Current GPA:")}
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="4"
+                            step="0.01"
+                            value={customCumGpa}
+                            onChange={(e) => setCustomCumGpa(Math.max(0, Math.min(4, parseFloat(e.target.value) || 0)))}
+                            className="w-full px-3 py-1.5 text-sm font-mono font-bold rounded-xl border border-zinc-250 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400">
+                            {t("الساعات التي اجتزتها (Completed Credits):", "Completed Credits:")}
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="144"
+                            step="1"
+                            value={customCompletedCredits}
+                            onChange={(e) => setCustomCompletedCredits(Math.max(0, Math.min(144, parseInt(e.target.value) || 0)))}
+                            className="w-full px-3 py-1.5 text-sm font-mono font-bold rounded-xl border border-zinc-250 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-sm font-bold">
+                      <span className="text-zinc-650 dark:text-zinc-400">{t("المعدل المستهدف عند التخرج:","Target GPA at graduation:")}</span>
+                      <span className="text-lg text-sky-600 dark:text-sky-400 font-extrabold">{targetGpa.toFixed(2)}</span>
+                    </div>
+
+                    <input
+                      type="range"
+                      min="2.00"
+                      max="4.00"
+                      step="0.05"
+                      value={targetGpa}
+                      onChange={(e) => setTargetGpa(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-600"
+                    />
+
+                    <div className="flex justify-between text-[10px] font-bold text-zinc-400">
+                      <span>2.00 {t("مقبول","Good")}</span>
+                      <span>3.00 {t("جيد جداً","Very Good")}</span>
+                      <span>4.00 {t("امتياز مرتفع","High Distinction")}</span>
+                    </div>
+                  </div>
+
+                  <div className={`p-4.5 rounded-2xl border text-xs leading-relaxed font-semibold flex gap-3 ${
+                    predictorStatus.type ==="success"
+                      ?"bg-green-50 border-green-200 text-green-700 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400"
+                      : predictorStatus.type ==="error"
+                      ?"bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+                      :"bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400"
+                  }`}>
+                    {predictorStatus.type ==="success" && <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type ==="error" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    {predictorStatus.type ==="warning" && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
+                    <span>{predictorStatus.text}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Simulation Results Summary with ReactBits SpotlightCard */}
+            <div>
+              <SpotlightCard className="border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm text-center" spotlightColor="rgba(6, 182, 212, 0.15)">
+                <div className="pt-8 pb-6 px-6">
+                  <h3 className="text-zinc-900 dark:text-white font-bold text-sm">
+                    {t("المعدل المطلوب في الساعات المتبقية","Required GPA in Remaining Hours")}
+                  </h3>
+                  <div className="text-5xl font-black text-zinc-950 dark:text-white mt-4.5">
+                    {requiredGpa <= 0 ?"0.00" : requiredGpa > 4.0 ?"A+" : requiredGpa.toFixed(2)}
+                  </div>
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 mt-2.5">
+                    ({t(`مستند إلى معدلك الحالي ${effectiveCumGpa.toFixed(2)} وإتمامك ${effectiveCompletedCredits} ساعة`, `Based on current GPA ${effectiveCumGpa.toFixed(2)} & ${effectiveCompletedCredits} credits`)})
+                  </p>
+
+                  <div className={`mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-850 ${isRtl ?"text-right" :"text-left"} space-y-3.5`}>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المنجزة:","Completed Credits:")}</span>
+                      <span className="font-bold text-zinc-950 dark:text-white">{effectiveCompletedCredits} / 144</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("الساعات المتبقية للتخرج:","Remaining Credits:")}</span>
+                      <span className="font-bold text-zinc-950 dark:text-white">{effectiveRemainingCredits} {t("ساعة","Hours")}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs pt-2.5 border-t border-zinc-100 dark:border-zinc-800">
+                      <span className="text-zinc-700 dark:text-white font-bold">{t("المعدل التراكمي الحالي:","Current Cumulative GPA:")}</span>
+                      <span className="font-black text-sky-600 dark:text-sky-400 font-mono text-sm">{effectiveCumGpa.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </SpotlightCard>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      </div>
+
+      {/* Official Print & PDF Export Document Layout */}
+      <div className="hidden print:block text-black p-8 space-y-6 bg-white font-sans w-full leading-relaxed max-w-4xl mx-auto" dir={dir}>
+        {/* Header Header Header */}
+        <div className="flex justify-between items-center border-b-2 border-black pb-5">
+          <div className="flex items-center gap-4">
+            {/* Logo */}
+            <img src="/uni-logo.jpeg" alt="Sinai University Logo" className="h-16 w-16 object-contain rounded-lg border border-black/20 p-1" />
+            <div className="space-y-0.5">
+              <h1 className="text-xl font-black text-black tracking-tight">
+                {t("جامعة سيناء — Sinai University","Sinai University")}
+              </h1>
+              <h2 className="text-xs font-bold text-gray-800">
+                {t("كلية تكنولوجيا المعلومات وعلوم الحاسب — بوابة الطلاب الأكاديمية","Faculty of Information Technology & Computer Science")}
+              </h2>
+              <p className="text-[11px] font-bold text-sky-950">
+                {t("السجل والتقرير الأكاديمي الموحد للطلاب (Official Academic Transcript Summary)","Official Academic Transcript Summary")}
+              </p>
+            </div>
+          </div>
+          <div className={`${isRtl ? "text-left" : "text-right"} text-xs space-y-1 font-bold border-r-2 border-black/20 pr-4 rtl:border-r-0 rtl:border-l-2 rtl:pl-4`}>
+            <p className="text-gray-900">{t("تاريخ التصدير:","Export Date:")} <span className="font-mono font-black">{new Date().toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US")}</span></p>
+            <p className="text-gray-600 text-[10px]">
+              {t("مستند رسمي استرشادي موثق آلياً","Automated Official Guidance Record")}
+            </p>
+          </div>
+        </div>
+
+        {/* Student Metadata Card Box */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 border-2 border-black/80 p-4 rounded-xl text-xs bg-gray-50/80">
+          <div className="space-y-1">
+            <span className="font-bold text-gray-600 text-[11px]">{t("اسم الطالب:","Student Name:")} </span>
+            <span className="font-black text-black text-xs block">{user ? getLocalizedUserName(user, lang) : t("طالب زائر (تقرير استرشادي)","Guest Student (Guidance Report)")}</span>
+          </div>
+          <div className="space-y-1">
+            <span className="font-bold text-gray-600 text-[11px]">{t("الرقم الجامعي (ID):","Student ID:")} </span>
+            <span className="font-black text-black font-mono text-xs block">{user?.studentId || t("غير مسجل (حساب زائر)","Unregistered (Guest)")}</span>
+          </div>
+          <div className="space-y-1">
+            <span className="font-bold text-gray-600 text-[11px]">{t("سنة القيد الأكاديمي:", "Enrollment Year:")} </span>
+            <span className="font-black text-black font-mono text-xs block">{startYear} / {startYear + 1}</span>
+          </div>
+          <div className="space-y-1 pt-1 border-t border-gray-200">
+            <span className="font-bold text-gray-600 text-[11px]">{t("التخصص / القسم الأكاديمي:","Department / Major:")} </span>
+            <span className="font-black text-black text-xs block">{user?.department || t("تكنولوجيا المعلومات وعلوم الحاسب (IT & CS)","Information Technology & CS")}</span>
+          </div>
+          <div className="space-y-1 pt-1 border-t border-gray-200">
+            <span className="font-bold text-gray-600 text-[11px]">{t("المستوى الأكاديمي:","Academic Level:")} </span>
+            <span className="font-black text-black text-xs block">{user?.level || t("تقرير كشف التقديرات الفصلي","Semester Transcript Breakdown")}</span>
+          </div>
+          <div className="space-y-1 pt-1 border-t border-gray-200">
+            <span className="font-bold text-gray-600 text-[11px]">{t("نظام الدراسة:", "Study System:")} </span>
+            <span className="font-black text-black text-xs block">{t("الساعات المعتمدة (Credit Hours)", "Credit Hours System")}</span>
+          </div>
+        </div>
+
+        {/* Academic Stats Box */}
+        <div className="grid grid-cols-4 gap-3 text-center text-xs">
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("المعدل التراكمي الفعلي","Cumulative GPA")}</span>
+            <span className="text-xl font-black font-mono text-black">{cumulativeGpa.toFixed(2)}</span>
+          </div>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("الساعات المستكملة","Completed Credits")}</span>
+            <span className="text-xl font-black font-mono text-black">{completedCredits} / 144</span>
+          </div>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("الساعات المتبقية","Remaining Credits")}</span>
+            <span className="text-xl font-black font-mono text-black">{remainingCredits} {t("ساعة","cr")}</span>
+          </div>
+          <div className="border-2 border-black p-3 rounded-xl bg-gray-50/50">
+            <span className="block font-bold text-gray-600 mb-1 text-[10px]">{t("المعدل الفصلي الحالي","Semester GPA")}</span>
+            <span className="text-xl font-black font-mono text-black">{semesterGpa.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Courses Grade Table */}
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between border-b-2 border-black pb-1.5">
+            <h3 className="text-xs font-black text-black">
+              {t("تفاصيل درجات ومواد الفصل الدراسي الحالي:","Current Semester Course Grades Breakdown:")}
+            </h3>
+            <span className="text-[10px] font-bold text-gray-600">
+              {t(`إجمالي المواد: ${calcCourses.filter(c => !!c.code).length} مواد`, `Total Courses: ${calcCourses.filter(c => !!c.code).length}`)}
+            </span>
+          </div>
+
+          <table className={`w-full ${isRtl ? "text-right" : "text-left"} text-xs border-collapse border-2 border-black`}>
+            <thead>
+              <tr className="bg-gray-100 border-b-2 border-black font-extrabold text-black">
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black w-10 text-center`}>#</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black w-24`}>{t("رمز المقرر","Course Code")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black`}>{t("اسم المادة الدراسية","Course Name")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black text-center w-20`}>{t("الساعات","Credits")}</th>
+                <th className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black text-center w-24`}>{t("التقدير","Grade")}</th>
+                <th className="p-2.5 text-center w-28">{t("إجمالي النقاط","Quality Points")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {calcCourses.filter(c => !!c.code).length > 0 ? (
+                calcCourses.filter(c => !!c.code).map((c, idx) => {
+                  const found = courses.find((co) => co.code === c.code);
+                  const gradePt = GRADE_POINTS[c.grade] || 0;
+                  const pts = gradePt * (c.credits || 0);
+                  return (
+                    <tr key={c.id} className="border-b border-black hover:bg-gray-50/50">
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold text-center`}>{idx + 1}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black font-mono`}>{c.code}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold`}>{found ? t(found.arabic, found.english) : c.code}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-bold text-center`}>{c.credits}</td>
+                      <td className={`p-2.5 ${isRtl ? "border-l" : "border-r"} border-black font-black text-center`}>
+                        {c.grade} <span className="text-[9px] font-normal text-gray-600">({gradePt.toFixed(2)})</span>
+                      </td>
+                      <td className="p-2.5 font-black text-center font-mono">{pts.toFixed(2)}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-gray-500 font-bold">
+                    {t("لم يتم اختيار أي مواد فصلية بعد في الحسابات","No current semester courses selected for calculation")}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Sign-off Verification Footer */}
+        <div className="pt-6 border-t-2 border-black flex justify-between items-end text-[10px] text-gray-800">
+          <div className="space-y-1">
+            <p className="font-extrabold text-black">{t("تنبيه رسمي وتوثيق إلكتروني:","Official Verification Notice:")}</p>
+            <p>{t("هذا المستند التوضيحي مستخرج آلياً وموثق عبر بوابة تكنولوجيا المعلومات بجامعة سيناء (SU IT Guide).","This official transcript summary is automatically generated and verified via Sinai Tech Portal.")}</p>
+            <p className="font-mono text-gray-600 font-bold">Verification URL: https://sinai-tech-portal.vercel.app</p>
+          </div>
+          <div className="text-center space-y-1.5 shrink-0">
+            <p className="font-bold text-black">{t("اعتماد التوثيق الإلكتروني للنظام","System Verification Seal")}</p>
+            <div className="w-36 h-14 border-2 border-dashed border-black rounded-xl flex flex-col items-center justify-center font-bold text-[9px] text-gray-700 bg-gray-50/50">
+              <span className="font-black text-black">{t("SU IT GUIDE","SU IT GUIDE")}</span>
+              <span className="text-[8px] text-gray-500">{t("موثق إلكترونياً", "Digitally Verified")}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

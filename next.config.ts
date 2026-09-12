@@ -78,6 +78,33 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
+  redirects: async () => [
+    {
+      source: '/gpa-calculator',
+      destination: '/gpa',
+      permanent: true,
+    },
+    {
+      source: '/credit-hours',
+      destination: '/academic-regulations',
+      permanent: true,
+    },
+    {
+      source: '/graduation-requirements',
+      destination: '/academic-regulations',
+      permanent: true,
+    },
+    {
+      source: '/curriculum',
+      destination: '/study-plan',
+      permanent: true,
+    },
+    {
+      source: '/bylaws',
+      destination: '/academic-regulations',
+      permanent: true,
+    },
+  ],
 };
 
 export default nextConfig;

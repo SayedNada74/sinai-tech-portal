@@ -451,7 +451,21 @@ export default function AiAssistantPage() {
 
     try {
       await sleep(1200);
-      const aiReply = getAiResponse(textToSend, studentContext, activeSession?.messages || []);
+      
+      // Inject customSemesters (Flexible Timeline) directly from localStorage to ensure fresh data
+      let customSemesters = [];
+      try {
+        const { getEnrollmentYearFromId } = await import("@/lib/academic-calendar");
+        const startYear = getEnrollmentYearFromId(user?.studentId, 2023);
+        const savedCustom = localStorage.getItem(`su_gpa_flexible_timeline_${startYear}`);
+        if (savedCustom) {
+          customSemesters = JSON.parse(savedCustom);
+        }
+      } catch(e) {}
+      
+      const enrichedContext: StudentContext = { ...studentContext, customSemesters };
+
+      const aiReply = getAiResponse(textToSend, enrichedContext, activeSession?.messages || []);
       const assistantMsg: AiMessage = { role:"assistant", content: aiReply };
 
       let finalTargetSession: ChatSession | null = null;

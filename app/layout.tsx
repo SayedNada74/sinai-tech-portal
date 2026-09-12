@@ -26,6 +26,7 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sinai-tech-portal.vercel.app"),
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -36,18 +37,33 @@ export const metadata: Metadata = {
     telephone: false
   },
   title: {
-    default: "SU IT Guide | دليل ومرشد طلاب جامعة سيناء",
-    template: "%s | SU IT Guide"
+    default: "SU IT Guide | دليل طلاب تكنولوجيا المعلومات وعلوم الحاسب - جامعة سيناء",
+    template: "%s | SU IT Guide - جامعة سيناء"
   },
-  description: "المنصة الأكاديمية التفاعلية الشاملة لطلاب تكنولوجيا المعلومات والحاسب الآلي بجامعة سيناء لتتبع خطتهم الدراسية وحساب معدلهم التراكمي.",
-  keywords: ["جامعة سيناء", "تكنولوجيا المعلومات", "حاسبات ومعلومات", "معدل تراكمي", "خطة دراسية", "ساعات معتمدة", "Sinai University", "IT", "GPA Calculator", "PWA"],
+  description: "المنصة الأكاديمية التفاعلية الشاملة لطلاب كلية تكنولوجيا المعلومات وعلوم الحاسب بجامعة سيناء — حاسبة GPA، دليل المقررات، الخطة الدراسية، اللائحة الأكاديمية، ونظام الساعات المعتمدة.",
+  keywords: [
+    "جامعة سيناء", "كلية تكنولوجيا المعلومات", "كلية حاسبات ومعلومات", "حاسبات جامعة سيناء",
+    "حساب GPA جامعة سيناء", "حاسبة المعدل التراكمي", "معدل تراكمي", "حساب المعدل الفصلي",
+    "مواد جامعة سيناء", "مواد حاسبات جامعة سيناء", "مقررات تكنولوجيا المعلومات",
+    "خطة دراسية جامعة سيناء", "ساعات معتمدة", "لائحة حاسبات جامعة سيناء",
+    "شجرة المتطلبات السابقة", "مواد الفرقة الأولى", "مواد الفرقة الثانية",
+    "Data Structures جامعة سيناء", "Computer Networks جامعة سيناء",
+    "دليل طلاب جامعة سيناء", "Moodle جامعة سيناء", "K-Moodle",
+    "نظام الساعات المعتمدة", "متطلبات التخرج", "الإنذار الأكاديمي", "مرتبة الشرف",
+    "Sinai University", "IT Faculty", "GPA Calculator", "Sinai University Courses",
+    "Sinai University GPA", "Credit Hours System", "Academic Regulations",
+    "Computer Science Sinai", "Information Technology Sinai"
+  ],
   authors: [{ name: "Sayed Mahmoud" }],
   verification: {
     google: "QTsHdLCIiaROweR1np2PQZHdjXmjsM-IYGJTes7do-Q",
   },
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
-    title: "SU IT Guide - منصة طالب تكنولوجيا المعلومات",
-    description: "تتبع خطتك الدراسية، احسب معدلك التراكمي، واحصل على إرشاد أكاديمي ذكي بجامعة سيناء.",
+    title: "SU IT Guide - دليل طلاب تكنولوجيا المعلومات جامعة سيناء",
+    description: "حاسبة GPA، دليل المقررات الدراسية، الخطة الدراسية الكاملة، واللائحة الأكاديمية الرسمية لكلية تكنولوجيا المعلومات وعلوم الحاسب بجامعة سيناء.",
     url: "https://sinai-tech-portal.vercel.app",
     siteName: "SU IT Guide",
     locale: "ar_EG",
@@ -55,8 +71,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SU IT Guide - منصة طالب تكنولوجيا المعلومات",
-    description: "البوابة الأكاديمية الشاملة لطلاب تكنولوجيا المعلومات بجامعة سيناء.",
+    title: "SU IT Guide - دليل طلاب تكنولوجيا المعلومات جامعة سيناء",
+    description: "حاسبة GPA، دليل المقررات، الخطة الدراسية، واللائحة الأكاديمية لطلاب كلية تكنولوجيا المعلومات بجامعة سيناء.",
   },
   icons: {
     icon: "/uni-logo.jpeg",
@@ -82,6 +98,49 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('app_theme')||localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.add('light-mode');document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');document.documentElement.classList.remove('light-mode');}var l=localStorage.getItem('app_lang')||'ar';document.documentElement.dir=l==='ar'?'rtl':'ltr';document.documentElement.lang=l;}catch(e){}})()`,
+          }}
+        />
+        {/* Global Schema.org JSON-LD: WebSite + EducationalOrganization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://sinai-tech-portal.vercel.app/#website",
+                  "url": "https://sinai-tech-portal.vercel.app",
+                  "name": "SU IT Guide",
+                  "alternateName": "دليل طلاب تكنولوجيا المعلومات - جامعة سيناء",
+                  "description": "المنصة الأكاديمية الشاملة لطلاب كلية تكنولوجيا المعلومات وعلوم الحاسب بجامعة سيناء",
+                  "inLanguage": ["ar", "en"],
+                  "publisher": { "@id": "https://sinai-tech-portal.vercel.app/#organization" },
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                      "@type": "EntryPoint",
+                      "urlTemplate": "https://sinai-tech-portal.vercel.app/courses?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "EducationalOrganization",
+                  "@id": "https://sinai-tech-portal.vercel.app/#organization",
+                  "name": "كلية تكنولوجيا المعلومات وعلوم الحاسب - جامعة سيناء",
+                  "alternateName": "Faculty of Information Technology & Computer Science - Sinai University",
+                  "url": "https://sinai-tech-portal.vercel.app",
+                  "sameAs": ["https://su.edu.eg"],
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "القنطرة شرق",
+                    "addressRegion": "الإسماعيلية",
+                    "addressCountry": "EG"
+                  }
+                }
+              ]
+            })
           }}
         />
         <meta name="theme-color" content="#7c3aed" />

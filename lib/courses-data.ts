@@ -147,3 +147,43 @@ export const COURSES: Course[] = RAW_COURSES.map((c) => {
     department
   };
 });
+
+// ============================================================================
+// SEO Slug Utilities — Clean URL generation for programmatic course pages
+// ============================================================================
+
+/**
+ * Generates a clean, SEO-friendly slug from a course code.
+ * Example: "CSW 221" -> "csw-221", "INT 349W" -> "int-349w", "Hu 100" -> "hu-100"
+ */
+export function getCourseSlug(course: Course | { code: string }): string {
+  return course.code.toLowerCase().replace(/\s+/g, '-');
+}
+
+/**
+ * Resolves a course from either:
+ * - A clean slug: "csw-221"
+ * - A raw code: "CSW 221"
+ * - A URL-encoded code: "CSW%20221"
+ * Returns undefined if no match is found.
+ */
+export function getCourseBySlug(slug: string): Course | undefined {
+  const decoded = decodeURIComponent(slug);
+  // Try exact slug match first (csw-221)
+  const bySlug = COURSES.find(c => getCourseSlug(c) === decoded.toLowerCase());
+  if (bySlug) return bySlug;
+  // Try raw code match (CSW 221, csw 221)
+  const byCode = COURSES.find(c => c.code.toLowerCase() === decoded.toLowerCase());
+  if (byCode) return byCode;
+  // Try with space replacement (csw-221 -> csw 221)
+  const withSpaces = decoded.replace(/-/g, ' ');
+  return COURSES.find(c => c.code.toLowerCase() === withSpaces.toLowerCase());
+}
+
+/**
+ * Returns all valid course slugs for use in generateStaticParams and sitemap.
+ */
+export function getAllCourseSlugs(): string[] {
+  return COURSES.map(c => getCourseSlug(c));
+}
+
