@@ -68,11 +68,20 @@ export const metadata: Metadata = {
     siteName: "SU IT Guide",
     locale: "ar_EG",
     type: "website",
+    images: [
+      {
+        url: "/uni-logo.jpeg",
+        width: 800,
+        height: 600,
+        alt: "SU IT Guide - شعار كلية تكنولوجيا المعلومات جامعة سيناء",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "SU IT Guide - دليل طلاب تكنولوجيا المعلومات جامعة سيناء",
     description: "حاسبة GPA، دليل المقررات، الخطة الدراسية، واللائحة الأكاديمية لطلاب كلية تكنولوجيا المعلومات بجامعة سيناء.",
+    images: ["/uni-logo.jpeg"],
   },
   icons: {
     icon: "/uni-logo.jpeg",
